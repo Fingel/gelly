@@ -1,13 +1,10 @@
 use adw::subclass::prelude::*;
 use glib::subclass::InitializingObject;
-use gtk::{Button, CompositeTemplate, glib};
+use gtk::{CompositeTemplate, glib};
 
 #[derive(CompositeTemplate, Default)]
 #[template(resource = "/io/m51/Gelly/ui/window.ui")]
-pub struct Window {
-    #[template_child]
-    pub button: TemplateChild<Button>,
-}
+pub struct Window {}
 
 #[glib::object_subclass]
 impl ObjectSubclass for Window {
