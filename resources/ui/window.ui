@@ -17,6 +17,13 @@
         <property name="orientation">1</property>
         <child>
           <object class="AdwHeaderBar" id="header_bar">
+            <child type="end">
+              <object class="GtkMenuButton" id="button_menu">
+                <property name="menu-model">menu_app</property>
+                <property name="icon-name">open-menu-symbolic</property>
+                <property name="primary">true</property>
+              </object>
+            </child>
             <property name="title-widget">
               <object class="AdwViewSwitcher" id="switcher_title">
                 <property name="stack">stack</property>
@@ -136,4 +143,16 @@
       </object>
     </property>
   </template>
+  <menu id="menu_app">
+    <section>
+      <item>
+        <attribute name="label" translatable="yes">Server List</attribute>
+        <attribute name="action">win.servers</attribute>
+      </item>
+      <item>
+        <attribute name="label" translatable="yes">Quit</attribute>
+        <attribute name="action">window.close</attribute>
+      </item>
+    </section>
+  </menu>
 </interface>

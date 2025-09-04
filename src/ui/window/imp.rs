@@ -1,6 +1,10 @@
 use adw::subclass::prelude::*;
 use glib::subclass::InitializingObject;
-use gtk::{CompositeTemplate, glib};
+use gtk::{
+    CompositeTemplate,
+    gio::{ActionEntry, prelude::ActionMapExtManual},
+    glib,
+};
 
 #[derive(CompositeTemplate, Default)]
 #[template(resource = "/io/m51/Gelly/ui/window.ui")]
@@ -24,6 +28,13 @@ impl ObjectSubclass for Window {
 impl ObjectImpl for Window {
     fn constructed(&self) {
         self.parent_constructed();
+
+        let action_servers = ActionEntry::builder("servers")
+            .activate(|_, _, _| {
+                println!("Server list action");
+            })
+            .build();
+        self.obj().add_action_entries([action_servers]);
     }
 }
 
