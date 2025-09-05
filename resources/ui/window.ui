@@ -19,7 +19,58 @@
             <property name="title" translatable="yes">Servers</property>
             <child>
               <object class="AdwStatusPage">
-                <property name="title" translatable="yes">Hello</property>
+                <property name="title" translatable="yes">Connect to Jellyfin</property>
+                <child>
+                  <object class="GtkBox">
+                    <property name="orientation">1</property>
+                    <property name="halign">3</property>
+                    <child>
+                      <object class="GtkListBox">
+                        <property name="selection-mode">none</property>
+                        <property name="margin-bottom">24</property>
+                        <style>
+                          <class name="boxed-list"/>
+                        </style>
+                        <child>
+                          <object class="AdwEntryRow">
+                          <property name="title">Host</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="AdwEntryRow">
+                            <property name="title">Port</property>
+                            <property name="input-purpose">2</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="AdwEntryRow">
+                            <property name="title">Username</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="AdwPasswordEntryRow">
+                            <property name="title">Password</property>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkListBox">
+                        <style>
+                          <class name="boxed-list"/>
+                        </style>
+                        <child>
+                          <object class="AdwButtonRow" id="connect">
+                            <property name="title">Connect</property>
+                            <style>
+                              <class name="suggested-action"/>
+                            </style>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                  </object>
+                </child>
               </object>
             </child>
           </object>
