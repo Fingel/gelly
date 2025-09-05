@@ -8,7 +8,14 @@ use gtk::{
 
 #[derive(CompositeTemplate, Default)]
 #[template(resource = "/io/m51/Gelly/ui/window.ui")]
-pub struct Window {}
+pub struct Window {
+    #[template_child]
+    pub setup_navigation: TemplateChild<adw::NavigationView>,
+    #[template_child]
+    pub setup_servers: TemplateChild<adw::NavigationPage>,
+    #[template_child]
+    pub main_window: TemplateChild<adw::NavigationPage>,
+}
 
 #[glib::object_subclass]
 impl ObjectSubclass for Window {
