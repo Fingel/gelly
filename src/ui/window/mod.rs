@@ -13,7 +13,7 @@ glib::wrapper! {
 impl Window {
     pub fn new(app: &adw::Application) -> Self {
         let window: Self = Object::builder().property("application", app).build();
-        let servers: Vec<String> = vec!["localhost".to_string()];
+        let servers: Vec<String> = vec![];
         if servers.is_empty() {
             window.show_server_setup();
         } else {

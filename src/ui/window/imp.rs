@@ -6,6 +6,8 @@ use gtk::{
     glib,
 };
 
+use crate::ui::server_form::ServerForm;
+
 #[derive(CompositeTemplate, Default)]
 #[template(resource = "/io/m51/Gelly/ui/window.ui")]
 pub struct Window {
@@ -15,6 +17,8 @@ pub struct Window {
     pub setup_servers: TemplateChild<adw::NavigationPage>,
     #[template_child]
     pub main_window: TemplateChild<adw::NavigationPage>,
+    #[template_child]
+    pub server_form: TemplateChild<ServerForm>,
 }
 
 #[glib::object_subclass]

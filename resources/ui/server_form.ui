@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <requires lib="gtk" version="4.0"/>
+  <template class="GellyServerForm" parent="GtkBox">
+    <property name="orientation">vertical</property>
+    <child>
+      <object class="GtkListBox">
+        <property name="selection-mode">none</property>
+        <property name="margin-bottom">24</property>
+        <style>
+          <class name="boxed-list"/>
+        </style>
+        <child>
+          <object class="AdwEntryRow">
+          <property name="title">Host</property>
+          </object>
+        </child>
+        <child>
+          <object class="AdwEntryRow">
+            <property name="title">Port</property>
+            <property name="input-purpose">2</property>
+          </object>
+        </child>
+        <child>
+          <object class="AdwEntryRow">
+            <property name="title">Username</property>
+          </object>
+        </child>
+        <child>
+          <object class="AdwPasswordEntryRow">
+            <property name="title">Password</property>
+          </object>
+        </child>
+      </object>
+    </child>
+  </template>
+</interface>
