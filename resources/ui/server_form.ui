@@ -11,23 +11,23 @@
           <class name="boxed-list"/>
         </style>
         <child>
-          <object class="AdwEntryRow">
+          <object class="AdwEntryRow" id="host_entry">
           <property name="title">Host</property>
           </object>
         </child>
         <child>
-          <object class="AdwEntryRow">
+          <object class="AdwEntryRow" id="port_entry">
             <property name="title">Port</property>
             <property name="input-purpose">2</property>
           </object>
         </child>
         <child>
-          <object class="AdwEntryRow">
+          <object class="AdwEntryRow" id="username_entry">
             <property name="title">Username</property>
           </object>
         </child>
         <child>
-          <object class="AdwPasswordEntryRow">
+          <object class="AdwPasswordEntryRow" id="password_entry">
             <property name="title">Password</property>
           </object>
         </child>

@@ -18,27 +18,41 @@
           <object class="AdwNavigationPage" id="setup_servers">
             <property name="title" translatable="yes">Servers</property>
             <child>
-              <object class="AdwStatusPage">
-                <property name="title" translatable="yes">Connect to Jellyfin</property>
+              <object class="GtkBox">
+                <property name="orientation">1</property>
                 <child>
-                  <object class="GtkBox">
-                    <property name="orientation">1</property>
-                    <property name="halign">3</property>
-                    <child>
-                      <object class="GellyServerForm" id="server_form">
+                  <object class="AdwHeaderBar" id="setup_header_bar">
+                    <property name="title-widget">
+                      <object class="AdwWindowTitle">
+                        <property name="title" translatable="yes">Setup Gelly</property>
                       </object>
-                    </child>
+                    </property>
+                  </object>
+                </child>
+                <child>
+                  <object class="AdwStatusPage">
+                    <property name="title" translatable="yes">Connect to Jellyfin</property>
                     <child>
-                      <object class="GtkListBox">
-                        <style>
-                          <class name="boxed-list"/>
-                        </style>
+                      <object class="GtkBox">
+                        <property name="orientation">1</property>
+                        <property name="halign">3</property>
                         <child>
-                          <object class="AdwButtonRow" id="connect">
-                            <property name="title">Connect</property>
+                          <object class="GellyServerForm" id="server_form">
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkListBox">
                             <style>
-                              <class name="suggested-action"/>
+                              <class name="boxed-list"/>
                             </style>
+                            <child>
+                              <object class="AdwButtonRow" id="connect">
+                                <property name="title">Connect</property>
+                                <style>
+                                  <class name="suggested-action"/>
+                                </style>
+                              </object>
+                            </child>
                           </object>
                         </child>
                       </object>
