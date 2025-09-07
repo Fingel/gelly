@@ -16,12 +16,6 @@
           </object>
         </child>
         <child>
-          <object class="AdwEntryRow" id="port_entry">
-            <property name="title">Port</property>
-            <property name="input-purpose">2</property>
-          </object>
-        </child>
-        <child>
           <object class="AdwEntryRow" id="username_entry">
             <property name="title">Username</property>
           </object>

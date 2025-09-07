@@ -31,4 +31,8 @@ impl Window {
         let imp = self.imp();
         imp.setup_navigation.replace(&[imp.main_window.get()]);
     }
+
+    pub fn handle_connection_attempt(&self, host: &str, username: &str, password: &str) {
+        dbg!(host, username, password);
+    }
 }

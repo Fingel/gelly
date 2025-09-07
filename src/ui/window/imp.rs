@@ -1,9 +1,11 @@
+use adw::prelude::*;
 use adw::subclass::prelude::*;
 use glib::subclass::InitializingObject;
 use gtk::{
     CompositeTemplate,
     gio::{ActionEntry, prelude::ActionMapExtManual},
     glib,
+    prelude::WidgetExt,
 };
 
 use crate::ui::server_form::ServerForm;
@@ -19,6 +21,8 @@ pub struct Window {
     pub main_window: TemplateChild<adw::NavigationPage>,
     #[template_child]
     pub server_form: TemplateChild<ServerForm>,
+    #[template_child]
+    pub connect_button: TemplateChild<adw::ButtonRow>,
 }
 
 #[glib::object_subclass]
@@ -46,6 +50,7 @@ impl ObjectImpl for Window {
             })
             .build();
         self.obj().add_action_entries([action_servers]);
+        self.setup_signals();
     }
 }
 
@@ -56,3 +61,38 @@ impl WindowImpl for Window {}
 impl AdwApplicationWindowImpl for Window {}
 
 impl ApplicationWindowImpl for Window {}
+
+impl Window {
+    fn setup_signals(&self) {
+        // Setup Connect Button
+        self.connect_button.connect_activated(glib::clone!(
+            #[weak(rename_to=window)]
+            self,
+            move |_| {
+                if window.server_form.is_complete() {
+                    let result = window.server_form.get_value();
+                    window.obj().handle_connection_attempt(
+                        &result.host,
+                        &result.username,
+                        &result.password,
+                    );
+                } else {
+                    dbg!("User attempted to submit without completing the form");
+                }
+            }
+        ));
+
+        // Make sure connect button remains inactive until form is ready
+        self.server_form
+            .imp()
+            .host_entry
+            .connect_changed(glib::clone!(
+                #[weak(rename_to=window)]
+                self,
+                move |_| {
+                    let sensitive = window.server_form.is_complete();
+                    window.connect_button.set_sensitive(sensitive);
+                }
+            ));
+    }
+}

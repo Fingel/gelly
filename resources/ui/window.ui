@@ -46,8 +46,9 @@
                               <class name="boxed-list"/>
                             </style>
                             <child>
-                              <object class="AdwButtonRow" id="connect">
+                              <object class="AdwButtonRow" id="connect_button">
                                 <property name="title">Connect</property>
+                                <property name="sensitive">false</property>
                                 <style>
                                   <class name="suggested-action"/>
                                 </style>
