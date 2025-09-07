@@ -2,6 +2,7 @@ use adw::subclass::prelude::ObjectSubclassIsExt;
 use glib::Object;
 use gtk::{gio, glib};
 mod imp;
+use crate::application::Application;
 
 glib::wrapper! {
     pub struct Window(ObjectSubclass<imp::Window>)
@@ -11,7 +12,7 @@ glib::wrapper! {
 }
 
 impl Window {
-    pub fn new(app: &adw::Application) -> Self {
+    pub fn new(app: &Application) -> Self {
         let window: Self = Object::builder().property("application", app).build();
         let servers: Vec<String> = vec![];
         if servers.is_empty() {
