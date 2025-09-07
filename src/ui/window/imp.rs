@@ -7,6 +7,7 @@ use gtk::{
     glib,
     prelude::WidgetExt,
 };
+use log::warn;
 
 use crate::ui::server_form::ServerForm;
 
@@ -77,7 +78,7 @@ impl Window {
                         &result.password,
                     );
                 } else {
-                    dbg!("User attempted to submit without completing the form");
+                    warn!("User attempted to submit without completing the form");
                 }
             }
         ));
