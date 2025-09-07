@@ -1,8 +1,14 @@
+use crate::application::Application;
 use adw::subclass::prelude::ObjectSubclassIsExt;
 use glib::Object;
-use gtk::{gio, glib};
+use gtk::{
+    gio,
+    glib::{self, object::CastNone},
+    prelude::*,
+};
+use log::info;
+
 mod imp;
-use crate::application::Application;
 
 glib::wrapper! {
     pub struct Window(ObjectSubclass<imp::Window>)
@@ -34,6 +40,12 @@ impl Window {
     }
 
     pub fn handle_connection_attempt(&self, host: &str, username: &str, password: &str) {
+        if let Some(app) = self.application().and_downcast::<Application>() {
+            dbg!("before", app.auth_token());
+            app.set_auth_token(Some(username.to_string()));
+            dbg!("after", app.auth_token());
+            info!("User authenticated successfully");
+        }
         dbg!(host, username, password);
     }
 }

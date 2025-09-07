@@ -6,7 +6,7 @@ mod imp;
 
 glib::wrapper! {
     pub struct Application(ObjectSubclass<imp::Application>)
-    @extends adw::Application, gio::Application,
+    @extends gio::Application, gtk::Application, adw::Application,
     @implements gio::ActionGroup, gio::ActionMap;
 }
 
