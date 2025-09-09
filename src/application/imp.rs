@@ -2,9 +2,11 @@ use adw::subclass::prelude::*;
 use gtk::glib;
 use std::cell::RefCell;
 
+use crate::jellyfin::Jellyfin;
+
 #[derive(Default)]
 pub struct Application {
-    pub auth_token: RefCell<Option<String>>,
+    pub jellyfin: RefCell<Option<Jellyfin>>,
 }
 
 #[glib::object_subclass]

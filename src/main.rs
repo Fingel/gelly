@@ -6,6 +6,8 @@ use log::info;
 use ui::window::Window;
 
 mod application;
+mod async_utils;
+mod jellyfin;
 mod ui;
 
 fn main() -> glib::ExitCode {

@@ -8,6 +8,11 @@ gtk = { version = "0.9", package = "gtk4", features = ["v4_18"] }
 adw = { version = "0.7", package = "libadwaita", features = ["v1_7"] }
 log = { version = "0.4.28", features = ["std"] }
 env_logger = { version = "0.11.8", features = ["color"] }
+tokio = { version = "1.47.1", features = ["rt-multi-thread", "sync"] }
+reqwest = { version = "0.12.23", features = ["json"] }
+serde_json = { version = "1.0.143", features = ["std"] }
+serde = { version = "1.0.219", features = ["derive"] }
+thiserror = "2.0.16"
 
 [build-dependencies]
 glib-build-tools = "0.21.0"

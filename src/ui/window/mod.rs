@@ -1,4 +1,6 @@
 use crate::application::Application;
+use crate::async_utils::spawn_tokio;
+use crate::jellyfin::{Jellyfin, JellyfinError};
 use adw::subclass::prelude::ObjectSubclassIsExt;
 use glib::Object;
 use gtk::{
@@ -6,7 +8,7 @@ use gtk::{
     glib::{self, object::CastNone},
     prelude::*,
 };
-use log::info;
+use log::debug;
 
 mod imp;
 
@@ -41,11 +43,42 @@ impl Window {
 
     pub fn handle_connection_attempt(&self, host: &str, username: &str, password: &str) {
         if let Some(app) = self.application().and_downcast::<Application>() {
-            dbg!("before", app.auth_token());
-            app.set_auth_token(Some(username.to_string()));
-            dbg!("after", app.auth_token());
-            info!("User authenticated successfully");
+            let host = host.to_string();
+            let username = username.to_string();
+            let password = password.to_string();
+            spawn_tokio(
+                async move { Jellyfin::new_with_auth(&host, &username, &password).await },
+                glib::clone!(
+                    #[weak(rename_to=window)]
+                    self,
+                    move |result| {
+                        match result {
+                            Ok(jellyfin) => {
+                                app.imp().jellyfin.replace(Some(jellyfin));
+                            }
+                            Err(err) => window.handle_connection_error(err),
+                        }
+                    }
+                ),
+            );
         }
         dbg!(host, username, password);
+    }
+
+    fn handle_connection_error(&self, error: JellyfinError) {
+        match error {
+            JellyfinError::Transport(err) => {
+                debug!("Transport error: {}", err);
+            }
+            JellyfinError::Http { status, message } => {
+                debug!("HTTP {} error: {}", status, message);
+            }
+            JellyfinError::AuthenticationFailed { message } => {
+                debug!("Authentication failed: {}", message);
+            }
+            _ => {
+                dbg!(error);
+            }
+        }
     }
 }
