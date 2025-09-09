@@ -1,11 +1,10 @@
-use std::sync::LazyLock;
+use std::sync::OnceLock;
 
 use tokio::runtime::Runtime;
 
 pub fn tokio_rt() -> &'static Runtime {
-    static TOKIO_RT: LazyLock<Runtime> =
-        LazyLock::new(|| Runtime::new().expect("Failed to create Tokio runtime"));
-    &TOKIO_RT
+    static TOKIO_RT: OnceLock<Runtime> = OnceLock::new();
+    TOKIO_RT.get_or_init(|| Runtime::new().expect("Failed to create Tokio runtime"))
 }
 
 /// Spawn a future that will run on a Tokio worker thread.
