@@ -25,9 +25,6 @@ pub enum JellyfinError {
     #[error("Authentication failed: {message}")]
     AuthenticationFailed { message: String },
 
-    #[error("Invalid server response: {0}")]
-    InvalidResponse(String),
-
     #[error("JSON parsing error: {0}")]
     JsonParsing(#[from] serde_json::Error),
 }
@@ -107,12 +104,10 @@ impl Jellyfin {
             "".to_string()
         };
 
-        let header = format!(
+        format!(
             "MediaBrowser Client=\"{}\", Device=\"{}\", DeviceId=\"{}\", Version=\"{}\"{}",
             CLIENT_ID, device, UUID, VERSION, auth
-        );
-        debug!("Auth header: {}", header);
-        header
+        )
     }
 
     async fn post_json<T>(&self, endpoint: &str, body: &T) -> Result<Response, JellyfinError>
@@ -141,10 +136,7 @@ impl Jellyfin {
     {
         let status = response.status();
         if status.is_success() {
-            let json_response = response
-                .json::<T>()
-                .await
-                .map_err(|e| JellyfinError::InvalidResponse(e.to_string()))?;
+            let json_response = response.json::<T>().await?;
             debug!("Received response: {:?}", json_response);
             Ok(json_response)
         } else {
