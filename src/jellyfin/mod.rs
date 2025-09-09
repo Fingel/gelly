@@ -1,4 +1,5 @@
-use std::fmt::Debug;
+use std::fs;
+use std::{fmt::Debug, sync::OnceLock};
 
 use api::AuthenticateResponse;
 use log::debug;
@@ -8,6 +9,9 @@ use serde_json::json;
 use thiserror::Error;
 
 mod api;
+
+static CLIENT_ID: &str = "Gelly"; //TODO: get this from the gtk app config
+static VERSION: &str = "0.1"; //TODO: get this from build script?
 
 #[derive(Error, Debug)]
 pub enum JellyfinError {
@@ -84,21 +88,31 @@ impl Jellyfin {
         Self::handle_response(response).await
     }
 
+    fn get_hostname(&self) -> &'static str {
+        static HOSTNAME: OnceLock<String> = OnceLock::new();
+        HOSTNAME.get_or_init(|| {
+            fs::read_to_string("/proc/sys/kernel/hostname")
+                .unwrap_or_else(|_| "Gelly-Device".to_string())
+                .trim()
+                .to_string()
+        })
+    }
+
     fn auth_header(&self) -> String {
-        let client = "Gelly";
-        let device = "GellyTestDevice";
+        let device = self.get_hostname();
         let device_id = "GellyFakeTestId";
-        let version = "0.1";
         let auth = if !self.token.is_empty() {
             format!(", Token=\"{}\"", self.token)
         } else {
             "".to_string()
         };
 
-        format!(
+        let header = format!(
             "MediaBrowser Client=\"{}\", Device=\"{}\", DeviceId=\"{}\", Version=\"{}\"{}",
-            client, device, device_id, version, auth
-        )
+            CLIENT_ID, device, device_id, VERSION, auth
+        );
+        debug!("Auth header: {}", header);
+        header
     }
 
     async fn post_json<T>(&self, endpoint: &str, body: &T) -> Result<Response, JellyfinError>
