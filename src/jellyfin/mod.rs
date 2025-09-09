@@ -12,6 +12,7 @@ mod api;
 
 static CLIENT_ID: &str = "Gelly"; //TODO: get this from the gtk app config
 static VERSION: &str = "0.1"; //TODO: get this from build script?
+static UUID: &str = "9770ae10-835f-422b-8125-81b8977b181d"; //TODO: generate and store in settings
 
 #[derive(Error, Debug)]
 pub enum JellyfinError {
@@ -100,7 +101,6 @@ impl Jellyfin {
 
     fn auth_header(&self) -> String {
         let device = self.get_hostname();
-        let device_id = "GellyFakeTestId";
         let auth = if !self.token.is_empty() {
             format!(", Token=\"{}\"", self.token)
         } else {
@@ -109,7 +109,7 @@ impl Jellyfin {
 
         let header = format!(
             "MediaBrowser Client=\"{}\", Device=\"{}\", DeviceId=\"{}\", Version=\"{}\"{}",
-            CLIENT_ID, device, device_id, VERSION, auth
+            CLIENT_ID, device, UUID, VERSION, auth
         );
         debug!("Auth header: {}", header);
         header
