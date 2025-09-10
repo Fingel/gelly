@@ -1,5 +1,8 @@
+use adw::subclass::prelude::ObjectSubclassIsExt;
 use glib::Object;
 use gtk::{gio, glib};
+
+use crate::jellyfin::Jellyfin;
 
 mod imp;
 
@@ -14,6 +17,20 @@ impl Application {
         Object::builder()
             .property("application-id", "io.m51.Gelly")
             .build()
+    }
+
+    pub fn jellyfin(&self) -> Jellyfin {
+        let mut jellyfin_ref = self.imp().jellyfin.borrow_mut();
+
+        if jellyfin_ref.is_none() {
+            let host = "";
+            let password = "";
+            let userid = "";
+            let jellyfin = Jellyfin::new(host, password, userid);
+            *jellyfin_ref = Some(jellyfin);
+        }
+
+        jellyfin_ref.as_ref().unwrap().clone()
     }
 }
 

@@ -60,7 +60,11 @@ impl Jellyfin {
         self.user_id = user_id.to_string();
     }
 
-    pub async fn new_with_auth(
+    pub fn is_authenticated(&self) -> bool {
+        !self.token.is_empty() && !self.user_id.is_empty() && !self.base_url.is_empty()
+    }
+
+    pub async fn new_authenticate(
         base_url: &str,
         username: &str,
         password: &str,
@@ -73,7 +77,7 @@ impl Jellyfin {
         Ok(jellyfin)
     }
 
-    pub async fn authenticate(
+    async fn authenticate(
         &self,
         username: &str,
         password: &str,

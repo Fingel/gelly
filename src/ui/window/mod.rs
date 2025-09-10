@@ -47,7 +47,7 @@ impl Window {
             let username = username.to_string();
             let password = password.to_string();
             spawn_tokio(
-                async move { Jellyfin::new_with_auth(&host, &username, &password).await },
+                async move { Jellyfin::new_authenticate(&host, &username, &password).await },
                 glib::clone!(
                     #[weak(rename_to=window)]
                     self,
