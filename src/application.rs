@@ -4,8 +4,6 @@ use gtk::{gio, glib};
 
 use crate::jellyfin::Jellyfin;
 
-mod imp;
-
 glib::wrapper! {
     pub struct Application(ObjectSubclass<imp::Application>)
     @extends gio::Application, gtk::Application, adw::Application,
@@ -38,4 +36,29 @@ impl Default for Application {
     fn default() -> Self {
         Self::new()
     }
+}
+
+mod imp {
+    use adw::subclass::prelude::*;
+    use gtk::glib;
+    use std::cell::RefCell;
+
+    use crate::jellyfin::Jellyfin;
+
+    #[derive(Default)]
+    pub struct Application {
+        pub jellyfin: RefCell<Option<Jellyfin>>,
+    }
+
+    #[glib::object_subclass]
+    impl ObjectSubclass for Application {
+        const NAME: &'static str = "GellyApplication";
+        type Type = super::Application;
+        type ParentType = adw::Application;
+    }
+
+    impl ObjectImpl for Application {}
+    impl ApplicationImpl for Application {}
+    impl GtkApplicationImpl for Application {}
+    impl AdwApplicationImpl for Application {}
 }
