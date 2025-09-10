@@ -32,13 +32,13 @@ pub enum JellyfinError {
 #[derive(Debug, Clone)]
 pub struct Jellyfin {
     client: Client,
-    base_url: String,
-    token: String,
-    user_id: String,
+    pub host: String,
+    pub token: String,
+    pub user_id: String,
 }
 
 impl Jellyfin {
-    pub fn new(base_url: &str, token: &str, user_id: &str) -> Self {
+    pub fn new(host: &str, token: &str, user_id: &str) -> Self {
         let client = Client::builder()
             .user_agent("Gelly/0.1")
             .build()
@@ -46,33 +46,25 @@ impl Jellyfin {
 
         Self {
             client,
-            base_url: base_url.to_string(),
+            host: host.to_string(),
             token: token.to_string(),
             user_id: user_id.to_string(),
         }
     }
 
-    pub fn set_access_token(&mut self, token: &str) {
-        self.token = token.to_string();
-    }
-
-    pub fn set_user_id(&mut self, user_id: &str) {
-        self.user_id = user_id.to_string();
-    }
-
     pub fn is_authenticated(&self) -> bool {
-        !self.token.is_empty() && !self.user_id.is_empty() && !self.base_url.is_empty()
+        !self.token.is_empty() && !self.user_id.is_empty() && !self.host.is_empty()
     }
 
     pub async fn new_authenticate(
-        base_url: &str,
+        host: &str,
         username: &str,
         password: &str,
     ) -> Result<Self, JellyfinError> {
-        let mut jellyfin = Self::new(base_url, "", "");
+        let mut jellyfin = Self::new(host, "", "");
         let resp = jellyfin.authenticate(username, password).await?;
-        jellyfin.set_access_token(&resp.access_token);
-        jellyfin.set_user_id(&resp.user.id);
+        jellyfin.token = resp.access_token;
+        jellyfin.user_id = resp.user.id;
 
         Ok(jellyfin)
     }
@@ -120,7 +112,7 @@ impl Jellyfin {
     {
         let url = format!(
             "{}/{}",
-            self.base_url.trim_end_matches('/'),
+            self.host.trim_end_matches('/'),
             endpoint.trim_start_matches('/')
         );
         debug!("Sending POST request to {}", url);

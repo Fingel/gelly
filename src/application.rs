@@ -1,7 +1,9 @@
 use adw::subclass::prelude::ObjectSubclassIsExt;
 use glib::Object;
+use gtk::gio::prelude::SettingsExt;
 use gtk::{gio, glib};
 
+use crate::config::{self, settings};
 use crate::jellyfin::Jellyfin;
 
 glib::wrapper! {
@@ -13,7 +15,7 @@ glib::wrapper! {
 impl Application {
     pub fn new() -> Self {
         Object::builder()
-            .property("application-id", "io.m51.Gelly")
+            .property("application-id", config::APP_ID)
             .build()
     }
 
@@ -21,10 +23,10 @@ impl Application {
         let mut jellyfin_ref = self.imp().jellyfin.borrow_mut();
 
         if jellyfin_ref.is_none() {
-            let host = "";
-            let password = "";
-            let userid = "";
-            let jellyfin = Jellyfin::new(host, password, userid);
+            let host = settings().string("hostname");
+            let user_id = settings().string("user-id");
+            let token = "";
+            let jellyfin = Jellyfin::new(host.as_str(), token, user_id.as_str());
             *jellyfin_ref = Some(jellyfin);
         }
 

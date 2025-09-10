@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<schemalist>
+  <schema id="io.m51.Gelly" path="/io/m51/Gelly/">
+    <key name="hostname" type="s">
+      <default>""</default>
+      <summary>Jellyfin Host</summary>
+    </key>
+    <key name="user-id" type="s">
+      <default>""</default>
+      <summary>Jellyfin User ID</summary>
+    </key>
+  </schema>
+</schemalist>

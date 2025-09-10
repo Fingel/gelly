@@ -1,5 +1,6 @@
 use crate::application::Application;
 use crate::async_utils::spawn_tokio;
+use crate::config::settings;
 use crate::jellyfin::{Jellyfin, JellyfinError};
 use adw::subclass::prelude::ObjectSubclassIsExt;
 use glib::Object;
@@ -52,7 +53,11 @@ impl Window {
                     move |result| {
                         match result {
                             Ok(jellyfin) => {
+                                let user_id = jellyfin.user_id.clone();
+                                let token = jellyfin.token.clone();
+                                let host = jellyfin.host.clone();
                                 app.imp().jellyfin.replace(Some(jellyfin));
+                                window.save_server_settings(&host, &user_id, &token);
                             }
                             Err(err) => window.handle_connection_error(err),
                         }
@@ -61,6 +66,15 @@ impl Window {
             );
         }
         dbg!(host, username, password);
+    }
+
+    fn save_server_settings(&self, host: &str, user_id: &str, _token: &str) {
+        settings()
+            .set_string("hostname", host)
+            .expect("Failed to save hostname");
+        settings()
+            .set_string("user-id", user_id)
+            .expect("Failed to save user-id");
     }
 
     fn handle_connection_error(&self, error: JellyfinError) {
