@@ -33,6 +33,21 @@ impl ServerForm {
             password: imp.password_entry.text().to_string(),
         }
     }
+
+    pub fn host_error(&self) {
+        self.imp().host_entry.add_css_class("error");
+    }
+
+    pub fn authentication_error(&self) {
+        self.imp().username_entry.add_css_class("error");
+        self.imp().password_entry.add_css_class("error");
+    }
+
+    pub fn clear_errors(&self) {
+        self.imp().host_entry.remove_css_class("error");
+        self.imp().username_entry.remove_css_class("error");
+        self.imp().password_entry.remove_css_class("error");
+    }
 }
 
 impl Default for ServerForm {

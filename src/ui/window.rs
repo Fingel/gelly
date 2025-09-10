@@ -9,7 +9,7 @@ use gtk::{
     glib::{self, object::CastNone},
     prelude::*,
 };
-use log::debug;
+use log::{debug, warn};
 
 glib::wrapper! {
     pub struct Window(ObjectSubclass<imp::Window>)
@@ -41,6 +41,7 @@ impl Window {
     }
 
     pub fn handle_connection_attempt(&self, host: &str, username: &str, password: &str) {
+        self.imp().server_form.clear_errors();
         if let Some(app) = self.application().and_downcast::<Application>() {
             let host = host.to_string();
             let username = username.to_string();
@@ -81,12 +82,17 @@ impl Window {
     fn handle_connection_error(&self, error: JellyfinError) {
         match error {
             JellyfinError::Transport(err) => {
+                self.imp().server_form.host_error();
                 debug!("Transport error: {}", err);
             }
             JellyfinError::Http { status, message } => {
-                debug!("HTTP {} error: {}", status, message);
+                warn!(
+                    "HTTP {} error: {} when attempting to authenticate",
+                    status, message
+                );
             }
             JellyfinError::AuthenticationFailed { message } => {
+                self.imp().server_form.authentication_error();
                 debug!("Authentication failed: {}", message);
             }
             _ => {
