@@ -30,6 +30,14 @@ impl Window {
         window
     }
 
+    pub fn toast(&self, title: &str, timeout: Option<u32>) {
+        let mut toast = adw::Toast::builder().title(title);
+        if let Some(timeout) = timeout {
+            toast = toast.timeout(timeout);
+        }
+        self.imp().toaster.add_toast(toast.build());
+    }
+
     pub fn show_server_setup(&self) {
         let imp = self.imp();
         imp.setup_navigation.replace(&[imp.setup_servers.get()]);
@@ -83,15 +91,18 @@ impl Window {
         match error {
             JellyfinError::Transport(err) => {
                 self.imp().server_form.host_error();
+                self.toast("Error connecting to host", None);
                 debug!("Transport error: {}", err);
             }
             JellyfinError::Http { status, message } => {
+                self.toast("HTTP {} error when attempting to authenticate", None);
                 warn!(
                     "HTTP {} error: {} when attempting to authenticate",
                     status, message
                 );
             }
             JellyfinError::AuthenticationFailed { message } => {
+                self.toast("Invalid credentials", None);
                 self.imp().server_form.authentication_error();
                 debug!("Authentication failed: {}", message);
             }
@@ -119,6 +130,8 @@ mod imp {
     #[derive(CompositeTemplate, Default)]
     #[template(resource = "/io/m51/Gelly/ui/window.ui")]
     pub struct Window {
+        #[template_child]
+        pub toaster: TemplateChild<adw::ToastOverlay>,
         #[template_child]
         pub setup_navigation: TemplateChild<adw::NavigationView>,
         #[template_child]
