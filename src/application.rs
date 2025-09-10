@@ -3,7 +3,7 @@ use glib::Object;
 use gtk::gio::prelude::SettingsExt;
 use gtk::{gio, glib};
 
-use crate::config::{self, settings};
+use crate::config::{self, retrieve_jellyfin_api_token, settings};
 use crate::jellyfin::Jellyfin;
 
 glib::wrapper! {
@@ -25,8 +25,9 @@ impl Application {
         if jellyfin_ref.is_none() {
             let host = settings().string("hostname");
             let user_id = settings().string("user-id");
-            let token = "";
-            let jellyfin = Jellyfin::new(host.as_str(), token, user_id.as_str());
+            let token =
+                retrieve_jellyfin_api_token(host.as_str(), user_id.as_str()).unwrap_or_default();
+            let jellyfin = Jellyfin::new(host.as_str(), &token, user_id.as_str());
             *jellyfin_ref = Some(jellyfin);
         }
 

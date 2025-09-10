@@ -443,6 +443,7 @@ dependencies = [
  "glib-build-tools",
  "gtk4",
  "libadwaita",
+ "libsecret",
  "log",
  "reqwest",
  "serde",
@@ -1142,6 +1143,32 @@ name = "libc"
 version = "0.2.175"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "6a82ae493e598baaea5209805c49bbf2ea7de956d50d7da0da1164f9c6d28543"
+
+[[package]]
+name = "libsecret"
+version = "0.7.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ed48c3c2b757067b21f693e8de3dd6ad4ba37508c8cc2c2bc8d0c2f16b5896b9"
+dependencies = [
+ "gio 0.20.12",
+ "glib 0.20.12",
+ "libc",
+ "libsecret-sys",
+]
+
+[[package]]
+name = "libsecret-sys"
+version = "0.7.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5b2ed075a9bb4deae8110ba9a2cf5a05fafa9ba588a3c2148eee56040ac5a302"
+dependencies = [
+ "gio-sys 0.20.10",
+ "glib-sys 0.20.10",
+ "gobject-sys 0.20.10",
+ "libc",
+ "pkg-config",
+ "system-deps",
+]
 
 [[package]]
 name = "linux-raw-sys"

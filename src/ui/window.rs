@@ -1,6 +1,6 @@
 use crate::application::Application;
 use crate::async_utils::spawn_tokio;
-use crate::config::settings;
+use crate::config::{settings, store_jellyfin_api_token};
 use crate::jellyfin::{Jellyfin, JellyfinError};
 use adw::subclass::prelude::ObjectSubclassIsExt;
 use glib::Object;
@@ -68,13 +68,14 @@ impl Window {
         dbg!(host, username, password);
     }
 
-    fn save_server_settings(&self, host: &str, user_id: &str, _token: &str) {
+    fn save_server_settings(&self, host: &str, user_id: &str, token: &str) {
         settings()
             .set_string("hostname", host)
             .expect("Failed to save hostname");
         settings()
             .set_string("user-id", user_id)
             .expect("Failed to save user-id");
+        store_jellyfin_api_token(host, user_id, token);
     }
 
     fn handle_connection_error(&self, error: JellyfinError) {
