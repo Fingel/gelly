@@ -40,12 +40,12 @@ impl Window {
 
     pub fn show_server_setup(&self) {
         let imp = self.imp();
-        imp.setup_navigation.replace(&[imp.setup_servers.get()]);
+        imp.setup_stack.set_visible_child(&imp.setup_servers.get());
     }
 
     pub fn show_main_page(&self) {
         let imp = self.imp();
-        imp.setup_navigation.replace(&[imp.main_window.get()]);
+        imp.setup_stack.set_visible_child(&imp.main_window.get());
     }
 
     pub fn handle_connection_attempt(&self, host: &str, username: &str, password: &str) {
@@ -133,7 +133,7 @@ mod imp {
         #[template_child]
         pub toaster: TemplateChild<adw::ToastOverlay>,
         #[template_child]
-        pub setup_navigation: TemplateChild<adw::NavigationView>,
+        pub setup_stack: TemplateChild<gtk::Stack>,
         #[template_child]
         pub setup_servers: TemplateChild<adw::NavigationPage>,
         #[template_child]
