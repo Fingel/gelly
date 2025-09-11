@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <requires lib="gtk" version="4.0"/>
+  <template class="GellySetup" parent="GtkBox">
+    <property name="orientation">vertical</property>
+    <child>
+      <object class="AdwNavigationView" id="setup_navigation_view">
+        <child>
+          <object class="AdwNavigationPage" id="setup_servers">
+            <property name="title" translatable="yes">Servers</property>
+            <child>
+              <object class="GtkBox">
+                <property name="orientation">1</property>
+                <child>
+                  <object class="AdwHeaderBar" id="setup_header_bar">
+                    <property name="title-widget">
+                      <object class="AdwWindowTitle">
+                        <property name="title" translatable="yes">Setup Gelly</property>
+                      </object>
+                    </property>
+                  </object>
+                </child>
+                <child>
+                  <object class="AdwStatusPage">
+                    <property name="title" translatable="yes">Connect to Jellyfin</property>
+                    <child>
+                      <object class="GtkBox">
+                        <property name="orientation">1</property>
+                        <property name="halign">3</property>
+                        <child>
+                          <object class="GtkBox" id="server_form">
+                            <property name="orientation">vertical</property>
+                            <child>
+                              <object class="GtkListBox">
+                                <property name="selection-mode">none</property>
+                                <property name="margin-bottom">24</property>
+                                <style>
+                                  <class name="boxed-list"/>
+                                </style>
+                                <child>
+                                  <object class="AdwEntryRow" id="host_entry">
+                                  <property name="title">Host</property>
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="AdwEntryRow" id="username_entry">
+                                    <property name="title">Username</property>
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="AdwPasswordEntryRow" id="password_entry">
+                                    <property name="title">Password</property>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkListBox">
+                            <style>
+                              <class name="boxed-list"/>
+                            </style>
+                            <child>
+                              <object class="AdwButtonRow" id="connect_button">
+                                <property name="title">Connect</property>
+                                <property name="sensitive">false</property>
+                                <style>
+                                  <class name="suggested-action"/>
+                                </style>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+  </template>
+</interface>

@@ -2,6 +2,6 @@
 <gresources>
   <gresource prefix="/io/m51/Gelly/">
     <file compressed="true" preprocess="xml-stripblanks">ui/window.ui</file>
-    <file compressed="true" preprocess="xml-stripblanks">ui/server_form.ui</file>
+    <file compressed="true" preprocess="xml-stripblanks">ui/setup.ui</file>
   </gresource>
 </gresources>

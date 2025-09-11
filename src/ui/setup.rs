@@ -1,0 +1,207 @@
+use crate::application::Application;
+use crate::async_utils::spawn_tokio;
+use crate::config::{settings, store_jellyfin_api_token};
+use crate::jellyfin::{Jellyfin, JellyfinError};
+use crate::ui::widget_ext::WidgetApplicationExt;
+use adw::prelude::*;
+use adw::subclass::prelude::ObjectSubclassIsExt;
+use glib::Object;
+use gtk::{gio, glib};
+use log::{debug, warn};
+
+glib::wrapper! {
+    pub struct Setup(ObjectSubclass<imp::Setup>)
+    @extends gtk::Widget, gtk::Box,
+                @implements gio::ActionMap, gio::ActionGroup;
+}
+
+#[derive(Debug)]
+pub struct ServerFormValues {
+    pub host: String,
+    pub username: String,
+    pub password: String,
+}
+
+impl Setup {
+    pub fn new() -> Self {
+        Object::builder().build()
+    }
+
+    pub fn is_complete(&self) -> bool {
+        !self.imp().host_entry.text().is_empty()
+    }
+
+    pub fn get_value(&self) -> ServerFormValues {
+        let imp = self.imp();
+        ServerFormValues {
+            host: imp.host_entry.text().to_string(),
+            username: imp.username_entry.text().to_string(),
+            password: imp.password_entry.text().to_string(),
+        }
+    }
+
+    pub fn host_error(&self) {
+        self.imp().host_entry.add_css_class("error");
+    }
+
+    pub fn authentication_error(&self) {
+        self.imp().username_entry.add_css_class("error");
+        self.imp().password_entry.add_css_class("error");
+    }
+
+    pub fn clear_errors(&self) {
+        self.imp().host_entry.remove_css_class("error");
+        self.imp().username_entry.remove_css_class("error");
+        self.imp().password_entry.remove_css_class("error");
+    }
+
+    pub fn handle_connection_attempt(&self, host: &str, username: &str, password: &str) {
+        self.clear_errors();
+        if let Some(app) = self.get_application::<Application>() {
+            let host = host.to_string();
+            let username = username.to_string();
+            let password = password.to_string();
+            spawn_tokio(
+                async move { Jellyfin::new_authenticate(&host, &username, &password).await },
+                glib::clone!(
+                    #[weak(rename_to=window)]
+                    self,
+                    move |result| {
+                        match result {
+                            Ok(jellyfin) => {
+                                let user_id = jellyfin.user_id.clone();
+                                let token = jellyfin.token.clone();
+                                let host = jellyfin.host.clone();
+                                app.imp().jellyfin.replace(Some(jellyfin));
+                                window.save_server_settings(&host, &user_id, &token);
+                            }
+                            Err(err) => window.handle_connection_error(err),
+                        }
+                    }
+                ),
+            );
+        }
+        dbg!(host, username, password);
+    }
+
+    fn save_server_settings(&self, host: &str, user_id: &str, token: &str) {
+        settings()
+            .set_string("hostname", host)
+            .expect("Failed to save hostname");
+        settings()
+            .set_string("user-id", user_id)
+            .expect("Failed to save user-id");
+        store_jellyfin_api_token(host, user_id, token);
+    }
+
+    fn handle_connection_error(&self, error: JellyfinError) {
+        match error {
+            JellyfinError::Transport(err) => {
+                self.host_error();
+                self.toast("Error connecting to host", None);
+                debug!("Transport error: {}", err);
+            }
+            JellyfinError::Http { status, message } => {
+                self.toast("HTTP {} error when attempting to authenticate", None);
+                warn!(
+                    "HTTP {} error: {} when attempting to authenticate",
+                    status, message
+                );
+            }
+            JellyfinError::AuthenticationFailed { message } => {
+                self.toast("Invalid credentials", None);
+                self.authentication_error();
+                debug!("Authentication failed: {}", message);
+            }
+            _ => {
+                dbg!(error);
+            }
+        }
+    }
+}
+
+impl Default for Setup {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+mod imp {
+    use adw::prelude::*;
+    use adw::subclass::prelude::*;
+    use glib::subclass::InitializingObject;
+    use gtk::{CompositeTemplate, glib, prelude::WidgetExt};
+    use log::warn;
+
+    #[derive(CompositeTemplate, Default)]
+    #[template(resource = "/io/m51/Gelly/ui/setup.ui")]
+    pub struct Setup {
+        #[template_child]
+        pub host_entry: TemplateChild<adw::EntryRow>,
+        #[template_child]
+        pub username_entry: TemplateChild<adw::EntryRow>,
+        #[template_child]
+        pub password_entry: TemplateChild<adw::PasswordEntryRow>,
+        #[template_child]
+        pub connect_button: TemplateChild<adw::ButtonRow>,
+    }
+
+    #[glib::object_subclass]
+    impl ObjectSubclass for Setup {
+        const NAME: &'static str = "GellySetup";
+        type Type = super::Setup;
+        type ParentType = gtk::Box;
+
+        fn class_init(klass: &mut Self::Class) {
+            klass.bind_template();
+        }
+
+        fn instance_init(obj: &InitializingObject<Self>) {
+            obj.init_template();
+        }
+    }
+
+    impl ObjectImpl for Setup {
+        fn constructed(&self) {
+            self.parent_constructed();
+            self.setup_signals();
+        }
+    }
+
+    impl Setup {
+        fn setup_signals(&self) {
+            // Setup Connect Button
+            self.connect_button.connect_activated(glib::clone!(
+                #[weak(rename_to=imp)]
+                self,
+                move |_| {
+                    let obj = imp.obj();
+                    if obj.is_complete() {
+                        let result = obj.get_value();
+                        obj.handle_connection_attempt(
+                            &result.host,
+                            &result.username,
+                            &result.password,
+                        );
+                    } else {
+                        warn!("User attempted to submit without completing the form");
+                    }
+                }
+            ));
+
+            // Make sure connect button remains inactive until form is ready
+            self.obj().imp().host_entry.connect_changed(glib::clone!(
+                #[weak(rename_to=imp)]
+                self,
+                move |_| {
+                    let obj = imp.obj();
+                    let sensitive = obj.is_complete();
+                    imp.connect_button.set_sensitive(sensitive);
+                }
+            ));
+        }
+    }
+
+    impl WidgetImpl for Setup {}
+    impl BoxImpl for Setup {}
+}
