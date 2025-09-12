@@ -1,4 +1,3 @@
-use crate::application::Application;
 use crate::async_utils::spawn_tokio;
 use crate::config::{settings, store_jellyfin_api_token};
 use crate::jellyfin::{Jellyfin, JellyfinError};
@@ -28,9 +27,8 @@ impl Setup {
     }
 
     fn select_page(&self) {
-        if let Some(app) = self.get_application::<Application>()
-            && app.jellyfin().is_authenticated()
-        {
+        let app = self.get_application();
+        if app.jellyfin().is_authenticated() {
             self.show_library_setup();
         } else {
             self.show_server_setup();
@@ -47,7 +45,7 @@ impl Setup {
         let imp = self.imp();
         imp.setup_navigation_view
             .replace(&[imp.setup_library.get()]);
-        let jellyfin = self.get_application::<Application>().unwrap().jellyfin();
+        let jellyfin = self.get_application().jellyfin();
         spawn_tokio(async move { jellyfin.get_views().await.unwrap() }, |_| {});
     }
 
@@ -81,9 +79,7 @@ impl Setup {
 
     pub fn handle_connection_attempt(&self, host: &str, username: &str, password: &str) {
         self.clear_errors();
-        let app = self
-            .get_application::<Application>()
-            .expect("Application not initialized");
+        let app = self.get_application();
         let host = host.to_string();
         let username = username.to_string();
         let password = password.to_string();
