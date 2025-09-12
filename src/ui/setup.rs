@@ -27,6 +27,28 @@ impl Setup {
         Object::builder().build()
     }
 
+    fn select_page(&self) {
+        if let Some(app) = self.get_application::<Application>()
+            && app.jellyfin().is_authenticated()
+        {
+            self.show_library_setup();
+        } else {
+            self.show_server_setup();
+        }
+    }
+
+    pub fn show_server_setup(&self) {
+        let imp = self.imp();
+        imp.setup_navigation_view
+            .replace(&[imp.setup_servers.get()]);
+    }
+
+    pub fn show_library_setup(&self) {
+        let imp = self.imp();
+        imp.setup_navigation_view
+            .replace(&[imp.setup_library.get()]);
+    }
+
     pub fn is_complete(&self) -> bool {
         !self.imp().host_entry.text().is_empty()
     }
@@ -57,31 +79,32 @@ impl Setup {
 
     pub fn handle_connection_attempt(&self, host: &str, username: &str, password: &str) {
         self.clear_errors();
-        if let Some(app) = self.get_application::<Application>() {
-            let host = host.to_string();
-            let username = username.to_string();
-            let password = password.to_string();
-            spawn_tokio(
-                async move { Jellyfin::new_authenticate(&host, &username, &password).await },
-                glib::clone!(
-                    #[weak(rename_to=window)]
-                    self,
-                    move |result| {
-                        match result {
-                            Ok(jellyfin) => {
-                                let user_id = jellyfin.user_id.clone();
-                                let token = jellyfin.token.clone();
-                                let host = jellyfin.host.clone();
-                                app.imp().jellyfin.replace(Some(jellyfin));
-                                window.save_server_settings(&host, &user_id, &token);
-                            }
-                            Err(err) => window.handle_connection_error(err),
+        let app = self
+            .get_application::<Application>()
+            .expect("Application not initialized");
+        let host = host.to_string();
+        let username = username.to_string();
+        let password = password.to_string();
+        spawn_tokio(
+            async move { Jellyfin::new_authenticate(&host, &username, &password).await },
+            glib::clone!(
+                #[weak(rename_to=window)]
+                self,
+                move |result| {
+                    match result {
+                        Ok(jellyfin) => {
+                            let user_id = jellyfin.user_id.clone();
+                            let token = jellyfin.token.clone();
+                            let host = jellyfin.host.clone();
+                            app.imp().jellyfin.replace(Some(jellyfin));
+                            window.save_server_settings(&host, &user_id, &token);
+                            window.show_library_setup();
                         }
+                        Err(err) => window.handle_connection_error(err),
                     }
-                ),
-            );
-        }
-        dbg!(host, username, password);
+                }
+            ),
+        );
     }
 
     fn save_server_settings(&self, host: &str, user_id: &str, token: &str) {
@@ -137,6 +160,12 @@ mod imp {
     #[template(resource = "/io/m51/Gelly/ui/setup.ui")]
     pub struct Setup {
         #[template_child]
+        pub setup_navigation_view: TemplateChild<adw::NavigationView>,
+        #[template_child]
+        pub setup_servers: TemplateChild<adw::NavigationPage>,
+        #[template_child]
+        pub setup_library: TemplateChild<adw::NavigationPage>,
+        #[template_child]
         pub host_entry: TemplateChild<adw::EntryRow>,
         #[template_child]
         pub username_entry: TemplateChild<adw::EntryRow>,
@@ -170,6 +199,10 @@ mod imp {
 
     impl Setup {
         fn setup_signals(&self) {
+            self.obj().connect_map(|setup| {
+                setup.select_page();
+            });
+
             // Setup Connect Button
             self.connect_button.connect_activated(glib::clone!(
                 #[weak(rename_to=imp)]
