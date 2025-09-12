@@ -47,6 +47,8 @@ impl Setup {
         let imp = self.imp();
         imp.setup_navigation_view
             .replace(&[imp.setup_library.get()]);
+        let jellyfin = self.get_application::<Application>().unwrap().jellyfin();
+        spawn_tokio(async move { jellyfin.get_views().await.unwrap() }, |_| {});
     }
 
     pub fn is_complete(&self) -> bool {

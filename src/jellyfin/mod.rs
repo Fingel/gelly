@@ -82,6 +82,13 @@ impl Jellyfin {
         Self::handle_response(response).await
     }
 
+    pub async fn get_views(&self) -> Result<Vec<String>, JellyfinError> {
+        let response = self.get("UserViews").await?;
+        dbg!(response.text().await.unwrap());
+        Ok(vec![])
+        // Self::handle_response(response).await
+    }
+
     fn get_hostname(&self) -> &'static str {
         static HOSTNAME: OnceLock<String> = OnceLock::new();
         HOSTNAME.get_or_init(|| {
@@ -120,6 +127,22 @@ impl Jellyfin {
             .client
             .post(&url)
             .json(&body)
+            .header("Authorization", self.auth_header());
+        let response = request.send().await?;
+        Ok(response)
+    }
+
+    /// Any GET request
+    async fn get(&self, endpoint: &str) -> Result<Response, JellyfinError> {
+        let url = format!(
+            "{}/{}",
+            self.host.trim_end_matches('/'),
+            endpoint.trim_start_matches('/')
+        );
+        debug!("Sending GET request to {}", url);
+        let request = self
+            .client
+            .get(&url)
             .header("Authorization", self.auth_header());
         let response = request.send().await?;
         Ok(response)
