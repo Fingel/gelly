@@ -109,7 +109,7 @@ impl Setup {
         spawn_tokio(
             async move { Jellyfin::new_authenticate(&host, &username, &password).await },
             glib::clone!(
-                #[weak(rename_to=window)]
+                #[weak(rename_to=setup)]
                 self,
                 move |result| {
                     match result {
@@ -118,10 +118,10 @@ impl Setup {
                             let token = jellyfin.token.clone();
                             let host = jellyfin.host.clone();
                             app.imp().jellyfin.replace(Some(jellyfin));
-                            window.save_server_settings(&host, &user_id, &token);
-                            window.show_library_setup();
+                            setup.save_server_settings(&host, &user_id, &token);
+                            setup.show_library_setup();
                         }
-                        Err(err) => window.handle_connection_error(err),
+                        Err(err) => setup.handle_connection_error(err),
                     }
                 }
             ),
