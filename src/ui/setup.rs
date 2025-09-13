@@ -45,31 +45,7 @@ impl Setup {
         let imp = self.imp();
         imp.setup_navigation_view
             .replace(&[imp.setup_library.get()]);
-        let jellyfin = self.get_application().jellyfin();
-        let combo = imp.library_combo.clone();
-        spawn_tokio(
-            async move { jellyfin.get_views().await },
-            glib::clone!(
-                #[weak(rename_to=setup)]
-                self,
-                move |result| {
-                    match result {
-                        Ok(views) => {
-                            setup.imp().libraries.replace(Some(views.items.clone()));
-                            let model = gtk::StringList::new(&[]);
-                            for item in &setup.imp().libraries.take().unwrap_or_default() {
-                                model.append(&item.name);
-                            }
-                            combo.set_model(Some(&model));
-                        }
-                        Err(err) => {
-                            error!("Failed to fetch libraries: {:?}", err);
-                            setup.toast("Failed to load libraries", None);
-                        }
-                    }
-                }
-            ),
-        );
+        self.populate_library_list();
     }
 
     pub fn is_complete(&self) -> bool {
@@ -161,6 +137,43 @@ impl Setup {
                 dbg!(error);
             }
         }
+    }
+
+    fn populate_library_list(&self) {
+        let imp = self.imp();
+        let jellyfin = self.get_application().jellyfin();
+        let combo = imp.library_combo.clone();
+        spawn_tokio(
+            async move { jellyfin.get_views().await },
+            glib::clone!(
+                #[weak(rename_to=setup)]
+                self,
+                move |result| {
+                    match result {
+                        Ok(views) => {
+                            // If the list contains Music, make it the first element
+                            let mut sorted_items = views.items.clone();
+                            if let Some(index) = sorted_items
+                                .iter()
+                                .position(|item| item.name.to_lowercase() == "music")
+                            {
+                                sorted_items.swap(0, index);
+                            }
+                            setup.imp().libraries.replace(Some(sorted_items));
+                            let model = gtk::StringList::new(&[]);
+                            for item in &setup.imp().libraries.take().unwrap_or_default() {
+                                model.append(&item.name);
+                            }
+                            combo.set_model(Some(&model));
+                        }
+                        Err(err) => {
+                            error!("Failed to fetch libraries: {:?}", err);
+                            setup.toast("Failed to load libraries", None);
+                        }
+                    }
+                }
+            ),
+        );
     }
 }
 
