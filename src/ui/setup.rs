@@ -6,7 +6,7 @@ use adw::prelude::*;
 use adw::subclass::prelude::ObjectSubclassIsExt;
 use glib::Object;
 use gtk::{gio, glib};
-use log::{debug, warn};
+use log::{debug, error, warn};
 
 glib::wrapper! {
     pub struct Setup(ObjectSubclass<imp::Setup>)
@@ -46,7 +46,30 @@ impl Setup {
         imp.setup_navigation_view
             .replace(&[imp.setup_library.get()]);
         let jellyfin = self.get_application().jellyfin();
-        spawn_tokio(async move { jellyfin.get_views().await.unwrap() }, |_| {});
+        let combo = imp.library_combo.clone();
+        spawn_tokio(
+            async move { jellyfin.get_views().await },
+            glib::clone!(
+                #[weak(rename_to=setup)]
+                self,
+                move |result| {
+                    match result {
+                        Ok(views) => {
+                            setup.imp().libraries.replace(Some(views.items.clone()));
+                            let model = gtk::StringList::new(&[]);
+                            for item in &setup.imp().libraries.take().unwrap_or_default() {
+                                model.append(&item.name);
+                            }
+                            combo.set_model(Some(&model));
+                        }
+                        Err(err) => {
+                            error!("Failed to fetch libraries: {:?}", err);
+                            setup.toast("Failed to load libraries", None);
+                        }
+                    }
+                }
+            ),
+        );
     }
 
     pub fn is_complete(&self) -> bool {
@@ -148,11 +171,13 @@ impl Default for Setup {
 }
 
 mod imp {
+    use crate::jellyfin::api::BaseItemDto;
     use adw::prelude::*;
     use adw::subclass::prelude::*;
     use glib::subclass::InitializingObject;
     use gtk::{CompositeTemplate, glib, prelude::WidgetExt};
     use log::warn;
+    use std::cell::RefCell;
 
     #[derive(CompositeTemplate, Default)]
     #[template(resource = "/io/m51/Gelly/ui/setup.ui")]
@@ -171,6 +196,9 @@ mod imp {
         pub password_entry: TemplateChild<adw::PasswordEntryRow>,
         #[template_child]
         pub connect_button: TemplateChild<adw::ButtonRow>,
+        #[template_child]
+        pub library_combo: TemplateChild<adw::ComboRow>,
+        pub libraries: RefCell<Option<Vec<BaseItemDto>>>,
     }
 
     #[glib::object_subclass]

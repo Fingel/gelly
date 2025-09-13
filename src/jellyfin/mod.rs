@@ -8,7 +8,9 @@ use serde::de::DeserializeOwned;
 use serde_json::json;
 use thiserror::Error;
 
-mod api;
+use crate::jellyfin::api::BaseItemDtoList;
+
+pub mod api;
 
 static CLIENT_ID: &str = "Gelly"; //TODO: get this from the gtk app config
 static VERSION: &str = "0.1"; //TODO: get this from build script?
@@ -79,14 +81,12 @@ impl Jellyfin {
             "Pw": password
         });
         let response = self.post_json("Users/authenticatebyname", &body).await?;
-        Self::handle_response(response).await
+        self.handle_response(response).await
     }
 
-    pub async fn get_views(&self) -> Result<Vec<String>, JellyfinError> {
+    pub async fn get_views(&self) -> Result<BaseItemDtoList, JellyfinError> {
         let response = self.get("UserViews").await?;
-        dbg!(response.text().await.unwrap());
-        Ok(vec![])
-        // Self::handle_response(response).await
+        self.handle_response(response).await
     }
 
     fn get_hostname(&self) -> &'static str {
@@ -149,7 +149,7 @@ impl Jellyfin {
     }
 
     /// Responsible for error handling when reading responses from Jellyfin
-    async fn handle_response<T>(response: Response) -> Result<T, JellyfinError>
+    async fn handle_response<T>(&self, response: Response) -> Result<T, JellyfinError>
     where
         T: DeserializeOwned + Debug,
     {

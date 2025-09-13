@@ -1,15 +1,27 @@
 use serde::Deserialize;
 
 #[derive(Debug, Deserialize)]
+#[serde(rename_all = "PascalCase")]
 pub struct AuthenticateResponse {
-    #[serde(rename = "AccessToken")]
     pub access_token: String,
-    #[serde(rename = "User")]
     pub user: User,
 }
 
 #[derive(Debug, Deserialize)]
+#[serde(rename_all = "PascalCase")]
 pub struct User {
-    #[serde(rename = "Id")]
     pub id: String,
+}
+
+#[derive(Clone, Debug, Deserialize)]
+#[serde(rename_all = "PascalCase")]
+pub struct BaseItemDto {
+    pub id: String,
+    pub name: String,
+}
+
+#[derive(Clone, Debug, Deserialize)]
+#[serde(rename_all = "PascalCase")]
+pub struct BaseItemDtoList {
+    pub items: Vec<BaseItemDto>,
 }

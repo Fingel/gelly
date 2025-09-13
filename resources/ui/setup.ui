@@ -95,11 +95,25 @@
                 </child>
                 <child>
                   <object class="AdwStatusPage">
-                    <property name="title" translatable="yes">Select a Library</property>
+                    <property name="title" translatable="yes">Select your music library</property>
                     <child>
                       <object class="GtkBox">
                         <property name="orientation">1</property>
-                        <property name="halign">3</property>
+                        <property name="halign">fill</property>
+                        <child>
+                          <object class="GtkListBox" id="library_list">
+                            <property name="selection-mode">none</property>
+                            <property name="margin-bottom">24</property>
+                            <style>
+                              <class name="boxed-list"/>
+                            </style>
+                            <child>
+                              <object class="AdwComboRow" id="library_combo">
+                                <property name="title" translatable="yes">Library Name</property>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
                       </object>
                     </child>
                   </object>
