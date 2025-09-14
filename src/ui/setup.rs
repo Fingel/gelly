@@ -183,7 +183,17 @@ impl Setup {
 
     fn handle_library_button_click(&self) {
         let library_id = self.get_selected_library();
-        dbg!(library_id);
+        settings()
+            .set_string("library-id", &library_id)
+            .expect("Failed to save library id");
+        let mut jellyfin = self.get_application().jellyfin().clone();
+        jellyfin.library_id = library_id;
+        self.get_application()
+            .imp()
+            .jellyfin
+            .replace(Some(jellyfin));
+        // We did it!
+        self.get_root_window().show_main_page();
     }
 
     fn get_selected_library(&self) -> String {

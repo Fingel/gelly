@@ -9,5 +9,9 @@
       <default>""</default>
       <summary>Jellyfin User ID</summary>
     </key>
+    <key name="library-id" type="s">
+      <default>""</default>
+      <summary>Jellyfin Library ID</summary>
+    </key>
   </schema>
 </schemalist>

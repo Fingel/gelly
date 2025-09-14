@@ -25,9 +25,11 @@ impl Application {
         if jellyfin_ref.is_none() {
             let host = settings().string("hostname");
             let user_id = settings().string("user-id");
+            let library_id = settings().string("library-id");
             let token =
                 retrieve_jellyfin_api_token(host.as_str(), user_id.as_str()).unwrap_or_default();
-            let jellyfin = Jellyfin::new(host.as_str(), &token, user_id.as_str());
+            let jellyfin =
+                Jellyfin::new(host.as_str(), &token, user_id.as_str(), library_id.as_str());
             *jellyfin_ref = Some(jellyfin);
         }
 

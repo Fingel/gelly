@@ -37,10 +37,11 @@ pub struct Jellyfin {
     pub host: String,
     pub token: String,
     pub user_id: String,
+    pub library_id: String,
 }
 
 impl Jellyfin {
-    pub fn new(host: &str, token: &str, user_id: &str) -> Self {
+    pub fn new(host: &str, token: &str, user_id: &str, library_id: &str) -> Self {
         let client = Client::builder()
             .user_agent("Gelly/0.1")
             .build()
@@ -51,6 +52,7 @@ impl Jellyfin {
             host: host.to_string(),
             token: token.to_string(),
             user_id: user_id.to_string(),
+            library_id: library_id.to_string(),
         }
     }
 
@@ -63,7 +65,7 @@ impl Jellyfin {
         username: &str,
         password: &str,
     ) -> Result<Self, JellyfinError> {
-        let mut jellyfin = Self::new(host, "", "");
+        let mut jellyfin = Self::new(host, "", "", "");
         let resp = jellyfin.authenticate(username, password).await?;
         jellyfin.token = resp.access_token;
         jellyfin.user_id = resp.user.id;

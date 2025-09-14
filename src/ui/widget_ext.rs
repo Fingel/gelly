@@ -2,10 +2,11 @@ use gtk::glib;
 use gtk::prelude::*;
 
 use crate::application::Application;
+use crate::ui::window::Window;
 
 pub trait WidgetApplicationExt {
     fn get_application(&self) -> Application;
-    fn get_root_window(&self) -> Option<crate::ui::window::Window>;
+    fn get_root_window(&self) -> Window;
     fn get_gtk_window(&self) -> Option<gtk::Window>;
     fn toast(&self, message: &str, timeout: Option<u32>);
 }
@@ -25,10 +26,11 @@ where
             .expect("Application type mismatch - ensure consistent Application type usage")
     }
 
-    fn get_root_window(&self) -> Option<crate::ui::window::Window> {
-        self.root()?
-            .dynamic_cast::<crate::ui::window::Window>()
-            .ok()
+    fn get_root_window(&self) -> Window {
+        self.root()
+            .expect("Could not get root window, something terrible has happened")
+            .dynamic_cast::<Window>()
+            .expect("Root window is not a window somehow")
     }
 
     fn get_gtk_window(&self) -> Option<gtk::Window> {
@@ -36,8 +38,6 @@ where
     }
 
     fn toast(&self, message: &str, timeout: Option<u32>) {
-        if let Some(window) = self.get_root_window() {
-            window.toast(message, timeout);
-        }
+        self.get_root_window().toast(message, timeout);
     }
 }
