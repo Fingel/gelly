@@ -159,9 +159,14 @@ impl Setup {
                             {
                                 sorted_items.swap(0, index);
                             }
-                            setup.imp().libraries.replace(Some(sorted_items));
+                            // Make launch button sensitive
+                            setup
+                                .imp()
+                                .library_button
+                                .set_sensitive(!sorted_items.is_empty());
+                            setup.imp().libraries.replace(sorted_items);
                             let model = gtk::StringList::new(&[]);
-                            for item in &setup.imp().libraries.take().unwrap_or_default() {
+                            for item in setup.imp().libraries.borrow().iter() {
                                 model.append(&item.name);
                             }
                             combo.set_model(Some(&model));
@@ -174,6 +179,22 @@ impl Setup {
                 }
             ),
         );
+    }
+
+    fn handle_library_button_click(&self) {
+        let library_id = self.get_selected_library();
+        dbg!(library_id);
+    }
+
+    fn get_selected_library(&self) -> String {
+        let imp = self.imp();
+        let selected_index = imp.library_combo.selected() as usize;
+        let libraries = imp.libraries.borrow();
+        let library = libraries
+            .get(selected_index)
+            .expect("Failed to get selected library, this should not happen");
+
+        library.id.clone()
     }
 }
 
@@ -211,7 +232,9 @@ mod imp {
         pub connect_button: TemplateChild<adw::ButtonRow>,
         #[template_child]
         pub library_combo: TemplateChild<adw::ComboRow>,
-        pub libraries: RefCell<Option<Vec<BaseItemDto>>>,
+        #[template_child]
+        pub library_button: TemplateChild<adw::ButtonRow>,
+        pub libraries: RefCell<Vec<BaseItemDto>>,
     }
 
     #[glib::object_subclass]
@@ -258,6 +281,16 @@ mod imp {
                     } else {
                         warn!("User attempted to submit without completing the form");
                     }
+                }
+            ));
+
+            // Setup Library Button
+            self.library_button.connect_activated(glib::clone!(
+                #[weak(rename_to=imp)]
+                self,
+                move |_| {
+                    let obj = imp.obj();
+                    obj.handle_library_button_click();
                 }
             ));
 
