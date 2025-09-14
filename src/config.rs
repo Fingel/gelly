@@ -1,4 +1,5 @@
 use gtk::gio;
+use gtk::gio::prelude::SettingsExt;
 use libsecret::{self, Schema, SchemaAttributeType, SchemaFlags};
 use std::{cell::RefCell, collections::HashMap};
 
@@ -15,6 +16,23 @@ pub fn settings() -> gio::Settings {
             .get_or_insert_with(|| gio::Settings::new(APP_ID))
             .clone()
     })
+}
+
+/// Sets jellyfin settings to blank values and clears the API token
+pub fn logout() {
+    clear_jellyfin_api_token(
+        settings().string("hostname").as_str(),
+        settings().string("user-id").as_str(),
+    );
+    settings()
+        .set_string("hostname", "")
+        .expect("Failed to clear hostname");
+    settings()
+        .set_string("user-id", "")
+        .expect("Failed to clear user-id");
+    settings()
+        .set_string("library-id", "")
+        .expect("Failed to clear library-id");
 }
 
 /// Application secret schema
@@ -53,7 +71,6 @@ pub fn retrieve_jellyfin_api_token(host: &str, user_id: &str) -> Option<String> 
         .map(|password| password.to_string())
 }
 
-#[allow(unused)]
 pub fn clear_jellyfin_api_token(host: &str, user_id: &str) {
     let mut attributes = HashMap::new();
     attributes.insert("host", host);

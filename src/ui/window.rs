@@ -1,4 +1,5 @@
-use crate::application::Application;
+use crate::config;
+use crate::{application::Application, ui::widget_ext::WidgetApplicationExt};
 use adw::subclass::prelude::ObjectSubclassIsExt;
 use glib::Object;
 use gtk::{
@@ -42,12 +43,23 @@ impl Window {
         imp.setup_stack
             .set_visible_child(&imp.main_navigation.get());
     }
+
+    pub fn logout(&self) {
+        config::logout();
+        self.get_application().imp().jellyfin.replace(None);
+        self.show_server_setup();
+        self.toast("Logged out", None);
+    }
 }
 
 mod imp {
     use adw::subclass::prelude::*;
     use glib::subclass::InitializingObject;
-    use gtk::{CompositeTemplate, glib};
+    use gtk::{
+        CompositeTemplate,
+        gio::{ActionEntry, prelude::ActionMapExtManual},
+        glib,
+    };
 
     use crate::ui::setup::Setup;
 
@@ -79,7 +91,22 @@ mod imp {
         }
     }
 
-    impl ObjectImpl for Window {}
+    impl ObjectImpl for Window {
+        fn constructed(&self) {
+            self.parent_constructed();
+
+            let action_servers = ActionEntry::builder("logout")
+                .activate(glib::clone!(
+                    #[weak(rename_to=window)]
+                    self,
+                    move |_, _, _| {
+                        window.obj().logout();
+                    }
+                ))
+                .build();
+            self.obj().add_action_entries([action_servers]);
+        }
+    }
 
     impl WidgetImpl for Window {}
 
