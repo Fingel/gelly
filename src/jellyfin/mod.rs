@@ -1,3 +1,4 @@
+use std::collections::HashMap;
 use std::fs;
 use std::{fmt::Debug, sync::OnceLock};
 
@@ -91,7 +92,31 @@ impl Jellyfin {
     }
 
     pub async fn get_views(&self) -> Result<BaseItemDtoList, JellyfinError> {
-        let response = self.get("UserViews").await?;
+        let response = self.get("UserViews", None).await?;
+        self.handle_response(response).await
+    }
+
+    pub async fn get_albums(&self) -> Result<BaseItemDtoList, JellyfinError> {
+        let params = vec![
+            ("sortBy", "DateCreated"),
+            ("sortOrder", "Ascending"),
+            ("IncludeItemTypes", "MusicAlbum"),
+            ("Recursive", "true"),
+            ("Fields", "PrimaryImageAspectRatio,SortName"),
+            ("ImageTypeLimit", "1"),
+            ("EnableImageTypes", "Primary,Backdrop,Banner,Thumb"),
+            ("StartIndex", "0"),
+            ("Limit", "100"),
+        ];
+        self.get_items(params).await
+    }
+
+    async fn get_items(
+        &self,
+        mut params: Vec<(&str, &str)>,
+    ) -> Result<BaseItemDtoList, JellyfinError> {
+        params.push(("parentId", &self.library_id));
+        let response = self.get("Items", Some(&params)).await?;
         self.handle_response(response).await
     }
 
@@ -139,7 +164,11 @@ impl Jellyfin {
     }
 
     /// Any GET request
-    async fn get(&self, endpoint: &str) -> Result<Response, JellyfinError> {
+    async fn get(
+        &self,
+        endpoint: &str,
+        params: Option<&[(&str, &str)]>,
+    ) -> Result<Response, JellyfinError> {
         let url = format!(
             "{}/{}",
             self.host.trim_end_matches('/'),
@@ -149,6 +178,7 @@ impl Jellyfin {
         let request = self
             .client
             .get(&url)
+            .query(params.unwrap_or(&[]))
             .header("Authorization", self.auth_header());
         let response = request.send().await?;
         Ok(response)
