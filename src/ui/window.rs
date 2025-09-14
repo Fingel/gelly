@@ -61,6 +61,7 @@ mod imp {
         glib,
     };
 
+    use crate::ui::album_list::AlbumList;
     use crate::ui::setup::Setup;
 
     #[derive(CompositeTemplate, Default)]
@@ -74,6 +75,8 @@ mod imp {
         pub setup: TemplateChild<Setup>,
         #[template_child]
         pub main_navigation: TemplateChild<adw::NavigationView>,
+        #[template_child]
+        pub album_list: TemplateChild<AlbumList>,
     }
 
     #[glib::object_subclass]

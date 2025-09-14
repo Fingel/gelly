@@ -3,5 +3,6 @@
   <gresource prefix="/io/m51/Gelly/">
     <file compressed="true" preprocess="xml-stripblanks">ui/window.ui</file>
     <file compressed="true" preprocess="xml-stripblanks">ui/setup.ui</file>
+    <file compressed="true" preprocess="xml-stripblanks">ui/album_list.ui</file>
   </gresource>
 </gresources>

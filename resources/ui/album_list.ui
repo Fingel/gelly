@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <requires lib="gtk" version="4.0"/>
+  <template class="GellyAlbumList" parent="GtkBox">
+    <property name="orientation">vertical</property>
+    <child>
+      <object class="GtkBox">
+        <property name="orientation">1</property>
+        <property name="valign">3</property>
+        <child>
+          <object class="GtkLinkButton">
+            <property name="label" translatable="yes">Album List Reference</property>
+            <property name="uri">https://gnome.pages.gitlab.gnome.org/libadwaita/doc/1.6/class.ViewSwitcher.html</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkLinkButton">
+            <property name="label" translatable="yes">Human Interface Guidelines</property>
+            <property name="uri">https://developer.gnome.org/hig/patterns/nav/view-switchers.html</property>
+          </object>
+        </child>
+      </object>
+    </child>
+  </template>
+</interface>
