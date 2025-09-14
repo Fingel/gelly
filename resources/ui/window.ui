@@ -167,8 +167,8 @@
   <menu id="menu_app">
     <section>
       <item>
-        <attribute name="label" translatable="yes">Server List</attribute>
-        <attribute name="action">win.servers</attribute>
+        <attribute name="label" translatable="yes">Logout</attribute>
+        <attribute name="action">win.logout</attribute>
       </item>
       <item>
         <attribute name="label" translatable="yes">Quit</attribute>

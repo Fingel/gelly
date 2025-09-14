@@ -60,6 +60,10 @@ impl Jellyfin {
         !self.token.is_empty() && !self.user_id.is_empty() && !self.host.is_empty()
     }
 
+    pub fn library_selected(&self) -> bool {
+        !self.library_id.is_empty()
+    }
+
     pub async fn new_authenticate(
         host: &str,
         username: &str,
