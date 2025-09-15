@@ -206,3 +206,9 @@ impl Jellyfin {
         }
     }
 }
+
+impl Default for Jellyfin {
+    fn default() -> Self {
+        Self::new("", "", "", "")
+    }
+}

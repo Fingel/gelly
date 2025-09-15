@@ -93,7 +93,7 @@ impl Setup {
                             let user_id = jellyfin.user_id.clone();
                             let token = jellyfin.token.clone();
                             let host = jellyfin.host.clone();
-                            app.imp().jellyfin.replace(Some(jellyfin));
+                            app.imp().jellyfin.replace(jellyfin);
                             setup.save_server_settings(&host, &user_id, &token);
                             setup.show_library_setup();
                         }
@@ -186,12 +186,7 @@ impl Setup {
         settings()
             .set_string("library-id", &library_id)
             .expect("Failed to save library id");
-        let mut jellyfin = self.get_application().jellyfin().clone();
-        jellyfin.library_id = library_id;
-        self.get_application()
-            .imp()
-            .jellyfin
-            .replace(Some(jellyfin));
+        self.get_application().initialize_or_load_jellyfin();
         // We did it!
         self.get_root_window().show_main_page();
     }

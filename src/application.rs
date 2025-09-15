@@ -14,26 +14,38 @@ glib::wrapper! {
 
 impl Application {
     pub fn new() -> Self {
-        Object::builder()
+        let app: Self = Object::builder()
             .property("application-id", config::APP_ID)
-            .build()
+            .build();
+        app.initialize_or_load_jellyfin();
+        app
     }
 
-    pub fn jellyfin(&self) -> Jellyfin {
-        let mut jellyfin_ref = self.imp().jellyfin.borrow_mut();
+    pub fn setup_complete(&self) -> bool {
+        let jellyfin = self.imp().jellyfin.borrow();
+        jellyfin.is_authenticated() && jellyfin.library_selected()
+    }
 
-        if jellyfin_ref.is_none() {
+    pub fn initialize_or_load_jellyfin(&self) {
+        let mut jellyfin = self.imp().jellyfin.borrow_mut();
+        if !jellyfin.is_authenticated() {
             let host = settings().string("hostname");
             let user_id = settings().string("user-id");
             let library_id = settings().string("library-id");
             let token =
                 retrieve_jellyfin_api_token(host.as_str(), user_id.as_str()).unwrap_or_default();
-            let jellyfin =
-                Jellyfin::new(host.as_str(), &token, user_id.as_str(), library_id.as_str());
-            *jellyfin_ref = Some(jellyfin);
-        }
 
-        jellyfin_ref.as_ref().unwrap().clone()
+            *jellyfin = Jellyfin::new(host.as_str(), &token, user_id.as_str(), library_id.as_str());
+        }
+    }
+
+    pub fn jellyfin(&self) -> Jellyfin {
+        self.imp().jellyfin.borrow().clone()
+    }
+
+    pub fn logout(&self) {
+        let mut jellyfin = self.imp().jellyfin.borrow_mut();
+        *jellyfin = Jellyfin::default();
     }
 }
 
@@ -47,12 +59,13 @@ mod imp {
     use adw::subclass::prelude::*;
     use gtk::glib;
     use std::cell::RefCell;
+    use std::rc::Rc;
 
     use crate::jellyfin::Jellyfin;
 
     #[derive(Default)]
     pub struct Application {
-        pub jellyfin: RefCell<Option<Jellyfin>>,
+        pub jellyfin: Rc<RefCell<Jellyfin>>,
     }
 
     #[glib::object_subclass]

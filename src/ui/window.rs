@@ -17,7 +17,7 @@ glib::wrapper! {
 impl Window {
     pub fn new(app: &Application) -> Self {
         let window: Self = Object::builder().property("application", app).build();
-        if !app.jellyfin().is_authenticated() || !app.jellyfin().library_selected() {
+        if !app.setup_complete() {
             window.show_server_setup();
         } else {
             window.show_main_page();
@@ -46,7 +46,7 @@ impl Window {
 
     pub fn logout(&self) {
         config::logout();
-        self.get_application().imp().jellyfin.replace(None);
+        self.get_application().logout();
         self.show_server_setup();
         self.toast("Logged out", None);
     }
