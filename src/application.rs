@@ -17,26 +17,29 @@ impl Application {
         let app: Self = Object::builder()
             .property("application-id", config::APP_ID)
             .build();
-        app.initialize_or_load_jellyfin();
+        app.load_settings();
+        app.initialize_jellyfin();
         app
+    }
+
+    pub fn load_settings(&self) {
+        let library_id = settings().string("library-id");
+        self.imp().library_id.replace(library_id.into());
     }
 
     pub fn setup_complete(&self) -> bool {
         let jellyfin = self.imp().jellyfin.borrow();
-        jellyfin.is_authenticated() && jellyfin.library_selected()
+        jellyfin.is_authenticated() && !self.imp().library_id.borrow().is_empty()
     }
 
-    pub fn initialize_or_load_jellyfin(&self) {
+    pub fn initialize_jellyfin(&self) {
         let mut jellyfin = self.imp().jellyfin.borrow_mut();
-        if !jellyfin.is_authenticated() {
-            let host = settings().string("hostname");
-            let user_id = settings().string("user-id");
-            let library_id = settings().string("library-id");
-            let token =
-                retrieve_jellyfin_api_token(host.as_str(), user_id.as_str()).unwrap_or_default();
+        let host = settings().string("hostname");
+        let user_id = settings().string("user-id");
+        let token =
+            retrieve_jellyfin_api_token(host.as_str(), user_id.as_str()).unwrap_or_default();
 
-            *jellyfin = Jellyfin::new(host.as_str(), &token, user_id.as_str(), library_id.as_str());
-        }
+        *jellyfin = Jellyfin::new(host.as_str(), &token, user_id.as_str());
     }
 
     pub fn jellyfin(&self) -> Jellyfin {
@@ -46,6 +49,10 @@ impl Application {
     pub fn logout(&self) {
         let mut jellyfin = self.imp().jellyfin.borrow_mut();
         *jellyfin = Jellyfin::default();
+        settings()
+            .set_string("library-id", "")
+            .expect("Failed to clear library ID");
+        config::logout();
     }
 }
 
@@ -66,6 +73,7 @@ mod imp {
     #[derive(Default)]
     pub struct Application {
         pub jellyfin: Rc<RefCell<Jellyfin>>,
+        pub library_id: RefCell<String>,
     }
 
     #[glib::object_subclass]

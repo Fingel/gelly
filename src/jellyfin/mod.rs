@@ -37,11 +37,10 @@ pub struct Jellyfin {
     pub host: String,
     pub token: String,
     pub user_id: String,
-    pub library_id: String,
 }
 
 impl Jellyfin {
-    pub fn new(host: &str, token: &str, user_id: &str, library_id: &str) -> Self {
+    pub fn new(host: &str, token: &str, user_id: &str) -> Self {
         let client = Client::builder()
             .user_agent("Gelly/0.1")
             .build()
@@ -52,7 +51,6 @@ impl Jellyfin {
             host: host.to_string(),
             token: token.to_string(),
             user_id: user_id.to_string(),
-            library_id: library_id.to_string(),
         }
     }
 
@@ -60,16 +58,12 @@ impl Jellyfin {
         !self.token.is_empty() && !self.user_id.is_empty() && !self.host.is_empty()
     }
 
-    pub fn library_selected(&self) -> bool {
-        !self.library_id.is_empty()
-    }
-
     pub async fn new_authenticate(
         host: &str,
         username: &str,
         password: &str,
     ) -> Result<Self, JellyfinError> {
-        let mut jellyfin = Self::new(host, "", "", "");
+        let mut jellyfin = Self::new(host, "", "");
         let resp = jellyfin.authenticate(username, password).await?;
         jellyfin.token = resp.access_token;
         jellyfin.user_id = resp.user.id;
@@ -95,8 +89,9 @@ impl Jellyfin {
         self.handle_response(response).await
     }
 
-    pub async fn get_albums(&self) -> Result<BaseItemDtoList, JellyfinError> {
+    pub async fn get_albums(&self, library_id: &str) -> Result<BaseItemDtoList, JellyfinError> {
         let params = vec![
+            ("parentId", library_id),
             ("sortBy", "DateCreated"),
             ("sortOrder", "Ascending"),
             ("IncludeItemTypes", "MusicAlbum"),
@@ -110,11 +105,7 @@ impl Jellyfin {
         self.get_items(params).await
     }
 
-    async fn get_items(
-        &self,
-        mut params: Vec<(&str, &str)>,
-    ) -> Result<BaseItemDtoList, JellyfinError> {
-        params.push(("parentId", &self.library_id));
+    async fn get_items(&self, params: Vec<(&str, &str)>) -> Result<BaseItemDtoList, JellyfinError> {
         let response = self.get("Items", Some(&params)).await?;
         self.handle_response(response).await
     }
@@ -209,6 +200,6 @@ impl Jellyfin {
 
 impl Default for Jellyfin {
     fn default() -> Self {
-        Self::new("", "", "", "")
+        Self::new("", "", "")
     }
 }

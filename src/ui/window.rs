@@ -1,4 +1,3 @@
-use crate::config;
 use crate::{application::Application, ui::widget_ext::WidgetApplicationExt};
 use adw::subclass::prelude::ObjectSubclassIsExt;
 use glib::Object;
@@ -45,7 +44,6 @@ impl Window {
     }
 
     pub fn logout(&self) {
-        config::logout();
         self.get_application().logout();
         self.show_server_setup();
         self.toast("Logged out", None);
