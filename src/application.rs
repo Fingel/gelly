@@ -1,6 +1,7 @@
 use adw::subclass::prelude::ObjectSubclassIsExt;
 use glib::Object;
 use gtk::gio::prelude::SettingsExt;
+use gtk::prelude::ObjectExt;
 use gtk::{gio, glib};
 
 use crate::async_utils::spawn_tokio;
@@ -61,16 +62,19 @@ impl Application {
         self.imp().library.borrow().clone()
     }
 
-    pub fn refresh_library<F>(&self, f: F)
-    where
-        F: FnOnce() + 'static,
-    {
+    pub fn refresh_library(&self) {
         let library = self.library().unwrap();
         spawn_tokio(
             async move {
                 library.refresh().await;
             },
-            |_| f(),
+            glib::clone!(
+                #[weak(rename_to=app)]
+                self,
+                move |_| {
+                    app.emit_by_name::<()>("library-refreshed", &[]);
+                },
+            ),
         );
     }
 
@@ -94,7 +98,9 @@ impl Default for Application {
 mod imp {
     use adw::subclass::prelude::*;
     use gtk::glib;
+    use gtk::glib::subclass::Signal;
     use std::cell::RefCell;
+    use std::sync::OnceLock;
 
     use crate::jellyfin::Jellyfin;
     use crate::library::Library;
@@ -113,7 +119,12 @@ mod imp {
         type ParentType = adw::Application;
     }
 
-    impl ObjectImpl for Application {}
+    impl ObjectImpl for Application {
+        fn signals() -> &'static [Signal] {
+            static SIGNALS: OnceLock<Vec<Signal>> = OnceLock::new();
+            SIGNALS.get_or_init(|| vec![Signal::builder("library-refreshed").build()])
+        }
+    }
     impl ApplicationImpl for Application {}
     impl GtkApplicationImpl for Application {}
     impl AdwApplicationImpl for Application {}

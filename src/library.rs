@@ -35,7 +35,5 @@ impl Library {
             Err(_) => vec![],
         };
         *self.albums.lock().await = parsed;
-
-        dbg!(self.albums.clone());
     }
 }

@@ -20,9 +20,15 @@ impl Default for AlbumList {
 }
 
 mod imp {
+    use crate::{application::Application, ui::widget_ext::WidgetApplicationExt};
     use adw::subclass::prelude::*;
     use glib::subclass::InitializingObject;
-    use gtk::{CompositeTemplate, glib};
+    use gtk::{
+        CompositeTemplate,
+        glib::{self, object::ObjectExt},
+        prelude::WidgetExt,
+    };
+
     #[derive(CompositeTemplate, Default)]
     #[template(resource = "/io/m51/Gelly/ui/album_list.ui")]
     pub struct AlbumList {}
@@ -42,7 +48,22 @@ mod imp {
         }
     }
 
-    impl ObjectImpl for AlbumList {}
+    impl ObjectImpl for AlbumList {
+        fn constructed(&self) {
+            self.parent_constructed();
+            self.obj().connect_map(|album_list| {
+                let app = album_list.get_application();
+                app.connect_closure(
+                    "library-refreshed",
+                    false,
+                    glib::closure_local!(move |app: Application| {
+                        dbg!("wow, we in signal handler");
+                        dbg!(app.library().unwrap().get_albums());
+                    }),
+                );
+            });
+        }
+    }
     impl WidgetImpl for AlbumList {}
     impl BoxImpl for AlbumList {}
 }
