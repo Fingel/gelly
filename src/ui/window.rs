@@ -41,6 +41,9 @@ impl Window {
         let imp = self.imp();
         imp.setup_stack
             .set_visible_child(&imp.main_navigation.get());
+        self.get_application().refresh_library(|| {
+            dbg!("Refreshed the library!");
+        });
     }
 
     pub fn logout(&self) {

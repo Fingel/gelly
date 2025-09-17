@@ -3,8 +3,10 @@ use glib::Object;
 use gtk::gio::prelude::SettingsExt;
 use gtk::{gio, glib};
 
+use crate::async_utils::spawn_tokio;
 use crate::config::{self, retrieve_jellyfin_api_token, settings};
 use crate::jellyfin::Jellyfin;
+use crate::library::Library;
 
 glib::wrapper! {
     pub struct Application(ObjectSubclass<imp::Application>)
@@ -19,6 +21,7 @@ impl Application {
             .build();
         app.load_settings();
         app.initialize_jellyfin();
+        app.initialize_library();
         app
     }
 
@@ -33,22 +36,48 @@ impl Application {
     }
 
     pub fn initialize_jellyfin(&self) {
-        let mut jellyfin = self.imp().jellyfin.borrow_mut();
         let host = settings().string("hostname");
         let user_id = settings().string("user-id");
         let token =
             retrieve_jellyfin_api_token(host.as_str(), user_id.as_str()).unwrap_or_default();
 
-        *jellyfin = Jellyfin::new(host.as_str(), &token, user_id.as_str());
+        let jellyfin = Jellyfin::new(host.as_str(), &token, user_id.as_str());
+        self.imp().jellyfin.replace(jellyfin);
     }
 
     pub fn jellyfin(&self) -> Jellyfin {
         self.imp().jellyfin.borrow().clone()
     }
 
+    pub fn initialize_library(&self) {
+        let library = Library::new(
+            self.imp().jellyfin.borrow().clone(),
+            self.imp().library_id.borrow().clone(),
+        );
+        self.imp().library.replace(Some(library));
+    }
+
+    pub fn library(&self) -> Option<Library> {
+        self.imp().library.borrow().clone()
+    }
+
+    pub fn refresh_library<F>(&self, f: F)
+    where
+        F: FnOnce() + 'static,
+    {
+        let library = self.library().unwrap();
+        spawn_tokio(
+            async move {
+                library.refresh().await;
+            },
+            |_| f(),
+        );
+    }
+
     pub fn logout(&self) {
-        let mut jellyfin = self.imp().jellyfin.borrow_mut();
-        *jellyfin = Jellyfin::default();
+        self.imp().jellyfin.replace(Jellyfin::default());
+        self.imp().library.replace(None);
+        self.imp().library_id.replace(String::new());
         settings()
             .set_string("library-id", "")
             .expect("Failed to clear library ID");
@@ -66,13 +95,14 @@ mod imp {
     use adw::subclass::prelude::*;
     use gtk::glib;
     use std::cell::RefCell;
-    use std::rc::Rc;
 
     use crate::jellyfin::Jellyfin;
+    use crate::library::Library;
 
     #[derive(Default)]
     pub struct Application {
-        pub jellyfin: Rc<RefCell<Jellyfin>>,
+        pub jellyfin: RefCell<Jellyfin>,
+        pub library: RefCell<Option<Library>>,
         pub library_id: RefCell<String>,
     }
 
