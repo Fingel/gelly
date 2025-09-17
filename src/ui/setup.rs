@@ -211,7 +211,7 @@ impl Default for Setup {
 }
 
 mod imp {
-    use crate::jellyfin::api::BaseItemDto;
+    use crate::jellyfin::api::LibraryDto;
     use adw::prelude::*;
     use adw::subclass::prelude::*;
     use glib::subclass::InitializingObject;
@@ -240,7 +240,7 @@ mod imp {
         pub library_combo: TemplateChild<adw::ComboRow>,
         #[template_child]
         pub library_button: TemplateChild<adw::ButtonRow>,
-        pub libraries: RefCell<Vec<BaseItemDto>>,
+        pub libraries: RefCell<Vec<LibraryDto>>,
     }
 
     #[glib::object_subclass]

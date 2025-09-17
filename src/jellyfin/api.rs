@@ -15,13 +15,13 @@ pub struct User {
 
 #[derive(Clone, Debug, Deserialize)]
 #[serde(rename_all = "PascalCase")]
-pub struct BaseItemDto {
+pub struct LibraryDto {
     pub id: String,
     pub name: String,
 }
 
 #[derive(Clone, Debug, Deserialize)]
 #[serde(rename_all = "PascalCase")]
-pub struct BaseItemDtoList {
-    pub items: Vec<BaseItemDto>,
+pub struct LibraryDtoList {
+    pub items: Vec<LibraryDto>,
 }

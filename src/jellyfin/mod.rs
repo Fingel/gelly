@@ -8,7 +8,7 @@ use serde::de::DeserializeOwned;
 use serde_json::json;
 use thiserror::Error;
 
-use crate::jellyfin::api::BaseItemDtoList;
+use crate::jellyfin::api::LibraryDtoList;
 
 pub mod api;
 
@@ -84,12 +84,12 @@ impl Jellyfin {
         self.handle_response(response).await
     }
 
-    pub async fn get_views(&self) -> Result<BaseItemDtoList, JellyfinError> {
+    pub async fn get_views(&self) -> Result<LibraryDtoList, JellyfinError> {
         let response = self.get("UserViews", None).await?;
         self.handle_response(response).await
     }
 
-    pub async fn get_albums(&self, library_id: &str) -> Result<BaseItemDtoList, JellyfinError> {
+    pub async fn get_albums(&self, library_id: &str) -> Result<LibraryDtoList, JellyfinError> {
         let params = vec![
             ("parentId", library_id),
             ("sortBy", "DateCreated"),
@@ -105,7 +105,7 @@ impl Jellyfin {
         self.get_items(params).await
     }
 
-    async fn get_items(&self, params: Vec<(&str, &str)>) -> Result<BaseItemDtoList, JellyfinError> {
+    async fn get_items(&self, params: Vec<(&str, &str)>) -> Result<LibraryDtoList, JellyfinError> {
         let response = self.get("Items", Some(&params)).await?;
         self.handle_response(response).await
     }

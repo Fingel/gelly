@@ -1,4 +1,4 @@
-use crate::jellyfin::{Jellyfin, api::BaseItemDto};
+use crate::jellyfin::{Jellyfin, api::LibraryDto};
 use std::sync::Arc;
 use tokio::sync::Mutex;
 
@@ -6,7 +6,7 @@ use tokio::sync::Mutex;
 pub struct Library {
     jellyfin: Jellyfin,
     library_id: String,
-    albums: Arc<Mutex<Vec<BaseItemDto>>>,
+    albums: Arc<Mutex<Vec<LibraryDto>>>,
 }
 
 impl Library {
@@ -23,7 +23,7 @@ impl Library {
         self.fetch_albums().await;
     }
 
-    pub fn get_albums(&self) -> Arc<Mutex<Vec<BaseItemDto>>> {
+    pub fn get_albums(&self) -> Arc<Mutex<Vec<LibraryDto>>> {
         self.albums.clone()
     }
 
