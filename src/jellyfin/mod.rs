@@ -95,11 +95,12 @@ impl Jellyfin {
             ("IncludeItemTypes", "Audio"),
             ("sortBy", "DateCreated"),
             ("sortOrder", "Descending"),
-            ("Recursive", "true"),
+            ("recursive", "true"),
+            ("fields", "DateCreated"),
             ("ImageTypeLimit", "1"),
             ("EnableImageTypes", "Primary"),
             ("StartIndex", "0"),
-            ("Limit", "100"),
+            ("Limit", "1000"),
         ];
         let response = self.get("Items", Some(&params)).await?;
         self.handle_response(response).await

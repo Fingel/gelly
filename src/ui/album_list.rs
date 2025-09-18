@@ -1,4 +1,4 @@
-use crate::ui::widget_ext::WidgetApplicationExt;
+use crate::{library_utils::albums_from_library, ui::widget_ext::WidgetApplicationExt};
 use glib::Object;
 use gtk::{gio, glib};
 
@@ -12,9 +12,10 @@ impl AlbumList {
     pub fn new() -> Self {
         Object::builder().build()
     }
-    pub fn do_library_stuff(&self) {
+    pub fn pull_albums(&self) {
         let library = self.get_application().library().clone();
-        dbg!(library);
+        let albums = albums_from_library(&library.borrow());
+        dbg!(albums);
     }
 }
 
@@ -70,7 +71,7 @@ mod imp {
                             #[weak]
                             album_list,
                             move |_app: Application| {
-                                album_list.do_library_stuff();
+                                album_list.pull_albums();
                             }
                         ),
                     );

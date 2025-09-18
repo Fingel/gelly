@@ -38,6 +38,7 @@ pub struct MusicDto {
     pub name: String,
     pub id: String,
     pub container: String,
+    pub date_created: String,
     pub run_time_ticks: u64,
     pub user_data: UserDataDto,
     pub album: String,
