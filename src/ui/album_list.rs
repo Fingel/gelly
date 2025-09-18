@@ -1,3 +1,4 @@
+use crate::ui::widget_ext::WidgetApplicationExt;
 use glib::Object;
 use gtk::{gio, glib};
 
@@ -11,6 +12,10 @@ impl AlbumList {
     pub fn new() -> Self {
         Object::builder().build()
     }
+    pub fn do_library_stuff(&self) {
+        let library = self.get_application().library().clone();
+        dbg!(library);
+    }
 }
 
 impl Default for AlbumList {
@@ -20,6 +25,7 @@ impl Default for AlbumList {
 }
 
 mod imp {
+
     use crate::{application::Application, ui::widget_ext::WidgetApplicationExt};
     use adw::subclass::prelude::*;
     use glib::subclass::InitializingObject;
@@ -51,17 +57,25 @@ mod imp {
     impl ObjectImpl for AlbumList {
         fn constructed(&self) {
             self.parent_constructed();
-            self.obj().connect_map(|album_list| {
-                let app = album_list.get_application();
-                app.connect_closure(
-                    "library-refreshed",
-                    false,
-                    glib::closure_local!(move |app: Application| {
-                        dbg!("wow, we in signal handler");
-                        dbg!(app.library().unwrap().get_albums());
-                    }),
-                );
-            });
+
+            self.obj().connect_map(glib::clone!(
+                #[weak(rename_to = album_list)]
+                self.obj(),
+                move |_| {
+                    let app = album_list.get_application();
+                    app.connect_closure(
+                        "library-refreshed",
+                        false,
+                        glib::closure_local!(
+                            #[weak]
+                            album_list,
+                            move |_app: Application| {
+                                album_list.do_library_stuff();
+                            }
+                        ),
+                    );
+                }
+            ));
         }
     }
     impl WidgetImpl for AlbumList {}

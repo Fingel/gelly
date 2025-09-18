@@ -8,7 +8,7 @@ use serde::de::DeserializeOwned;
 use serde_json::json;
 use thiserror::Error;
 
-use crate::jellyfin::api::LibraryDtoList;
+use crate::jellyfin::api::{LibraryDtoList, MusicDtoList};
 
 pub mod api;
 
@@ -89,23 +89,18 @@ impl Jellyfin {
         self.handle_response(response).await
     }
 
-    pub async fn get_albums(&self, library_id: &str) -> Result<LibraryDtoList, JellyfinError> {
+    pub async fn get_library(&self, library_id: &str) -> Result<MusicDtoList, JellyfinError> {
         let params = vec![
             ("parentId", library_id),
+            ("IncludeItemTypes", "Audio"),
             ("sortBy", "DateCreated"),
-            ("sortOrder", "Ascending"),
-            ("IncludeItemTypes", "MusicAlbum"),
+            ("sortOrder", "Descending"),
             ("Recursive", "true"),
-            ("Fields", "PrimaryImageAspectRatio,SortName"),
             ("ImageTypeLimit", "1"),
-            ("EnableImageTypes", "Primary,Backdrop,Banner,Thumb"),
+            ("EnableImageTypes", "Primary"),
             ("StartIndex", "0"),
             ("Limit", "100"),
         ];
-        self.get_items(params).await
-    }
-
-    async fn get_items(&self, params: Vec<(&str, &str)>) -> Result<LibraryDtoList, JellyfinError> {
         let response = self.get("Items", Some(&params)).await?;
         self.handle_response(response).await
     }
@@ -182,7 +177,6 @@ impl Jellyfin {
         let status = response.status();
         if status.is_success() {
             let json_response = response.json::<T>().await?;
-            debug!("Received response: {:?}", json_response);
             Ok(json_response)
         } else {
             let message = response

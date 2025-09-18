@@ -6,8 +6,10 @@ use gtk::{gio, glib};
 
 use crate::async_utils::spawn_tokio;
 use crate::config::{self, retrieve_jellyfin_api_token, settings};
-use crate::jellyfin::Jellyfin;
-use crate::library::Library;
+use crate::jellyfin::api::{MusicDto, MusicDtoList};
+use crate::jellyfin::{Jellyfin, JellyfinError};
+use std::cell::RefCell;
+use std::rc::Rc;
 
 glib::wrapper! {
     pub struct Application(ObjectSubclass<imp::Application>)
@@ -22,7 +24,6 @@ impl Application {
             .build();
         app.load_settings();
         app.initialize_jellyfin();
-        app.initialize_library();
         app
     }
 
@@ -50,29 +51,28 @@ impl Application {
         self.imp().jellyfin.borrow().clone()
     }
 
-    pub fn initialize_library(&self) {
-        let library = Library::new(
-            self.imp().jellyfin.borrow().clone(),
-            self.imp().library_id.borrow().clone(),
-        );
-        self.imp().library.replace(Some(library));
-    }
-
-    pub fn library(&self) -> Option<Library> {
-        self.imp().library.borrow().clone()
+    pub fn library(&self) -> Rc<RefCell<Vec<MusicDto>>> {
+        self.imp().library.clone()
     }
 
     pub fn refresh_library(&self) {
-        let library = self.library().unwrap();
+        let library_id = self.imp().library_id.borrow().clone();
+        let jellyfin = self.jellyfin();
         spawn_tokio(
-            async move {
-                library.refresh().await;
-            },
+            async move { jellyfin.get_library(&library_id).await },
             glib::clone!(
                 #[weak(rename_to=app)]
                 self,
-                move |_| {
-                    app.emit_by_name::<()>("library-refreshed", &[]);
+                move |result: Result<MusicDtoList, JellyfinError>| {
+                    match result {
+                        Ok(library) => {
+                            app.imp().library.replace(library.items);
+                            app.emit_by_name::<()>("library-refreshed", &[]);
+                        }
+                        Err(err) => {
+                            log::error!("Failed to refresh library: {}", err);
+                        }
+                    }
                 },
             ),
         );
@@ -80,7 +80,7 @@ impl Application {
 
     pub fn logout(&self) {
         self.imp().jellyfin.replace(Jellyfin::default());
-        self.imp().library.replace(None);
+        self.imp().library.replace(Vec::new());
         self.imp().library_id.replace(String::new());
         settings()
             .set_string("library-id", "")
@@ -100,15 +100,16 @@ mod imp {
     use gtk::glib;
     use gtk::glib::subclass::Signal;
     use std::cell::RefCell;
+    use std::rc::Rc;
     use std::sync::OnceLock;
 
     use crate::jellyfin::Jellyfin;
-    use crate::library::Library;
+    use crate::jellyfin::api::MusicDto;
 
     #[derive(Default)]
     pub struct Application {
         pub jellyfin: RefCell<Jellyfin>,
-        pub library: RefCell<Option<Library>>,
+        pub library: Rc<RefCell<Vec<MusicDto>>>,
         pub library_id: RefCell<String>,
     }
 
