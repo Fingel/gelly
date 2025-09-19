@@ -13,10 +13,9 @@
         <property name="orientation">1</property>
         <property name="spacing">6</property>
         <child>
-          <object class="GtkLabel" id="fake_label">
+          <object class="GtkLabel" id="album_image">
             <property name="ellipsize">3</property>
             <property name="justify">0</property>
-            <property name="label">Album Name</property>
           </object>
         </child>
         <child>

@@ -47,8 +47,6 @@ impl AlbumList {
 
         factory.connect_setup(move |_, list_item| {
             let placeholder = Album::new();
-            placeholder.set_album_name("Placeholder");
-            placeholder.set_artist_name("Placeholder Artist");
             let item = list_item
                 .downcast_ref::<ListItem>()
                 .expect("Needs to be a ListItem");
@@ -68,8 +66,7 @@ impl AlbumList {
                 .and_downcast::<Album>()
                 .expect("Child has to be an Album");
 
-            album_widget.set_album_name(&album_data.name());
-            album_widget.set_artist_name(&album_data.primary_artist());
+            album_widget.set_album_data(&album_data);
         });
 
         imp.grid_view.set_model(Some(&selection_model));

@@ -1,3 +1,4 @@
+use crate::models::album_data::AlbumData;
 use glib::Object;
 use gtk::{gio, glib, subclass::prelude::*};
 
@@ -17,6 +18,16 @@ impl Album {
 
     pub fn set_artist_name(&self, artist: &str) {
         self.imp().artist_label.set_text(artist);
+    }
+
+    pub fn set_album_image(&self, image: &str) {
+        self.imp().album_image.set_text(image);
+    }
+
+    pub fn set_album_data(&self, album_data: &AlbumData) {
+        self.set_album_name(&album_data.name());
+        self.set_artist_name(&album_data.primary_artist());
+        self.set_album_image(&album_data.image_tag());
     }
 }
 
@@ -40,6 +51,8 @@ mod imp {
         pub name_label: TemplateChild<gtk::Label>,
         #[template_child]
         pub artist_label: TemplateChild<gtk::Label>,
+        #[template_child]
+        pub album_image: TemplateChild<gtk::Label>,
     }
 
     #[glib::object_subclass]
