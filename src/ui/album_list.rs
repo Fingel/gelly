@@ -24,31 +24,23 @@ impl AlbumList {
     pub fn pull_albums(&self) {
         let library = self.get_application().library().clone();
         let albums = albums_from_library(&library.borrow());
-        dbg!(albums);
+        let store = self
+            .imp()
+            .store
+            .get()
+            .expect("AlbumList store should be initialized.");
+        store.remove_all();
+        for album in albums {
+            store.append(&album);
+        }
     }
 
     fn setup_model(&self) {
         let imp = self.imp();
         let store = gio::ListStore::new::<AlbumData>();
-        let dummy_albums = vec![
-            AlbumData::new(
-                "Album 1",
-                "Album_id_1",
-                vec![String::from("Artist 1")],
-                "date_created_1",
-                "image_1",
-            ),
-            AlbumData::new(
-                "Album 2",
-                "Album_id_2",
-                vec![String::from("Artist 2")],
-                "date_created_2",
-                "image_2",
-            ),
-        ];
-        for a in dummy_albums {
-            store.append(&a);
-        }
+        imp.store
+            .set(store.clone())
+            .expect("AlbumList store should only be set once.");
 
         let selection_model = gtk::SingleSelection::new(Some(store));
         let factory = gtk::SignalListItemFactory::new();
@@ -93,11 +85,13 @@ impl Default for AlbumList {
 
 mod imp {
 
+    use std::cell::OnceCell;
+
     use crate::{application::Application, ui::widget_ext::WidgetApplicationExt};
     use adw::subclass::prelude::*;
     use glib::subclass::InitializingObject;
     use gtk::{
-        CompositeTemplate,
+        CompositeTemplate, gio,
         glib::{self, object::ObjectExt},
         prelude::WidgetExt,
     };
@@ -107,6 +101,7 @@ mod imp {
     pub struct AlbumList {
         #[template_child]
         pub grid_view: TemplateChild<gtk::GridView>,
+        pub store: OnceCell<gio::ListStore>,
     }
 
     #[glib::object_subclass]
