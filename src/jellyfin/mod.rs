@@ -177,7 +177,8 @@ impl Jellyfin {
     {
         let status = response.status();
         if status.is_success() {
-            let json_response = response.json::<T>().await?;
+            let response_body = response.text().await?;
+            let json_response = serde_json::from_str(&response_body)?;
             Ok(json_response)
         } else {
             let message = response

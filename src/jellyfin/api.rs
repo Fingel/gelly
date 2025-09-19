@@ -46,7 +46,7 @@ pub struct MusicDto {
     pub album_id: String,
     pub album_primary_image_tag: String,
     pub media_type: String,
-    pub normalization_gain: f64,
+    pub normalization_gain: Option<f64>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
