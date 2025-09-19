@@ -10,6 +10,7 @@ mod async_utils;
 mod config;
 mod jellyfin;
 mod library_utils;
+mod models;
 mod ui;
 
 fn main() -> glib::ExitCode {

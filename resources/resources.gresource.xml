@@ -4,5 +4,6 @@
     <file compressed="true" preprocess="xml-stripblanks">ui/window.ui</file>
     <file compressed="true" preprocess="xml-stripblanks">ui/setup.ui</file>
     <file compressed="true" preprocess="xml-stripblanks">ui/album_list.ui</file>
+    <file compressed="true" preprocess="xml-stripblanks">ui/album.ui</file>
   </gresource>
 </gresources>

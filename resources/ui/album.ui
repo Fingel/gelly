@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <requires lib="gtk" version="4.0"/>
+  <template class="GellyAlbum" parent="GtkBox">
+		<property name="margin-start">6</property>
+    <property name="margin-end">6</property>
+    <property name="margin-top">6</property>
+    <property name="margin-bottom">6</property>
+    <child>
+      <object class="GtkBox" id="inner">
+        <property name="halign">3</property>
+        <property name="valign">1</property>
+        <property name="orientation">1</property>
+        <property name="spacing">6</property>
+        <child>
+          <object class="GtkLabel" id="fake_label">
+            <property name="ellipsize">3</property>
+            <property name="justify">0</property>
+            <property name="label">Album Name</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkLabel" id="name_label">
+            <property name="ellipsize">3</property>
+            <property name="justify">0</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkLabel" id="artist_label">
+            <property name="ellipsize">3</property>
+            <property name="justify">0</property>
+          </object>
+        </child>
+      </object>
+    </child>
+  </template>
+</interface>
