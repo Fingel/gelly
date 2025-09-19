@@ -71,6 +71,10 @@ impl Application {
                         }
                         Err(err) => {
                             log::error!("Failed to refresh library: {}", err);
+                            app.emit_by_name::<()>(
+                                "global-error",
+                                &[&String::from("Failed to refresh library")],
+                            )
                         }
                     }
                 },
@@ -99,6 +103,7 @@ mod imp {
     use adw::subclass::prelude::*;
     use gtk::glib;
     use gtk::glib::subclass::Signal;
+    use gtk::glib::types::StaticType;
     use std::cell::RefCell;
     use std::rc::Rc;
     use std::sync::OnceLock;
@@ -123,7 +128,14 @@ mod imp {
     impl ObjectImpl for Application {
         fn signals() -> &'static [Signal] {
             static SIGNALS: OnceLock<Vec<Signal>> = OnceLock::new();
-            SIGNALS.get_or_init(|| vec![Signal::builder("library-refreshed").build()])
+            SIGNALS.get_or_init(|| {
+                vec![
+                    Signal::builder("library-refreshed").build(),
+                    Signal::builder("global-error")
+                        .param_types([String::static_type()])
+                        .build(),
+                ]
+            })
         }
     }
     impl ApplicationImpl for Application {}

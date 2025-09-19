@@ -58,10 +58,13 @@ mod imp {
         CompositeTemplate,
         gio::{ActionEntry, prelude::ActionMapExtManual},
         glib,
+        prelude::*,
     };
 
+    use crate::application::Application;
     use crate::ui::album_list::AlbumList;
     use crate::ui::setup::Setup;
+    use crate::ui::widget_ext::WidgetApplicationExt;
 
     #[derive(CompositeTemplate, Default)]
     #[template(resource = "/io/m51/Gelly/ui/window.ui")]
@@ -107,6 +110,25 @@ mod imp {
                 ))
                 .build();
             self.obj().add_action_entries([action_servers]);
+
+            self.obj().connect_map(glib::clone!(
+                #[weak(rename_to = window)]
+                self.obj(),
+                move |_| {
+                    let app = window.get_application();
+                    app.connect_closure(
+                        "global-error",
+                        false,
+                        glib::closure_local!(
+                            #[weak]
+                            window,
+                            move |_app: Application, title: &str| {
+                                window.toast(title, None);
+                            }
+                        ),
+                    );
+                }
+            ));
         }
     }
 
