@@ -106,6 +106,13 @@ impl Jellyfin {
         self.handle_response(response).await
     }
 
+    pub async fn get_image(&self, item_id: &str) -> Result<Vec<u8>, JellyfinError> {
+        let response = self
+            .get(&format!("Items/{}/Images/Primary", item_id), None)
+            .await?;
+        self.handle_binary_response(response).await
+    }
+
     fn get_hostname(&self) -> &'static str {
         static HOSTNAME: OnceLock<String> = OnceLock::new();
         HOSTNAME.get_or_init(|| {
@@ -180,6 +187,25 @@ impl Jellyfin {
             let response_body = response.text().await?;
             let json_response = serde_json::from_str(&response_body)?;
             Ok(json_response)
+        } else {
+            let message = response
+                .text()
+                .await
+                .unwrap_or_else(|_| "Unknown Error".to_string());
+
+            match status {
+                StatusCode::UNAUTHORIZED => Err(JellyfinError::AuthenticationFailed { message }),
+                _ => Err(JellyfinError::Http { status, message }),
+            }
+        }
+    }
+
+    /// Same as handle_response but does not deserialize the response body.
+    async fn handle_binary_response(&self, response: Response) -> Result<Vec<u8>, JellyfinError> {
+        let status = response.status();
+        if status.is_success() {
+            let response_body = response.bytes().await?;
+            Ok(response_body.to_vec())
         } else {
             let message = response
                 .text()
