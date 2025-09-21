@@ -5,9 +5,11 @@ use gtk::prelude::ObjectExt;
 use gtk::{gio, glib};
 
 use crate::async_utils::spawn_tokio;
+use crate::cache::ImageCache;
 use crate::config::{self, retrieve_jellyfin_api_token, settings};
 use crate::jellyfin::api::{MusicDto, MusicDtoList};
 use crate::jellyfin::{Jellyfin, JellyfinError};
+use log::error;
 use std::cell::RefCell;
 use std::rc::Rc;
 
@@ -24,6 +26,7 @@ impl Application {
             .build();
         app.load_settings();
         app.initialize_jellyfin();
+        app.initialize_image_cache();
         app
     }
 
@@ -45,6 +48,18 @@ impl Application {
 
         let jellyfin = Jellyfin::new(host.as_str(), &token, user_id.as_str());
         self.imp().jellyfin.replace(jellyfin);
+    }
+
+    pub fn initialize_image_cache(&self) {
+        match ImageCache::new() {
+            Ok(cache) => {
+                self.imp().image_cache.replace(cache);
+            }
+            Err(err) => {
+                // App can technically still function
+                error!("Failed to initialize image cache: {}", err);
+            }
+        }
     }
 
     pub fn jellyfin(&self) -> Jellyfin {
@@ -108,6 +123,7 @@ mod imp {
     use std::rc::Rc;
     use std::sync::OnceLock;
 
+    use crate::cache::ImageCache;
     use crate::jellyfin::Jellyfin;
     use crate::jellyfin::api::MusicDto;
 
@@ -116,6 +132,7 @@ mod imp {
         pub jellyfin: RefCell<Jellyfin>,
         pub library: Rc<RefCell<Vec<MusicDto>>>,
         pub library_id: RefCell<String>,
+        pub image_cache: RefCell<ImageCache>,
     }
 
     #[glib::object_subclass]

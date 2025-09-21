@@ -7,6 +7,7 @@ use ui::window::Window;
 
 mod application;
 mod async_utils;
+mod cache;
 mod config;
 mod jellyfin;
 mod library_utils;
