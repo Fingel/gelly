@@ -108,8 +108,8 @@ impl Jellyfin {
 
     pub async fn get_image(&self, item_id: &str) -> Result<Vec<u8>, JellyfinError> {
         let params = vec![
-            ("fillHeight", "225"),
-            ("fillWidth", "225"),
+            ("fillHeight", "200"),
+            ("fillWidth", "200"),
             ("quality", "96"),
         ];
         let response = self

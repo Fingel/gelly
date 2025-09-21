@@ -2,6 +2,7 @@
 <interface>
   <requires lib="gtk" version="4.0"/>
   <template class="GellyAlbum" parent="GtkBox">
+    <property name="halign">center</property>
 		<property name="margin-start">6</property>
     <property name="margin-end">6</property>
     <property name="margin-top">6</property>
@@ -16,8 +17,8 @@
           <object class="GtkOverlay">
             <child>
               <object class="GtkImage" id="album_image">
-                <property name="width-request">255</property>
-                <property name="height-request">255</property>
+                <property name="width-request">200</property>
+                <property name="height-request">200</property>
               </object>
             </child>
             <child type="overlay">
