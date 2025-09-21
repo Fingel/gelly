@@ -13,5 +13,17 @@
       <default>""</default>
       <summary>Jellyfin Library ID</summary>
     </key>
+    <key name="window-width" type="i">
+      <default>-1</default>
+      <summary>Default window width</summary>
+    </key>
+    <key name="window-height" type="i">
+      <default>-1</default>
+      <summary>Default window height</summary>
+    </key>
+    <key name="window-maximized" type="b">
+      <default>false</default>
+      <summary>Default window maximized state</summary>
+    </key>
   </schema>
 </schemalist>

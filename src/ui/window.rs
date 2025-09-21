@@ -1,9 +1,11 @@
+use crate::config::settings;
 use crate::{application::Application, ui::widget_ext::WidgetApplicationExt};
 use adw::subclass::prelude::ObjectSubclassIsExt;
 use glib::Object;
 use gtk::{
     gio,
     glib::{self},
+    prelude::*,
 };
 
 glib::wrapper! {
@@ -48,6 +50,28 @@ impl Window {
         self.get_application().logout();
         self.show_server_setup();
         self.toast("Logged out", None);
+    }
+
+    pub fn save_window_size(&self) -> Result<(), glib::BoolError> {
+        let size = self.default_size();
+        let settings = settings();
+        settings.set_int("window-width", size.0)?;
+        settings.set_int("window-height", size.1)?;
+        settings.set_boolean("window-maximized", self.is_maximized())?;
+
+        Ok(())
+    }
+
+    fn load_window_size(&self) {
+        let settings = settings();
+        let width = settings.int("window-width");
+        let height = settings.int("window-height");
+        let maximized = settings.boolean("window-maximized");
+
+        self.set_default_size(width, height);
+        if maximized {
+            self.maximize();
+        }
     }
 }
 
@@ -100,6 +124,7 @@ mod imp {
     impl ObjectImpl for Window {
         fn constructed(&self) {
             self.parent_constructed();
+            self.obj().load_window_size();
 
             let action_logout = ActionEntry::builder("logout")
                 .activate(glib::clone!(
@@ -152,7 +177,14 @@ mod imp {
 
     impl WidgetImpl for Window {}
 
-    impl WindowImpl for Window {}
+    impl WindowImpl for Window {
+        fn close_request(&self) -> glib::Propagation {
+            self.obj()
+                .save_window_size()
+                .expect("Could not save window size");
+            glib::Propagation::Proceed
+        }
+    }
 
     impl AdwApplicationWindowImpl for Window {}
 
