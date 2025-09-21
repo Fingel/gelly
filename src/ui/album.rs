@@ -49,9 +49,8 @@ impl Album {
     }
 
     pub fn show_error(&self) {
-        // Todo show an actual error icon here
-        self.set_album_name("ERROR");
-        self.imp().spinner.set_visible(false);
+        self.set_loading(false);
+        self.imp().error_icon.set_visible(true);
     }
 
     pub fn set_album_data(&self, album_data: &AlbumData) {
@@ -98,6 +97,8 @@ mod imp {
         pub album_image: TemplateChild<gtk::Image>,
         #[template_child]
         pub spinner: TemplateChild<gtk::Spinner>,
+        #[template_child]
+        pub error_icon: TemplateChild<gtk::Image>,
     }
 
     #[glib::object_subclass]
