@@ -121,4 +121,9 @@ impl ImageCache {
     fn get_cache_file_path(&self, item_id: &str) -> PathBuf {
         self.cache_dir.join(item_id)
     }
+
+    pub fn clear_cache(&self) {
+        _ = fs::remove_dir_all(&self.cache_dir);
+        _ = fs::create_dir_all(&self.cache_dir);
+    }
 }

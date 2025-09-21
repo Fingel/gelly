@@ -151,9 +151,14 @@
         <attribute name="action">win.logout</attribute>
       </item>
       <item>
+        <attribute name="label" translatable="yes">Clear Image Cache</attribute>
+        <attribute name="action">win.clear-cache</attribute>
+      </item>
+      <item>
         <attribute name="label" translatable="yes">Quit</attribute>
         <attribute name="action">window.close</attribute>
       </item>
+
     </section>
   </menu>
 </interface>

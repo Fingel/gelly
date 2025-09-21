@@ -60,6 +60,7 @@ mod imp {
         glib,
         prelude::*,
     };
+    use log::{debug, warn};
 
     use crate::application::Application;
     use crate::ui::album_list::AlbumList;
@@ -100,7 +101,7 @@ mod imp {
         fn constructed(&self) {
             self.parent_constructed();
 
-            let action_servers = ActionEntry::builder("logout")
+            let action_logout = ActionEntry::builder("logout")
                 .activate(glib::clone!(
                     #[weak(rename_to=window)]
                     self,
@@ -109,7 +110,24 @@ mod imp {
                     }
                 ))
                 .build();
-            self.obj().add_action_entries([action_servers]);
+
+            let action_clear_cache = ActionEntry::builder("clear-cache")
+                .activate(glib::clone!(
+                    #[weak(rename_to=window)]
+                    self,
+                    move |_, _, _| {
+                        if let Some(image_cache) = window.obj().get_application().image_cache() {
+                            image_cache.clear_cache();
+                            debug!("Image cache cleared");
+                        } else {
+                            warn!("No image cache found");
+                        }
+                    }
+                ))
+                .build();
+
+            self.obj()
+                .add_action_entries([action_logout, action_clear_cache]);
 
             self.obj().connect_map(glib::clone!(
                 #[weak(rename_to = window)]
