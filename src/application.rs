@@ -57,6 +57,7 @@ impl Application {
             }
             Err(err) => {
                 // App can technically still function
+                self.imp().image_cache.replace(None);
                 error!("Failed to initialize image cache: {}", err);
             }
         }
