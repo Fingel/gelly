@@ -1,6 +1,8 @@
+use crate::cache::ImageCache;
 use crate::models::album_data::AlbumData;
 use glib::Object;
-use gtk::{gio, glib, subclass::prelude::*};
+use gtk::{gio, glib, prelude::WidgetExt, subclass::prelude::*};
+use log::warn;
 
 glib::wrapper! {
     pub struct Album(ObjectSubclass<imp::Album>)
@@ -20,14 +22,39 @@ impl Album {
         self.imp().artist_label.set_text(artist);
     }
 
-    pub fn set_album_image(&self, image: &str) {
-        self.imp().album_image.set_text(image);
+    pub fn set_album_image(&self, image_data: &[u8]) {
+        // TODO: move the bytes to pixbuf method somewhere else.
+        match ImageCache::bytes_to_texture(image_data) {
+            Ok(texture) => {
+                self.imp().album_image.set_paintable(Some(&texture));
+                self.imp().spinner.set_visible(false);
+            }
+            Err(err) => {
+                warn!("Failed to load album image: {}", err);
+                self.set_album_name("ERROR");
+                self.imp().spinner.set_visible(false);
+            }
+        }
+    }
+
+    pub fn show_loading(&self) {
+        self.imp().spinner.set_visible(true);
+        self.imp().album_image.clear();
+    }
+
+    pub fn show_error(&self) {
+        // Todo show an actual error icon here
+        self.set_album_name("ERROR");
+        self.imp().spinner.set_visible(false);
     }
 
     pub fn set_album_data(&self, album_data: &AlbumData) {
         self.set_album_name(&album_data.name());
         self.set_artist_name(&album_data.primary_artist());
-        self.set_album_image(&album_data.image_tag());
+
+        if album_data.image_loading() {
+            self.show_loading();
+        }
     }
 }
 
@@ -52,7 +79,9 @@ mod imp {
         #[template_child]
         pub artist_label: TemplateChild<gtk::Label>,
         #[template_child]
-        pub album_image: TemplateChild<gtk::Label>,
+        pub album_image: TemplateChild<gtk::Image>,
+        #[template_child]
+        pub spinner: TemplateChild<gtk::Label>,
     }
 
     #[glib::object_subclass]

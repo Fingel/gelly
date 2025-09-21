@@ -1,4 +1,5 @@
 use crate::{
+    async_utils::spawn_tokio,
     library_utils::albums_from_library,
     models::album_data::AlbumData,
     ui::{album::Album, widget_ext::WidgetApplicationExt},
@@ -10,6 +11,7 @@ use gtk::{
     prelude::*,
     subclass::prelude::*,
 };
+use log::{debug, warn};
 
 glib::wrapper! {
     pub struct AlbumList(ObjectSubclass<imp::AlbumList>)
@@ -53,24 +55,71 @@ impl AlbumList {
             item.set_child(Some(&placeholder))
         });
 
-        factory.connect_bind(move |_, list_item| {
-            let list_item = list_item
-                .downcast_ref::<gtk::ListItem>()
-                .expect("Needs to be a ListItem");
-            let album_data = list_item
-                .item()
-                .and_downcast::<AlbumData>()
-                .expect("Item should be an AlbumData");
-            let album_widget = list_item
-                .child()
-                .and_downcast::<Album>()
-                .expect("Child has to be an Album");
+        factory.connect_bind(glib::clone!(
+            #[weak(rename_to = album_list)]
+            self,
+            move |_, list_item| {
+                let list_item = list_item
+                    .downcast_ref::<gtk::ListItem>()
+                    .expect("Needs to be a ListItem");
+                let album_data = list_item
+                    .item()
+                    .and_downcast::<AlbumData>()
+                    .expect("Item should be an AlbumData");
+                let album_widget = list_item
+                    .child()
+                    .and_downcast::<Album>()
+                    .expect("Child has to be an Album");
 
-            album_widget.set_album_data(&album_data);
-        });
+                album_widget.set_album_data(&album_data);
+
+                // Async image loading
+                album_list.load_album_image(&album_data, &album_widget);
+            }
+        ));
 
         imp.grid_view.set_model(Some(&selection_model));
         imp.grid_view.set_factory(Some(&factory));
+    }
+
+    fn load_album_image(&self, album_data: &AlbumData, album_widget: &Album) {
+        if album_data.image_loading() || album_data.image_loaded() {
+            debug!("Image is already loaded");
+            return;
+        }
+
+        let Some(image_cache) = self.get_application().image_cache() else {
+            warn!("Image cache not available");
+            return;
+        };
+
+        let item_id = album_data.id();
+        let jellyfin = self.get_application().jellyfin();
+        album_data.set_image_loading(true);
+        album_widget.show_loading();
+
+        spawn_tokio(
+            async move { image_cache.get_image(&item_id, &jellyfin).await },
+            glib::clone!(
+                #[weak]
+                album_data,
+                #[weak]
+                album_widget,
+                move |result| {
+                    album_data.set_image_loading(false);
+                    album_data.set_image_loaded(true);
+                    match result {
+                        Ok(image_data) => {
+                            album_widget.set_album_image(&image_data);
+                        }
+                        Err(err) => {
+                            warn!("Failed to load album art for {}: {}", album_data.id(), err);
+                            album_widget.show_error();
+                        }
+                    }
+                }
+            ),
+        );
     }
 }
 

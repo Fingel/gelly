@@ -1,6 +1,7 @@
 use std::{collections::HashSet, fs, path::PathBuf, sync::Arc, time::Duration};
 
 use gtk::{
+    gdk::Texture,
     gdk_pixbuf::{Pixbuf, PixbufLoader, prelude::PixbufLoaderExt},
     glib,
 };
@@ -58,11 +59,11 @@ impl ImageCache {
         &self,
         item_id: &str,
         jellyfin: &Jellyfin,
-    ) -> Result<Pixbuf, CacheError> {
+    ) -> Result<Vec<u8>, CacheError> {
         loop {
             if let Ok(bytes) = self.load_from_disk(item_id) {
                 debug!("Image cache hit: {}", item_id);
-                return Self::bytes_to_pixbuf(&bytes);
+                return Ok(bytes);
             }
 
             // Prevent duplicate requests
@@ -84,7 +85,7 @@ impl ImageCache {
                 pending.remove(item_id);
             }
 
-            return result.and_then(|bytes| Self::bytes_to_pixbuf(&bytes));
+            return result;
         }
     }
 
@@ -129,6 +130,10 @@ impl ImageCache {
         self.cache_dir.join(item_id)
     }
 
+    pub fn bytes_to_texture(image_data: &[u8]) -> Result<Texture, CacheError> {
+        let pixbuf = Self::bytes_to_pixbuf(image_data)?;
+        Ok(Texture::for_pixbuf(&pixbuf))
+    }
     pub fn bytes_to_pixbuf(image_data: &[u8]) -> Result<Pixbuf, CacheError> {
         let loader = PixbufLoader::new();
         loader.write(image_data)?;

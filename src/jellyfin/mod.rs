@@ -107,8 +107,13 @@ impl Jellyfin {
     }
 
     pub async fn get_image(&self, item_id: &str) -> Result<Vec<u8>, JellyfinError> {
+        let params = vec![
+            ("fillHeight", "225"),
+            ("fillWidth", "225"),
+            ("quality", "96"),
+        ];
         let response = self
-            .get(&format!("Items/{}/Images/Primary", item_id), None)
+            .get(&format!("Items/{}/Images/Primary", item_id), Some(&params))
             .await?;
         self.handle_binary_response(response).await
     }

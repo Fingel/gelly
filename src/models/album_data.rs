@@ -6,6 +6,7 @@ glib::wrapper! {
     pub struct AlbumData(ObjectSubclass<imp::AlbumData>);
 }
 
+/// Simple GObject to provide album data, and to convert from the API response from jellyfin.
 impl AlbumData {
     pub fn new(
         name: &str,
@@ -20,6 +21,8 @@ impl AlbumData {
             .property("artists", artists)
             .property("date-created", date_created)
             .property("image-tag", image_tag)
+            .property("image-loading", false)
+            .property("image-loaded", false)
             .build()
     }
 
@@ -75,6 +78,12 @@ mod imp {
 
         #[property(get, set, name = "image-tag")]
         pub image_tag: RefCell<String>,
+
+        #[property(get, set, name = "image-loading")]
+        pub image_loading: RefCell<bool>,
+
+        #[property(get, set, name = "image-loaded")]
+        pub image_loaded: RefCell<bool>,
     }
 
     #[glib::object_subclass]
