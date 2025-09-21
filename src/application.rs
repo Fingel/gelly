@@ -53,7 +53,7 @@ impl Application {
     pub fn initialize_image_cache(&self) {
         match ImageCache::new() {
             Ok(cache) => {
-                self.imp().image_cache.replace(cache);
+                self.imp().image_cache.replace(Some(cache));
             }
             Err(err) => {
                 // App can technically still function
@@ -68,6 +68,10 @@ impl Application {
 
     pub fn library(&self) -> Rc<RefCell<Vec<MusicDto>>> {
         self.imp().library.clone()
+    }
+
+    pub fn image_cache(&self) -> Option<ImageCache> {
+        self.imp().image_cache.borrow().clone()
     }
 
     pub fn refresh_library(&self) {
@@ -132,7 +136,7 @@ mod imp {
         pub jellyfin: RefCell<Jellyfin>,
         pub library: Rc<RefCell<Vec<MusicDto>>>,
         pub library_id: RefCell<String>,
-        pub image_cache: RefCell<ImageCache>,
+        pub image_cache: RefCell<Option<ImageCache>>,
     }
 
     #[glib::object_subclass]

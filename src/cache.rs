@@ -142,12 +142,3 @@ impl ImageCache {
         })
     }
 }
-
-impl Default for ImageCache {
-    fn default() -> Self {
-        Self {
-            pending_requests: Arc::new(Mutex::new(HashSet::new())),
-            cache_dir: PathBuf::from("/tmp"),
-        }
-    }
-}
