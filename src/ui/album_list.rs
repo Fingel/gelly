@@ -96,7 +96,7 @@ impl AlbumList {
         let item_id = album_data.id();
         let jellyfin = self.get_application().jellyfin();
         album_data.set_image_loading(true);
-        album_widget.show_loading();
+        album_widget.set_loading(true);
 
         spawn_tokio(
             async move { image_cache.get_image(&item_id, &jellyfin).await },
@@ -110,6 +110,7 @@ impl AlbumList {
                     album_data.set_image_loaded(true);
                     match result {
                         Ok(image_data) => {
+                            album_widget.set_loading(false);
                             album_widget.set_album_image(&image_data);
                         }
                         Err(err) => {

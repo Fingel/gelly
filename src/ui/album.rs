@@ -31,19 +31,21 @@ impl Album {
         match self.bytes_to_texture(image_data) {
             Ok(texture) => {
                 self.imp().album_image.set_paintable(Some(&texture));
-                self.imp().spinner.set_visible(false);
             }
             Err(err) => {
                 warn!("Failed to load album image: {}", err);
                 self.set_album_name("ERROR");
-                self.imp().spinner.set_visible(false);
             }
         }
     }
 
-    pub fn show_loading(&self) {
-        self.imp().spinner.set_visible(true);
-        self.imp().album_image.clear();
+    pub fn set_loading(&self, loading: bool) {
+        self.imp().spinner.set_visible(loading);
+        if loading {
+            self.imp().spinner.start();
+        } else {
+            self.imp().spinner.stop();
+        }
     }
 
     pub fn show_error(&self) {
@@ -55,10 +57,7 @@ impl Album {
     pub fn set_album_data(&self, album_data: &AlbumData) {
         self.set_album_name(&album_data.name());
         self.set_artist_name(&album_data.primary_artist());
-
-        if album_data.image_loading() {
-            self.show_loading();
-        }
+        self.set_loading(album_data.image_loading());
     }
 
     fn bytes_to_texture(&self, image_data: &[u8]) -> Result<Texture, glib::Error> {
@@ -98,7 +97,7 @@ mod imp {
         #[template_child]
         pub album_image: TemplateChild<gtk::Image>,
         #[template_child]
-        pub spinner: TemplateChild<gtk::Label>,
+        pub spinner: TemplateChild<gtk::Spinner>,
     }
 
     #[glib::object_subclass]

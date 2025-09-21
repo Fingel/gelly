@@ -13,14 +13,23 @@
         <property name="orientation">1</property>
         <property name="spacing">6</property>
         <child>
-          <object class="GtkLabel" id="spinner">
-            <property name="label">Loading...</property>
-            <property name="ellipsize">3</property>
-            <property name="justify">0</property>
-          </object>
-          <object class="GtkImage" id="album_image">
-            <property name="width-request">255</property>
-            <property name="height-request">255</property>
+          <object class="GtkOverlay">
+            <child>
+              <object class="GtkImage" id="album_image">
+                <property name="width-request">255</property>
+                <property name="height-request">255</property>
+              </object>
+            </child>
+            <child type="overlay">
+              <object class="GtkSpinner" id="spinner">
+                <property name="spinning">true</property>
+                <property name="width-request">48</property>
+                <property name="height-request">48</property>
+                <property name="halign">center</property>
+                <property name="valign">center</property>
+                <property name="visible">false</property>
+              </object>
+            </child>
           </object>
         </child>
         <child>
