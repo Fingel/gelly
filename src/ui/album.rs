@@ -34,7 +34,6 @@ impl Album {
             }
             Err(err) => {
                 warn!("Failed to load album image: {}", err);
-                self.set_album_name("ERROR");
             }
         }
     }
@@ -94,7 +93,7 @@ mod imp {
         #[template_child]
         pub artist_label: TemplateChild<gtk::Label>,
         #[template_child]
-        pub album_image: TemplateChild<gtk::Image>,
+        pub album_image: TemplateChild<gtk::Picture>,
         #[template_child]
         pub spinner: TemplateChild<gtk::Spinner>,
         #[template_child]
