@@ -1,10 +1,5 @@
 use std::{collections::HashSet, fs, path::PathBuf, sync::Arc, time::Duration};
 
-use gtk::{
-    gdk::Texture,
-    gdk_pixbuf::{Pixbuf, PixbufLoader, prelude::PixbufLoaderExt},
-    glib,
-};
 use log::{debug, warn};
 use thiserror::Error;
 use tokio::sync::Mutex;
@@ -18,9 +13,6 @@ use crate::{
 pub enum CacheError {
     #[error("IO error: {0}")]
     Io(#[from] std::io::Error),
-
-    #[error("Glib/Pixbuf error")]
-    GlibPixbuf(#[from] glib::Error),
 
     #[error("Jellyfin error: {0}")]
     Jellyfin(#[from] JellyfinError),
@@ -128,22 +120,5 @@ impl ImageCache {
 
     fn get_cache_file_path(&self, item_id: &str) -> PathBuf {
         self.cache_dir.join(item_id)
-    }
-
-    pub fn bytes_to_texture(image_data: &[u8]) -> Result<Texture, CacheError> {
-        let pixbuf = Self::bytes_to_pixbuf(image_data)?;
-        Ok(Texture::for_pixbuf(&pixbuf))
-    }
-    pub fn bytes_to_pixbuf(image_data: &[u8]) -> Result<Pixbuf, CacheError> {
-        let loader = PixbufLoader::new();
-        loader.write(image_data)?;
-        loader.close()?;
-        loader.pixbuf().ok_or_else(|| {
-            glib::Error::new(
-                glib::FileError::Failed,
-                "Failed to create pixbuf from image data",
-            )
-            .into()
-        })
     }
 }
