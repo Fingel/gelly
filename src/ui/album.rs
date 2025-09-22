@@ -54,7 +54,7 @@ impl Album {
 
     pub fn set_album_data(&self, album_data: &AlbumData) {
         self.set_album_name(&album_data.name());
-        self.set_artist_name(&album_data.primary_artist());
+        self.set_artist_name(&album_data.artists_string());
         self.set_loading(album_data.image_loading());
     }
 
