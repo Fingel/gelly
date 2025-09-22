@@ -23,6 +23,25 @@
             <child>
               <object class="AdwNavigationView" id="main_navigation">
                 <child>
+                  <object class="AdwNavigationPage" id="album_detail">
+                    <property name="title" translatable="yes">Album Detail</property>
+                    <child>
+                      <object class="GtkBox">
+                        <property name="orientation">1</property>
+                        <child>
+                          <object class="AdwHeaderBar">
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkLabel">
+                            <property name="label" translatable="yes">Album Detail</property>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <child>
                   <object class="AdwNavigationPage" id="main_window">
                     <property name="title" translatable="yes">Main</property>
                     <child>

@@ -43,6 +43,7 @@ impl Window {
         let imp = self.imp();
         imp.setup_stack
             .set_visible_child(&imp.main_navigation.get());
+        imp.main_navigation.replace(&[imp.main_window.get()]);
         self.get_application().refresh_library();
     }
 
@@ -103,7 +104,11 @@ mod imp {
         #[template_child]
         pub main_navigation: TemplateChild<adw::NavigationView>,
         #[template_child]
+        pub main_window: TemplateChild<adw::NavigationPage>,
+        #[template_child]
         pub album_list: TemplateChild<AlbumList>,
+        #[template_child]
+        pub album_detail: TemplateChild<adw::NavigationPage>,
     }
 
     #[glib::object_subclass]

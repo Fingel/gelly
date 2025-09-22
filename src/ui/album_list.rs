@@ -23,6 +23,7 @@ impl AlbumList {
     pub fn new() -> Self {
         Object::builder().build()
     }
+
     pub fn pull_albums(&self) {
         let library = self.get_application().library().clone();
         let albums = albums_from_library(&library.borrow());
@@ -35,6 +36,27 @@ impl AlbumList {
         for album in albums {
             store.append(&album);
         }
+    }
+
+    pub fn activate_album(&self, index: u32) {
+        // Next job: clean the F out of this.
+        let store = self
+            .imp()
+            .store
+            .get()
+            .expect("AlbumList store should be initialized.");
+        let album = store
+            .item(index)
+            .unwrap()
+            .downcast_ref::<AlbumData>()
+            .unwrap()
+            .clone();
+        dbg!(album.id());
+        let window = self.get_root_window();
+        window
+            .imp()
+            .main_navigation
+            .push(&window.imp().album_detail.get());
     }
 
     fn setup_model(&self) {
@@ -187,6 +209,14 @@ mod imp {
                             }
                         ),
                     );
+                }
+            ));
+
+            self.grid_view.connect_activate(glib::clone!(
+                #[weak(rename_to = album_list)]
+                self.obj(),
+                move |_, position| {
+                    album_list.activate_album(position);
                 }
             ));
         }
