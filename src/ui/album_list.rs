@@ -56,7 +56,7 @@ impl AlbumList {
         window
             .imp()
             .main_navigation
-            .push(&window.imp().album_detail.get());
+            .push(&window.imp().album_detail_page.get());
     }
 
     fn setup_model(&self) {

@@ -87,10 +87,10 @@ mod imp {
     };
     use log::{debug, warn};
 
-    use crate::application::Application;
     use crate::ui::album_list::AlbumList;
     use crate::ui::setup::Setup;
     use crate::ui::widget_ext::WidgetApplicationExt;
+    use crate::{application::Application, ui::album_detail::AlbumDetail};
 
     #[derive(CompositeTemplate, Default)]
     #[template(resource = "/io/m51/Gelly/ui/window.ui")]
@@ -108,7 +108,9 @@ mod imp {
         #[template_child]
         pub album_list: TemplateChild<AlbumList>,
         #[template_child]
-        pub album_detail: TemplateChild<adw::NavigationPage>,
+        pub album_detail_page: TemplateChild<adw::NavigationPage>,
+        #[template_child]
+        pub album_detail: TemplateChild<AlbumDetail>,
     }
 
     #[glib::object_subclass]
