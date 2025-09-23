@@ -39,24 +39,19 @@ impl AlbumList {
     }
 
     pub fn activate_album(&self, index: u32) {
-        // Next job: clean the F out of this.
         let store = self
             .imp()
             .store
             .get()
             .expect("AlbumList store should be initialized.");
-        let album = store
+        let album_data = store
             .item(index)
-            .unwrap()
+            .expect("Item index invalid")
             .downcast_ref::<AlbumData>()
-            .unwrap()
+            .expect("Item should be an AlbumData")
             .clone();
-        dbg!(album.id());
         let window = self.get_root_window();
-        window
-            .imp()
-            .main_navigation
-            .push(&window.imp().album_detail_page.get());
+        window.show_album_detail(&album_data);
     }
 
     fn setup_model(&self) {
@@ -134,6 +129,7 @@ impl AlbumList {
                         Ok(image_data) => {
                             album_widget.set_loading(false);
                             album_widget.set_album_image(&image_data);
+                            album_data.set_image_data(image_data);
                         }
                         Err(err) => {
                             warn!("Failed to load album art for {}: {}", album_data.id(), err);

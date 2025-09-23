@@ -1,4 +1,5 @@
 use crate::config::settings;
+use crate::models::album_data::AlbumData;
 use crate::{application::Application, ui::widget_ext::WidgetApplicationExt};
 use adw::subclass::prelude::ObjectSubclassIsExt;
 use glib::Object;
@@ -45,6 +46,12 @@ impl Window {
             .set_visible_child(&imp.main_navigation.get());
         imp.main_navigation.replace(&[imp.main_window.get()]);
         self.get_application().refresh_library();
+    }
+
+    pub fn show_album_detail(&self, album_data: &AlbumData) {
+        let imp = self.imp();
+        imp.main_navigation.push(&imp.album_detail_page.get());
+        imp.album_detail.set_album_data(album_data);
     }
 
     pub fn logout(&self) {

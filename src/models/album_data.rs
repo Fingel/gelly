@@ -1,6 +1,6 @@
 use crate::jellyfin::api::MusicDto;
 use glib::Object;
-use gtk::glib;
+use gtk::{glib, subclass::prelude::*};
 
 glib::wrapper! {
     pub struct AlbumData(ObjectSubclass<imp::AlbumData>);
@@ -35,6 +35,14 @@ impl AlbumData {
     /// Get all artists joined by ", "
     pub fn artists_string(&self) -> String {
         self.artists().join(", ")
+    }
+
+    pub fn set_image_data(&self, image_data: Vec<u8>) {
+        self.imp().image_data.replace(image_data);
+    }
+
+    pub fn image_data(&self) -> Vec<u8> {
+        self.imp().image_data.borrow().clone()
     }
 }
 
@@ -84,6 +92,8 @@ mod imp {
 
         #[property(get, set, name = "image-loaded")]
         pub image_loaded: RefCell<bool>,
+
+        pub image_data: RefCell<Vec<u8>>,
     }
 
     #[glib::object_subclass]

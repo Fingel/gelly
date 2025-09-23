@@ -8,8 +8,55 @@
       </object>
     </child>
     <child>
-      <object class="GtkLabel">
-        <property name="label" translatable="yes">Album Detail</property>
+      <object class="GtkBox">
+        <property name="orientation">vertical</property>
+        <child>
+          <object class="GtkBox">
+            <property name="halign">fill</property>
+            <property name="hexpand">True</property>
+            <property name="spacing">16</property>
+            <child>
+              <object class="GtkPicture" id="album_image">
+                <property name="width-request">200</property>
+                <property name="height-request">200</property>
+                <property name="can-shrink">true</property>
+                <property name="content-fit">cover</property>
+                <style>
+                  <class name="album-image"/>
+                </style>
+              </object>
+            </child>
+            <child>
+              <object class="GtkBox" id="album_info">
+                <property name="halign">center</property>
+                <property name="valign">start</property>
+                <property name="orientation">vertical</property>
+                <property name="margin-top">18</property>
+                <child>
+                  <object class="GtkLabel" id="name_label">
+                    <property name="focusable">False</property>
+                    <property name="halign">start</property>
+                    <property name="ellipsize">middle</property>
+                    <property name="margin-bottom">18</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="artist_label">
+                    <property name="focusable">False</property>
+                    <property name="halign">start</property>
+                    <property name="ellipsize">middle</property>
+                    <property name="margin-bottom">12</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="GtkLabel" id="placeholder_label">
+            <property name="label">Track list goes here</property>
+          </object>
+        </child>
       </object>
     </child>
   </template>

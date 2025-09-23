@@ -1,12 +1,7 @@
 use crate::models::album_data::AlbumData;
+use crate::ui::image_utils::bytes_to_texture;
 use glib::Object;
-use gtk::{
-    gdk::Texture,
-    gdk_pixbuf::{PixbufLoader, prelude::PixbufLoaderExt},
-    gio, glib,
-    prelude::WidgetExt,
-    subclass::prelude::*,
-};
+use gtk::{gio, glib, prelude::WidgetExt, subclass::prelude::*};
 use log::warn;
 
 glib::wrapper! {
@@ -28,7 +23,7 @@ impl Album {
     }
 
     pub fn set_album_image(&self, image_data: &[u8]) {
-        match self.bytes_to_texture(image_data) {
+        match bytes_to_texture(image_data) {
             Ok(texture) => {
                 self.imp().album_image.set_paintable(Some(&texture));
             }
@@ -56,19 +51,6 @@ impl Album {
         self.set_album_name(&album_data.name());
         self.set_artist_name(&album_data.artists_string());
         self.set_loading(album_data.image_loading());
-    }
-
-    fn bytes_to_texture(&self, image_data: &[u8]) -> Result<Texture, glib::Error> {
-        let loader = PixbufLoader::new();
-        loader.write(image_data)?;
-        loader.close()?;
-        match loader.pixbuf() {
-            Some(pixbuf) => Ok(Texture::for_pixbuf(&pixbuf)),
-            None => Err(glib::Error::new(
-                glib::FileError::Failed,
-                "Failed to create pixbuf from image data",
-            )),
-        }
     }
 }
 
