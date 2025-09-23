@@ -1,13 +1,6 @@
 use crate::models::album_data::AlbumData;
 use glib::Object;
-use gtk::{
-    gdk::Texture,
-    gdk_pixbuf::{PixbufLoader, prelude::PixbufLoaderExt},
-    gio, glib,
-    prelude::WidgetExt,
-    subclass::prelude::*,
-};
-use log::warn;
+use gtk::{gio, glib};
 
 glib::wrapper! {
     pub struct AlbumDetail(ObjectSubclass<imp::AlbumDetail>)
@@ -19,6 +12,8 @@ impl AlbumDetail {
     pub fn new() -> Self {
         Object::builder().build()
     }
+
+    pub fn set_album_data(&self, _album_data: &AlbumData) {}
 }
 
 impl Default for AlbumDetail {
