@@ -1,4 +1,8 @@
-use crate::{models::album_data::AlbumData, ui::image_utils::bytes_to_texture};
+use crate::{
+    library_utils::tracks_for_album,
+    models::album_data::AlbumData,
+    ui::{image_utils::bytes_to_texture, widget_ext::WidgetApplicationExt},
+};
 use glib::Object;
 use gtk::{gio, glib, subclass::prelude::*};
 use log::warn;
@@ -16,6 +20,7 @@ impl AlbumDetail {
 
     pub fn set_album_data(&self, album_data: &AlbumData) {
         let imp = self.imp();
+        imp.album_id.replace(album_data.id());
         imp.name_label.set_text(&album_data.name());
         imp.artist_label.set_text(&album_data.artists_string());
         if album_data.year() > 0 {
@@ -33,6 +38,13 @@ impl AlbumDetail {
                 }
             }
         }
+        self.pull_tracks();
+    }
+
+    pub fn pull_tracks(&self) {
+        let library = self.get_application().library().clone();
+        let tracks = tracks_for_album(&self.imp().album_id.borrow(), &library.borrow());
+        dbg!(tracks);
     }
 }
 
@@ -43,6 +55,8 @@ impl Default for AlbumDetail {
 }
 
 mod imp {
+    use std::cell::RefCell;
+
     use adw::subclass::prelude::*;
     use glib::subclass::InitializingObject;
     use gtk::{
@@ -61,6 +75,8 @@ mod imp {
         pub artist_label: TemplateChild<gtk::Label>,
         #[template_child]
         pub year_label: TemplateChild<gtk::Label>,
+
+        pub album_id: RefCell<String>,
     }
 
     #[glib::object_subclass]
