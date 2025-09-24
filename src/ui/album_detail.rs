@@ -18,6 +18,11 @@ impl AlbumDetail {
         let imp = self.imp();
         imp.name_label.set_text(&album_data.name());
         imp.artist_label.set_text(&album_data.artists_string());
+        if album_data.year() > 0 {
+            imp.year_label.set_text(&album_data.year().to_string());
+        } else {
+            imp.year_label.set_text("");
+        }
         if !album_data.image_data().is_empty() {
             match bytes_to_texture(&album_data.image_data()) {
                 Ok(texture) => {
@@ -54,6 +59,8 @@ mod imp {
         pub name_label: TemplateChild<gtk::Label>,
         #[template_child]
         pub artist_label: TemplateChild<gtk::Label>,
+        #[template_child]
+        pub year_label: TemplateChild<gtk::Label>,
     }
 
     #[glib::object_subclass]

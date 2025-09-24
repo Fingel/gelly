@@ -14,6 +14,7 @@ impl AlbumData {
         artists: Vec<String>,
         date_created: &str,
         image_tag: &str,
+        year: &Option<u32>,
     ) -> Self {
         Object::builder()
             .property("name", name)
@@ -23,6 +24,7 @@ impl AlbumData {
             .property("image-tag", image_tag)
             .property("image-loading", false)
             .property("image-loaded", false)
+            .property("year", year.unwrap_or(0))
             .build()
     }
 
@@ -60,6 +62,7 @@ impl From<&MusicDto> for AlbumData {
             artists,
             &dto.date_created,
             &dto.album_primary_image_tag,
+            &dto.production_year,
         )
     }
 }
@@ -83,6 +86,9 @@ mod imp {
 
         #[property(get, set, name = "date-created")]
         pub date_created: RefCell<String>,
+
+        #[property(get, set)]
+        pub year: RefCell<u32>,
 
         #[property(get, set, name = "image-tag")]
         pub image_tag: RefCell<String>,
