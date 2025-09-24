@@ -1,5 +1,5 @@
 dev: schemas
-    RUST_LOG=debug cargo run
+    RUST_LOG="debug,glycin=off,glycin_utils=off" cargo run
 
 schemas:
     mkdir -p ~/.local/share/glib-2.0/schemas
