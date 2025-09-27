@@ -1,7 +1,7 @@
 use crate::{
     library_utils::tracks_for_album,
     models::album_data::AlbumData,
-    ui::{image_utils::bytes_to_texture, widget_ext::WidgetApplicationExt},
+    ui::{image_utils::bytes_to_texture, song::Song, widget_ext::WidgetApplicationExt},
 };
 use glib::Object;
 use gtk::{gio, glib, subclass::prelude::*};
@@ -44,7 +44,13 @@ impl AlbumDetail {
     pub fn pull_tracks(&self) {
         let library = self.get_application().library().clone();
         let tracks = tracks_for_album(&self.imp().album_id.borrow(), &library.borrow());
-        dbg!(tracks);
+        let track_list = &self.imp().track_list;
+        track_list.remove_all();
+        for track in tracks {
+            let song_widget = Song::new();
+            song_widget.set_song_data(&track);
+            track_list.append(&song_widget);
+        }
     }
 }
 
@@ -75,6 +81,8 @@ mod imp {
         pub artist_label: TemplateChild<gtk::Label>,
         #[template_child]
         pub year_label: TemplateChild<gtk::Label>,
+        #[template_child]
+        pub track_list: TemplateChild<gtk::ListBox>,
 
         pub album_id: RefCell<String>,
     }

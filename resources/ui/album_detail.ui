@@ -76,8 +76,13 @@
               </object>
             </child>
             <child>
-              <object class="GtkLabel" id="placeholder_label">
-                <property name="label">Track list goes here</property>
+              <object class="GtkListBox" id="track_list">
+                <property name="selection-mode">none</property>
+                <property name="margin-top">24</property>
+                <property name="width-request">300</property>
+                <style>
+                  <class name="boxed-list"/>
+                </style>
               </object>
             </child>
           </object>

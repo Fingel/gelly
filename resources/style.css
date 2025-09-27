@@ -1,3 +1,7 @@
 .album-image {
     border-radius: 12px;
 }
+
+.song {
+    padding: 12px;
+}
