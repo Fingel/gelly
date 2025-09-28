@@ -16,6 +16,7 @@ impl Song {
 
     pub fn set_song_data(&self, song: &MusicDto) {
         let imp = self.imp();
+        imp.item_id.replace(Some(song.id.clone()));
         imp.title_label.set_label(&song.name);
         imp.number_label.set_label(&song.index_number.to_string());
         imp.duration_label
@@ -39,12 +40,11 @@ fn format_duration(ticks: u64) -> String {
 }
 
 mod imp {
+    use std::cell::RefCell;
+
     use adw::subclass::prelude::*;
     use glib::subclass::InitializingObject;
-    use gtk::{
-        CompositeTemplate,
-        glib::{self},
-    };
+    use gtk::{CompositeTemplate, glib};
 
     #[derive(CompositeTemplate, Default)]
     #[template(resource = "/io/m51/Gelly/ui/song.ui")]
@@ -55,6 +55,10 @@ mod imp {
         pub number_label: TemplateChild<gtk::Label>,
         #[template_child]
         pub duration_label: TemplateChild<gtk::Label>,
+        #[template_child]
+        pub play_button: TemplateChild<gtk::Button>,
+
+        pub item_id: RefCell<Option<String>>,
     }
 
     #[glib::object_subclass]

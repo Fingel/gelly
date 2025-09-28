@@ -8,7 +8,7 @@ use std::sync::OnceLock;
 
 use crate::{
     audio::player::{AudioPlayer, PlayerEvent, PlayerState},
-    jellyfin::{Jellyfin, api::MusicDto},
+    jellyfin::Jellyfin,
 };
 
 glib::wrapper! {
@@ -64,19 +64,12 @@ impl AudioModel {
         });
     }
 
-    pub fn play_track(&self, track: &MusicDto, jellyfin: &Jellyfin) {
+    pub fn play_track(&self, track: &str, jellyfin: &Jellyfin) {
         if let Some(player) = self.imp().player.borrow().as_ref() {
-            let stream_url = jellyfin.get_stream_uri(&track.id);
-            self.set_property("current-song-title", &track.name);
-            self.set_property(
-                "current-song-artist",
-                track
-                    .artist_items
-                    .first()
-                    .map(|a| a.name.as_str())
-                    .unwrap_or("Unknown"),
-            );
-            self.set_property("current-song-album", &track.album);
+            let stream_url = jellyfin.get_stream_uri(track);
+            self.set_property("current-song-title", "NAME_TODO");
+            self.set_property("current-song-artist", "ARTIST_TODO");
+            self.set_property("current-song-album", "ALBUM_TODO");
 
             // Reset position/duration
             self.set_property("position", 0u32);
@@ -143,6 +136,9 @@ mod imp {
     pub struct AudioModel {
         #[property(get, set)]
         pub playing: Cell<bool>,
+
+        #[property(get, set)]
+        pub paused: Cell<bool>,
 
         #[property(get, set)]
         pub loading: Cell<bool>,

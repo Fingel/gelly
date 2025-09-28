@@ -119,11 +119,15 @@ impl Jellyfin {
     }
 
     pub fn get_stream_uri(&self, item_id: &str) -> String {
+        // TODO figure out what containers to actually prioritize
+        let containers =
+            "opus,webm|opus,mp3,aac,m4a|aac,m4a|alac,m4b|aac,flac,webma,webm|webma,wav,ogg";
         format!(
-            "{}/Audio/{item_id}/universal?api_key={}&userId={}",
+            "{}/Audio/{item_id}/universal?api_key={}&userId={}&container={}",
             self.host.trim_end_matches("/"),
             self.token,
-            self.user_id
+            self.user_id,
+            containers
         )
     }
 

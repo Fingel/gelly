@@ -28,6 +28,7 @@ impl Application {
         app.load_settings();
         app.initialize_jellyfin();
         app.initialize_image_cache();
+        app.initialize_audio_model();
         app
     }
 
@@ -154,7 +155,7 @@ impl Application {
         config::logout();
     }
 
-    pub fn play_track(&self, track: &MusicDto) {
+    pub fn play_track(&self, track: &str) {
         if let Some(audio_model) = self.audio_model() {
             audio_model.play_track(track, &self.jellyfin());
         }

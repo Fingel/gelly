@@ -52,6 +52,12 @@ impl AlbumDetail {
             track_list.append(&song_widget);
         }
     }
+
+    pub fn play_song(&self, item_id: &str) {
+        // TODO set playlist for all remaining tracks here
+        let app = self.get_application();
+        app.play_track(item_id);
+    }
 }
 
 impl Default for AlbumDetail {
@@ -67,8 +73,11 @@ mod imp {
     use glib::subclass::InitializingObject;
     use gtk::{
         CompositeTemplate,
-        glib::{self},
+        glib::{self, object::Cast},
     };
+    use log::warn;
+
+    use crate::ui::song::Song;
 
     #[derive(CompositeTemplate, Default)]
     #[template(resource = "/io/m51/Gelly/ui/album_detail.ui")]
@@ -102,6 +111,28 @@ mod imp {
         }
     }
     impl BoxImpl for AlbumDetail {}
-    impl ObjectImpl for AlbumDetail {}
+    impl ObjectImpl for AlbumDetail {
+        fn constructed(&self) {
+            self.parent_constructed();
+            self.setup_signals();
+        }
+    }
     impl WidgetImpl for AlbumDetail {}
+
+    impl AlbumDetail {
+        fn setup_signals(&self) {
+            self.track_list.connect_row_activated(glib::clone!(
+                #[weak(rename_to=imp)]
+                self,
+                move |_track_list, row| {
+                    let song = row.downcast_ref::<Song>().unwrap();
+                    if let Some(id) = song.imp().item_id.borrow().clone() {
+                        imp.obj().play_song(&id);
+                    } else {
+                        warn!("Song ID is missing");
+                    }
+                }
+            ));
+        }
+    }
 }
