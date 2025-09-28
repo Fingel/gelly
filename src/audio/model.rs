@@ -8,7 +8,7 @@ use std::sync::OnceLock;
 
 use crate::{
     audio::player::{AudioPlayer, PlayerEvent, PlayerState},
-    jellyfin::Jellyfin,
+    models::song_data::SongData,
 };
 
 glib::wrapper! {
@@ -19,6 +19,10 @@ impl AudioModel {
     pub fn new() -> Self {
         let obj: Self = Object::builder().build();
         obj.initialize_player();
+        obj.set_playlist_index(-1);
+        // TODO set these from settings
+        obj.set_volume(1.0);
+        obj.set_muted(false);
         obj
     }
 
@@ -64,20 +68,27 @@ impl AudioModel {
         });
     }
 
-    pub fn play_track(&self, track: &str, jellyfin: &Jellyfin) {
-        if let Some(player) = self.imp().player.borrow().as_ref() {
-            let stream_url = jellyfin.get_stream_uri(track);
-            self.set_property("current-song-title", "NAME_TODO");
-            self.set_property("current-song-artist", "ARTIST_TODO");
-            self.set_property("current-song-album", "ALBUM_TODO");
+    pub fn set_playlist(&self, songs: Vec<SongData>, start_index: usize) {
+        self.imp().playlist.replace(songs);
+        self.set_playlist_index(start_index as i32);
+        self.play_current_song();
+    }
 
-            // Reset position/duration
-            self.set_property("position", 0u32);
-            self.set_property("duration", 0u32);
-            self.set_property("loading", true);
-
-            player.set_uri(&stream_url);
-            player.play();
+    fn play_current_song(&self) {
+        if let Some(current_song) = self.current_song() {
+            let stream_uri: String = self.emit_by_name("request-stream-uri", &[&current_song.id()]);
+            if stream_uri.is_empty() {
+                self.emit_by_name::<()>("error", &[&"Failed to get stream URI".to_string()]);
+                return;
+            }
+            if let Some(player) = self.imp().player.borrow().as_ref() {
+                self.set_property("position", 0u32);
+                self.set_property("duration", 0u32);
+                self.set_property("loading", true);
+                player.stop();
+                player.set_uri(&stream_uri);
+                player.play();
+            }
         }
     }
 
@@ -96,9 +107,6 @@ impl AudioModel {
     pub fn stop(&self) {
         if let Some(player) = self.imp().player.borrow().as_ref() {
             player.stop();
-            self.set_property("current-song-title", "");
-            self.set_property("current-song-artist", "");
-            self.set_property("current-song-album", "");
             self.set_property("position", 0u32);
             self.set_property("duration", 0u32);
         }
@@ -118,6 +126,27 @@ impl AudioModel {
             self.play();
         }
     }
+
+    pub fn current_song(&self) -> Option<SongData> {
+        let index = self.imp().playlist_index.get();
+        if index >= 0 {
+            self.imp().playlist.borrow().get(index as usize).cloned()
+        } else {
+            None
+        }
+    }
+
+    pub fn current_song_title(&self) -> String {
+        self.current_song().map(|s| s.title()).unwrap_or_default()
+    }
+
+    pub fn current_song_artists(&self) -> Vec<String> {
+        self.current_song().map(|s| s.artists()).unwrap_or_default()
+    }
+
+    pub fn current_song_album(&self) -> String {
+        self.current_song().map(|s| s.album()).unwrap_or_default()
+    }
 }
 
 impl Default for AudioModel {
@@ -127,13 +156,16 @@ impl Default for AudioModel {
 }
 
 mod imp {
-    use crate::audio::player::AudioPlayer;
+    use crate::{audio::player::AudioPlayer, models::song_data::SongData};
 
     use super::*;
 
     #[derive(Properties, Default)]
     #[properties(wrapper_type = super::AudioModel)]
     pub struct AudioModel {
+        #[property(get, set)]
+        pub playlist_index: Cell<i32>,
+
         #[property(get, set)]
         pub playing: Cell<bool>,
 
@@ -155,16 +187,8 @@ mod imp {
         #[property(get, set)]
         pub muted: Cell<bool>,
 
-        #[property(get, set, name = "current-song-title")]
-        pub current_song_title: RefCell<String>,
-
-        #[property(get, set, name = "current-song-artist")]
-        pub current_song_artist: RefCell<String>,
-
-        #[property(get, set, name = "current-song-album")]
-        pub current_song_album: RefCell<String>,
-
         pub player: RefCell<Option<AudioPlayer>>,
+        pub playlist: RefCell<Vec<SongData>>,
     }
     #[glib::object_subclass]
     impl ObjectSubclass for AudioModel {
@@ -185,6 +209,10 @@ mod imp {
                     glib::subclass::Signal::builder("song-finished").build(),
                     glib::subclass::Signal::builder("error")
                         .param_types([String::static_type()])
+                        .build(),
+                    glib::subclass::Signal::builder("request-stream-uri")
+                        .param_types([String::static_type()])
+                        .return_type::<String>()
                         .build(),
                 ]
             })

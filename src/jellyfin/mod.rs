@@ -11,6 +11,7 @@ use thiserror::Error;
 use crate::jellyfin::api::{LibraryDtoList, MusicDtoList};
 
 pub mod api;
+pub mod utils;
 
 static CLIENT_ID: &str = "Gelly"; //TODO: get this from the gtk app config
 static VERSION: &str = "0.1"; //TODO: get this from build script?

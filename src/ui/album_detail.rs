@@ -1,6 +1,6 @@
 use crate::{
     library_utils::tracks_for_album,
-    models::album_data::AlbumData,
+    models::{album_data::AlbumData, song_data::SongData},
     ui::{image_utils::bytes_to_texture, song::Song, widget_ext::WidgetApplicationExt},
 };
 use glib::Object;
@@ -44,19 +44,25 @@ impl AlbumDetail {
     pub fn pull_tracks(&self) {
         let library = self.get_application().library().clone();
         let tracks = tracks_for_album(&self.imp().album_id.borrow(), &library.borrow());
+        let songs: Vec<SongData> = tracks.iter().map(SongData::from).collect();
         let track_list = &self.imp().track_list;
         track_list.remove_all();
-        for track in tracks {
+        for song in &songs {
             let song_widget = Song::new();
-            song_widget.set_song_data(&track);
+            song_widget.set_song_data(song);
             track_list.append(&song_widget);
         }
+        self.imp().songs.replace(songs);
     }
 
-    pub fn play_song(&self, item_id: &str) {
-        // TODO set playlist for all remaining tracks here
-        let app = self.get_application();
-        app.play_track(item_id);
+    pub fn song_selected(&self, index: usize) {
+        let songs = self.imp().songs.borrow().clone();
+        if let Some(audio_model) = self.get_application().audio_model() {
+            audio_model.set_playlist(songs, index);
+        } else {
+            self.toast("Audio model not initialized, please restart", None);
+            warn!("No audio model found");
+        }
     }
 }
 
@@ -73,11 +79,11 @@ mod imp {
     use glib::subclass::InitializingObject;
     use gtk::{
         CompositeTemplate,
-        glib::{self, object::Cast},
+        glib::{self},
+        prelude::*,
     };
-    use log::warn;
 
-    use crate::ui::song::Song;
+    use crate::models::song_data::SongData;
 
     #[derive(CompositeTemplate, Default)]
     #[template(resource = "/io/m51/Gelly/ui/album_detail.ui")]
@@ -94,6 +100,7 @@ mod imp {
         pub track_list: TemplateChild<gtk::ListBox>,
 
         pub album_id: RefCell<String>,
+        pub songs: RefCell<Vec<SongData>>,
     }
 
     #[glib::object_subclass]
@@ -125,12 +132,9 @@ mod imp {
                 #[weak(rename_to=imp)]
                 self,
                 move |_track_list, row| {
-                    let song = row.downcast_ref::<Song>().unwrap();
-                    if let Some(id) = song.imp().item_id.borrow().clone() {
-                        imp.obj().play_song(&id);
-                    } else {
-                        warn!("Song ID is missing");
-                    }
+                    dbg!("What happened>?");
+                    let index = row.index();
+                    imp.obj().song_selected(index as usize);
                 }
             ));
         }

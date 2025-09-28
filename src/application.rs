@@ -67,18 +67,15 @@ impl Application {
 
     pub fn initialize_audio_model(&self) {
         let audio_model = AudioModel::new();
-        // TODO: probably dont need these or get from settings
-        audio_model.imp().set_volume(1.0);
-        audio_model.imp().set_muted(false);
 
         audio_model.connect_closure(
-            "song-finished",
+            "request-stream-uri",
             false,
             glib::closure_local!(
                 #[weak(rename_to = app)]
                 self,
-                move |_audio_model: AudioModel| {
-                    app.play_next_track();
+                move |_audio_model: AudioModel, song_id: &str| -> String {
+                    app.jellyfin().get_stream_uri(song_id)
                 }
             ),
         );
@@ -153,17 +150,6 @@ impl Application {
             .set_string("library-id", "")
             .expect("Failed to clear library ID");
         config::logout();
-    }
-
-    pub fn play_track(&self, track: &str) {
-        if let Some(audio_model) = self.audio_model() {
-            audio_model.play_track(track, &self.jellyfin());
-        }
-    }
-
-    fn play_next_track(&self) {
-        // Todo playlist handling
-        dbg!("Playing next track...");
     }
 }
 

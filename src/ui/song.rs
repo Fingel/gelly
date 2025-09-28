@@ -1,7 +1,7 @@
 use glib::Object;
 use gtk::{gio, glib, subclass::prelude::*};
 
-use crate::jellyfin::api::MusicDto;
+use crate::{jellyfin::utils::format_duration, models::song_data::SongData};
 
 glib::wrapper! {
     pub struct Song(ObjectSubclass<imp::Song>)
@@ -14,13 +14,13 @@ impl Song {
         Object::builder().build()
     }
 
-    pub fn set_song_data(&self, song: &MusicDto) {
+    pub fn set_song_data(&self, song: &SongData) {
         let imp = self.imp();
-        imp.item_id.replace(Some(song.id.clone()));
-        imp.title_label.set_label(&song.name);
-        imp.number_label.set_label(&song.index_number.to_string());
+        imp.item_id.replace(Some(song.id()));
+        imp.title_label.set_label(&song.title());
+        imp.number_label.set_label(&song.track_number().to_string());
         imp.duration_label
-            .set_label(&format_duration(song.run_time_ticks));
+            .set_label(&format_duration(song.duration()));
     }
 }
 
@@ -28,15 +28,6 @@ impl Default for Song {
     fn default() -> Self {
         Self::new()
     }
-}
-
-fn format_duration(ticks: u64) -> String {
-    // Jellyfin ticks are in 100-nanosecond intervals
-    // 1 second = 10,000,000 ticks
-    let seconds = ticks / 10_000_000;
-    let minutes = seconds / 60;
-    let remaining_seconds = seconds % 60;
-    format!("{}:{:02}", minutes, remaining_seconds)
 }
 
 mod imp {
