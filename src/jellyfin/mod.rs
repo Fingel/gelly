@@ -118,6 +118,15 @@ impl Jellyfin {
         self.handle_binary_response(response).await
     }
 
+    pub fn get_stream_uri(&self, item_id: &str) -> String {
+        format!(
+            "{}/Audio/{item_id}/universal?api_key={}&userId={}",
+            self.host.trim_end_matches("/"),
+            self.token,
+            self.user_id
+        )
+    }
+
     fn get_hostname(&self) -> &'static str {
         static HOSTNAME: OnceLock<String> = OnceLock::new();
         HOSTNAME.get_or_init(|| {

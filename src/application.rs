@@ -5,6 +5,7 @@ use gtk::prelude::ObjectExt;
 use gtk::{gio, glib};
 
 use crate::async_utils::spawn_tokio;
+use crate::audio::model::AudioModel;
 use crate::cache::ImageCache;
 use crate::config::{self, retrieve_jellyfin_api_token, settings};
 use crate::jellyfin::api::{MusicDto, MusicDtoList};
@@ -63,6 +64,43 @@ impl Application {
         }
     }
 
+    pub fn initialize_audio_model(&self) {
+        let audio_model = AudioModel::new();
+        // TODO: probably dont need these or get from settings
+        audio_model.imp().set_volume(1.0);
+        audio_model.imp().set_muted(false);
+
+        audio_model.connect_closure(
+            "song-finished",
+            false,
+            glib::closure_local!(
+                #[weak(rename_to = app)]
+                self,
+                move |_audio_model: AudioModel| {
+                    app.play_next_track();
+                }
+            ),
+        );
+
+        audio_model.connect_closure(
+            "error",
+            false,
+            glib::closure_local!(
+                #[weak(rename_to = app)]
+                self,
+                move |_audio_model: AudioModel, error: String| {
+                    log::error!("Audio error: {}", error);
+                    app.emit_by_name::<()>(
+                        "global-error",
+                        &[&format!("Playback error: {}", error)],
+                    );
+                }
+            ),
+        );
+
+        self.imp().audio_model.replace(Some(audio_model));
+    }
+
     pub fn jellyfin(&self) -> Jellyfin {
         self.imp().jellyfin.borrow().clone()
     }
@@ -73,6 +111,10 @@ impl Application {
 
     pub fn image_cache(&self) -> Option<ImageCache> {
         self.imp().image_cache.borrow().clone()
+    }
+
+    pub fn audio_model(&self) -> Option<AudioModel> {
+        self.imp().audio_model.borrow().clone()
     }
 
     pub fn refresh_library(&self) {
@@ -111,6 +153,17 @@ impl Application {
             .expect("Failed to clear library ID");
         config::logout();
     }
+
+    pub fn play_track(&self, track: &MusicDto) {
+        if let Some(audio_model) = self.audio_model() {
+            audio_model.play_track(track, &self.jellyfin());
+        }
+    }
+
+    fn play_next_track(&self) {
+        // Todo playlist handling
+        dbg!("Playing next track...");
+    }
 }
 
 impl Default for Application {
@@ -128,6 +181,7 @@ mod imp {
     use std::rc::Rc;
     use std::sync::OnceLock;
 
+    use crate::audio::model::AudioModel;
     use crate::cache::ImageCache;
     use crate::jellyfin::Jellyfin;
     use crate::jellyfin::api::MusicDto;
@@ -138,6 +192,7 @@ mod imp {
         pub library: Rc<RefCell<Vec<MusicDto>>>,
         pub library_id: RefCell<String>,
         pub image_cache: RefCell<Option<ImageCache>>,
+        pub audio_model: RefCell<Option<AudioModel>>,
     }
 
     #[glib::object_subclass]
