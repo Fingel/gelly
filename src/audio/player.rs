@@ -130,8 +130,8 @@ impl AudioPlayer {
             while let Some(msg) = messages.next().await {
                 match msg.view() {
                     gst::MessageView::StateChanged(state_changed) => {
-                        // Only handle pipeline state changes
-                        // TODO: Why do we need this?
+                        // Only handle pipeline-level state changes to avoid duplicate notifications
+                        // Individual elements also emit state changes, but we only care about the overall pipeline state
                         if let Some(source) = state_changed.src()
                             && source.type_() == gst::Pipeline::static_type()
                         {
