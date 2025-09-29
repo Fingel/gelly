@@ -21,6 +21,7 @@ pub enum PlayerEvent {
     DurationChanged(u64),
 }
 
+#[derive(Debug)]
 pub struct AudioPlayer {
     pipeline: gst::Pipeline,
     playbin: gst::Element,

@@ -29,7 +29,10 @@ impl AudioModel {
 
     fn initialize_player(&self) {
         let (player, event_reciever) = AudioPlayer::new();
-        self.imp().player.replace(Some(player));
+        self.imp()
+            .player
+            .set(player)
+            .expect("Player should only be initialized once");
 
         let obj_weak = self.downgrade();
         glib::spawn_future_local(async move {
@@ -70,6 +73,22 @@ impl AudioModel {
         });
     }
 
+    fn player(&self) -> &AudioPlayer {
+        self.imp()
+            .player
+            .get()
+            .expect("Player should be initialized")
+    }
+
+    fn stream_uri(&self, song_id: &str) -> String {
+        let uri: String = self.emit_by_name("request-stream-uri", &[&song_id]);
+        if uri.is_empty() {
+            self.emit_by_name::<()>("error", &[&"Failed to get stream URI".to_string()]);
+            return String::new();
+        }
+        uri
+    }
+
     pub fn set_playlist(&self, songs: Vec<SongModel>, start_index: usize) {
         self.imp().playlist.replace(songs);
         self.load_song(start_index as i32);
@@ -78,61 +97,46 @@ impl AudioModel {
 
     fn load_song(&self, index: i32) {
         if let Some(song) = self.imp().playlist.borrow().get(index as usize).cloned() {
-            let stream_uri: String = self.emit_by_name("request-stream-uri", &[&song.id()]);
-            if stream_uri.is_empty() {
-                self.emit_by_name::<()>("error", &[&"Failed to get stream URI".to_string()]);
-                return;
-            }
-            if let Some(player) = self.imp().player.borrow().as_ref() {
-                player.stop();
-                self.set_property("position", 0u32);
-                self.set_property("duration", 0u32);
-                self.set_property("loading", true);
-                self.set_playlist_index(index);
-                player.set_uri(&stream_uri);
-            }
+            let stream_uri = self.stream_uri(&song.id());
+            let player = self.player();
+            player.stop();
+            self.set_property("position", 0u32);
+            self.set_property("duration", 0u32);
+            self.set_property("loading", true);
+            self.set_playlist_index(index);
+            player.set_uri(&stream_uri);
         } else {
             warn!("Failed to load song at index {}", index);
         }
     }
 
     pub fn next(&self) {
-        if let Some(_current_song) = self.current_song() {
-            let next_index = self.playlist_index() + 1;
-            if next_index < self.imp().playlist.borrow().len() as i32 {
-                self.load_song(next_index);
-                self.play();
-            } else {
-                self.emit_by_name::<()>("playlist-finished", &[]);
-            }
+        let next_index = self.playlist_index() + 1;
+        if next_index < self.imp().playlist.borrow().len() as i32 {
+            self.load_song(next_index);
+            self.play();
+        } else {
+            self.emit_by_name::<()>("playlist-finished", &[]);
         }
     }
 
     pub fn play(&self) {
-        if let Some(player) = self.imp().player.borrow().as_ref() {
-            player.play();
-        }
+        self.player().play();
     }
 
     pub fn pause(&self) {
-        if let Some(player) = self.imp().player.borrow().as_ref() {
-            player.pause();
-        }
+        self.player().pause();
     }
 
     pub fn stop(&self) {
-        if let Some(player) = self.imp().player.borrow().as_ref() {
-            player.stop();
-            self.set_property("position", 0u32);
-            self.set_property("duration", 0u32);
-        }
+        self.player().stop();
+        self.set_property("position", 0u32);
+        self.set_property("duration", 0u32);
     }
 
     pub fn seek(&self, position: u32) {
-        if let Some(player) = self.imp().player.borrow().as_ref() {
-            player.seek(position as u64);
-            self.set_property("position", position);
-        }
+        self.player().seek(position as u64);
+        self.set_property("position", position);
     }
 
     pub fn toggle_play_pause(&self) {
@@ -172,6 +176,8 @@ impl Default for AudioModel {
 }
 
 mod imp {
+    use std::cell::OnceCell;
+
     use crate::{audio::player::AudioPlayer, models::SongModel};
 
     use super::*;
@@ -203,7 +209,7 @@ mod imp {
         #[property(get, set)]
         pub muted: Cell<bool>,
 
-        pub player: RefCell<Option<AudioPlayer>>,
+        pub player: OnceCell<AudioPlayer>,
         pub playlist: RefCell<Vec<SongModel>>,
     }
     #[glib::object_subclass]
@@ -241,7 +247,7 @@ mod imp {
             let clamped_volume = volume.clamp(0.0, 1.0);
             self.volume.set(clamped_volume);
 
-            if let Some(player) = self.player.borrow().as_ref() {
+            if let Some(player) = self.player.get() {
                 player.set_volume(clamped_volume);
             }
         }
@@ -249,7 +255,7 @@ mod imp {
         pub fn set_muted(&self, muted: bool) {
             self.muted.set(muted);
 
-            if let Some(player) = self.player.borrow().as_ref() {
+            if let Some(player) = self.player.get() {
                 player.set_mute(muted);
             }
         }
