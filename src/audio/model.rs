@@ -3,6 +3,7 @@ use gtk::{
     prelude::*,
     subclass::prelude::*,
 };
+use log::warn;
 use std::cell::{Cell, RefCell};
 use std::sync::OnceLock;
 
@@ -57,6 +58,7 @@ impl AudioModel {
                         obj.set_property("duration", dur as u32);
                     }
                     PlayerEvent::EndOfStream => {
+                        obj.next();
                         obj.emit_by_name::<()>("song-finished", &[]);
                     }
                     PlayerEvent::Error(err) => {
@@ -70,24 +72,38 @@ impl AudioModel {
 
     pub fn set_playlist(&self, songs: Vec<SongModel>, start_index: usize) {
         self.imp().playlist.replace(songs);
-        self.set_playlist_index(start_index as i32);
-        self.play_current_song();
+        self.load_song(start_index as i32);
+        self.play();
     }
 
-    fn play_current_song(&self) {
-        if let Some(current_song) = self.current_song() {
-            let stream_uri: String = self.emit_by_name("request-stream-uri", &[&current_song.id()]);
+    fn load_song(&self, index: i32) {
+        if let Some(song) = self.imp().playlist.borrow().get(index as usize).cloned() {
+            let stream_uri: String = self.emit_by_name("request-stream-uri", &[&song.id()]);
             if stream_uri.is_empty() {
                 self.emit_by_name::<()>("error", &[&"Failed to get stream URI".to_string()]);
                 return;
             }
             if let Some(player) = self.imp().player.borrow().as_ref() {
+                player.stop();
                 self.set_property("position", 0u32);
                 self.set_property("duration", 0u32);
                 self.set_property("loading", true);
-                player.stop();
+                self.set_playlist_index(index);
                 player.set_uri(&stream_uri);
-                player.play();
+            }
+        } else {
+            warn!("Failed to load song at index {}", index);
+        }
+    }
+
+    pub fn next(&self) {
+        if let Some(_current_song) = self.current_song() {
+            let next_index = self.playlist_index() + 1;
+            if next_index < self.imp().playlist.borrow().len() as i32 {
+                self.load_song(next_index);
+                self.play();
+            } else {
+                self.emit_by_name::<()>("playlist-finished", &[]);
             }
         }
     }
@@ -207,6 +223,7 @@ mod imp {
                     glib::subclass::Signal::builder("pause").build(),
                     glib::subclass::Signal::builder("stop").build(),
                     glib::subclass::Signal::builder("song-finished").build(),
+                    glib::subclass::Signal::builder("playlist-finished").build(),
                     glib::subclass::Signal::builder("error")
                         .param_types([String::static_type()])
                         .build(),
