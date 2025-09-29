@@ -8,7 +8,7 @@ use std::sync::OnceLock;
 
 use crate::{
     audio::player::{AudioPlayer, PlayerEvent, PlayerState},
-    models::song_data::SongData,
+    models::SongModel,
 };
 
 glib::wrapper! {
@@ -68,7 +68,7 @@ impl AudioModel {
         });
     }
 
-    pub fn set_playlist(&self, songs: Vec<SongData>, start_index: usize) {
+    pub fn set_playlist(&self, songs: Vec<SongModel>, start_index: usize) {
         self.imp().playlist.replace(songs);
         self.set_playlist_index(start_index as i32);
         self.play_current_song();
@@ -127,7 +127,7 @@ impl AudioModel {
         }
     }
 
-    pub fn current_song(&self) -> Option<SongData> {
+    pub fn current_song(&self) -> Option<SongModel> {
         let index = self.imp().playlist_index.get();
         if index >= 0 {
             self.imp().playlist.borrow().get(index as usize).cloned()
@@ -156,7 +156,7 @@ impl Default for AudioModel {
 }
 
 mod imp {
-    use crate::{audio::player::AudioPlayer, models::song_data::SongData};
+    use crate::{audio::player::AudioPlayer, models::SongModel};
 
     use super::*;
 
@@ -188,7 +188,7 @@ mod imp {
         pub muted: Cell<bool>,
 
         pub player: RefCell<Option<AudioPlayer>>,
-        pub playlist: RefCell<Vec<SongData>>,
+        pub playlist: RefCell<Vec<SongModel>>,
     }
     #[glib::object_subclass]
     impl ObjectSubclass for AudioModel {

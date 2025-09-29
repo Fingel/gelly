@@ -1,6 +1,6 @@
 use crate::{
     library_utils::tracks_for_album,
-    models::{AlbumModel, song_data::SongData},
+    models::{AlbumModel, SongModel},
     ui::{image_utils::bytes_to_texture, song::Song, widget_ext::WidgetApplicationExt},
 };
 use glib::Object;
@@ -44,7 +44,7 @@ impl AlbumDetail {
     pub fn pull_tracks(&self) {
         let library = self.get_application().library().clone();
         let tracks = tracks_for_album(&self.imp().album_id.borrow(), &library.borrow());
-        let songs: Vec<SongData> = tracks.iter().map(SongData::from).collect();
+        let songs: Vec<SongModel> = tracks.iter().map(SongModel::from).collect();
         let track_list = &self.imp().track_list;
         track_list.remove_all();
         for song in &songs {
@@ -83,7 +83,7 @@ mod imp {
         prelude::*,
     };
 
-    use crate::models::song_data::SongData;
+    use crate::models::SongModel;
 
     #[derive(CompositeTemplate, Default)]
     #[template(resource = "/io/m51/Gelly/ui/album_detail.ui")]
@@ -100,7 +100,7 @@ mod imp {
         pub track_list: TemplateChild<gtk::ListBox>,
 
         pub album_id: RefCell<String>,
-        pub songs: RefCell<Vec<SongData>>,
+        pub songs: RefCell<Vec<SongModel>>,
     }
 
     #[glib::object_subclass]

@@ -3,10 +3,10 @@ use glib::Object;
 use gtk::glib;
 
 glib::wrapper! {
-    pub struct SongData(ObjectSubclass<imp::SongData>);
+    pub struct SongModel(ObjectSubclass<imp::SongData>);
 }
 
-impl SongData {
+impl SongModel {
     pub fn new(
         id: &str,
         title: &str,
@@ -28,7 +28,7 @@ impl SongData {
     }
 }
 
-impl From<&MusicDto> for SongData {
+impl From<&MusicDto> for SongModel {
     fn from(dto: &MusicDto) -> Self {
         let artists = dto
             .artist_items
@@ -36,7 +36,7 @@ impl From<&MusicDto> for SongData {
             .map(|artist| artist.name.clone())
             .collect();
 
-        SongData::new(
+        SongModel::new(
             &dto.id,
             &dto.name,
             artists,
@@ -54,7 +54,7 @@ mod imp {
     use std::cell::RefCell;
 
     #[derive(Properties, Default)]
-    #[properties(wrapper_type = super::SongData)]
+    #[properties(wrapper_type = super::SongModel)]
     pub struct SongData {
         #[property(get, set)]
         id: RefCell<String>,
@@ -81,7 +81,7 @@ mod imp {
     #[glib::object_subclass]
     impl ObjectSubclass for SongData {
         const NAME: &'static str = "GellySongData";
-        type Type = super::SongData;
+        type Type = super::SongModel;
         type ParentType = glib::Object;
     }
 

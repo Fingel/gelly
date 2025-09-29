@@ -1,7 +1,7 @@
 use glib::Object;
 use gtk::{gio, glib, subclass::prelude::*};
 
-use crate::{jellyfin::utils::format_duration, models::song_data::SongData};
+use crate::{jellyfin::utils::format_duration, models::SongModel};
 
 glib::wrapper! {
     pub struct Song(ObjectSubclass<imp::Song>)
@@ -14,7 +14,7 @@ impl Song {
         Object::builder().build()
     }
 
-    pub fn set_song_data(&self, song: &SongData) {
+    pub fn set_song_data(&self, song: &SongModel) {
         let imp = self.imp();
         imp.item_id.replace(Some(song.id()));
         imp.title_label.set_label(&song.title());
