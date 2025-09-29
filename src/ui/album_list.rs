@@ -1,7 +1,7 @@
 use crate::{
     async_utils::spawn_tokio,
     library_utils::albums_from_library,
-    models::album_data::AlbumData,
+    models::AlbumModel,
     ui::{album::Album, widget_ext::WidgetApplicationExt},
 };
 use glib::Object;
@@ -44,19 +44,19 @@ impl AlbumList {
             .store
             .get()
             .expect("AlbumList store should be initialized.");
-        let album_data = store
+        let album_model = store
             .item(index)
             .expect("Item index invalid")
-            .downcast_ref::<AlbumData>()
+            .downcast_ref::<AlbumModel>()
             .expect("Item should be an AlbumData")
             .clone();
         let window = self.get_root_window();
-        window.show_album_detail(&album_data);
+        window.show_album_detail(&album_model);
     }
 
     fn setup_model(&self) {
         let imp = self.imp();
-        let store = gio::ListStore::new::<AlbumData>();
+        let store = gio::ListStore::new::<AlbumModel>();
         imp.store
             .set(store.clone())
             .expect("AlbumList store should only be set once.");
@@ -79,19 +79,19 @@ impl AlbumList {
                 let list_item = list_item
                     .downcast_ref::<gtk::ListItem>()
                     .expect("Needs to be a ListItem");
-                let album_data = list_item
+                let album_model = list_item
                     .item()
-                    .and_downcast::<AlbumData>()
+                    .and_downcast::<AlbumModel>()
                     .expect("Item should be an AlbumData");
                 let album_widget = list_item
                     .child()
                     .and_downcast::<Album>()
                     .expect("Child has to be an Album");
 
-                album_widget.set_album_data(&album_data);
+                album_widget.set_album_model(&album_model);
 
                 // Async image loading
-                album_list.load_album_image(&album_data, &album_widget);
+                album_list.load_album_image(&album_model, &album_widget);
             }
         ));
 
@@ -99,8 +99,8 @@ impl AlbumList {
         imp.grid_view.set_factory(Some(&factory));
     }
 
-    fn load_album_image(&self, album_data: &AlbumData, album_widget: &Album) {
-        if album_data.image_loading() || album_data.image_loaded() {
+    fn load_album_image(&self, album_model: &AlbumModel, album_widget: &Album) {
+        if album_model.image_loading() || album_model.image_loaded() {
             debug!("Image is already loaded");
             return;
         }
@@ -110,29 +110,29 @@ impl AlbumList {
             return;
         };
 
-        let item_id = album_data.id();
+        let item_id = album_model.id();
         let jellyfin = self.get_application().jellyfin();
-        album_data.set_image_loading(true);
+        album_model.set_image_loading(true);
         album_widget.set_loading(true);
 
         spawn_tokio(
             async move { image_cache.get_image(&item_id, &jellyfin).await },
             glib::clone!(
                 #[weak]
-                album_data,
+                album_model,
                 #[weak]
                 album_widget,
                 move |result| {
-                    album_data.set_image_loading(false);
-                    album_data.set_image_loaded(true);
+                    album_model.set_image_loading(false);
+                    album_model.set_image_loaded(true);
                     match result {
                         Ok(image_data) => {
                             album_widget.set_loading(false);
                             album_widget.set_album_image(&image_data);
-                            album_data.set_image_data(image_data);
+                            album_model.set_image_data(image_data);
                         }
                         Err(err) => {
-                            warn!("Failed to load album art for {}: {}", album_data.id(), err);
+                            warn!("Failed to load album art for {}: {}", album_model.id(), err);
                             album_widget.show_error();
                         }
                     }

@@ -1,4 +1,4 @@
-use crate::models::album_data::AlbumData;
+use crate::models::AlbumModel;
 use crate::ui::image_utils::bytes_to_texture;
 use glib::Object;
 use gtk::{gio, glib, prelude::WidgetExt, subclass::prelude::*};
@@ -47,10 +47,10 @@ impl Album {
         self.imp().error_icon.set_visible(true);
     }
 
-    pub fn set_album_data(&self, album_data: &AlbumData) {
-        self.set_album_name(&album_data.name());
-        self.set_artist_name(&album_data.artists_string());
-        self.set_loading(album_data.image_loading());
+    pub fn set_album_model(&self, album_model: &AlbumModel) {
+        self.set_album_name(&album_model.name());
+        self.set_artist_name(&album_model.artists_string());
+        self.set_loading(album_model.image_loading());
     }
 }
 

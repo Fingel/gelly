@@ -1,6 +1,6 @@
 use crate::{
     library_utils::tracks_for_album,
-    models::{album_data::AlbumData, song_data::SongData},
+    models::{AlbumModel, song_data::SongData},
     ui::{image_utils::bytes_to_texture, song::Song, widget_ext::WidgetApplicationExt},
 };
 use glib::Object;
@@ -18,18 +18,18 @@ impl AlbumDetail {
         Object::builder().build()
     }
 
-    pub fn set_album_data(&self, album_data: &AlbumData) {
+    pub fn set_album_model(&self, album_model: &AlbumModel) {
         let imp = self.imp();
-        imp.album_id.replace(album_data.id());
-        imp.name_label.set_text(&album_data.name());
-        imp.artist_label.set_text(&album_data.artists_string());
-        if album_data.year() > 0 {
-            imp.year_label.set_text(&album_data.year().to_string());
+        imp.album_id.replace(album_model.id());
+        imp.name_label.set_text(&album_model.name());
+        imp.artist_label.set_text(&album_model.artists_string());
+        if album_model.year() > 0 {
+            imp.year_label.set_text(&album_model.year().to_string());
         } else {
             imp.year_label.set_text("");
         }
-        if !album_data.image_data().is_empty() {
-            match bytes_to_texture(&album_data.image_data()) {
+        if !album_model.image_data().is_empty() {
+            match bytes_to_texture(&album_model.image_data()) {
                 Ok(texture) => {
                     self.imp().album_image.set_paintable(Some(&texture));
                 }

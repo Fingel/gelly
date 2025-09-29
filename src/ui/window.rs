@@ -1,5 +1,5 @@
 use crate::config::settings;
-use crate::models::album_data::AlbumData;
+use crate::models::AlbumModel;
 use crate::{application::Application, ui::widget_ext::WidgetApplicationExt};
 use adw::{prelude::*, subclass::prelude::ObjectSubclassIsExt};
 use glib::Object;
@@ -47,11 +47,11 @@ impl Window {
         self.get_application().refresh_library();
     }
 
-    pub fn show_album_detail(&self, album_data: &AlbumData) {
+    pub fn show_album_detail(&self, album_model: &AlbumModel) {
         let imp = self.imp();
-        imp.album_detail_page.set_title(&album_data.name());
+        imp.album_detail_page.set_title(&album_model.name());
         imp.main_navigation.push(&imp.album_detail_page.get());
-        imp.album_detail.set_album_data(album_data);
+        imp.album_detail.set_album_model(album_model);
     }
 
     pub fn logout(&self) {

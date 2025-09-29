@@ -3,11 +3,11 @@ use glib::Object;
 use gtk::{glib, subclass::prelude::*};
 
 glib::wrapper! {
-    pub struct AlbumData(ObjectSubclass<imp::AlbumData>);
+    pub struct AlbumModel(ObjectSubclass<imp::AlbumData>);
 }
 
 /// Simple GObject to provide album data, and to convert from the API response from jellyfin.
-impl AlbumData {
+impl AlbumModel {
     pub fn new(
         name: &str,
         id: &str,
@@ -48,7 +48,7 @@ impl AlbumData {
     }
 }
 
-impl From<&MusicDto> for AlbumData {
+impl From<&MusicDto> for AlbumModel {
     fn from(dto: &MusicDto) -> Self {
         let artists = dto
             .artist_items
@@ -56,7 +56,7 @@ impl From<&MusicDto> for AlbumData {
             .map(|artist| artist.name.clone())
             .collect();
 
-        AlbumData::new(
+        AlbumModel::new(
             &dto.album,
             &dto.album_id,
             artists,
@@ -73,7 +73,7 @@ mod imp {
     use std::cell::RefCell;
 
     #[derive(Properties, Default)]
-    #[properties(wrapper_type = super::AlbumData)]
+    #[properties(wrapper_type = super::AlbumModel)]
     pub struct AlbumData {
         #[property(get, set)]
         pub name: RefCell<String>,
@@ -105,7 +105,7 @@ mod imp {
     #[glib::object_subclass]
     impl ObjectSubclass for AlbumData {
         const NAME: &'static str = "GellyAlbumData";
-        type Type = super::AlbumData;
+        type Type = super::AlbumModel;
         type ParentType = glib::Object;
     }
 
