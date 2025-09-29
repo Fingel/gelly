@@ -132,7 +132,6 @@ mod imp {
                 #[weak(rename_to=imp)]
                 self,
                 move |_track_list, row| {
-                    dbg!("What happened>?");
                     let index = row.index();
                     imp.obj().song_selected(index as usize);
                 }
