@@ -151,7 +151,7 @@
             <property name="orientation">horizontal</property>
             <property name="spacing">6</property>
             <property name="margin-start">6</property>
-            <property name="margin-end">6</property>
+            <property name="margin-end">12</property>
             <property name="margin-top">6</property>
             <property name="margin-bottom">6</property>
             <property name="valign">center</property>
@@ -210,12 +210,6 @@
                     </child>
                   </object>
                 </property>
-              </object>
-            </child>
-            <child>
-              <object class="GtkButton" id="play_mode_button">
-                <property name="icon-name">media-playlist-consecutive-symbolic</property>
-                <property name="tooltip-text">Volume</property>
               </object>
             </child>
           </object>
