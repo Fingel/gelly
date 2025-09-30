@@ -86,6 +86,19 @@ impl PlayerBar {
             ),
         );
 
+        audio_model.connect_notify_local(
+            Some("volume"),
+            glib::clone!(
+                #[weak(rename_to = player)]
+                self,
+                move |audio_model, _| {
+                    let volume = audio_model.volume();
+                    player.imp().volume_scale.set_value(volume);
+                    player.imp().update_volume_icon(volume);
+                }
+            ),
+        );
+
         // Initial update
         self.update_song_info(audio_model);
         self.update_play_pause_button(audio_model.playing());
@@ -212,6 +225,12 @@ mod imp {
         pub position_label: TemplateChild<gtk::Label>,
         #[template_child]
         pub duration_label: TemplateChild<gtk::Label>,
+        #[template_child]
+        pub mute_button: TemplateChild<gtk::Button>,
+        #[template_child]
+        pub volume_button: TemplateChild<gtk::MenuButton>,
+        #[template_child]
+        pub volume_scale: TemplateChild<gtk::Scale>,
 
         pub audio_model: OnceCell<AudioModel>,
 
@@ -253,6 +272,19 @@ mod imp {
             self.audio_model.get().expect("AudioModel not initialized")
         }
 
+        pub fn update_volume_icon(&self, volume: f64) {
+            let icon_name = if volume == 0.0 {
+                "audio-volume-muted-symbolic"
+            } else if volume < 0.33 {
+                "audio-volume-low-symbolic"
+            } else if volume < 0.66 {
+                "audio-volume-medium-symbolic"
+            } else {
+                "audio-volume-high-symbolic"
+            };
+            self.volume_button.set_icon_name(icon_name);
+        }
+
         fn setup_signals(&self) {
             self.play_pause_button.connect_clicked(glib::clone!(
                 #[weak(rename_to = imp)]
@@ -278,6 +310,15 @@ mod imp {
                 }
             ));
 
+            self.mute_button.connect_clicked(glib::clone!(
+                #[weak(rename_to = imp)]
+                self,
+                move |_| {
+                    imp.volume_scale.set_value(0.0);
+                    imp.update_volume_icon(0.0);
+                }
+            ));
+
             self.position_scale.connect_change_value(glib::clone!(
                 // TODO: What is the upgrade_or macro for? Propagation?
                 #[weak(rename_to = imp)]
@@ -287,6 +328,16 @@ mod imp {
                 move |_, _, value| {
                     imp.audio_model().seek(value as u32);
                     glib::Propagation::Proceed
+                }
+            ));
+
+            self.volume_scale.connect_value_changed(glib::clone!(
+                #[weak(rename_to = imp)]
+                self,
+                move |scale| {
+                    let volume = scale.value();
+                    imp.audio_model().imp().set_volume(volume);
+                    imp.update_volume_icon(volume);
                 }
             ));
 

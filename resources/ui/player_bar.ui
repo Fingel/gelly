@@ -158,19 +158,67 @@
             <property name="halign">end</property>
             <property name="vexpand">false</property>
             <property name="hexpand">false</property>
-              <child>
-                <object class="GtkButton" id="volume_button">
-                  <property name="icon-name">audio-volume-high-symbolic</property>
-                  <property name="tooltip-text">Volume</property>
-                </object>
-              </child>
-              <child>
-                <object class="GtkButton" id="play_mode_button">
-                  <property name="icon-name">media-playlist-consecutive-symbolic</property>
-                  <property name="tooltip-text">Volume</property>
-                </object>
-              </child>
-            </object>
+            <child>
+              <object class="GtkMenuButton" id="volume_button">
+                <property name="icon-name">audio-volume-high-symbolic</property>
+                <property name="tooltip-text">Volume</property>
+                <property name="popover">
+                  <object class="GtkPopover">
+                    <property name="position">top</property>
+                    <property name="autohide">true</property>
+                    <property name="has-arrow">true</property>
+                    <child>
+                      <object class="GtkBox">
+                        <property name="orientation">horizontal</property>
+                        <property name="spacing">6</property>
+                        <property name="margin-start">12</property>
+                        <property name="margin-end">12</property>
+                        <property name="margin-top">12</property>
+                        <property name="margin-bottom">12</property>
+                        <child>
+                          <object class="GtkButton" id="mute_button">
+                            <property name="icon-name">audio-volume-low-symbolic</property>
+                            <property name="tooltip-text">Mute</property>
+                            <style>
+                              <class name="circular"/>
+                              <class name="flat"/>
+                            </style>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkScale" id="volume_scale">
+                            <property name="orientation">horizontal</property>
+                            <property name="width-request">120</property>
+                            <property name="draw-value">false</property>
+                            <property name="adjustment">
+                              <object class="GtkAdjustment">
+                                <property name="lower">0</property>
+                                <property name="upper">1</property>
+                                <property name="step-increment">0.05</property>
+                                <property name="page-increment">0.1</property>
+                                <property name="value">1.0</property>
+                              </object>
+                            </property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkImage">
+                            <property name="icon-name">audio-volume-high-symbolic</property>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                  </object>
+                </property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkButton" id="play_mode_button">
+                <property name="icon-name">media-playlist-consecutive-symbolic</property>
+                <property name="tooltip-text">Volume</property>
+              </object>
+            </child>
+          </object>
         </child>
       </object>
     </child>
