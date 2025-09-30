@@ -117,8 +117,20 @@ impl AudioModel {
             self.load_song(next_index);
             self.play();
         } else {
+            self.load_song(0);
+            self.stop();
             self.emit_by_name::<()>("playlist-finished", &[]);
         }
+    }
+
+    pub fn prev(&self) {
+        let prev_index = self.playlist_index() - 1;
+        if prev_index >= 0 {
+            self.load_song(prev_index);
+        } else {
+            self.load_song(0);
+        }
+        self.play();
     }
 
     pub fn play(&self) {

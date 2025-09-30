@@ -270,6 +270,14 @@ mod imp {
                 }
             ));
 
+            self.prev_button.connect_clicked(glib::clone!(
+                #[weak(rename_to = imp)]
+                self,
+                move |_| {
+                    imp.audio_model().prev();
+                }
+            ));
+
             self.position_scale.connect_change_value(glib::clone!(
                 // TODO: What is the upgrade_or macro for? Propagation?
                 #[weak(rename_to = imp)]
