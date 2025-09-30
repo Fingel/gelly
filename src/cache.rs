@@ -52,6 +52,7 @@ impl ImageCache {
         item_id: &str,
         jellyfin: &Jellyfin,
     ) -> Result<Vec<u8>, CacheError> {
+        // We should probably be using hashes here, many IDs have the same image.
         loop {
             if let Ok(bytes) = self.load_from_disk(item_id) {
                 debug!("Image cache hit: {}", item_id);

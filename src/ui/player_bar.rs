@@ -126,22 +126,19 @@ impl PlayerBar {
 
         // Load album art if available
         if let Some(song) = audio_model.current_song() {
-            self.load_album_art(&song.album_id(), Some(&song.id()));
+            self.load_album_art(&song.id());
         }
     }
 
-    fn load_album_art(&self, album_id: &str, _item_id: Option<&str>) {
-        // TODO: Refactor this out as it's copypasta from the album code for loading art
-        // TODO: Get individual item art if available as well
+    fn load_album_art(&self, song_id: &str) {
+        let song_id = song_id.to_string();
         let Some(image_cache) = self.get_application().image_cache() else {
             return;
         };
-
         let jellyfin = self.get_application().jellyfin();
-        let album_id = album_id.to_string();
 
         crate::async_utils::spawn_tokio(
-            async move { image_cache.get_image(&album_id, &jellyfin).await },
+            async move { image_cache.get_image(&song_id, &jellyfin).await },
             glib::clone!(
                 #[weak(rename_to = player)]
                 self,
