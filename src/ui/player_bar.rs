@@ -148,34 +148,37 @@ impl PlayerBar {
         // TODO: also would be nice to not do the redundant set image when we have both
         let album_id = album_id.to_string();
         let song_id = song_id.to_string();
-        for id in [album_id, song_id] {
-            let Some(image_cache) = self.get_application().image_cache() else {
-                return;
-            };
-            let jellyfin = self.get_application().jellyfin();
+        let Some(image_cache) = self.get_application().image_cache() else {
+            return;
+        };
+        let jellyfin = self.get_application().jellyfin();
 
-            crate::async_utils::spawn_tokio(
-                async move { image_cache.get_image(&id, &jellyfin).await },
-                glib::clone!(
-                    #[weak(rename_to = player)]
-                    self,
-                    move |result| {
-                        match result {
-                            Ok(image_data) => {
-                                if let Ok(texture) =
-                                    bytes_to_texture(&image_data, Some(100), Some(100))
-                                {
-                                    player.imp().album_art.set_paintable(Some(&texture));
-                                }
-                            }
-                            Err(err) => {
-                                debug!("Failed to load album art: {}", err);
+        crate::async_utils::spawn_tokio(
+            async move {
+                // Try loading song level art first
+                match image_cache.get_image(&song_id, &jellyfin).await {
+                    Ok(image_data) => Ok(image_data),
+                    Err(_) => image_cache.get_image(&album_id, &jellyfin).await,
+                }
+            },
+            glib::clone!(
+                #[weak(rename_to = player)]
+                self,
+                move |result| {
+                    match result {
+                        Ok(image_data) => {
+                            if let Ok(texture) = bytes_to_texture(&image_data, Some(100), Some(100))
+                            {
+                                player.imp().album_art.set_paintable(Some(&texture));
                             }
                         }
+                        Err(err) => {
+                            debug!("Failed to load album art: {}", err);
+                        }
                     }
-                ),
-            );
-        }
+                }
+            ),
+        );
     }
 
     fn format_time(seconds: u32) -> String {
