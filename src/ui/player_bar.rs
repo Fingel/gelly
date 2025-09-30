@@ -4,7 +4,7 @@ use crate::{
 };
 use glib::Object;
 use gtk::{gio, glib, prelude::*, subclass::prelude::*};
-use log::warn;
+use log::debug;
 
 glib::wrapper! {
     pub struct PlayerBar(ObjectSubclass<imp::PlayerBar>)
@@ -139,37 +139,43 @@ impl PlayerBar {
 
         // Load album art if available
         if let Some(song) = audio_model.current_song() {
-            self.load_album_art(&song.id());
+            self.load_album_art(&song.album_id(), &song.id());
         }
     }
 
-    fn load_album_art(&self, song_id: &str) {
+    fn load_album_art(&self, album_id: &str, song_id: &str) {
+        // TODO: get fancy here and save album cover for tracks that dont have their own image
+        // TODO: also would be nice to not do the redundant set image when we have both
+        let album_id = album_id.to_string();
         let song_id = song_id.to_string();
-        let Some(image_cache) = self.get_application().image_cache() else {
-            return;
-        };
-        let jellyfin = self.get_application().jellyfin();
+        for id in [album_id, song_id] {
+            let Some(image_cache) = self.get_application().image_cache() else {
+                return;
+            };
+            let jellyfin = self.get_application().jellyfin();
 
-        crate::async_utils::spawn_tokio(
-            async move { image_cache.get_image(&song_id, &jellyfin).await },
-            glib::clone!(
-                #[weak(rename_to = player)]
-                self,
-                move |result| {
-                    match result {
-                        Ok(image_data) => {
-                            if let Ok(texture) = bytes_to_texture(&image_data, Some(100), Some(100))
-                            {
-                                player.imp().album_art.set_paintable(Some(&texture));
+            crate::async_utils::spawn_tokio(
+                async move { image_cache.get_image(&id, &jellyfin).await },
+                glib::clone!(
+                    #[weak(rename_to = player)]
+                    self,
+                    move |result| {
+                        match result {
+                            Ok(image_data) => {
+                                if let Ok(texture) =
+                                    bytes_to_texture(&image_data, Some(100), Some(100))
+                                {
+                                    player.imp().album_art.set_paintable(Some(&texture));
+                                }
+                            }
+                            Err(err) => {
+                                debug!("Failed to load album art: {}", err);
                             }
                         }
-                        Err(err) => {
-                            warn!("Failed to load album art: {}", err);
-                        }
                     }
-                }
-            ),
-        );
+                ),
+            );
+        }
     }
 
     fn format_time(seconds: u32) -> String {
