@@ -23,7 +23,7 @@ impl Album {
     }
 
     pub fn set_album_image(&self, image_data: &[u8]) {
-        match bytes_to_texture(image_data) {
+        match bytes_to_texture(image_data, None, None) {
             Ok(texture) => {
                 self.imp().album_image.set_paintable(Some(&texture));
             }

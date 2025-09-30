@@ -29,7 +29,7 @@ impl AlbumDetail {
             imp.year_label.set_text("");
         }
         if !album_model.image_data().is_empty() {
-            match bytes_to_texture(&album_model.image_data()) {
+            match bytes_to_texture(&album_model.image_data(), None, None) {
                 Ok(texture) => {
                     self.imp().album_image.set_paintable(Some(&texture));
                 }

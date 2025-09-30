@@ -105,6 +105,7 @@ impl AudioModel {
             self.set_property("loading", true);
             self.set_playlist_index(index);
             player.set_uri(&stream_uri);
+            self.emit_by_name::<()>("song-changed", &[]);
         } else {
             warn!("Failed to load song at index {}", index);
         }
@@ -229,6 +230,7 @@ mod imp {
                     glib::subclass::Signal::builder("pause").build(),
                     glib::subclass::Signal::builder("stop").build(),
                     glib::subclass::Signal::builder("song-finished").build(),
+                    glib::subclass::Signal::builder("song-changed").build(),
                     glib::subclass::Signal::builder("playlist-finished").build(),
                     glib::subclass::Signal::builder("error")
                         .param_types([String::static_type()])

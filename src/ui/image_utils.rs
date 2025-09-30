@@ -4,8 +4,17 @@ use gtk::{
     glib,
 };
 
-pub fn bytes_to_texture(image_data: &[u8]) -> Result<Texture, glib::Error> {
+pub fn bytes_to_texture(
+    image_data: &[u8],
+    width: Option<u32>,
+    height: Option<u32>,
+) -> Result<Texture, glib::Error> {
     let loader = PixbufLoader::new();
+    if let Some(width) = width
+        && let Some(height) = height
+    {
+        loader.set_size(width as i32, height as i32);
+    }
     loader.write(image_data)?;
     loader.close()?;
     match loader.pixbuf() {

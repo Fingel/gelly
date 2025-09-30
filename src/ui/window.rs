@@ -45,6 +45,11 @@ impl Window {
             .set_visible_child(&imp.main_navigation.get());
         imp.main_navigation.replace(&[imp.main_window.get()]);
         self.get_application().refresh_library();
+
+        // Initialize player bar with audio model
+        if let Some(audio_model) = self.get_application().audio_model() {
+            imp.player_bar.bind_to_audio_model(&audio_model);
+        }
     }
 
     pub fn show_album_detail(&self, album_model: &AlbumModel) {
@@ -95,6 +100,7 @@ mod imp {
     use log::{debug, warn};
 
     use crate::ui::album_list::AlbumList;
+    use crate::ui::player_bar::PlayerBar;
     use crate::ui::setup::Setup;
     use crate::ui::widget_ext::WidgetApplicationExt;
     use crate::{application::Application, ui::album_detail::AlbumDetail};
@@ -118,6 +124,8 @@ mod imp {
         pub album_detail_page: TemplateChild<adw::NavigationPage>,
         #[template_child]
         pub album_detail: TemplateChild<AlbumDetail>,
+        #[template_child]
+        pub player_bar: TemplateChild<PlayerBar>,
     }
 
     #[glib::object_subclass]
