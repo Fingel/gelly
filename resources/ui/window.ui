@@ -64,7 +64,7 @@
                                   <object class="AdwViewStackPage" id="albums">
                                     <property name="name">albums</property>
                                     <property name="title" translatable="yes">Albums</property>
-                                    <property name="icon-name">audio-x-generic-symbolic</property>
+                                    <property name="icon-name">media-optical-cd-audio-symbolic</property>
                                     <property name="use-underline">true</property>
                                     <property name="child">
                                       <object class="GellyAlbumList" id="album_list">
@@ -76,7 +76,7 @@
                                   <object class="AdwViewStackPage" id="page2">
                                     <property name="name">page2</property>
                                     <property name="title" translatable="yes">Artists</property>
-                                    <property name="icon-name">audio-speakers-symbolic</property>
+                                    <property name="icon-name">org.gnome.Settings-users-symbolic</property>
                                     <property name="use-underline">true</property>
                                     <property name="child">
                                       <object class="AdwStatusPage">
@@ -107,10 +107,8 @@
                                 <child>
                                   <object class="AdwViewStackPage" id="page3">
                                     <property name="name">page3</property>
-                                    <property name="title" translatable="yes">Songs</property>
-                                    <property name="icon-name">media-optical-cd-audio-symbolic</property>
-                                    <property name="badge-number">0</property>
-                                    <property name="needs-attention">true</property>
+                                    <property name="title" translatable="yes">Now Playing</property>
+                                    <property name="icon-name">audio-x-generic-symbolic</property>
                                     <property name="use-underline">true</property>
                                     <property name="child">
                                       <object class="AdwStatusPage">
