@@ -14,9 +14,9 @@
             <property name="focusable">False</property>
             <property name="homogeneous">True</property>
             <child>
-              <object class="GtkButton" id="play_button">
-                <property name="label">Play</property>
+              <object class="GtkImage" id="playing_icon">
                 <property name="icon_name">media-playback-start-symbolic</property>
+                <property name="visible">False</property>
               </object>
             </child>
             <child>

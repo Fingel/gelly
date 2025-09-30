@@ -105,7 +105,7 @@ impl AudioModel {
             self.set_property("loading", true);
             self.set_playlist_index(index);
             player.set_uri(&stream_uri);
-            self.emit_by_name::<()>("song-changed", &[]);
+            self.emit_by_name::<()>("song-changed", &[&song.id()]);
         } else {
             warn!("Failed to load song at index {}", index);
         }
@@ -180,6 +180,10 @@ impl AudioModel {
     pub fn current_song_album(&self) -> String {
         self.current_song().map(|s| s.album()).unwrap_or_default()
     }
+
+    pub fn current_song_id(&self) -> String {
+        self.current_song().map(|s| s.id()).unwrap_or_default()
+    }
 }
 
 impl Default for AudioModel {
@@ -242,7 +246,9 @@ mod imp {
                     glib::subclass::Signal::builder("pause").build(),
                     glib::subclass::Signal::builder("stop").build(),
                     glib::subclass::Signal::builder("song-finished").build(),
-                    glib::subclass::Signal::builder("song-changed").build(),
+                    glib::subclass::Signal::builder("song-changed")
+                        .param_types([String::static_type()])
+                        .build(),
                     glib::subclass::Signal::builder("playlist-finished").build(),
                     glib::subclass::Signal::builder("error")
                         .param_types([String::static_type()])

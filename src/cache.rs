@@ -55,7 +55,6 @@ impl ImageCache {
         // We should probably be using hashes here, many IDs have the same image.
         loop {
             if let Ok(bytes) = self.load_from_disk(item_id) {
-                debug!("Image cache hit: {}", item_id);
                 return Ok(bytes);
             }
 

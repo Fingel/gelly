@@ -1,10 +1,11 @@
 use crate::{
+    audio::model::AudioModel,
     library_utils::tracks_for_album,
     models::{AlbumModel, SongModel},
     ui::{image_utils::bytes_to_texture, song::Song, widget_ext::WidgetApplicationExt},
 };
 use glib::Object;
-use gtk::{gio, glib, subclass::prelude::*};
+use gtk::{gio, glib, prelude::*, subclass::prelude::*};
 use log::warn;
 
 glib::wrapper! {
@@ -39,6 +40,9 @@ impl AlbumDetail {
             }
         }
         self.pull_tracks();
+        if let Some(audio_model) = self.get_application().audio_model() {
+            self.update_playing_status(&audio_model.current_song_id());
+        }
     }
 
     pub fn pull_tracks(&self) {
@@ -64,6 +68,35 @@ impl AlbumDetail {
             warn!("No audio model found");
         }
     }
+
+    fn listen_for_song_changes(&self) {
+        if let Some(audio_model) = self.get_application().audio_model() {
+            audio_model.connect_closure(
+                "song-changed",
+                false,
+                glib::closure_local!(
+                    #[weak(rename_to = album_detail)]
+                    self,
+                    move |_audio_model: AudioModel, song_id: &str| {
+                        album_detail.update_playing_status(song_id);
+                    }
+                ),
+            );
+        }
+    }
+
+    fn update_playing_status(&self, current_song_id: &str) {
+        // Iterate through all song widgets in the track list
+        let track_list = &self.imp().track_list;
+        let mut row_index = 0;
+        while let Some(song_widget) = track_list.row_at_index(row_index).and_downcast::<Song>() {
+            if let Some(id) = song_widget.imp().item_id.borrow().clone() {
+                let is_current = id == current_song_id;
+                song_widget.imp().playing_icon.set_visible(is_current);
+            }
+            row_index += 1;
+        }
+    }
 }
 
 impl Default for AlbumDetail {
@@ -73,7 +106,7 @@ impl Default for AlbumDetail {
 }
 
 mod imp {
-    use std::cell::RefCell;
+    use std::cell::{Cell, RefCell};
 
     use adw::subclass::prelude::*;
     use glib::subclass::InitializingObject;
@@ -101,6 +134,7 @@ mod imp {
 
         pub album_id: RefCell<String>,
         pub songs: RefCell<Vec<SongModel>>,
+        pub song_change_signal_connected: Cell<bool>,
     }
 
     #[glib::object_subclass]
@@ -122,6 +156,16 @@ mod imp {
         fn constructed(&self) {
             self.parent_constructed();
             self.setup_signals();
+            self.obj().connect_map(glib::clone!(
+                #[weak(rename_to = album_detail)]
+                self.obj(),
+                move |_| {
+                    if !album_detail.imp().song_change_signal_connected.get() {
+                        album_detail.listen_for_song_changes();
+                        album_detail.imp().song_change_signal_connected.set(true);
+                    }
+                }
+            ));
         }
     }
     impl WidgetImpl for AlbumDetail {}

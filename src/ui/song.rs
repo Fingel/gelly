@@ -47,7 +47,7 @@ mod imp {
         #[template_child]
         pub duration_label: TemplateChild<gtk::Label>,
         #[template_child]
-        pub play_button: TemplateChild<gtk::Button>,
+        pub playing_icon: TemplateChild<gtk::Image>,
 
         pub item_id: RefCell<Option<String>>,
     }
