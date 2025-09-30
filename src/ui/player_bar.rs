@@ -145,7 +145,6 @@ impl PlayerBar {
 
     fn load_album_art(&self, album_id: &str, song_id: &str) {
         // TODO: get fancy here and save album cover for tracks that dont have their own image
-        // TODO: also would be nice to not do the redundant set image when we have both
         let album_id = album_id.to_string();
         let song_id = song_id.to_string();
         let Some(image_cache) = self.get_application().image_cache() else {
@@ -329,7 +328,6 @@ mod imp {
             ));
 
             self.position_scale.connect_change_value(glib::clone!(
-                // TODO: What is the upgrade_or macro for? Propagation?
                 #[weak(rename_to = imp)]
                 self,
                 #[upgrade_or]
