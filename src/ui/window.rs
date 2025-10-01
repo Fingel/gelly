@@ -1,5 +1,5 @@
 use crate::config::settings;
-use crate::models::AlbumModel;
+use crate::models::{AlbumModel, ArtistModel};
 use crate::{application::Application, ui::widget_ext::WidgetApplicationExt};
 use adw::{prelude::*, subclass::prelude::ObjectSubclassIsExt};
 use glib::Object;
@@ -44,6 +44,9 @@ impl Window {
         imp.setup_stack
             .set_visible_child(&imp.main_navigation.get());
         imp.main_navigation.replace(&[imp.main_window.get()]);
+        // Setup library refresh callback, then refresh library
+        imp.album_list.setup_library_connection();
+        imp.artist_list.setup_library_connection();
         self.get_application().refresh_library();
 
         // Initialize player bar with audio model
@@ -57,6 +60,10 @@ impl Window {
         imp.album_detail_page.set_title(&album_model.name());
         imp.main_navigation.push(&imp.album_detail_page.get());
         imp.album_detail.set_album_model(album_model);
+    }
+
+    pub fn show_artist_detail(&self, artist_model: &ArtistModel) {
+        dbg!(artist_model);
     }
 
     pub fn logout(&self) {
@@ -99,10 +106,10 @@ mod imp {
     };
     use log::{debug, warn};
 
-    use crate::ui::album_list::AlbumList;
     use crate::ui::player_bar::PlayerBar;
     use crate::ui::setup::Setup;
     use crate::ui::widget_ext::WidgetApplicationExt;
+    use crate::ui::{album_list::AlbumList, artist_list::ArtistList};
     use crate::{application::Application, ui::album_detail::AlbumDetail};
 
     #[derive(CompositeTemplate, Default)]
@@ -120,6 +127,8 @@ mod imp {
         pub main_window: TemplateChild<adw::NavigationPage>,
         #[template_child]
         pub album_list: TemplateChild<AlbumList>,
+        #[template_child]
+        pub artist_list: TemplateChild<ArtistList>,
         #[template_child]
         pub album_detail_page: TemplateChild<adw::NavigationPage>,
         #[template_child]

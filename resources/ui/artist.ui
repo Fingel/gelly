@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <requires lib="gtk" version="4.0"/>
+  <template class="GellyArtist" parent="GtkBox">
+    <property name="halign">center</property>
+		<property name="margin-start">6</property>
+    <property name="margin-end">6</property>
+    <property name="margin-top">6</property>
+    <property name="margin-bottom">6</property>
+    <child>
+      <object class="GtkBox" id="inner">
+        <property name="halign">3</property>
+        <property name="valign">1</property>
+        <property name="orientation">1</property>
+        <property name="spacing">6</property>
+        <child>
+          <object class="GtkOverlay">
+            <child>
+              <object class="GtkPicture" id="artist_image">
+                <property name="width-request">200</property>
+                <property name="height-request">200</property>
+                <property name="can-shrink">true</property>
+                <property name="content-fit">cover</property>
+                <style>
+                  <class name="album-image"/>
+                </style>
+              </object>
+            </child>
+            <child type="overlay">
+              <object class="GtkSpinner" id="spinner">
+                <property name="spinning">true</property>
+                <property name="width-request">48</property>
+                <property name="height-request">48</property>
+                <property name="halign">center</property>
+                <property name="valign">center</property>
+                <property name="visible">false</property>
+              </object>
+            </child>
+            <child type="overlay">
+              <object class="GtkImage" id="error_icon">
+                <property name="icon-name">dialog-warning-symbolic</property>
+                <property name="icon-size">large</property>
+                <property name="halign">center</property>
+                <property name="valign">center</property>
+                <property name="visible">false</property>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="GtkLabel" id="name_label">
+            <property name="ellipsize">3</property>
+            <property name="justify">0</property>
+          </object>
+        </child>
+      </object>
+    </child>
+  </template>
+</interface>

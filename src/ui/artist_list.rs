@@ -1,9 +1,9 @@
 use crate::{
     application::Application,
     async_utils::spawn_tokio,
-    library_utils::albums_from_library,
-    models::AlbumModel,
-    ui::{album::Album, widget_ext::WidgetApplicationExt},
+    library_utils::artists_from_library,
+    models::ArtistModel,
+    ui::{artist::Artist, widget_ext::WidgetApplicationExt},
 };
 use glib::Object;
 use gtk::{
@@ -15,44 +15,44 @@ use gtk::{
 use log::{debug, warn};
 
 glib::wrapper! {
-    pub struct AlbumList(ObjectSubclass<imp::AlbumList>)
+    pub struct ArtistList(ObjectSubclass<imp::ArtistList>)
     @extends gtk::Widget, gtk::Box,
         @implements gio::ActionMap, gio::ActionGroup;
 }
 
-impl AlbumList {
+impl ArtistList {
     pub fn new() -> Self {
         Object::builder().build()
     }
 
-    pub fn pull_albums(&self) {
+    pub fn pull_artists(&self) {
         let library = self.get_application().library().clone();
-        let albums = albums_from_library(&library.borrow());
+        let artists = artists_from_library(&library.borrow());
         let store = self
             .imp()
             .store
             .get()
             .expect("AlbumList store should be initialized.");
         store.remove_all();
-        for album in albums {
-            store.append(&album);
+        for artist in artists {
+            store.append(&artist);
         }
     }
 
-    pub fn activate_album(&self, index: u32) {
+    pub fn activate_artist(&self, index: u32) {
         let store = self
             .imp()
             .store
             .get()
-            .expect("AlbumList store should be initialized.");
-        let album_model = store
+            .expect("ArtistList store should be initialized.");
+        let artist_model = store
             .item(index)
             .expect("Item index invalid")
-            .downcast_ref::<AlbumModel>()
-            .expect("Item should be an AlbumData")
+            .downcast_ref::<ArtistModel>()
+            .expect("Item should be an ArtistModel")
             .clone();
         let window = self.get_root_window();
-        window.show_album_detail(&album_model);
+        window.show_artist_detail(&artist_model);
     }
 
     pub fn setup_library_connection(&self) {
@@ -61,10 +61,10 @@ impl AlbumList {
             "library-refreshed",
             false,
             glib::closure_local!(
-                #[weak(rename_to = album_list)]
+                #[weak(rename_to = artist_list)]
                 self,
                 move |_app: Application| {
-                    album_list.pull_albums();
+                    artist_list.pull_artists();
                 }
             ),
         );
@@ -72,16 +72,16 @@ impl AlbumList {
 
     fn setup_model(&self) {
         let imp = self.imp();
-        let store = gio::ListStore::new::<AlbumModel>();
+        let store = gio::ListStore::new::<ArtistModel>();
         imp.store
             .set(store.clone())
-            .expect("AlbumList store should only be set once.");
+            .expect("ArtistList store should only be set once.");
 
         let selection_model = gtk::SingleSelection::new(Some(store));
         let factory = gtk::SignalListItemFactory::new();
 
         factory.connect_setup(move |_, list_item| {
-            let placeholder = Album::new();
+            let placeholder = Artist::new();
             let item = list_item
                 .downcast_ref::<ListItem>()
                 .expect("Needs to be a ListItem");
@@ -95,19 +95,19 @@ impl AlbumList {
                 let list_item = list_item
                     .downcast_ref::<gtk::ListItem>()
                     .expect("Needs to be a ListItem");
-                let album_model = list_item
+                let artist_model = list_item
                     .item()
-                    .and_downcast::<AlbumModel>()
-                    .expect("Item should be an AlbumData");
-                let album_widget = list_item
+                    .and_downcast::<ArtistModel>()
+                    .expect("Item should be an ArtistData");
+                let artist_widget = list_item
                     .child()
-                    .and_downcast::<Album>()
-                    .expect("Child has to be an Album");
+                    .and_downcast::<Artist>()
+                    .expect("Child has to be an Artist");
 
-                album_widget.set_album_model(&album_model);
+                artist_widget.set_artist_model(&artist_model);
 
                 // Async image loading
-                album_list.load_album_image(&album_model, &album_widget);
+                album_list.load_image(&artist_model, &artist_widget);
             }
         ));
 
@@ -115,8 +115,8 @@ impl AlbumList {
         imp.grid_view.set_factory(Some(&factory));
     }
 
-    fn load_album_image(&self, album_model: &AlbumModel, album_widget: &Album) {
-        if album_model.image_loading() || album_model.image_loaded() {
+    fn load_image(&self, artist_model: &ArtistModel, artist_widget: &Artist) {
+        if artist_model.image_loading() || artist_model.image_loaded() {
             debug!("Image is already loaded");
             return;
         }
@@ -126,30 +126,34 @@ impl AlbumList {
             return;
         };
 
-        let item_id = album_model.id();
+        let item_id = artist_model.id();
         let jellyfin = self.get_application().jellyfin();
-        album_model.set_image_loading(true);
-        album_widget.set_loading(true);
+        artist_model.set_image_loading(true);
+        artist_widget.set_loading(true);
 
         spawn_tokio(
             async move { image_cache.get_image(&item_id, &jellyfin).await },
             glib::clone!(
                 #[weak]
-                album_model,
+                artist_model,
                 #[weak]
-                album_widget,
+                artist_widget,
                 move |result| {
-                    album_model.set_image_loading(false);
-                    album_model.set_image_loaded(true);
+                    artist_model.set_image_loading(false);
+                    artist_model.set_image_loaded(true);
                     match result {
                         Ok(image_data) => {
-                            album_widget.set_loading(false);
-                            album_widget.set_album_image(&image_data);
-                            album_model.set_image_data(image_data);
+                            artist_widget.set_loading(false);
+                            artist_widget.set_image(&image_data);
+                            artist_model.set_image_data(image_data);
                         }
                         Err(err) => {
-                            warn!("Failed to load album art for {}: {}", album_model.id(), err);
-                            album_widget.show_error();
+                            warn!(
+                                "Failed to load album art for {}: {}",
+                                artist_model.id(),
+                                err
+                            );
+                            artist_widget.show_error();
                         }
                     }
                 }
@@ -158,14 +162,13 @@ impl AlbumList {
     }
 }
 
-impl Default for AlbumList {
+impl Default for ArtistList {
     fn default() -> Self {
         Self::new()
     }
 }
 
 mod imp {
-
     use std::cell::OnceCell;
 
     use adw::subclass::prelude::*;
@@ -173,17 +176,17 @@ mod imp {
     use gtk::{CompositeTemplate, gio, glib};
 
     #[derive(CompositeTemplate, Default)]
-    #[template(resource = "/io/m51/Gelly/ui/album_list.ui")]
-    pub struct AlbumList {
+    #[template(resource = "/io/m51/Gelly/ui/artist_list.ui")]
+    pub struct ArtistList {
         #[template_child]
         pub grid_view: TemplateChild<gtk::GridView>,
         pub store: OnceCell<gio::ListStore>,
     }
 
     #[glib::object_subclass]
-    impl ObjectSubclass for AlbumList {
-        const NAME: &'static str = "GellyAlbumList";
-        type Type = super::AlbumList;
+    impl ObjectSubclass for ArtistList {
+        const NAME: &'static str = "GellyArtistList";
+        type Type = super::ArtistList;
         type ParentType = gtk::Box;
 
         fn class_init(klass: &mut Self::Class) {
@@ -194,21 +197,20 @@ mod imp {
             obj.init_template();
         }
     }
-
-    impl ObjectImpl for AlbumList {
+    impl ObjectImpl for ArtistList {
         fn constructed(&self) {
             self.parent_constructed();
             self.obj().setup_model();
 
             self.grid_view.connect_activate(glib::clone!(
-                #[weak(rename_to = album_list)]
+                #[weak(rename_to = artist_list)]
                 self.obj(),
                 move |_, position| {
-                    album_list.activate_album(position);
+                    artist_list.activate_artist(position);
                 }
             ));
         }
     }
-    impl WidgetImpl for AlbumList {}
-    impl BoxImpl for AlbumList {}
+    impl WidgetImpl for ArtistList {}
+    impl BoxImpl for ArtistList {}
 }

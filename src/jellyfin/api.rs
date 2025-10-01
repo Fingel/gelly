@@ -44,6 +44,7 @@ pub struct MusicDto {
     pub album: String,
     pub artist_items: Vec<ArtistItemsDto>,
     pub album_id: String,
+    // TODO: this doesn't seem to be used anywhere
     pub album_primary_image_tag: String,
     pub media_type: String,
     pub normalization_gain: Option<f64>,
