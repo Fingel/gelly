@@ -11,5 +11,6 @@
     <file compressed="true" preprocess="xml-stripblanks">ui/player_bar.ui</file>
     <file compressed="true" preprocess="xml-stripblanks">ui/artist_list.ui</file>
     <file compressed="true" preprocess="xml-stripblanks">ui/artist.ui</file>
+    <file compressed="true" preprocess="xml-stripblanks">ui/artist_detail.ui</file>
   </gresource>
 </gresources>

@@ -30,18 +30,23 @@ impl AlbumDetail {
             imp.year_label.set_text("");
         }
         if !album_model.image_data().is_empty() {
-            match bytes_to_texture(&album_model.image_data(), None, None) {
-                Ok(texture) => {
-                    self.imp().album_image.set_paintable(Some(&texture));
-                }
-                Err(err) => {
-                    warn!("Failed to load album image: {}", err);
-                }
-            }
+            // TODO this is wrong, should delegate to a album art widget
+            self.set_album_image(&album_model.image_data());
         }
         self.pull_tracks();
         if let Some(audio_model) = self.get_application().audio_model() {
             self.update_playing_status(&audio_model.current_song_id());
+        }
+    }
+
+    pub fn set_album_image(&self, image_data: &[u8]) {
+        match bytes_to_texture(image_data, None, None) {
+            Ok(texture) => {
+                self.imp().album_image.set_paintable(Some(&texture));
+            }
+            Err(err) => {
+                warn!("Failed to load album image: {}", err);
+            }
         }
     }
 

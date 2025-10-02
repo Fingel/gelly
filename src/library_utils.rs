@@ -25,6 +25,18 @@ pub fn artists_from_library(library: &[MusicDto]) -> Vec<ArtistModel> {
     artists
 }
 
+pub fn albums_for_artist(artist_id: &str, library: &[MusicDto]) -> Vec<AlbumModel> {
+    let mut seen_album_ids = HashSet::new();
+    let albums: Vec<AlbumModel> = library
+        .iter()
+        .filter(|dto| dto.artist_items.iter().any(|artist| artist.id == artist_id))
+        .filter(|dto| seen_album_ids.insert(&dto.album_id))
+        .map(AlbumModel::from)
+        .collect();
+
+    albums
+}
+
 pub fn tracks_for_album(album_id: &str, library: &[MusicDto]) -> Vec<MusicDto> {
     // TODO: should we be converting to SongModel here?
     let mut tracks: Vec<MusicDto> = library

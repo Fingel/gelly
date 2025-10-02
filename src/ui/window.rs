@@ -63,7 +63,10 @@ impl Window {
     }
 
     pub fn show_artist_detail(&self, artist_model: &ArtistModel) {
-        dbg!(artist_model);
+        let imp = self.imp();
+        imp.artist_detail_page.set_title(&artist_model.name());
+        imp.main_navigation.push(&imp.artist_detail_page.get());
+        imp.artist_detail.set_artist_model(artist_model);
     }
 
     pub fn logout(&self) {
@@ -106,10 +109,10 @@ mod imp {
     };
     use log::{debug, warn};
 
-    use crate::ui::player_bar::PlayerBar;
     use crate::ui::setup::Setup;
     use crate::ui::widget_ext::WidgetApplicationExt;
     use crate::ui::{album_list::AlbumList, artist_list::ArtistList};
+    use crate::ui::{artist_detail::ArtistDetail, player_bar::PlayerBar};
     use crate::{application::Application, ui::album_detail::AlbumDetail};
 
     #[derive(CompositeTemplate, Default)]
@@ -128,11 +131,15 @@ mod imp {
         #[template_child]
         pub album_list: TemplateChild<AlbumList>,
         #[template_child]
-        pub artist_list: TemplateChild<ArtistList>,
-        #[template_child]
         pub album_detail_page: TemplateChild<adw::NavigationPage>,
         #[template_child]
         pub album_detail: TemplateChild<AlbumDetail>,
+        #[template_child]
+        pub artist_list: TemplateChild<ArtistList>,
+        #[template_child]
+        pub artist_detail_page: TemplateChild<adw::NavigationPage>,
+        #[template_child]
+        pub artist_detail: TemplateChild<ArtistDetail>,
         #[template_child]
         pub player_bar: TemplateChild<PlayerBar>,
     }
