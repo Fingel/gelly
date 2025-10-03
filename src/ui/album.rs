@@ -1,8 +1,6 @@
 use crate::models::AlbumModel;
-use crate::ui::image_utils::bytes_to_texture;
 use glib::Object;
-use gtk::{gio, glib, prelude::WidgetExt, subclass::prelude::*};
-use log::warn;
+use gtk::{gio, glib, subclass::prelude::*};
 
 glib::wrapper! {
     pub struct Album(ObjectSubclass<imp::Album>)
@@ -22,35 +20,10 @@ impl Album {
         self.imp().artist_label.set_text(artist);
     }
 
-    pub fn set_album_image(&self, image_data: &[u8]) {
-        match bytes_to_texture(image_data, None, None) {
-            Ok(texture) => {
-                self.imp().album_image.set_paintable(Some(&texture));
-            }
-            Err(err) => {
-                warn!("Failed to load album image: {}", err);
-            }
-        }
-    }
-
-    pub fn set_loading(&self, loading: bool) {
-        self.imp().spinner.set_visible(loading);
-        if loading {
-            self.imp().spinner.start();
-        } else {
-            self.imp().spinner.stop();
-        }
-    }
-
-    pub fn show_error(&self) {
-        self.set_loading(false);
-        self.imp().error_icon.set_visible(true);
-    }
-
     pub fn set_album_model(&self, album_model: &AlbumModel) {
         self.set_album_name(&album_model.name());
         self.set_artist_name(&album_model.artists_string());
-        self.set_loading(album_model.image_loading());
+        self.imp().album_image.set_item_id(&album_model.id());
     }
 }
 
@@ -67,6 +40,8 @@ mod imp {
         glib::{self},
     };
 
+    use crate::ui::album_art::AlbumArt;
+
     #[derive(CompositeTemplate, Default)]
     #[template(resource = "/io/m51/Gelly/ui/album.ui")]
     pub struct Album {
@@ -75,11 +50,7 @@ mod imp {
         #[template_child]
         pub artist_label: TemplateChild<gtk::Label>,
         #[template_child]
-        pub album_image: TemplateChild<gtk::Picture>,
-        #[template_child]
-        pub spinner: TemplateChild<gtk::Spinner>,
-        #[template_child]
-        pub error_icon: TemplateChild<gtk::Image>,
+        pub album_image: TemplateChild<AlbumArt>,
     }
 
     #[glib::object_subclass]

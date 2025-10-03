@@ -7,6 +7,7 @@
     <file compressed="true" preprocess="xml-stripblanks">ui/album_list.ui</file>
     <file compressed="true" preprocess="xml-stripblanks">ui/album_detail.ui</file>
     <file compressed="true" preprocess="xml-stripblanks">ui/album.ui</file>
+    <file compressed="true" preprocess="xml-stripblanks">ui/album_art.ui</file>
     <file compressed="true" preprocess="xml-stripblanks">ui/song.ui</file>
     <file compressed="true" preprocess="xml-stripblanks">ui/player_bar.ui</file>
     <file compressed="true" preprocess="xml-stripblanks">ui/artist_list.ui</file>

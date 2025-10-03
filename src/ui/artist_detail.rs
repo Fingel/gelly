@@ -1,12 +1,10 @@
 use crate::{
-    async_utils::spawn_tokio,
     library_utils::albums_for_artist,
     models::{AlbumModel, ArtistModel},
     ui::{album_detail::AlbumDetail, widget_ext::WidgetApplicationExt},
 };
 use glib::Object;
 use gtk::{gio, glib, prelude::*, subclass::prelude::*};
-use log::warn;
 
 glib::wrapper! {
     pub struct ArtistDetail(ObjectSubclass<imp::ArtistDetail>)
@@ -39,37 +37,7 @@ impl ArtistDetail {
             self.imp().albums_box.append(&album_widget);
             album_widget.set_album_model(album);
             album_widget.imp().artist_label.set_label("");
-            self.load_album_image(&album_widget, &album.id());
         }
-    }
-
-    fn load_album_image(&self, album_widget: &AlbumDetail, album_id: &str) {
-        let album_id = album_id.to_string();
-        let Some(image_cache) = self.get_application().image_cache() else {
-            warn!("Image cache not available");
-            return;
-        };
-
-        let jellyfin = self.get_application().jellyfin();
-        // TODO loading state for album art here. Refactor album cover into own widget?
-
-        spawn_tokio(
-            async move { image_cache.get_image(&album_id, &jellyfin).await },
-            glib::clone!(
-                #[weak]
-                album_widget,
-                move |result| {
-                    match result {
-                        Ok(image_data) => {
-                            album_widget.set_album_image(&image_data);
-                        }
-                        Err(err) => {
-                            warn!("Failed to load album art for {}", err);
-                        }
-                    }
-                }
-            ),
-        );
     }
 }
 

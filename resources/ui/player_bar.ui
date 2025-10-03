@@ -25,7 +25,6 @@
                 <property name="content-fit">cover</property>
                 <style>
                   <class name="album-image"/>
-                  <class name="album-image-small"/>
                 </style>
               </object>
             </child>

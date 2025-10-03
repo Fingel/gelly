@@ -1,8 +1,6 @@
 use crate::models::ArtistModel;
-use crate::ui::image_utils::bytes_to_texture;
 use glib::Object;
-use gtk::{gio, glib, prelude::WidgetExt, subclass::prelude::*};
-use log::warn;
+use gtk::{gio, glib, subclass::prelude::*};
 
 glib::wrapper! {
     pub struct Artist(ObjectSubclass<imp::Artist>)
@@ -18,34 +16,9 @@ impl Artist {
         self.imp().name_label.set_text(name);
     }
 
-    pub fn set_image(&self, image_data: &[u8]) {
-        match bytes_to_texture(image_data, None, None) {
-            Ok(texture) => {
-                self.imp().artist_image.set_paintable(Some(&texture));
-            }
-            Err(err) => {
-                warn!("Failed to load image: {}", err);
-            }
-        }
-    }
-
-    pub fn set_loading(&self, loading: bool) {
-        self.imp().spinner.set_visible(loading);
-        if loading {
-            self.imp().spinner.start();
-        } else {
-            self.imp().spinner.stop();
-        }
-    }
-
-    pub fn show_error(&self) {
-        self.set_loading(false);
-        self.imp().error_icon.set_visible(true);
-    }
-
     pub fn set_artist_model(&self, artist_model: &ArtistModel) {
         self.set_name(&artist_model.name());
-        self.set_loading(artist_model.image_loading());
+        self.imp().artist_image.set_item_id(&artist_model.id());
     }
 }
 
@@ -62,17 +35,15 @@ mod imp {
         glib::{self},
     };
 
+    use crate::ui::album_art::AlbumArt;
+
     #[derive(CompositeTemplate, Default)]
     #[template(resource = "/io/m51/Gelly/ui/artist.ui")]
     pub struct Artist {
         #[template_child]
         pub name_label: TemplateChild<gtk::Label>,
         #[template_child]
-        pub artist_image: TemplateChild<gtk::Picture>,
-        #[template_child]
-        pub spinner: TemplateChild<gtk::Spinner>,
-        #[template_child]
-        pub error_icon: TemplateChild<gtk::Image>,
+        pub artist_image: TemplateChild<AlbumArt>,
     }
 
     #[glib::object_subclass]

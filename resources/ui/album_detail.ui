@@ -9,14 +9,7 @@
         <property name="hexpand">True</property>
         <property name="spacing">16</property>
         <child>
-          <object class="GtkPicture" id="album_image">
-            <property name="width-request">200</property>
-            <property name="height-request">200</property>
-            <property name="can-shrink">true</property>
-            <property name="content-fit">cover</property>
-            <style>
-              <class name="album-image"/>
-            </style>
+          <object class="GellyAlbumArt" id="album_image">
           </object>
         </child>
         <child>

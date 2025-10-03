@@ -2,7 +2,7 @@ use crate::{
     audio::model::AudioModel,
     library_utils::tracks_for_album,
     models::{AlbumModel, SongModel},
-    ui::{image_utils::bytes_to_texture, song::Song, widget_ext::WidgetApplicationExt},
+    ui::{song::Song, widget_ext::WidgetApplicationExt},
 };
 use glib::Object;
 use gtk::{gio, glib, prelude::*, subclass::prelude::*};
@@ -29,24 +29,10 @@ impl AlbumDetail {
         } else {
             imp.year_label.set_text("");
         }
-        if !album_model.image_data().is_empty() {
-            // TODO this is wrong, should delegate to a album art widget
-            self.set_album_image(&album_model.image_data());
-        }
+        imp.album_image.set_item_id(&album_model.id());
         self.pull_tracks();
         if let Some(audio_model) = self.get_application().audio_model() {
             self.update_playing_status(&audio_model.current_song_id());
-        }
-    }
-
-    pub fn set_album_image(&self, image_data: &[u8]) {
-        match bytes_to_texture(image_data, None, None) {
-            Ok(texture) => {
-                self.imp().album_image.set_paintable(Some(&texture));
-            }
-            Err(err) => {
-                warn!("Failed to load album image: {}", err);
-            }
         }
     }
 
@@ -121,13 +107,13 @@ mod imp {
         prelude::*,
     };
 
-    use crate::models::SongModel;
+    use crate::{models::SongModel, ui::album_art::AlbumArt};
 
     #[derive(CompositeTemplate, Default)]
     #[template(resource = "/io/m51/Gelly/ui/album_detail.ui")]
     pub struct AlbumDetail {
         #[template_child]
-        pub album_image: TemplateChild<gtk::Picture>,
+        pub album_image: TemplateChild<AlbumArt>,
         #[template_child]
         pub name_label: TemplateChild<gtk::Label>,
         #[template_child]

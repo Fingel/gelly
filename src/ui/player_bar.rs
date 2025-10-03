@@ -20,9 +20,10 @@ impl PlayerBar {
     pub fn bind_to_audio_model(&self, audio_model: &AudioModel) {
         let imp = self.imp();
 
-        imp.audio_model
-            .set(audio_model.clone())
-            .expect("Audio model already set");
+        match imp.audio_model.set(audio_model.clone()) {
+            Ok(_) => (),
+            Err(e) => debug!("Audio model already set: {:?}", e),
+        };
 
         audio_model.connect_closure(
             "play",

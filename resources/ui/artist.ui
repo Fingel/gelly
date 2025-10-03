@@ -14,37 +14,7 @@
         <property name="orientation">1</property>
         <property name="spacing">6</property>
         <child>
-          <object class="GtkOverlay">
-            <child>
-              <object class="GtkPicture" id="artist_image">
-                <property name="width-request">200</property>
-                <property name="height-request">200</property>
-                <property name="can-shrink">true</property>
-                <property name="content-fit">cover</property>
-                <style>
-                  <class name="album-image"/>
-                </style>
-              </object>
-            </child>
-            <child type="overlay">
-              <object class="GtkSpinner" id="spinner">
-                <property name="spinning">true</property>
-                <property name="width-request">48</property>
-                <property name="height-request">48</property>
-                <property name="halign">center</property>
-                <property name="valign">center</property>
-                <property name="visible">false</property>
-              </object>
-            </child>
-            <child type="overlay">
-              <object class="GtkImage" id="error_icon">
-                <property name="icon-name">dialog-warning-symbolic</property>
-                <property name="icon-size">large</property>
-                <property name="halign">center</property>
-                <property name="valign">center</property>
-                <property name="visible">false</property>
-              </object>
-            </child>
+          <object class="GellyAlbumArt" id="artist_image">
           </object>
         </child>
         <child>

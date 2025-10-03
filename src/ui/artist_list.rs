@@ -1,6 +1,5 @@
 use crate::{
     application::Application,
-    async_utils::spawn_tokio,
     library_utils::artists_from_library,
     models::ArtistModel,
     ui::{artist::Artist, widget_ext::WidgetApplicationExt},
@@ -12,7 +11,6 @@ use gtk::{
     prelude::*,
     subclass::prelude::*,
 };
-use log::{debug, warn};
 
 glib::wrapper! {
     pub struct ArtistList(ObjectSubclass<imp::ArtistList>)
@@ -88,77 +86,24 @@ impl ArtistList {
             item.set_child(Some(&placeholder))
         });
 
-        factory.connect_bind(glib::clone!(
-            #[weak(rename_to = album_list)]
-            self,
-            move |_, list_item| {
-                let list_item = list_item
-                    .downcast_ref::<gtk::ListItem>()
-                    .expect("Needs to be a ListItem");
-                let artist_model = list_item
-                    .item()
-                    .and_downcast::<ArtistModel>()
-                    .expect("Item should be an ArtistData");
-                let artist_widget = list_item
-                    .child()
-                    .and_downcast::<Artist>()
-                    .expect("Child has to be an Artist");
+        factory.connect_bind(move |_, list_item| {
+            let list_item = list_item
+                .downcast_ref::<gtk::ListItem>()
+                .expect("Needs to be a ListItem");
+            let artist_model = list_item
+                .item()
+                .and_downcast::<ArtistModel>()
+                .expect("Item should be an ArtistData");
+            let artist_widget = list_item
+                .child()
+                .and_downcast::<Artist>()
+                .expect("Child has to be an Artist");
 
-                artist_widget.set_artist_model(&artist_model);
-
-                // Async image loading
-                album_list.load_image(&artist_model, &artist_widget);
-            }
-        ));
+            artist_widget.set_artist_model(&artist_model);
+        });
 
         imp.grid_view.set_model(Some(&selection_model));
         imp.grid_view.set_factory(Some(&factory));
-    }
-
-    fn load_image(&self, artist_model: &ArtistModel, artist_widget: &Artist) {
-        if artist_model.image_loading() || artist_model.image_loaded() {
-            debug!("Image is already loaded");
-            return;
-        }
-
-        let Some(image_cache) = self.get_application().image_cache() else {
-            warn!("Image cache not available");
-            return;
-        };
-
-        let item_id = artist_model.id();
-        let jellyfin = self.get_application().jellyfin();
-        artist_model.set_image_loading(true);
-        artist_widget.set_loading(true);
-
-        spawn_tokio(
-            async move { image_cache.get_image(&item_id, &jellyfin).await },
-            glib::clone!(
-                #[weak]
-                artist_model,
-                #[weak]
-                artist_widget,
-                move |result| {
-                    artist_model.set_image_loading(false);
-                    artist_model.set_image_loaded(true);
-                    match result {
-                        Ok(image_data) => {
-                            artist_widget.set_loading(false);
-                            artist_widget.set_image(&image_data);
-                            artist_model.set_image_data(image_data);
-                        }
-                        Err(err) => {
-                            warn!(
-                                "Failed to load album art for {}: {}",
-                                artist_model.id(),
-                                err
-                            );
-                            artist_widget.show_error();
-                        }
-                    }
-                }
-            ),
-        );
     }
 }
 
