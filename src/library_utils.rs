@@ -15,13 +15,14 @@ pub fn albums_from_library(library: &[MusicDto]) -> Vec<AlbumModel> {
 
 pub fn artists_from_library(library: &[MusicDto]) -> Vec<ArtistModel> {
     let mut seen_artist_ids = HashSet::new();
-    let artists: Vec<ArtistModel> = library
+    let mut artists: Vec<ArtistModel> = library
         .iter()
         .flat_map(|dto| &dto.artist_items)
         .filter(|artist| seen_artist_ids.insert(&artist.id))
         .map(ArtistModel::from)
         .collect();
 
+    artists.sort_by_key(|artist| artist.name().to_lowercase());
     artists
 }
 
