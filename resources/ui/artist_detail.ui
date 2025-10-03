@@ -4,11 +4,6 @@
   <template class="GellyArtistDetail" parent="GtkBox">
     <property name="orientation">vertical</property>
     <child>
-      <object class="GtkLabel" id="artist_label">
-        <property name="label">Artist</property>
-      </object>
-    </child>
-    <child>
       <object class="GtkBox" id="albums_box">
         <property name="orientation">vertical</property>
         <property name="spacing">24</property>

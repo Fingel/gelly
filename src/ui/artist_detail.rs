@@ -19,7 +19,6 @@ impl ArtistDetail {
 
     pub fn set_artist_model(&self, artist_model: &ArtistModel) {
         let imp = self.imp();
-        imp.artist_label.set_label(&artist_model.name());
         imp.artist_id.replace(artist_model.id());
         self.pull_albums();
     }
@@ -36,7 +35,7 @@ impl ArtistDetail {
             let album_widget = AlbumDetail::new();
             self.imp().albums_box.append(&album_widget);
             album_widget.set_album_model(album);
-            album_widget.imp().artist_label.set_label("");
+            album_widget.imp().artist_label.set_visible(false);
         }
     }
 }
@@ -62,8 +61,6 @@ mod imp {
     #[derive(CompositeTemplate, Default)]
     #[template(resource = "/io/m51/Gelly/ui/artist_detail.ui")]
     pub struct ArtistDetail {
-        #[template_child]
-        pub artist_label: TemplateChild<gtk::Label>,
         #[template_child]
         pub albums_box: TemplateChild<gtk::Box>,
 
