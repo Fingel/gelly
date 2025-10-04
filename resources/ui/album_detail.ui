@@ -1,6 +1,6 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <interface>
-  <requires lib="gtk" version="4.0"/>
+  <requires lib="gtk" version="4.0" />
   <template class="GellyAlbumDetail" parent="GtkBox">
     <property name="orientation">vertical</property>
     <child>
@@ -26,7 +26,7 @@
                 <property name="ellipsize">middle</property>
                 <property name="margin-bottom">18</property>
                 <style>
-                  <class name="title-1"/>
+                  <class name="title-1" />
                 </style>
               </object>
             </child>
@@ -37,7 +37,7 @@
                 <property name="ellipsize">middle</property>
                 <property name="margin-bottom">12</property>
                 <style>
-                  <class name="title-2"/>
+                  <class name="title-2" />
                 </style>
               </object>
             </child>
@@ -46,10 +46,45 @@
                 <property name="focusable">False</property>
                 <property name="halign">start</property>
                 <property name="ellipsize">middle</property>
-                <property name="margin-bottom">12</property>
                 <style>
-                  <class name="dimmed"/>
+                  <class name="dimmed" />
                 </style>
+              </object>
+            </child>
+            <child>
+              <object class="GtkBox">
+                <property name="orientation">horizontal</property>
+                <property name="spacing">6</property>
+                <property name="margin-bottom">12</property>
+                <child>
+                  <object class="GtkLabel" id="track_count">
+                    <property name="focusable">False</property>
+                    <property name="halign">start</property>
+                    <style>
+                      <class name="dimmed" />
+                    </style>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkLabel">
+                    <property name="focusable">False</property>
+                    <property name="halign">start</property>
+                    <property name="ellipsize">middle</property>
+                    <property name="label">tracks, </property>
+                    <style>
+                      <class name="dimmed" />
+                    </style>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="album_duration">
+                    <property name="focusable">False</property>
+                    <property name="halign">start</property>
+                    <style>
+                      <class name="dimmed" />
+                    </style>
+                  </object>
+                </child>
               </object>
             </child>
           </object>
@@ -62,7 +97,7 @@
         <property name="margin-top">24</property>
         <property name="width-request">300</property>
         <style>
-          <class name="boxed-list"/>
+          <class name="boxed-list" />
         </style>
       </object>
     </child>

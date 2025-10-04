@@ -1,5 +1,6 @@
 use crate::{
     audio::model::AudioModel,
+    jellyfin::utils::format_duration,
     library_utils::tracks_for_album,
     models::{AlbumModel, SongModel},
     ui::{song::Song, widget_ext::WidgetApplicationExt},
@@ -26,8 +27,9 @@ impl AlbumDetail {
         imp.artist_label.set_text(&album_model.artists_string());
         if album_model.year() > 0 {
             imp.year_label.set_text(&album_model.year().to_string());
+            imp.year_label.set_visible(true);
         } else {
-            imp.year_label.set_text("");
+            imp.year_label.set_visible(false);
         }
         imp.album_image.set_item_id(&album_model.id());
         self.pull_tracks();
@@ -48,6 +50,7 @@ impl AlbumDetail {
             track_list.append(&song_widget);
         }
         self.imp().songs.replace(songs);
+        self.update_track_metadata();
     }
 
     pub fn song_selected(&self, index: usize) {
@@ -88,6 +91,15 @@ impl AlbumDetail {
             row_index += 1;
         }
     }
+
+    fn update_track_metadata(&self) {
+        let songs = self.imp().songs.borrow();
+        self.imp().track_count.set_text(&songs.len().to_string());
+        let duration = songs.iter().map(|song| song.duration()).sum::<u64>();
+        self.imp()
+            .album_duration
+            .set_text(&format_duration(duration));
+    }
 }
 
 impl Default for AlbumDetail {
@@ -122,6 +134,10 @@ mod imp {
         pub year_label: TemplateChild<gtk::Label>,
         #[template_child]
         pub track_list: TemplateChild<gtk::ListBox>,
+        #[template_child]
+        pub track_count: TemplateChild<gtk::Label>,
+        #[template_child]
+        pub album_duration: TemplateChild<gtk::Label>,
 
         pub album_id: RefCell<String>,
         pub songs: RefCell<Vec<SongModel>>,
