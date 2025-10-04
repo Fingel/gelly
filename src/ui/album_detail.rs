@@ -63,6 +63,16 @@ impl AlbumDetail {
         }
     }
 
+    fn play_album(&self) {
+        let songs = self.imp().songs.borrow().clone();
+        if let Some(audio_model) = self.get_application().audio_model() {
+            audio_model.set_playlist(songs, 0);
+        } else {
+            self.toast("Audio model not initialized, please restart", None);
+            warn!("No audio model found");
+        }
+    }
+
     fn listen_for_song_changes(&self) {
         if let Some(audio_model) = self.get_application().audio_model() {
             audio_model.connect_closure(
@@ -138,6 +148,8 @@ mod imp {
         pub track_count: TemplateChild<gtk::Label>,
         #[template_child]
         pub album_duration: TemplateChild<gtk::Label>,
+        #[template_child]
+        pub play_all: TemplateChild<gtk::Button>,
 
         pub album_id: RefCell<String>,
         pub songs: RefCell<Vec<SongModel>>,
@@ -185,6 +197,14 @@ mod imp {
                 move |_track_list, row| {
                     let index = row.index();
                     imp.obj().song_selected(index as usize);
+                }
+            ));
+
+            self.play_all.connect_clicked(glib::clone!(
+                #[weak(rename_to=imp)]
+                self,
+                move |_| {
+                    imp.obj().play_album();
                 }
             ));
         }

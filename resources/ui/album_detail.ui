@@ -70,7 +70,7 @@
                     <property name="focusable">False</property>
                     <property name="halign">start</property>
                     <property name="ellipsize">middle</property>
-                    <property name="label">tracks, </property>
+                    <property name="label">tracks</property>
                     <style>
                       <class name="dimmed" />
                     </style>
@@ -82,6 +82,22 @@
                     <property name="halign">start</property>
                     <style>
                       <class name="dimmed" />
+                    </style>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="GtkBox">
+                <property name="orientation">horizontal</property>
+                <child>
+                  <object class="GtkButton" id="play_all">
+                    <property
+                                            name="icon-name"
+                                        >media-playback-start-symbolic</property>
+                    <property name="tooltip-text">Play</property>
+                    <style>
+                      <class name="circular" />
                     </style>
                   </object>
                 </child>
