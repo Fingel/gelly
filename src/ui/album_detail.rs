@@ -43,6 +43,15 @@ impl AlbumDetail {
         for song in &songs {
             let song_widget = Song::new();
             song_widget.set_song_data(song);
+            // Check if currently playing song is in the album
+            if let Some(audio_model) = self.get_application().audio_model()
+                && audio_model
+                    .current_song()
+                    .is_some_and(|current_song| current_song.id() == song.id())
+            {
+                song_widget.set_playing(true);
+            }
+
             track_list.append(&song_widget);
         }
         self.imp().songs.replace(songs);
@@ -63,6 +72,18 @@ impl AlbumDetail {
         let songs = self.imp().songs.borrow().clone();
         if let Some(audio_model) = self.get_application().audio_model() {
             audio_model.set_playlist(songs, 0);
+        } else {
+            self.toast("Audio model not initialized, please restart", None);
+            warn!("No audio model found");
+        }
+    }
+
+    fn enqueue_album(&self) {
+        let songs = self.imp().songs.borrow().clone();
+        if let Some(audio_model) = self.get_application().audio_model() {
+            let song_cnt = songs.len();
+            audio_model.append_to_playlist(songs);
+            self.toast(&format!("{} songs added to playlist", song_cnt), None);
         } else {
             self.toast("Audio model not initialized, please restart", None);
             warn!("No audio model found");
@@ -117,6 +138,8 @@ mod imp {
         pub album_duration: TemplateChild<gtk::Label>,
         #[template_child]
         pub play_all: TemplateChild<gtk::Button>,
+        #[template_child]
+        pub enqueue: TemplateChild<gtk::Button>,
 
         pub album_id: RefCell<String>,
         pub songs: RefCell<Vec<SongModel>>,
@@ -162,6 +185,14 @@ mod imp {
                 self,
                 move |_| {
                     imp.obj().play_album();
+                }
+            ));
+
+            self.enqueue.connect_clicked(glib::clone!(
+                #[weak(rename_to=imp)]
+                self,
+                move |_| {
+                    imp.obj().enqueue_album();
                 }
             ));
         }

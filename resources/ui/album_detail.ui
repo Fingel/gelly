@@ -90,12 +90,24 @@
             <child>
               <object class="GtkBox">
                 <property name="orientation">horizontal</property>
+                <property name="spacing">6</property>
                 <child>
                   <object class="GtkButton" id="play_all">
                     <property
-                                            name="icon-name"
-                                        >media-playback-start-symbolic</property>
+                      name="icon-name"
+                    >media-playback-start-symbolic</property>
                     <property name="tooltip-text">Play</property>
+                    <style>
+                      <class name="circular" />
+                    </style>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkButton" id="enqueue">
+                    <property
+                      name="icon-name"
+                    >list-add-symbolic</property>
+                    <property name="tooltip-text">Add to playlist</property>
                     <style>
                       <class name="circular" />
                     </style>

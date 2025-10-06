@@ -99,6 +99,11 @@ impl AudioModel {
         self.play();
     }
 
+    pub fn append_to_playlist(&self, songs: Vec<SongModel>) {
+        let mut playlist = self.imp().playlist.borrow_mut();
+        playlist.extend(songs);
+    }
+
     pub fn play_song(&self, index: usize) {
         self.load_song(index as i32);
         self.play();
