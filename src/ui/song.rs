@@ -1,7 +1,10 @@
 use glib::Object;
-use gtk::{gio, glib, subclass::prelude::*};
+use gtk::{gio, glib, prelude::*, subclass::prelude::*};
 
-use crate::{jellyfin::utils::format_duration, models::SongModel};
+use crate::{
+    audio::model::AudioModel, jellyfin::utils::format_duration, models::SongModel,
+    ui::widget_ext::WidgetApplicationExt,
+};
 
 glib::wrapper! {
     pub struct Song(ObjectSubclass<imp::Song>)
@@ -22,6 +25,27 @@ impl Song {
         imp.duration_label
             .set_label(&format_duration(song.duration()));
     }
+
+    pub fn set_playing(&self, playing: bool) {
+        self.imp().playing_icon.set_visible(playing);
+    }
+
+    fn listen_for_song_changes(&self) {
+        if let Some(audio_model) = self.get_application().audio_model() {
+            audio_model.connect_closure(
+                "song-changed",
+                false,
+                glib::closure_local!(
+                    #[weak(rename_to = song)]
+                    self,
+                    move |_audio_model: AudioModel, song_id: &str| {
+                        let my_id = song.imp().item_id.borrow().clone().unwrap_or_default();
+                        song.set_playing(song_id == my_id);
+                    }
+                ),
+            );
+        }
+    }
 }
 
 impl Default for Song {
@@ -35,7 +59,7 @@ mod imp {
 
     use adw::subclass::prelude::*;
     use glib::subclass::InitializingObject;
-    use gtk::{CompositeTemplate, glib};
+    use gtk::{CompositeTemplate, glib, prelude::*};
 
     #[derive(CompositeTemplate, Default)]
     #[template(resource = "/io/m51/Gelly/ui/song.ui")]
@@ -66,7 +90,18 @@ mod imp {
             obj.init_template();
         }
     }
-    impl ObjectImpl for Song {}
+    impl ObjectImpl for Song {
+        fn constructed(&self) {
+            self.parent_constructed();
+            self.obj().connect_map(glib::clone!(
+                #[weak(rename_to = song)]
+                self.obj(),
+                move |_| {
+                    song.listen_for_song_changes();
+                }
+            ));
+        }
+    }
     impl ListBoxRowImpl for Song {}
     impl WidgetImpl for Song {}
 }

@@ -89,9 +89,18 @@ impl AudioModel {
         uri
     }
 
+    pub fn playlist(&self) -> Vec<SongModel> {
+        self.imp().playlist.borrow().clone()
+    }
+
     pub fn set_playlist(&self, songs: Vec<SongModel>, start_index: usize) {
         self.imp().playlist.replace(songs);
         self.load_song(start_index as i32);
+        self.play();
+    }
+
+    pub fn play_song(&self, index: usize) {
+        self.load_song(index as i32);
         self.play();
     }
 
