@@ -222,8 +222,22 @@ mod imp {
                 ))
                 .build();
 
-            self.obj()
-                .add_action_entries([action_logout, action_clear_cache]);
+            let action_refresh_library = ActionEntry::builder("refresh-library")
+                .activate(glib::clone!(
+                    #[weak(rename_to=window)]
+                    self,
+                    move |_, _, _| {
+                        let app = window.obj().get_application();
+                        app.refresh_library();
+                    }
+                ))
+                .build();
+
+            self.obj().add_action_entries([
+                action_logout,
+                action_clear_cache,
+                action_refresh_library,
+            ]);
 
             self.obj().connect_map(glib::clone!(
                 #[weak(rename_to = window)]
@@ -250,7 +264,6 @@ mod imp {
                             window,
                             move |_app: Application| {
                                 window.loading_visible(true);
-                                window.toast("Library refresh started", None);
                             }
                         ),
                     );
