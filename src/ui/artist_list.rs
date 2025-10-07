@@ -26,14 +26,19 @@ impl ArtistList {
     pub fn pull_artists(&self) {
         let library = self.get_application().library().clone();
         let artists = artists_from_library(&library.borrow());
-        let store = self
-            .imp()
-            .store
-            .get()
-            .expect("AlbumList store should be initialized.");
-        store.remove_all();
-        for artist in artists {
-            store.append(&artist);
+        if artists.is_empty() {
+            self.set_empty(true);
+        } else {
+            self.set_empty(false);
+            let store = self
+                .imp()
+                .store
+                .get()
+                .expect("AlbumList store should be initialized.");
+            store.remove_all();
+            for artist in artists {
+                store.append(&artist);
+            }
         }
     }
 
@@ -105,6 +110,11 @@ impl ArtistList {
         imp.grid_view.set_model(Some(&selection_model));
         imp.grid_view.set_factory(Some(&factory));
     }
+
+    fn set_empty(&self, empty: bool) {
+        self.imp().empty.set_visible(empty);
+        self.imp().grid_view.set_visible(!empty);
+    }
 }
 
 impl Default for ArtistList {
@@ -125,6 +135,8 @@ mod imp {
     pub struct ArtistList {
         #[template_child]
         pub grid_view: TemplateChild<gtk::GridView>,
+        #[template_child]
+        pub empty: TemplateChild<adw::StatusPage>,
         pub store: OnceCell<gio::ListStore>,
     }
 

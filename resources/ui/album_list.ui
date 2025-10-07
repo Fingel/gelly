@@ -8,6 +8,13 @@
         <property name="orientation">vertical</property>
         <property name="valign">fill</property>
         <child>
+          <object class="AdwStatusPage" id="empty">
+            <property name="title">No Albums</property>
+            <property name="icon-name">audio-x-generic-symbolic</property>
+            <property name="visible">true</property>
+          </object>
+        </child>
+        <child>
           <object class="GtkScrolledWindow">
             <property name="hscrollbar-policy">never</property>
             <property name="vscrollbar-policy">automatic</property>
@@ -20,6 +27,7 @@
                 <property name="min-columns">1</property>
                 <property name="max-columns">10</property>
                 <property name="single-click-activate">true</property>
+                <property name="visible">false</property>
               </object>
             </child>
           </object>
