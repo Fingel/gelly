@@ -47,6 +47,7 @@ impl Window {
         // Setup library refresh callback, then refresh library
         imp.album_list.setup_library_connection();
         imp.artist_list.setup_library_connection();
+        self.loading_visible(true);
         self.get_application().refresh_library();
 
         // Initialize player bar with audio model
@@ -96,6 +97,34 @@ impl Window {
             self.maximize();
         }
     }
+
+    pub fn loading_visible(&self, visible: bool) {
+        self.imp().progress_bar.set_visible(visible);
+        if visible {
+            self.start_pulse_timer();
+        }
+    }
+
+    fn start_pulse_timer(&self) {
+        glib::timeout_add_local(
+            std::time::Duration::from_millis(100),
+            glib::clone!(
+                #[weak(rename_to = window)]
+                self,
+                #[upgrade_or_else]
+                || glib::ControlFlow::Break,
+                move || {
+                    let imp = window.imp();
+                    if imp.progress_bar.is_visible() {
+                        imp.progress_bar.pulse();
+                        glib::ControlFlow::Continue
+                    } else {
+                        glib::ControlFlow::Break
+                    }
+                }
+            ),
+        );
+    }
 }
 
 mod imp {
@@ -144,6 +173,8 @@ mod imp {
         pub player_bar: TemplateChild<PlayerBar>,
         #[template_child]
         pub now_playing: TemplateChild<NowPlaying>,
+        #[template_child]
+        pub progress_bar: TemplateChild<gtk::ProgressBar>,
     }
 
     #[glib::object_subclass]
@@ -207,6 +238,32 @@ mod imp {
                             window,
                             move |_app: Application, title: &str| {
                                 window.toast(title, None);
+                            }
+                        ),
+                    );
+
+                    app.connect_closure(
+                        "library-refresh-start",
+                        false,
+                        glib::closure_local!(
+                            #[weak]
+                            window,
+                            move |_app: Application| {
+                                window.loading_visible(true);
+                                window.toast("Library refresh started", None);
+                            }
+                        ),
+                    );
+
+                    app.connect_closure(
+                        "library-refreshed",
+                        false,
+                        glib::closure_local!(
+                            #[weak]
+                            window,
+                            move |_app: Application| {
+                                window.loading_visible(false);
+                                window.toast("Library refresh complete", None);
                             }
                         ),
                     );

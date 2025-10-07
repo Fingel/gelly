@@ -116,6 +116,7 @@ impl Application {
     }
 
     pub fn refresh_library(&self) {
+        self.emit_by_name::<()>("library-refresh-start", &[]);
         let library_id = self.imp().library_id.borrow().clone();
         let jellyfin = self.jellyfin();
         spawn_tokio(
@@ -194,6 +195,7 @@ mod imp {
             static SIGNALS: OnceLock<Vec<Signal>> = OnceLock::new();
             SIGNALS.get_or_init(|| {
                 vec![
+                    Signal::builder("library-refresh-start").build(),
                     Signal::builder("library-refreshed").build(),
                     Signal::builder("global-error")
                         .param_types([String::static_type()])
