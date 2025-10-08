@@ -20,6 +20,7 @@ impl AudioModel {
     pub fn new() -> Self {
         let obj: Self = Object::builder().build();
         obj.initialize_player();
+        obj.initialize_mpris();
         obj.set_playlist_index(-1);
         // TODO set these from settings
         obj.set_volume(1.0);
