@@ -1,13 +1,154 @@
+use adw::subclass::prelude::{ObjectSubclassExt, ObjectSubclassIsExt};
 use gtk::{gio, glib, prelude::*};
-use log::error;
-use mpris_server::zbus::fdo;
+use log::{error, info, warn};
+use mpris_server::zbus::{self, fdo};
 use mpris_server::{
     LocalPlayerInterface, LocalRootInterface, LocalServer, LoopStatus, Metadata, PlaybackStatus,
-    Time, TrackId, Volume,
+    Property, Time, TrackId, Volume,
 };
+use thiserror::Error;
 
 use crate::audio::model::AudioModel;
-use crate::config;
+use crate::config::{self, APP_ID};
+
+#[derive(Error, Debug)]
+pub enum MprisError {
+    #[error("Zbus error: {0}")]
+    Zbus(#[from] zbus::Error),
+
+    #[error("FDO error: {0}")]
+    Fdo(#[from] fdo::Error),
+
+    #[error("Initialization error: {message}")]
+    InitializationError { message: String },
+}
+
+type Result<T> = std::result::Result<T, MprisError>;
+
+// Extend AudioModel with MPRIS functionality
+impl AudioModel {
+    pub async fn initialize_mpris(&self) -> Result<()> {
+        let server = LocalServer::new(APP_ID, self.imp().obj().clone()).await?;
+        glib::spawn_future_local(server.run());
+        self.imp()
+            .mpris_server
+            .set(server)
+            .map_err(|_| MprisError::InitializationError {
+                message: "Failed to set MPRIS server".to_string(),
+            })?;
+        Ok(())
+    }
+
+    pub fn mpris_server(&self) -> Option<&LocalServer<AudioModel>> {
+        self.imp().mpris_server.get()
+    }
+
+    pub fn mpris_properties_changed(&self, property: impl IntoIterator<Item = Property> + 'static) {
+        glib::spawn_future_local(glib::clone!(
+            #[weak(rename_to=imp)]
+            self,
+            async move {
+                match imp.mpris_server() {
+                    Some(server) => {
+                        if let Err(err) = server.properties_changed(property).await {
+                            warn!("Failed to emit properties changed: {}", err);
+                        }
+                    }
+                    None => {
+                        info!("Failed to get MPRIS server.");
+                    }
+                }
+            }
+        ));
+    }
+
+    pub fn metadata(&self) -> Metadata {
+        self.imp()
+            .obj()
+            .current_song()
+            .map_or_else(Metadata::new, |song| {
+                Metadata::builder()
+                    .artist(song.artists())
+                    .album(song.album())
+                    .title(song.title())
+                    .length(Time::from_secs(song.duration() as i64))
+                    .build()
+            })
+    }
+
+    fn application(&self) -> Option<crate::application::Application> {
+        gio::Application::default()
+            .and_then(|app| app.downcast::<crate::application::Application>().ok())
+    }
+
+    pub fn notify_mpris_playback_status(&self) {
+        let status = if self.playing() {
+            PlaybackStatus::Playing
+        } else if self.paused() {
+            PlaybackStatus::Paused
+        } else {
+            PlaybackStatus::Stopped
+        };
+
+        self.mpris_properties_changed([
+            Property::PlaybackStatus(status),
+            Property::CanPause(self.playing()),
+            Property::CanPlay(!self.playlist().is_empty()),
+        ]);
+    }
+
+    pub fn notify_mpris_track_changed(&self) {
+        self.mpris_properties_changed([
+            Property::Metadata(self.metadata()),
+            Property::CanGoNext({
+                let playlist = self.playlist();
+                let current_index = self.playlist_index();
+                current_index >= 0 && (current_index + 1) < playlist.len() as i32
+            }),
+            Property::CanGoPrevious(self.playlist_index() > 0),
+        ]);
+    }
+
+    pub fn notify_mpris_metadata(&self) {
+        self.mpris_properties_changed([Property::Metadata(self.metadata())]);
+    }
+
+    pub fn notify_mpris_volume(&self) {
+        self.mpris_properties_changed([Property::Volume(self.volume())]);
+    }
+
+    pub fn notify_mpris_seeked(&self, position_seconds: u32) {
+        glib::spawn_future_local(glib::clone!(
+            #[weak(rename_to=imp)]
+            self,
+            async move {
+                match imp.mpris_server() {
+                    Some(server) => {
+                        let signal = mpris_server::Signal::Seeked {
+                            position: Time::from_secs(position_seconds as i64),
+                        };
+                        if let Err(err) = server.emit(signal).await {
+                            warn!("failed to emit seeked signal: {}", err);
+                        }
+                    }
+                    None => {
+                        info!("Failed to get MPRIS server.");
+                    }
+                }
+            }
+        ));
+    }
+
+    pub fn notify_mpris_can_navigate(&self) {
+        let playlist = self.playlist();
+        let current_index = self.playlist_index();
+
+        self.mpris_properties_changed([
+            Property::CanGoNext(current_index + 1 < playlist.len() as i32),
+            Property::CanGoPrevious(current_index > 0),
+        ]);
+    }
+}
 
 impl LocalRootInterface for AudioModel {
     async fn can_quit(&self) -> fdo::Result<bool> {
@@ -212,29 +353,5 @@ impl LocalPlayerInterface for AudioModel {
 
     async fn can_control(&self) -> fdo::Result<bool> {
         Ok(true)
-    }
-}
-
-impl AudioModel {
-    pub fn initialize_mpris(&self) {
-        let audio_model = self.clone(); // Gobject clones are RC's by gtk so this is fine
-
-        glib::spawn_future_local(async move {
-            match LocalServer::new(config::APP_ID, audio_model).await {
-                Ok(server) => {
-                    let _handle = glib::spawn_future_local(async move {
-                        server.run().await;
-                    });
-                }
-                Err(e) => {
-                    error!("Failed to create MPRIS server: {}", e);
-                }
-            }
-        });
-    }
-
-    fn application(&self) -> Option<crate::application::Application> {
-        gio::Application::default()
-            .and_then(|app| app.downcast::<crate::application::Application>().ok())
     }
 }

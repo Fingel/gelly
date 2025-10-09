@@ -20,7 +20,6 @@ impl AudioModel {
     pub fn new() -> Self {
         let obj: Self = Object::builder().build();
         obj.initialize_player();
-        obj.initialize_mpris();
         obj.set_playlist_index(-1);
         // TODO set these from settings
         obj.set_volume(1.0);
@@ -49,6 +48,9 @@ impl AudioModel {
                         obj.set_property("paused", paused);
                         obj.set_property("loading", false);
 
+                        // Mpris notification
+                        obj.notify_mpris_playback_status();
+
                         match state {
                             PlayerState::Playing => obj.emit_by_name::<()>("play", &[]),
                             PlayerState::Paused => obj.emit_by_name::<()>("pause", &[]),
@@ -60,6 +62,8 @@ impl AudioModel {
                     }
                     PlayerEvent::DurationChanged(dur) => {
                         obj.set_property("duration", dur as u32);
+                        // Update MPRIS metadata
+                        obj.notify_mpris_metadata();
                     }
                     PlayerEvent::EndOfStream => {
                         obj.next();
@@ -98,11 +102,13 @@ impl AudioModel {
         self.imp().playlist.replace(songs);
         self.load_song(start_index as i32);
         self.play();
+        self.notify_mpris_can_navigate();
     }
 
     pub fn append_to_playlist(&self, songs: Vec<SongModel>) {
         let mut playlist = self.imp().playlist.borrow_mut();
         playlist.extend(songs);
+        self.notify_mpris_can_navigate();
     }
 
     pub fn play_song(&self, index: usize) {
@@ -121,6 +127,8 @@ impl AudioModel {
             self.set_playlist_index(index);
             player.set_uri(&stream_uri);
             self.emit_by_name::<()>("song-changed", &[&song.id()]);
+            // Notify MPRIS with metadata
+            self.notify_mpris_track_changed();
         } else {
             warn!("Failed to load song at index {}", index);
         }
@@ -165,6 +173,8 @@ impl AudioModel {
     pub fn seek(&self, position: u32) {
         self.player().seek(position as u64);
         self.set_property("position", position);
+        // Some MRPIS clients care about this I guess
+        self.notify_mpris_seeked(position);
     }
 
     pub fn toggle_play_pause(&self) {
@@ -210,6 +220,8 @@ impl Default for AudioModel {
 mod imp {
     use std::cell::OnceCell;
 
+    use mpris_server::LocalServer;
+
     use crate::{audio::player::AudioPlayer, models::SongModel};
 
     use super::*;
@@ -243,6 +255,7 @@ mod imp {
 
         pub player: OnceCell<AudioPlayer>,
         pub playlist: RefCell<Vec<SongModel>>,
+        pub mpris_server: OnceCell<LocalServer<super::AudioModel>>,
     }
     #[glib::object_subclass]
     impl ObjectSubclass for AudioModel {
@@ -275,6 +288,19 @@ mod imp {
                 ]
             })
         }
+
+        fn constructed(&self) {
+            self.parent_constructed();
+            glib::spawn_future_local(glib::clone!(
+                #[weak(rename_to = imp)]
+                self,
+                async move {
+                    if let Err(e) = imp.obj().initialize_mpris().await {
+                        warn!("Failed to initialize MPRIS: {}", e);
+                    }
+                }
+            ));
+        }
     }
 
     impl AudioModel {
@@ -285,6 +311,8 @@ mod imp {
             if let Some(player) = self.player.get() {
                 player.set_volume(clamped_volume);
             }
+
+            self.obj().notify_mpris_volume();
         }
 
         pub fn set_muted(&self, muted: bool) {
