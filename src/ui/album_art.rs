@@ -16,7 +16,10 @@ impl AlbumArt {
         Object::builder().build()
     }
 
-    pub fn set_item_id(&self, item_id: &str) {
+    pub fn set_item_id(&self, item_id: &str, fallback_id: Option<&str>) {
+        if let Some(id) = fallback_id {
+            self.imp().fallback_image.replace(Some(id.to_string()));
+        }
         let current_item_id = self.imp().item_id.borrow().clone();
         if current_item_id != item_id {
             self.imp().is_loaded.set(false);
@@ -28,8 +31,12 @@ impl AlbumArt {
     }
 
     pub fn set_image(&self, image_data: &[u8]) {
-        let width = self.width();
-        let height = self.height();
+        let width = if self.width() == 0 { 200 } else { self.width() };
+        let height = if self.height() == 0 {
+            200
+        } else {
+            self.height()
+        };
         match bytes_to_texture(image_data, Some(width), Some(height)) {
             Ok(texture) => {
                 self.imp().album_image.set_paintable(Some(&texture));

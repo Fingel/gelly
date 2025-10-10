@@ -18,7 +18,9 @@ impl Artist {
 
     pub fn set_artist_model(&self, artist_model: &ArtistModel) {
         self.set_name(&artist_model.name());
-        self.imp().artist_image.set_item_id(&artist_model.id());
+        self.imp()
+            .artist_image
+            .set_item_id(&artist_model.id(), None);
     }
 }
 

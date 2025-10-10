@@ -1,7 +1,4 @@
-use crate::{
-    audio::model::AudioModel,
-    ui::{image_utils::bytes_to_texture, widget_ext::WidgetApplicationExt},
-};
+use crate::audio::model::AudioModel;
 use glib::Object;
 use gtk::{gio, glib, prelude::*, subclass::prelude::*};
 use log::debug;
@@ -145,38 +142,7 @@ impl PlayerBar {
     }
 
     fn load_album_art(&self, album_id: &str, song_id: &str) {
-        // TODO: get fancy here and save album cover for tracks that dont have their own image
-        let album_id = album_id.to_string();
-        let song_id = song_id.to_string();
-        let Some(image_cache) = self.get_application().image_cache() else {
-            return;
-        };
-        let jellyfin = self.get_application().jellyfin();
-
-        crate::async_utils::spawn_tokio(
-            async move {
-                image_cache
-                    .get_images(&song_id, Some(&album_id), &jellyfin)
-                    .await
-            },
-            glib::clone!(
-                #[weak(rename_to = player)]
-                self,
-                move |result| {
-                    match result {
-                        Ok(image_data) => {
-                            if let Ok(texture) = bytes_to_texture(&image_data, Some(100), Some(100))
-                            {
-                                player.imp().album_art.set_paintable(Some(&texture));
-                            }
-                        }
-                        Err(err) => {
-                            debug!("Failed to load album art: {}", err);
-                        }
-                    }
-                }
-            ),
-        );
+        self.imp().album_art.set_item_id(song_id, Some(album_id));
     }
 
     fn format_time(seconds: u32) -> String {
@@ -199,7 +165,7 @@ impl Default for PlayerBar {
 mod imp {
     use std::cell::{OnceCell, RefCell};
 
-    use crate::audio::model::AudioModel;
+    use crate::{audio::model::AudioModel, ui::album_art::AlbumArt};
     use adw::subclass::prelude::*;
     use glib::{Properties, subclass::InitializingObject};
     use gtk::{
@@ -215,7 +181,7 @@ mod imp {
         #[template_child]
         pub action_bar: TemplateChild<gtk::ActionBar>,
         #[template_child]
-        pub album_art: TemplateChild<gtk::Picture>,
+        pub album_art: TemplateChild<AlbumArt>,
         #[template_child]
         pub title_label: TemplateChild<gtk::Label>,
         #[template_child]

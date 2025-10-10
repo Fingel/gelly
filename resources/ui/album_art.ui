@@ -12,8 +12,6 @@
       <object class="GtkOverlay">
         <child>
           <object class="GtkPicture" id="album_image">
-            <property name="width-request">200</property>
-            <property name="height-request">200</property>
             <property name="can-shrink">true</property>
             <property name="content-fit">cover</property>
             <style>

@@ -23,7 +23,7 @@ impl Album {
     pub fn set_album_model(&self, album_model: &AlbumModel) {
         self.set_album_name(&album_model.name());
         self.set_artist_name(&album_model.artists_string());
-        self.imp().album_image.set_item_id(&album_model.id());
+        self.imp().album_image.set_item_id(&album_model.id(), None);
     }
 }
 

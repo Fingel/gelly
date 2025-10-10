@@ -30,7 +30,7 @@ impl AlbumDetail {
         } else {
             imp.year_label.set_visible(false);
         }
-        imp.album_image.set_item_id(&album_model.id());
+        imp.album_image.set_item_id(&album_model.id(), None);
         self.pull_tracks();
     }
 

@@ -8,6 +8,8 @@
         <property name="halign">fill</property>
         <property name="hexpand">True</property>
         <property name="spacing">16</property>
+        <property name="width-request">200</property>
+        <property name="height-request">200</property>
         <child>
           <object class="GellyAlbumArt" id="album_image">
           </object>
