@@ -47,11 +47,31 @@ impl ImageCache {
         Ok(cache_dir.join(APP_ID).join("album-art"))
     }
 
-    pub async fn get_image(
+    pub async fn get_images(
         &self,
-        item_id: &str,
+        primary: &str,
+        fallback: Option<&str>,
         jellyfin: &Jellyfin,
     ) -> Result<Vec<u8>, CacheError> {
+        match fallback {
+            None => self.get_image(primary, jellyfin).await,
+            Some(fallback) => {
+                if let Ok(image) = self.get_image(primary, jellyfin).await {
+                    dbg!("Found primary image.");
+                    Ok(image)
+                } else {
+                    dbg!("Failed to find primary image, looking for fallback");
+                    let res = self.get_image(fallback, jellyfin).await;
+                    if res.is_ok() {
+                        dbg!("symlink primary to fallback here.");
+                    }
+                    res
+                }
+            }
+        }
+    }
+
+    async fn get_image(&self, item_id: &str, jellyfin: &Jellyfin) -> Result<Vec<u8>, CacheError> {
         // We should probably be using hashes here, many IDs have the same image.
         loop {
             if let Ok(bytes) = self.load_from_disk(item_id) {

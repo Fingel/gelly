@@ -62,6 +62,8 @@ impl AlbumArt {
             self.imp().item_id.borrow().clone()
         };
 
+        let fallback_id = self.imp().fallback_image.borrow().clone();
+
         if self.imp().is_loading.get() || self.imp().is_loaded.get() {
             return;
         }
@@ -75,7 +77,11 @@ impl AlbumArt {
 
         self.set_loading(true);
         spawn_tokio(
-            async move { image_cache.get_image(&item_id, &jellyfin).await },
+            async move {
+                image_cache
+                    .get_images(&item_id, fallback_id.as_deref(), &jellyfin)
+                    .await
+            },
             glib::clone!(
                 #[weak(rename_to = album_art)]
                 self,
@@ -130,6 +136,7 @@ mod imp {
         pub item_id: RefCell<String>,
         pub is_loading: Cell<bool>,
         pub is_loaded: Cell<bool>,
+        pub fallback_image: RefCell<Option<String>>,
     }
 
     #[glib::object_subclass]

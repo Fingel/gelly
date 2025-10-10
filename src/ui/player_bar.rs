@@ -155,11 +155,9 @@ impl PlayerBar {
 
         crate::async_utils::spawn_tokio(
             async move {
-                // Try loading song level art first
-                match image_cache.get_image(&song_id, &jellyfin).await {
-                    Ok(image_data) => Ok(image_data),
-                    Err(_) => image_cache.get_image(&album_id, &jellyfin).await,
-                }
+                image_cache
+                    .get_images(&song_id, Some(&album_id), &jellyfin)
+                    .await
             },
             glib::clone!(
                 #[weak(rename_to = player)]
