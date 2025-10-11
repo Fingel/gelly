@@ -34,8 +34,7 @@ impl ImageCache {
         })
     }
 
-    fn get_cache_directory() -> Result<PathBuf, CacheError> {
-        // TODO: could use a crate like `directories` to make this cross platform
+    pub fn get_cache_directory() -> Result<PathBuf, CacheError> {
         // TODO: see if these directories are actually correct
         let cache_dir = if let Ok(xdg_cache) = std::env::var("XDG_CACHE_HOME") {
             PathBuf::from(xdg_cache)

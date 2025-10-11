@@ -9,6 +9,7 @@ use mpris_server::{
 use thiserror::Error;
 
 use crate::audio::model::AudioModel;
+use crate::cache::ImageCache;
 use crate::config::{self, APP_ID};
 
 #[derive(Error, Debug)]
@@ -67,10 +68,14 @@ impl AudioModel {
             .obj()
             .current_song()
             .map_or_else(Metadata::new, |song| {
+                let cache_dir = ImageCache::get_cache_directory().unwrap_or_default();
+                let art_path = cache_dir.join(song.id());
+                let art_url = format!("file://{}", art_path.to_string_lossy());
                 Metadata::builder()
                     .artist(song.artists())
                     .album(song.album())
                     .title(song.title())
+                    .art_url(art_url)
                     .length(Time::from_secs(song.duration() as i64))
                     .build()
             })
