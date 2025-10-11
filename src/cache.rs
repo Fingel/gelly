@@ -1,4 +1,4 @@
-use std::{collections::HashSet, fs, path::PathBuf, sync::Arc, time::Duration};
+use std::{collections::HashSet, fs, os::unix, path::PathBuf, sync::Arc, time::Duration};
 
 use log::{debug, warn};
 use thiserror::Error;
@@ -56,16 +56,16 @@ impl ImageCache {
         match fallback {
             None => self.get_image(primary, jellyfin).await,
             Some(fallback) => {
-                if let Ok(image) = self.get_image(primary, jellyfin).await {
-                    dbg!("Found primary image.");
-                    Ok(image)
+                if let Ok(primary_image) = self.get_image(primary, jellyfin).await {
+                    Ok(primary_image)
                 } else {
-                    dbg!("Failed to find primary image, looking for fallback");
-                    let res = self.get_image(fallback, jellyfin).await;
-                    if res.is_ok() {
-                        dbg!("symlink primary to fallback here.");
+                    let fallback_image = self.get_image(fallback, jellyfin).await;
+                    if fallback_image.is_ok() {
+                        let primary_path = self.get_cache_file_path(primary);
+                        let fallback_path = self.get_cache_file_path(fallback);
+                        unix::fs::symlink(&fallback_path, &primary_path)?;
                     }
-                    res
+                    fallback_image
                 }
             }
         }
