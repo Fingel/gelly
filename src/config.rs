@@ -25,9 +25,6 @@ pub fn logout() {
         settings().string("user-id").as_str(),
     );
     settings()
-        .set_string("hostname", "")
-        .expect("Failed to clear hostname");
-    settings()
         .set_string("user-id", "")
         .expect("Failed to clear user-id");
     settings()

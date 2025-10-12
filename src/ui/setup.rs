@@ -37,6 +37,11 @@ impl Setup {
 
     pub fn show_server_setup(&self) {
         let imp = self.imp();
+        let host = settings().string("hostname");
+        if !host.is_empty() {
+            imp.host_entry.set_text(&host);
+        }
+        imp.password_entry.set_text("");
         imp.setup_navigation_view
             .replace(&[imp.setup_servers.get()]);
     }
