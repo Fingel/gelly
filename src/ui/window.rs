@@ -280,6 +280,18 @@ mod imp {
                             }
                         ),
                     );
+
+                    app.connect_closure(
+                        "force-logout",
+                        false,
+                        glib::closure_local!(
+                            #[weak]
+                            window,
+                            move |_app: Application| {
+                                window.logout();
+                            }
+                        ),
+                    );
                 }
             ));
         }

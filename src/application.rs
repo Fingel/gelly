@@ -130,13 +130,19 @@ impl Application {
                             app.imp().library.replace(library.items);
                             app.emit_by_name::<()>("library-refreshed", &[]);
                         }
-                        Err(err) => {
-                            log::error!("Failed to refresh library: {}", err);
-                            app.emit_by_name::<()>(
-                                "global-error",
-                                &[&String::from("Failed to refresh library")],
-                            )
-                        }
+                        Err(err) => match err {
+                            JellyfinError::AuthenticationFailed { message } => {
+                                log::error!("Authentication failed: {}", message);
+                                app.emit_by_name::<()>("force-logout", &[]);
+                            }
+                            _ => {
+                                log::error!("Failed to refresh library: {}", err);
+                                app.emit_by_name::<()>(
+                                    "global-error",
+                                    &[&String::from("Failed to refresh library")],
+                                )
+                            }
+                        },
                     }
                 },
             ),
@@ -197,6 +203,7 @@ mod imp {
                 vec![
                     Signal::builder("library-refresh-start").build(),
                     Signal::builder("library-refreshed").build(),
+                    Signal::builder("force-logout").build(),
                     Signal::builder("global-error")
                         .param_types([String::static_type()])
                         .build(),
