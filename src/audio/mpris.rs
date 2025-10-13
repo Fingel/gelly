@@ -172,8 +172,10 @@ impl LocalRootInterface for AudioModel {
     }
 
     async fn raise(&self) -> fdo::Result<()> {
-        if let Some(app) = self.application() {
-            app.activate();
+        if let Some(app) = self.application()
+            && let Some(window) = app.active_window()
+        {
+            window.present();
         }
         Ok(())
     }

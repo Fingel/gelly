@@ -28,6 +28,10 @@ fn main() -> glib::ExitCode {
 }
 
 fn build_ui(app: &Application) {
+    if let Some(window) = app.active_window() {
+        window.present();
+        return;
+    }
     let window = Window::new(app);
     window.present();
 }

@@ -24,6 +24,7 @@ impl Application {
     pub fn new() -> Self {
         let app: Self = Object::builder()
             .property("application-id", config::APP_ID)
+            .property("flags", gio::ApplicationFlags::FLAGS_NONE)
             .build();
         app.load_settings();
         app.initialize_jellyfin();
