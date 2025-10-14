@@ -42,7 +42,7 @@ impl From<&MusicDto> for SongModel {
             artists,
             &dto.album,
             &dto.album_id,
-            dto.index_number,
+            dto.index_number.unwrap_or(0),
             dto.run_time_ticks,
         )
     }

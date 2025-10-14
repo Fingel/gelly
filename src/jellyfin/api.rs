@@ -49,7 +49,7 @@ pub struct MusicDto {
     pub media_type: String,
     pub normalization_gain: Option<f64>,
     pub production_year: Option<u32>,
-    pub index_number: u32,
+    pub index_number: Option<u32>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
