@@ -1,0 +1,11 @@
+[Desktop Entry]
+Name=Gelly
+Type=Application
+Exec=gelly
+Comment=Jellyfin client focused on music.
+Icon=io.m51.Gelly
+Terminal=false
+GenericName=Jellyfin Music Client
+StartupNotify=true
+Categories=GNOME;GTK;Audio;AudioVideo;
+Keywords=Jellyfin;Music;Stream;
