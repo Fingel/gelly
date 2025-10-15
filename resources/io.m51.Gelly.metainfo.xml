@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>io.m51.Gelly</id>
+  <name>Gelly</name>
+  <launchable type="desktop-id">io.m51.Gelly.desktop</launchable>
+  <summary>Jellyfin client focused on music</summary>
+  <description>
+    <p>
+      Gelly is a Jellyfin Media Server client focused specifically on music playback.
+    </p>
+    <ul>
+      <li>Browse your music collection by artist or album</li>
+      <li>Modern GTK/Adwaita interface with MPRIS support</li>
+      <li>Written in Rust</li>
+    </ul>
+  </description>
+  <content_rating type="oars-1.1"/>
+  <developer_name>Austin Riba</developer_name>
+  <developer id="io.m51">
+    <name>Austin Riba</name>
+  </developer>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>GPL-3.0-or-later</project_license>
+  <url type="homepage">https://github.com/Fingel/gelly</url>
+  <url type="bugtracker">https://github.com/Fingel/gelly/issues</url>
+  <screenshots>
+    <screenshot type="default">
+      <image>https://github.com/user-attachments/assets/8c914d2f-52a0-4cfa-9113-0855a0209568</image>
+      <caption>Main window showing music library</caption>
+    </screenshot>
+  </screenshots>
+  <releases>
+    <release version="0.1.0" date="2025-10-14">
+      <description>
+        <p>
+          This release includes initial support for music playback and browsing.
+        </p>
+      </description>
+    </release>
+  </releases>
+  <provides>
+    <binary>gelly</binary>
+  </provides>
+</component>
