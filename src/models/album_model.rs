@@ -13,7 +13,6 @@ impl AlbumModel {
         id: &str,
         artists: Vec<String>,
         date_created: &str,
-        image_tag: &str,
         year: &Option<u32>,
     ) -> Self {
         Object::builder()
@@ -21,7 +20,6 @@ impl AlbumModel {
             .property("id", id)
             .property("artists", artists)
             .property("date-created", date_created)
-            .property("image-tag", image_tag)
             .property("image-loading", false)
             .property("image-loaded", false)
             .property("year", year.unwrap_or(0))
@@ -61,7 +59,6 @@ impl From<&MusicDto> for AlbumModel {
             &dto.album_id,
             artists,
             &dto.date_created,
-            &dto.album_primary_image_tag,
             &dto.production_year,
         )
     }
@@ -89,9 +86,6 @@ mod imp {
 
         #[property(get, set)]
         pub year: RefCell<u32>,
-
-        #[property(get, set, name = "image-tag")]
-        pub image_tag: RefCell<String>,
 
         #[property(get, set, name = "image-loading")]
         pub image_loading: RefCell<bool>,
