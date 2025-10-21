@@ -102,13 +102,14 @@ impl AudioModel {
         self.imp().playlist.replace(songs);
         self.load_song(start_index as i32);
         self.play();
-        self.notify_mpris_can_navigate();
+        self.notify_mpris_can_navigate(true, start_index > 0);
     }
 
     pub fn append_to_playlist(&self, songs: Vec<SongModel>) {
         let mut playlist = self.imp().playlist.borrow_mut();
         playlist.extend(songs);
-        self.notify_mpris_can_navigate();
+        let current_index = self.playlist_index();
+        self.notify_mpris_can_navigate(true, current_index > 0);
     }
 
     pub fn play_song(&self, index: usize) {

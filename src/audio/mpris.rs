@@ -144,14 +144,8 @@ impl AudioModel {
         ));
     }
 
-    pub fn notify_mpris_can_navigate(&self) {
-        let playlist = self.playlist();
-        let current_index = self.playlist_index();
-
-        self.mpris_properties_changed([
-            Property::CanGoNext(current_index + 1 < playlist.len() as i32),
-            Property::CanGoPrevious(current_index > 0),
-        ]);
+    pub fn notify_mpris_can_navigate(&self, next: bool, prev: bool) {
+        self.mpris_properties_changed([Property::CanGoNext(next), Property::CanGoPrevious(prev)]);
     }
 }
 
