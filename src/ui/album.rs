@@ -73,6 +73,8 @@ mod imp {
         #[template_child]
         pub album_image: TemplateChild<AlbumArt>,
         #[template_child]
+        pub play_revealer: TemplateChild<gtk::Revealer>,
+        #[template_child]
         pub motion_controller: TemplateChild<gtk::EventControllerMotion>,
         #[template_child]
         pub overlay_play: TemplateChild<gtk::Button>,
@@ -109,7 +111,7 @@ mod imp {
                 #[weak(rename_to = imp)]
                 self,
                 move |_, _x, _y| {
-                    imp.overlay_play.set_visible(true);
+                    imp.play_revealer.set_reveal_child(true);
                 }
             ));
 
@@ -117,7 +119,7 @@ mod imp {
                 #[weak(rename_to = imp)]
                 self,
                 move |_| {
-                    imp.overlay_play.set_visible(false);
+                    imp.play_revealer.set_reveal_child(false);
                 }
             ));
 

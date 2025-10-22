@@ -21,22 +21,28 @@
               </object>
             </child>
             <child type="overlay">
-              <object class="GtkButton" id="overlay_play">
+              <object class="GtkRevealer" id="play_revealer">
                 <property name="halign">center</property>
                 <property name="valign">center</property>
-                <property name="width-request">50</property>
-                <property name="height-request">50</property>
-                <property name="visible">false</property>
+                <property name="reveal-child">false</property>
+                <property name="transition-type">crossfade</property>
+                <property name="transition-duration">200</property>
                 <child>
-                  <object class="GtkImage">
-                    <property name="icon-name">media-playback-start-symbolic</property>
-                    <property name="icon-size">2</property>
+                  <object class="GtkButton" id="overlay_play">
+                    <property name="width-request">50</property>
+                    <property name="height-request">50</property>
+                    <child>
+                      <object class="GtkImage">
+                        <property name="icon-name">media-playback-start-symbolic</property>
+                        <property name="icon-size">2</property>
+                      </object>
+                    </child>
+                    <style>
+                      <class name="circular"/>
+                      <class name="suggested-action"/>
+                    </style>
                   </object>
                 </child>
-                <style>
-                  <class name="circular"/>
-                  <class name="suggested-action"/>
-                </style>
               </object>
             </child>
             <child>
