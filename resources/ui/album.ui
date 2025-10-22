@@ -15,7 +15,34 @@
         <property name="width-request">250</property>
         <property name="height-request">250</property>
         <child>
-          <object class="GellyAlbumArt" id="album_image">
+          <object class="GtkOverlay">
+            <child>
+              <object class="GtkEventControllerMotion" id="motion_controller">
+              </object>
+            </child>
+            <child type="overlay">
+              <object class="GtkButton" id="overlay_play">
+                <property name="halign">center</property>
+                <property name="valign">center</property>
+                <property name="width-request">50</property>
+                <property name="height-request">50</property>
+                <property name="visible">false</property>
+                <child>
+                  <object class="GtkImage">
+                    <property name="icon-name">media-playback-start-symbolic</property>
+                    <property name="icon-size">2</property>
+                  </object>
+                </child>
+                <style>
+                  <class name="circular"/>
+                  <class name="suggested-action"/>
+                </style>
+              </object>
+            </child>
+            <child>
+              <object class="GellyAlbumArt" id="album_image">
+              </object>
+            </child>
           </object>
         </child>
         <child>
