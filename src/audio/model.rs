@@ -148,7 +148,12 @@ impl AudioModel {
     }
 
     pub fn prev(&self) {
-        let prev_index = self.playlist_index() - 1;
+        let prev_index = if self.get_position() > 3 {
+            self.playlist_index()
+        } else {
+            self.playlist_index() - 1
+        };
+
         if prev_index >= 0 {
             self.load_song(prev_index);
         } else {
@@ -176,6 +181,10 @@ impl AudioModel {
         self.set_property("position", position);
         // Some MRPIS clients care about this I guess
         self.notify_mpris_seeked(position);
+    }
+
+    pub fn get_position(&self) -> u64 {
+        self.player().get_position().unwrap_or(0)
     }
 
     pub fn toggle_play_pause(&self) {
