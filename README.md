@@ -13,6 +13,17 @@ Gelly is [Jellyfin Media Server](https://jellyfin.org/) client focused on music 
 - [ ] Remote playlist management
 - [ ] Eye candy
 
+## Installation
+
+### Arch Linux
+
+Gelly is available on the [aur](https://aur.archlinux.org/packages/gelly):
+
+    paru -S gelly
+
+Flatpak packaging is planned. For now, non-aur users will need to build
+from source. See Development.
+
 ## Development
 
 Gelly leverages [gtk-rs](https://gtk-rs.org/) for the UI and
@@ -22,8 +33,7 @@ development libraries installed for both GTK and gstreamer to build from source.
 Gelly does *not* require any nightly features from Rust.
 
 The [justfile](justfile) contains recipes, simply running the default recipe `just` should be enough
-to build and launch Gelly. Currently the only non-binary resources are glib schemas, which are placed
-in ~/.local/share/glib-2.0/schemas - this will expand soon to include icons, .desktop entries, etc.
+to build and launch Gelly.
 
 
 ## Windows/OSX
