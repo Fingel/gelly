@@ -1,6 +1,6 @@
+use dbus_secret_service::{EncryptionType, SecretService};
 use gtk::gio;
 use gtk::gio::prelude::SettingsExt;
-use libsecret::{self, Schema, SchemaAttributeType, SchemaFlags};
 use std::{cell::RefCell, collections::HashMap};
 
 pub static APP_ID: &str = "io.m51.Gelly";
@@ -32,47 +32,69 @@ pub fn logout() {
         .expect("Failed to clear library-id");
 }
 
-/// Application secret schema
-fn secret_schema() -> Schema {
-    let mut attributes = HashMap::new();
-    attributes.insert("host", SchemaAttributeType::String);
-    attributes.insert("user-id", SchemaAttributeType::String);
-    Schema::new(APP_ID, SchemaFlags::NONE, attributes)
-}
-
-//TODO: Remove the expects here and just don't store the token if no secret service is available.
 pub fn store_jellyfin_api_token(host: &str, user_id: &str, api_token: &str) {
-    let mut attributes = HashMap::new();
-    attributes.insert("host", host);
-    attributes.insert("user-id", user_id);
-    let collection = libsecret::COLLECTION_DEFAULT;
-    let schema = secret_schema();
-    libsecret::password_store_sync(
-        Some(&schema),
-        attributes,
-        Some(collection),
-        "Jellyfin API Token",
-        api_token,
-        gio::Cancellable::NONE,
-    )
-    .expect("Unable to store Jellyfin API token");
+    let ss = SecretService::connect(EncryptionType::Plain).unwrap();
+    let collection = ss.get_default_collection().unwrap();
+    let mut properties = HashMap::new();
+    properties.insert("host", host);
+    properties.insert("user-id", user_id);
+    collection
+        .create_item(
+            "Jellyfin API Token",
+            properties,
+            api_token.as_bytes(),
+            true,
+            "text/plain",
+        )
+        .expect("Failed to store API token");
 }
 
 pub fn retrieve_jellyfin_api_token(host: &str, user_id: &str) -> Option<String> {
-    let mut attributes = HashMap::new();
-    attributes.insert("host", host);
-    attributes.insert("user-id", user_id);
-    let schema = secret_schema();
-    libsecret::password_lookup_sync(Some(&schema), attributes, gio::Cancellable::NONE)
-        .expect("Unable to retrieve Jellyfin API token")
-        .map(|password| password.to_string())
+    let ss =
+        SecretService::connect(EncryptionType::Plain).expect("Could not connect to secret service");
+
+    let search_items = ss
+        .search_items(HashMap::from([("host", host), ("user-id", user_id)]))
+        .unwrap();
+
+    let item = match search_items.unlocked.first() {
+        Some(item) => item,
+        None => {
+            // if there aren't any, try to unlock them
+            if let Some(locked_item) = search_items.locked.first() {
+                locked_item.unlock().unwrap();
+                locked_item
+            } else {
+                return None;
+            }
+        }
+    };
+
+    let secret = item
+        .get_secret()
+        .expect("Unable to retrieve secret from keyring");
+    Some(String::from_utf8(secret).unwrap())
 }
 
 pub fn clear_jellyfin_api_token(host: &str, user_id: &str) {
-    let mut attributes = HashMap::new();
-    attributes.insert("host", host);
-    attributes.insert("user-id", user_id);
-    let schema = secret_schema();
-    libsecret::password_clear_sync(Some(&schema), attributes, gio::Cancellable::NONE)
-        .expect("Unable to clear Jellyfin API token")
+    let ss =
+        SecretService::connect(EncryptionType::Plain).expect("Could not connect to secret service");
+
+    let search_items = ss
+        .search_items(HashMap::from([("host", host), ("user-id", user_id)]))
+        .unwrap();
+
+    let item = match search_items.unlocked.first() {
+        Some(item) => item,
+        None => {
+            // if there aren't any, try to unlock them
+            if let Some(locked_item) = search_items.locked.first() {
+                locked_item.unlock().unwrap();
+                locked_item
+            } else {
+                return;
+            }
+        }
+    };
+    item.delete().expect("Unable to remove secret from keyring");
 }
