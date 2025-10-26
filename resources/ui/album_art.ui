@@ -31,8 +31,12 @@
         </child>
         <child type="overlay">
           <object class="GtkImage" id="error_icon">
+            <property name="tooltip-text" translatable="yes">Missing album art</property>
             <property name="icon-name">dialog-warning-symbolic</property>
             <property name="icon-size">large</property>
+            <property name="width-request">48</property>
+            <property name="height-request">48</property>
+            <property name="margin-top">100</property>
             <property name="halign">center</property>
             <property name="valign">center</property>
             <property name="visible">false</property>
