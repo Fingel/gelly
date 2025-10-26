@@ -11,7 +11,7 @@ use log::{debug, error, warn};
 glib::wrapper! {
     pub struct Setup(ObjectSubclass<imp::Setup>)
     @extends gtk::Widget, gtk::Box,
-                @implements gio::ActionMap, gio::ActionGroup;
+                @implements gio::ActionMap, gio::ActionGroup, gtk::Accessible, gtk::Buildable, gtk::ConstraintTarget;
 }
 
 #[derive(Debug)]

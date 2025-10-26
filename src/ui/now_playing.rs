@@ -6,7 +6,7 @@ use log::warn;
 glib::wrapper! {
     pub struct NowPlaying(ObjectSubclass<imp::NowPlaying>)
     @extends gtk::Widget, gtk::Box,
-        @implements gio::ActionMap, gio::ActionGroup;
+        @implements gio::ActionMap, gio::ActionGroup, gtk::Accessible, gtk::Buildable, gtk::ConstraintTarget;
 }
 
 impl NowPlaying {

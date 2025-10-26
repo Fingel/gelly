@@ -4,13 +4,13 @@ use crate::{
     ui::widget_ext::WidgetApplicationExt,
 };
 use glib::Object;
-use gtk::{gio, glib, subclass::prelude::*};
+use gtk::{self, gio, glib, subclass::prelude::*};
 use log::warn;
 
 glib::wrapper! {
     pub struct Album(ObjectSubclass<imp::Album>)
     @extends gtk::Widget, gtk::Box,
-        @implements gio::ActionMap, gio::ActionGroup;
+        @implements gio::ActionMap, gio::ActionGroup, gtk::Accessible, gtk::Buildable, gtk::ConstraintTarget;
 }
 impl Album {
     pub fn new() -> Self {

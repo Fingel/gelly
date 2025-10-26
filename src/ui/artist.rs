@@ -5,7 +5,7 @@ use gtk::{gio, glib, subclass::prelude::*};
 glib::wrapper! {
     pub struct Artist(ObjectSubclass<imp::Artist>)
     @extends gtk::Widget, gtk::Box,
-        @implements gio::ActionMap, gio::ActionGroup;
+        @implements gio::ActionMap, gio::ActionGroup, gtk::Accessible, gtk::Buildable, gtk::ConstraintTarget;
 }
 impl Artist {
     pub fn new() -> Self {

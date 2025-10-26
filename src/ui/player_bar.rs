@@ -6,7 +6,7 @@ use log::debug;
 glib::wrapper! {
     pub struct PlayerBar(ObjectSubclass<imp::PlayerBar>)
     @extends gtk::Widget, gtk::Box,
-        @implements gio::ActionMap, gio::ActionGroup;
+        @implements gio::ActionMap, gio::ActionGroup, gtk::Accessible, gtk::Buildable, gtk::ConstraintTarget;
 }
 
 impl PlayerBar {

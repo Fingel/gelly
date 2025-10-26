@@ -11,7 +11,7 @@ use log::warn;
 glib::wrapper! {
     pub struct AlbumDetail(ObjectSubclass<imp::AlbumDetail>)
     @extends gtk::Widget, gtk::Box,
-        @implements gio::ActionMap, gio::ActionGroup;
+        @implements gio::ActionMap, gio::ActionGroup, gtk::Accessible, gtk::Buildable, gtk::ConstraintTarget;
 }
 
 impl AlbumDetail {

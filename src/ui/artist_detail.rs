@@ -9,7 +9,7 @@ use gtk::{gio, glib, prelude::*, subclass::prelude::*};
 glib::wrapper! {
     pub struct ArtistDetail(ObjectSubclass<imp::ArtistDetail>)
     @extends gtk::Widget, gtk::Box,
-        @implements gio::ActionMap, gio::ActionGroup;
+        @implements gio::ActionMap, gio::ActionGroup, gtk::Accessible, gtk::Buildable, gtk::ConstraintTarget;
 }
 
 impl ArtistDetail {

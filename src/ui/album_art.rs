@@ -9,7 +9,7 @@ use log::warn;
 glib::wrapper! {
     pub struct AlbumArt(ObjectSubclass<imp::AlbumArt>)
     @extends gtk::Widget, gtk::Box,
-        @implements gio::ActionMap, gio::ActionGroup;
+        @implements gio::ActionMap, gio::ActionGroup, gtk::Accessible, gtk::Buildable, gtk::ConstraintTarget;
 }
 impl AlbumArt {
     pub fn new() -> Self {

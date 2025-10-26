@@ -15,7 +15,7 @@ use gtk::{
 glib::wrapper! {
     pub struct AlbumList(ObjectSubclass<imp::AlbumList>)
     @extends gtk::Widget, gtk::Box,
-        @implements gio::ActionMap, gio::ActionGroup;
+        @implements gio::ActionMap, gio::ActionGroup, gtk::Accessible, gtk::Buildable, gtk::ConstraintTarget;
 }
 
 impl AlbumList {

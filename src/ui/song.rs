@@ -9,7 +9,7 @@ use crate::{
 glib::wrapper! {
     pub struct Song(ObjectSubclass<imp::Song>)
     @extends gtk::Widget, gtk::ListBoxRow,
-        @implements gio::ActionMap, gio::ActionGroup;
+        @implements gio::ActionMap, gio::ActionGroup, gtk::Accessible, gtk::Buildable, gtk::ConstraintTarget, gtk::Actionable;
 }
 
 impl Song {
