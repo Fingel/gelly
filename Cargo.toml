@@ -13,12 +13,12 @@ reqwest = { version = "0.12.23", features = ["json"] }
 serde_json = { version = "1.0.143", features = ["std"] }
 serde = { version = "1.0.219", features = ["derive"] }
 thiserror = "2.0.16"
-gdk-pixbuf = { version = "0.21.2", features = ["v2_42"] }
 gstreamer = { version = "0.24.2", features = ["v1_26"] }
 async-channel = "2.5.0"
 futures-util = "0.3.31"
 mpris-server = "0.9.0"
 dbus-secret-service = "4.1.0"
+glycin = { version = "3.0.4", features = ["gdk4"] }
 
 [build-dependencies]
 glib-build-tools = "0.21.0"

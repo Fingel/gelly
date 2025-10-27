@@ -16,6 +16,7 @@
         <property name="height-request">250</property>
         <child>
           <object class="GellyAlbumArt" id="artist_image">
+            <property name="size">200</property>
           </object>
         </child>
         <child>

@@ -14,12 +14,9 @@
             <property name="margin-end">6</property>
             <property name="margin-top">6</property>
             <property name="margin-bottom">6</property>
-            <property name="width-request">100</property>
-            <property name="height-request">100</property>
             <child>
               <object class="GellyAlbumArt" id="album_art">
-                <property name="width">100</property>
-                <property name="height">100</property>
+                <property name="size">100</property>
               </object>
             </child>
           </object>

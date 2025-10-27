@@ -2,6 +2,7 @@
 <interface>
   <requires lib="gtk" version="4.0"/>
   <template class="GellyAlbumArt" parent="GtkBox">
+    <property name="size">200</property>
     <property name="halign">center</property>
 		<property name="margin-start">6</property>
     <property name="margin-end">6</property>
@@ -11,9 +12,7 @@
     <child>
       <object class="GtkOverlay">
         <child>
-          <object class="GtkPicture" id="album_image">
-            <property name="can-shrink">true</property>
-            <property name="content-fit">cover</property>
+          <object class="GtkImage" id="album_image">
             <style>
               <class name="album-image"/>
             </style>

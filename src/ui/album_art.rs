@@ -31,20 +31,21 @@ impl AlbumArt {
     }
 
     pub fn set_image(&self, image_data: &[u8]) {
-        let width = if self.width() == 0 { 200 } else { self.width() };
-        let height = if self.height() == 0 {
-            200
-        } else {
-            self.height()
-        };
-        match bytes_to_texture(image_data, Some(width), Some(height)) {
-            Ok(texture) => {
-                self.imp().album_image.set_paintable(Some(&texture));
+        let image_data_copy = image_data.to_vec();
+        glib::spawn_future_local(glib::clone!(
+            #[weak(rename_to=album_art)]
+            self,
+            async move {
+                match bytes_to_texture(&image_data_copy).await {
+                    Ok(texture) => {
+                        album_art.imp().album_image.set_paintable(Some(&texture));
+                    }
+                    Err(err) => {
+                        warn!("Failed to load album image: {}", err);
+                    }
+                }
             }
-            Err(err) => {
-                warn!("Failed to load album image: {}", err);
-            }
-        }
+        ));
     }
 
     pub fn set_loading(&self, loading: bool) {
@@ -130,15 +131,13 @@ mod imp {
     #[template(resource = "/io/m51/Gelly/ui/album_art.ui")]
     pub struct AlbumArt {
         #[template_child]
-        pub album_image: TemplateChild<gtk::Picture>,
+        pub album_image: TemplateChild<gtk::Image>,
         #[template_child]
         pub spinner: TemplateChild<gtk::Spinner>,
         #[template_child]
         pub error_icon: TemplateChild<gtk::Image>,
         #[property(get, set, default = 200_u32)]
-        pub width: Cell<u32>,
-        #[property(get, set, default = 200_u32)]
-        pub height: Cell<u32>,
+        pub size: Cell<u32>,
 
         pub item_id: RefCell<String>,
         pub is_loading: Cell<bool>,
@@ -170,6 +169,12 @@ mod imp {
             self.obj().connect_realize(|widget| {
                 widget.load_image();
             });
+
+            // Bind the width and height properties to the picture widget
+            self.obj()
+                .bind_property("size", &self.album_image.get(), "pixel-size")
+                .sync_create()
+                .build();
         }
     }
 }
