@@ -30,6 +30,7 @@ pub struct LibraryDtoList {
 #[serde(rename_all = "PascalCase")]
 pub struct MusicDtoList {
     pub items: Vec<MusicDto>,
+    pub total_record_count: u64,
 }
 
 #[derive(Clone, Debug, Deserialize)]

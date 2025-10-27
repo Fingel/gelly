@@ -10,7 +10,7 @@ use crate::cache::ImageCache;
 use crate::config::{self, retrieve_jellyfin_api_token, settings};
 use crate::jellyfin::api::{MusicDto, MusicDtoList};
 use crate::jellyfin::{Jellyfin, JellyfinError};
-use log::error;
+use log::{error, info};
 use std::cell::RefCell;
 use std::rc::Rc;
 
@@ -128,8 +128,13 @@ impl Application {
                 move |result: Result<MusicDtoList, JellyfinError>| {
                     match result {
                         Ok(library) => {
+                            let library_cnt = library.items.len() as u64;
+                            info!(
+                                "Jellyfin library size: {} received: {} ",
+                                library.total_record_count, library_cnt
+                            );
                             app.imp().library.replace(library.items);
-                            app.emit_by_name::<()>("library-refreshed", &[]);
+                            app.emit_by_name::<()>("library-refreshed", &[&library_cnt]);
                         }
                         Err(err) => match err {
                             JellyfinError::AuthenticationFailed { message } => {
@@ -203,7 +208,9 @@ mod imp {
             SIGNALS.get_or_init(|| {
                 vec![
                     Signal::builder("library-refresh-start").build(),
-                    Signal::builder("library-refreshed").build(),
+                    Signal::builder("library-refreshed")
+                        .param_types([u64::static_type()])
+                        .build(),
                     Signal::builder("force-logout").build(),
                     Signal::builder("global-error")
                         .param_types([String::static_type()])

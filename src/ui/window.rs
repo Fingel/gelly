@@ -274,9 +274,12 @@ mod imp {
                         glib::closure_local!(
                             #[weak]
                             window,
-                            move |_app: Application| {
+                            move |_app: Application, total_record_count: u64| {
                                 window.loading_visible(false);
-                                window.toast("Library refresh complete", None);
+                                window.toast(
+                                    &format!("{} items added to library", total_record_count),
+                                    None,
+                                );
                             }
                         ),
                     );

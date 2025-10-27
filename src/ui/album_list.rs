@@ -66,7 +66,7 @@ impl AlbumList {
             glib::closure_local!(
                 #[weak(rename_to = album_list)]
                 self,
-                move |_app: Application| {
+                move |_app: Application, _total_record_count: u64| {
                     album_list.pull_albums();
                 }
             ),

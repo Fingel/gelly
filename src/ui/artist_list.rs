@@ -66,7 +66,7 @@ impl ArtistList {
             glib::closure_local!(
                 #[weak(rename_to = artist_list)]
                 self,
-                move |_app: Application| {
+                move |_app: Application, _total_record_count: u64| {
                     artist_list.pull_artists();
                 }
             ),
