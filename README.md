@@ -12,6 +12,7 @@ Gelly is [Jellyfin Media Server](https://jellyfin.org/) client focused on music 
 - [x] MPRIS support
 - [ ] Remote playlist management
 - [ ] Eye candy
+- [ ] Search
 
 ## Installation
 
