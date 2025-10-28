@@ -48,7 +48,7 @@ impl Window {
         imp.album_list.setup_library_connection();
         imp.artist_list.setup_library_connection();
         self.loading_visible(true);
-        self.get_application().refresh_library();
+        self.get_application().refresh_library(false);
 
         // Initialize player bar with audio model
         if let Some(audio_model) = self.get_application().audio_model() {
@@ -228,7 +228,7 @@ mod imp {
                     self,
                     move |_, _, _| {
                         let app = window.obj().get_application();
-                        app.refresh_library();
+                        app.refresh_library(true);
                     }
                 ))
                 .build();

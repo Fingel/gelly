@@ -68,8 +68,8 @@ impl AudioModel {
             .obj()
             .current_song()
             .map_or_else(Metadata::new, |song| {
-                let cache_dir = ImageCache::get_cache_directory().unwrap_or_default();
-                let art_path = cache_dir.join(song.id());
+                let cache_dir = ImageCache::new().expect("Failed to create image cache");
+                let art_path = cache_dir.get_cache_file_path(&song.id());
                 let art_url = format!("file://{}", art_path.to_string_lossy());
                 Metadata::builder()
                     .artist(song.artists())

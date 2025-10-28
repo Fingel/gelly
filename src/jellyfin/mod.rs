@@ -2,12 +2,12 @@ use std::fs;
 use std::{fmt::Debug, sync::OnceLock};
 
 use api::AuthenticateResponse;
-use log::debug;
+use log::{debug, warn};
 use reqwest::{Client, Response, StatusCode};
-use serde::de::DeserializeOwned;
 use serde_json::json;
 use thiserror::Error;
 
+use crate::cache::LibraryCache;
 use crate::jellyfin::api::{LibraryDtoList, MusicDtoList};
 
 pub mod api;
@@ -82,15 +82,30 @@ impl Jellyfin {
             "Pw": password
         });
         let response = self.post_json("Users/authenticatebyname", &body).await?;
-        self.handle_response(response).await
+        let body = self.handle_response(response).await?;
+        Ok(serde_json::from_str(&body)?)
     }
 
     pub async fn get_views(&self) -> Result<LibraryDtoList, JellyfinError> {
         let response = self.get("UserViews", None).await?;
-        self.handle_response(response).await
+        let body = self.handle_response(response).await?;
+        Ok(serde_json::from_str(&body)?)
     }
 
-    pub async fn get_library(&self, library_id: &str) -> Result<MusicDtoList, JellyfinError> {
+    pub async fn get_library(
+        &self,
+        library_id: &str,
+        refresh: bool,
+    ) -> Result<MusicDtoList, JellyfinError> {
+        let cache = LibraryCache::new().expect("Could not create library cache");
+        if !refresh
+            && let Ok(cached_data) = cache.load_from_disk()
+            && let Ok(music_list) = serde_json::from_slice::<MusicDtoList>(&cached_data)
+        {
+            debug!("Loaded library from cache");
+            return Ok(music_list);
+        }
+
         let params = vec![
             ("parentId", library_id),
             ("IncludeItemTypes", "Audio"),
@@ -104,7 +119,11 @@ impl Jellyfin {
             ("Limit", "1000"),
         ];
         let response = self.get("Items", Some(&params)).await?;
-        self.handle_response(response).await
+        let body = self.handle_response(response).await?;
+        if let Err(e) = cache.save_to_disk(body.as_bytes()) {
+            warn!("Failed to save library to cache: {}", e);
+        }
+        Ok(serde_json::from_str(&body)?)
     }
 
     pub async fn get_image(&self, item_id: &str) -> Result<Vec<u8>, JellyfinError> {
@@ -196,15 +215,11 @@ impl Jellyfin {
     }
 
     /// Responsible for error handling when reading responses from Jellyfin
-    async fn handle_response<T>(&self, response: Response) -> Result<T, JellyfinError>
-    where
-        T: DeserializeOwned + Debug,
-    {
+    async fn handle_response(&self, response: Response) -> Result<String, JellyfinError> {
         let status = response.status();
         if status.is_success() {
             let response_body = response.text().await?;
-            let json_response = serde_json::from_str(&response_body)?;
-            Ok(json_response)
+            Ok(response_body)
         } else {
             let message = response
                 .text()

@@ -18,6 +18,42 @@ pub enum CacheError {
     Jellyfin(#[from] JellyfinError),
 }
 
+fn get_cache_directory(name: &str) -> Result<PathBuf, CacheError> {
+    // TODO: see if these directories are actually correct
+    let cache_dir = if let Ok(xdg_cache) = std::env::var("XDG_CACHE_HOME") {
+        PathBuf::from(xdg_cache)
+    } else if let Ok(home) = std::env::var("HOME") {
+        PathBuf::from(home).join(".cache")
+    } else {
+        PathBuf::from("/tmp")
+    };
+    Ok(cache_dir.join(APP_ID).join(name))
+}
+
+#[derive(Debug, Clone)]
+pub struct LibraryCache {
+    cache_dir: PathBuf,
+}
+
+impl LibraryCache {
+    pub fn new() -> Result<Self, CacheError> {
+        let cache_dir = get_cache_directory("library")?;
+        fs::create_dir_all(&cache_dir)?;
+        Ok(Self { cache_dir })
+    }
+
+    pub fn save_to_disk(&self, library_data: &[u8]) -> Result<(), CacheError> {
+        let path = self.cache_dir.join("library.json");
+        fs::write(path, library_data)?;
+        Ok(())
+    }
+
+    pub fn load_from_disk(&self) -> Result<Vec<u8>, CacheError> {
+        let path = self.cache_dir.join("library.json");
+        Ok(fs::read(path)?)
+    }
+}
+
 #[derive(Debug, Clone)]
 pub struct ImageCache {
     pending_requests: Arc<Mutex<HashSet<String>>>,
@@ -26,24 +62,12 @@ pub struct ImageCache {
 
 impl ImageCache {
     pub fn new() -> Result<Self, CacheError> {
-        let cache_dir = Self::get_cache_directory()?;
+        let cache_dir = get_cache_directory("album-art")?;
         fs::create_dir_all(&cache_dir)?;
         Ok(Self {
             pending_requests: Arc::new(Mutex::new(HashSet::new())),
             cache_dir,
         })
-    }
-
-    pub fn get_cache_directory() -> Result<PathBuf, CacheError> {
-        // TODO: see if these directories are actually correct
-        let cache_dir = if let Ok(xdg_cache) = std::env::var("XDG_CACHE_HOME") {
-            PathBuf::from(xdg_cache)
-        } else if let Ok(home) = std::env::var("HOME") {
-            PathBuf::from(home).join(".cache")
-        } else {
-            PathBuf::from("/tmp")
-        };
-        Ok(cache_dir.join(APP_ID).join("album-art"))
     }
 
     pub async fn get_images(
@@ -108,8 +132,7 @@ impl ImageCache {
         debug!("Downloading album art for {}", item_id);
         let image_data = jellyfin.get_image(item_id).await?;
 
-        // Save to disk
-        if let Err(e) = self.save_to_disk(item_id, &image_data).await {
+        if let Err(e) = self.save_to_disk(item_id, &image_data) {
             warn!("Failed to save image to disk cache: {}", e);
         }
 
@@ -128,7 +151,7 @@ impl ImageCache {
         Ok(fs::read(&file_path)?)
     }
 
-    async fn save_to_disk(&self, item_id: &str, image_data: &[u8]) -> Result<(), CacheError> {
+    fn save_to_disk(&self, item_id: &str, image_data: &[u8]) -> Result<(), CacheError> {
         let file_path = self.get_cache_file_path(item_id);
         if let Some(parent) = file_path.parent() {
             fs::create_dir_all(parent)?;
@@ -137,7 +160,7 @@ impl ImageCache {
         Ok(())
     }
 
-    fn get_cache_file_path(&self, item_id: &str) -> PathBuf {
+    pub fn get_cache_file_path(&self, item_id: &str) -> PathBuf {
         self.cache_dir.join(item_id)
     }
 

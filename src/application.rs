@@ -116,12 +116,12 @@ impl Application {
         self.imp().audio_model.borrow().clone()
     }
 
-    pub fn refresh_library(&self) {
+    pub fn refresh_library(&self, refresh: bool) {
         self.emit_by_name::<()>("library-refresh-start", &[]);
         let library_id = self.imp().library_id.borrow().clone();
         let jellyfin = self.jellyfin();
         spawn_tokio(
-            async move { jellyfin.get_library(&library_id).await },
+            async move { jellyfin.get_library(&library_id, refresh).await },
             glib::clone!(
                 #[weak(rename_to=app)]
                 self,

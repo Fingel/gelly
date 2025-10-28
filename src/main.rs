@@ -23,6 +23,7 @@ fn main() -> glib::ExitCode {
     let app = Application::new();
     app.connect_startup(|_| load_css());
     app.connect_activate(build_ui);
+    app.set_accels_for_action("win.refresh-library", &["<Ctrl>r"]);
     info!("Application started");
     app.run()
 }

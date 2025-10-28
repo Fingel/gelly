@@ -1,4 +1,4 @@
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "PascalCase")]
@@ -26,14 +26,14 @@ pub struct LibraryDtoList {
     pub items: Vec<LibraryDto>,
 }
 
-#[derive(Clone, Debug, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "PascalCase")]
 pub struct MusicDtoList {
     pub items: Vec<MusicDto>,
     pub total_record_count: u64,
 }
 
-#[derive(Clone, Debug, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "PascalCase")]
 pub struct MusicDto {
     pub name: String,
@@ -51,7 +51,7 @@ pub struct MusicDto {
     pub index_number: Option<u32>,
 }
 
-#[derive(Clone, Debug, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "PascalCase")]
 pub struct UserDataDto {
     pub play_count: u64,
@@ -59,7 +59,7 @@ pub struct UserDataDto {
     pub played: bool,
 }
 
-#[derive(Clone, Debug, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "PascalCase")]
 pub struct ArtistItemsDto {
     pub name: String,
