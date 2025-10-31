@@ -195,6 +195,10 @@
   <menu id="menu_app">
     <section>
       <item>
+        <attribute name="label" translatable="yes">Request Library Rescan</attribute>
+        <attribute name="action">win.request-library-rescan</attribute>
+      </item>
+      <item>
         <attribute name="label" translatable="yes">Refresh Library</attribute>
         <attribute name="action">win.refresh-library</attribute>
       </item>

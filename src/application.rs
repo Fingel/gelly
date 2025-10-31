@@ -155,6 +155,30 @@ impl Application {
         );
     }
 
+    pub fn request_library_rescan(&self) {
+        let library_id = self.imp().library_id.borrow().clone();
+        let jellyfin = self.jellyfin();
+        spawn_tokio(
+            async move { jellyfin.request_library_rescan(&library_id).await },
+            glib::clone!(
+                #[weak(rename_to=app)]
+                self,
+                move |result: Result<(), JellyfinError>| {
+                    match result {
+                        Ok(()) => app.emit_by_name::<()>("library-rescan-requested", &[]),
+                        Err(err) => {
+                            log::error!("Failed to rescan library: {}", err);
+                            app.emit_by_name::<()>(
+                                "global-error",
+                                &[&String::from("Failed to rescan library")],
+                            )
+                        }
+                    }
+                }
+            ),
+        )
+    }
+
     pub fn logout(&self) {
         self.imp().jellyfin.replace(Jellyfin::default());
         self.imp().library.replace(Vec::new());
@@ -211,6 +235,7 @@ mod imp {
                     Signal::builder("library-refreshed")
                         .param_types([u64::static_type()])
                         .build(),
+                    Signal::builder("library-rescan-requested").build(),
                     Signal::builder("force-logout").build(),
                     Signal::builder("global-error")
                         .param_types([String::static_type()])

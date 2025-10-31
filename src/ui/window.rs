@@ -233,10 +233,22 @@ mod imp {
                 ))
                 .build();
 
+            let action_request_library_rescan = ActionEntry::builder("request-library-rescan")
+                .activate(glib::clone!(
+                    #[weak(rename_to=window)]
+                    self,
+                    move |_, _, _| {
+                        let app = window.obj().get_application();
+                        app.request_library_rescan();
+                    }
+                ))
+                .build();
+
             self.obj().add_action_entries([
                 action_logout,
                 action_clear_cache,
                 action_refresh_library,
+                action_request_library_rescan,
             ]);
 
             self.obj().connect_map(glib::clone!(
@@ -278,6 +290,21 @@ mod imp {
                                 window.loading_visible(false);
                                 window.toast(
                                     &format!("{} items added to library", total_record_count),
+                                    None,
+                                );
+                            }
+                        ),
+                    );
+
+                    app.connect_closure(
+                        "library-rescan-requested",
+                        false,
+                        glib::closure_local!(
+                            #[weak]
+                            window,
+                            move |_app: Application| {
+                                window.toast(
+                                    "Library rescan requested. Wait a few seconds and then use the \"Refresh Library\" option.",
                                     None,
                                 );
                             }

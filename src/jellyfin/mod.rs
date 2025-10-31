@@ -126,6 +126,27 @@ impl Jellyfin {
         Ok(serde_json::from_str(&body)?)
     }
 
+    pub async fn request_library_rescan(&self, library_id: &str) -> Result<(), JellyfinError> {
+        let params = vec![
+            ("itemId", library_id),
+            ("Recursive", "true"),
+            ("ImageRefreshMode", "Default"),
+            ("MetadataRefreshMode", "Default"),
+            ("ReplaceAllImages", "false"),
+            ("RegenerateTrickplay", "false"),
+            ("ReplaceAllMetadata", "false"),
+        ];
+        let response = self
+            .post(
+                &format!("Items/{}/Refresh", library_id),
+                Some(&params),
+                None,
+            )
+            .await?;
+        self.handle_response(response).await?;
+        Ok(())
+    }
+
     pub async fn get_image(&self, item_id: &str) -> Result<Vec<u8>, JellyfinError> {
         let params = vec![
             ("fillHeight", "200"),
@@ -188,6 +209,28 @@ impl Jellyfin {
             .client
             .post(&url)
             .json(&body)
+            .header("Authorization", self.auth_header());
+        let response = request.send().await?;
+        Ok(response)
+    }
+
+    async fn post(
+        &self,
+        endpoint: &str,
+        params: Option<&[(&str, &str)]>,
+        body: Option<String>,
+    ) -> Result<Response, JellyfinError> {
+        let url = format!(
+            "{}/{}",
+            self.host.trim_end_matches('/'),
+            endpoint.trim_start_matches('/')
+        );
+        debug!("Sending POST request to {}", url);
+        let request = self
+            .client
+            .post(&url)
+            .query(params.unwrap_or(&[]))
+            .body(body.unwrap_or_default())
             .header("Authorization", self.auth_header());
         let response = request.send().await?;
         Ok(response)
