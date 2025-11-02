@@ -2,11 +2,11 @@ use crate::{
     application::Application,
     library_utils::artists_from_library,
     models::ArtistModel,
-    ui::{artist::Artist, widget_ext::WidgetApplicationExt},
+    ui::{artist::Artist, widget_ext::WidgetApplicationExt, window::Window},
 };
 use glib::Object;
 use gtk::{
-    ListItem, gio,
+    FilterListModel, ListItem, PropertyExpression, StringFilter, gio,
     glib::{self, object::Cast},
     prelude::*,
     subclass::prelude::*,
@@ -73,12 +73,56 @@ impl ArtistList {
         );
     }
 
+    pub fn setup_search_connection(&self) {
+        let window = self.get_root_window();
+
+        window.connect_closure(
+            "search",
+            false,
+            glib::closure_local!(
+                #[weak(rename_to = album_list)]
+                self,
+                move |_: Window| {
+                    album_list.imp().search_bar.set_search_mode(true);
+                }
+            ),
+        );
+    }
+
+    pub fn search_changed(&self, query: &str) {
+        let imp = self.imp();
+        let store = imp.store.get().expect("Store should be initialized");
+
+        if query.is_empty() {
+            let selection_model = gtk::SingleSelection::new(Some(store.clone()));
+            imp.grid_view.set_model(Some(&selection_model));
+        } else {
+            let name_filter = imp
+                .name_filter
+                .get()
+                .expect("Name filter should be initialized");
+            name_filter.set_search(Some(query));
+            let filter_model = FilterListModel::new(Some(store.clone()), Some(name_filter.clone()));
+            let selection_model = gtk::SingleSelection::new(Some(filter_model));
+            imp.grid_view.set_model(Some(&selection_model));
+        }
+    }
+
     fn setup_model(&self) {
         let imp = self.imp();
         let store = gio::ListStore::new::<ArtistModel>();
+        let name_expression =
+            PropertyExpression::new(ArtistModel::static_type(), None::<&gtk::Expression>, "name");
+        let name_filter = StringFilter::new(Some(name_expression));
+        name_filter.set_ignore_case(true);
+        name_filter.set_match_mode(gtk::StringFilterMatchMode::Substring);
+
         imp.store
             .set(store.clone())
             .expect("ArtistList store should only be set once.");
+        imp.name_filter
+            .set(name_filter)
+            .expect("Name filter should only be set once.");
 
         let selection_model = gtk::SingleSelection::new(Some(store));
         let factory = gtk::SignalListItemFactory::new();
@@ -128,7 +172,7 @@ mod imp {
 
     use adw::subclass::prelude::*;
     use glib::subclass::InitializingObject;
-    use gtk::{CompositeTemplate, gio, glib};
+    use gtk::{CompositeTemplate, gio, glib, prelude::*};
 
     #[derive(CompositeTemplate, Default)]
     #[template(resource = "/io/m51/Gelly/ui/artist_list.ui")]
@@ -137,7 +181,13 @@ mod imp {
         pub grid_view: TemplateChild<gtk::GridView>,
         #[template_child]
         pub empty: TemplateChild<adw::StatusPage>,
+        #[template_child]
+        pub search_bar: TemplateChild<gtk::SearchBar>,
+        #[template_child]
+        pub search_entry: TemplateChild<gtk::SearchEntry>,
+
         pub store: OnceCell<gio::ListStore>,
+        pub name_filter: OnceCell<gtk::StringFilter>,
     }
 
     #[glib::object_subclass]
@@ -154,6 +204,7 @@ mod imp {
             obj.init_template();
         }
     }
+
     impl ObjectImpl for ArtistList {
         fn constructed(&self) {
             self.parent_constructed();
@@ -164,6 +215,22 @@ mod imp {
                 self.obj(),
                 move |_, position| {
                     artist_list.activate_artist(position);
+                }
+            ));
+
+            self.search_entry.connect_search_changed(glib::clone!(
+                #[weak(rename_to = artist_list)]
+                self.obj(),
+                move |entry| {
+                    artist_list.search_changed(&entry.text());
+                }
+            ));
+
+            self.obj().connect_realize(glib::clone!(
+                #[weak (rename_to = artist_list)]
+                self.obj(),
+                move |_| {
+                    artist_list.setup_search_connection();
                 }
             ));
         }
