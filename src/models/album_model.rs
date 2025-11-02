@@ -15,6 +15,8 @@ impl AlbumModel {
         date_created: &str,
         year: &Option<u32>,
     ) -> Self {
+        let artists_string = artists.join(", ");
+
         Object::builder()
             .property("name", name)
             .property("id", id)
@@ -23,6 +25,7 @@ impl AlbumModel {
             .property("image-loading", false)
             .property("image-loaded", false)
             .property("year", year.unwrap_or(0))
+            .property("artists-string", artists_string)
             .build()
     }
 
@@ -30,11 +33,6 @@ impl AlbumModel {
     pub fn primary_artist(&self) -> String {
         let artists = self.artists();
         artists.first().cloned().unwrap_or_default()
-    }
-
-    /// Get all artists joined by ", "
-    pub fn artists_string(&self) -> String {
-        self.artists().join(", ")
     }
 
     pub fn set_image_data(&self, image_data: Vec<u8>) {
@@ -92,6 +90,9 @@ mod imp {
 
         #[property(get, set, name = "image-loaded")]
         pub image_loaded: RefCell<bool>,
+
+        #[property(get, set, name = "artists-string")]
+        pub artists_string: RefCell<String>,
 
         pub image_data: RefCell<Vec<u8>>,
     }

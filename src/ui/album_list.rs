@@ -6,7 +6,7 @@ use crate::{
 };
 use glib::Object;
 use gtk::{
-    ListItem, gio,
+    FilterListModel, ListItem, PropertyExpression, StringFilter, gio,
     glib::{self, object::Cast},
     prelude::*,
     subclass::prelude::*,
@@ -74,7 +74,34 @@ impl AlbumList {
     }
 
     pub fn search_changed(&self, query: &str) {
-        dbg!(query);
+        let imp = self.imp();
+        let store = imp.store.get().expect("Store should be initialized");
+
+        if query.is_empty() {
+            let selection_model = gtk::SingleSelection::new(Some(store.clone()));
+            imp.grid_view.set_model(Some(&selection_model));
+        } else {
+            let name_filter = imp
+                .name_filter
+                .get()
+                .expect("Name filter should be initialized");
+            let artists_filter = imp
+                .artists_filter
+                .get()
+                .expect("Name filter should be initialized");
+
+            name_filter.set_search(Some(query));
+            artists_filter.set_search(Some(query));
+
+            let any_filter = gtk::AnyFilter::new();
+            any_filter.append(name_filter.clone());
+            any_filter.append(artists_filter.clone());
+
+            let filter_model = FilterListModel::new(Some(store.clone()), Some(any_filter));
+            let selection_model = gtk::SingleSelection::new(Some(filter_model));
+
+            imp.grid_view.set_model(Some(&selection_model));
+        }
     }
 
     pub fn setup_search_connection(&self) {
@@ -96,9 +123,30 @@ impl AlbumList {
     fn setup_model(&self) {
         let imp = self.imp();
         let store = gio::ListStore::new::<AlbumModel>();
+        let name_expression =
+            PropertyExpression::new(AlbumModel::static_type(), None::<&gtk::Expression>, "name");
+        let name_filter = StringFilter::new(Some(name_expression));
+        name_filter.set_ignore_case(true);
+        name_filter.set_match_mode(gtk::StringFilterMatchMode::Substring);
+
+        let artists_expression = PropertyExpression::new(
+            AlbumModel::static_type(),
+            None::<&gtk::Expression>,
+            "artists-string",
+        );
+        let artists_filter = StringFilter::new(Some(artists_expression));
+        artists_filter.set_ignore_case(true);
+        artists_filter.set_match_mode(gtk::StringFilterMatchMode::Substring);
+
         imp.store
             .set(store.clone())
             .expect("AlbumList store should only be set once.");
+        imp.name_filter
+            .set(name_filter)
+            .expect("Name filter should only be set once");
+        imp.artists_filter
+            .set(artists_filter)
+            .expect("Artists filter should only be set once");
 
         let selection_model = gtk::SingleSelection::new(Some(store));
         let factory = gtk::SignalListItemFactory::new();
@@ -164,6 +212,8 @@ mod imp {
         pub search_entry: TemplateChild<gtk::SearchEntry>,
 
         pub store: OnceCell<gio::ListStore>,
+        pub name_filter: OnceCell<gtk::StringFilter>,
+        pub artists_filter: OnceCell<gtk::StringFilter>,
     }
 
     #[glib::object_subclass]
