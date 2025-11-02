@@ -128,6 +128,8 @@ impl Window {
 }
 
 mod imp {
+    use std::sync::OnceLock;
+
     use adw::subclass::prelude::*;
     use glib::subclass::InitializingObject;
     use gtk::{
@@ -244,11 +246,22 @@ mod imp {
                 ))
                 .build();
 
+            let action_search = ActionEntry::builder("search")
+                .activate(glib::clone!(
+                    #[weak(rename_to=window)]
+                    self,
+                    move |_, _, _| {
+                        window.obj().emit_by_name::<()>("search", &[]);
+                    }
+                ))
+                .build();
+
             self.obj().add_action_entries([
                 action_logout,
                 action_clear_cache,
                 action_refresh_library,
                 action_request_library_rescan,
+                action_search,
             ]);
 
             self.obj().connect_map(glib::clone!(
@@ -324,6 +337,11 @@ mod imp {
                     );
                 }
             ));
+        }
+
+        fn signals() -> &'static [glib::subclass::Signal] {
+            static SIGNALS: OnceLock<Vec<glib::subclass::Signal>> = OnceLock::new();
+            SIGNALS.get_or_init(|| vec![glib::subclass::Signal::builder("search").build()])
         }
     }
 

@@ -2,7 +2,7 @@ use crate::{
     application::Application,
     library_utils::albums_from_library,
     models::AlbumModel,
-    ui::{album::Album, widget_ext::WidgetApplicationExt},
+    ui::{album::Album, widget_ext::WidgetApplicationExt, window::Window},
 };
 use glib::Object;
 use gtk::{
@@ -73,6 +73,26 @@ impl AlbumList {
         );
     }
 
+    pub fn search_changed(&self, query: &str) {
+        dbg!(query);
+    }
+
+    pub fn setup_search_connection(&self) {
+        let window = self.get_root_window();
+
+        window.connect_closure(
+            "search",
+            false,
+            glib::closure_local!(
+                #[weak(rename_to = album_list)]
+                self,
+                move |_: Window| {
+                    album_list.imp().search_bar.set_search_mode(true);
+                }
+            ),
+        );
+    }
+
     fn setup_model(&self) {
         let imp = self.imp();
         let store = gio::ListStore::new::<AlbumModel>();
@@ -129,7 +149,7 @@ mod imp {
 
     use adw::subclass::prelude::*;
     use glib::subclass::InitializingObject;
-    use gtk::{CompositeTemplate, gio, glib};
+    use gtk::{CompositeTemplate, gio, glib, prelude::*};
 
     #[derive(CompositeTemplate, Default)]
     #[template(resource = "/io/m51/Gelly/ui/album_list.ui")]
@@ -138,6 +158,10 @@ mod imp {
         pub grid_view: TemplateChild<gtk::GridView>,
         #[template_child]
         pub empty: TemplateChild<adw::StatusPage>,
+        #[template_child]
+        pub search_bar: TemplateChild<gtk::SearchBar>,
+        #[template_child]
+        pub search_entry: TemplateChild<gtk::SearchEntry>,
 
         pub store: OnceCell<gio::ListStore>,
     }
@@ -167,6 +191,22 @@ mod imp {
                 self.obj(),
                 move |_, position| {
                     album_list.activate_album(position);
+                }
+            ));
+
+            self.search_entry.connect_search_changed(glib::clone!(
+                #[weak(rename_to = album_list)]
+                self.obj(),
+                move |entry| {
+                    album_list.search_changed(&entry.text());
+                }
+            ));
+
+            self.obj().connect_realize(glib::clone!(
+                #[weak (rename_to = album_list)]
+                self.obj(),
+                move |_| {
+                    album_list.setup_search_connection();
                 }
             ));
         }

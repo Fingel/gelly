@@ -101,6 +101,13 @@
                             <property name="orientation">1</property>
                             <child>
                               <object class="AdwHeaderBar" id="header_bar">
+                                <child type="start">
+                                  <object class="GtkButton" id="search_button">
+                                    <property name="action-name">win.search</property>
+                                    <property name="icon-name">edit-find-symbolic</property>
+                                    <property name="tooltip-text" translatable="yes">Search</property>
+                                  </object>
+                                </child>
                                 <child type="end">
                                   <object class="GtkMenuButton" id="button_menu">
                                     <property name="menu-model">menu_app</property>
@@ -201,6 +208,10 @@
       <item>
         <attribute name="label" translatable="yes">Refresh Library</attribute>
         <attribute name="action">win.refresh-library</attribute>
+      </item>
+      <item>
+        <attribute name="label" translatable="yes">Search</attribute>
+        <attribute name="action">win.search</attribute>
       </item>
       <item>
         <attribute name="label" translatable="yes">Clear Image Cache</attribute>

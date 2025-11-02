@@ -24,6 +24,7 @@ fn main() -> glib::ExitCode {
     app.connect_startup(|_| load_css());
     app.connect_activate(build_ui);
     app.set_accels_for_action("win.refresh-library", &["<Ctrl>r"]);
+    app.set_accels_for_action("win.search", &["<Ctrl>f"]);
     info!("Application started");
     app.run()
 }
