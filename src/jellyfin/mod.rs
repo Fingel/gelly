@@ -6,6 +6,7 @@ use log::{debug, warn};
 use reqwest::{Client, Response, StatusCode};
 use serde_json::json;
 use thiserror::Error;
+use tokio::time::Instant;
 
 use crate::cache::LibraryCache;
 use crate::jellyfin::api::{LibraryDtoList, MusicDtoList, PlaylistDtoList};
@@ -106,6 +107,83 @@ impl Jellyfin {
             return Ok(music_list);
         }
 
+        // Time library download so we can keep an eye on it.
+        let now = Instant::now();
+        const LIMIT: u64 = 1000;
+
+        // Make the first request to get total count
+        let mut all_items = Vec::new();
+        let first_page = self.get_library_page(library_id, 0, LIMIT).await?;
+        let total_count = first_page.total_record_count;
+
+        debug!(
+            "Total library items: {}, fetched first {} items",
+            total_count,
+            first_page.items.len()
+        );
+        all_items.extend(first_page.items);
+
+        // If we have more items to fetch, create concurrent requests for remaining pages
+        if total_count > LIMIT {
+            let remaining_items = total_count - LIMIT;
+            let additional_pages = remaining_items.div_ceil(LIMIT);
+
+            debug!("Fetching {} additional pages", additional_pages);
+
+            // Create futures for all remaining pages using the futures crate
+            let page_futures: Vec<_> = (1..=additional_pages)
+                .map(|page| {
+                    let start_index = page * LIMIT;
+                    self.get_library_page(library_id, start_index, LIMIT)
+                })
+                .collect();
+            let page_results = futures::future::join_all(page_futures).await;
+
+            for result in page_results {
+                match result {
+                    Ok(page) => {
+                        debug!("Fetched page with {} items", page.items.len());
+                        all_items.extend(page.items);
+                    }
+                    Err(e) => {
+                        warn!("Failed to fetch library page: {}", e);
+                        // Continue with other pages rather than failing completely
+                    }
+                }
+            }
+        }
+
+        let elapsed = now.elapsed();
+        debug!(
+            "Total time taken to fetch library: {:?} Limit: {}",
+            elapsed, LIMIT
+        );
+
+        debug!("Total items collected: {}", all_items.len());
+
+        // Create the final result with all items
+        let final_result = MusicDtoList {
+            items: all_items,
+            total_record_count: total_count,
+        };
+
+        if let Ok(json_data) = serde_json::to_string(&final_result)
+            && let Err(e) = cache.save_to_disk(json_data.as_bytes())
+        {
+            warn!("Failed to save library to cache: {}", e);
+        }
+
+        Ok(final_result)
+    }
+
+    async fn get_library_page(
+        &self,
+        library_id: &str,
+        start_index: u64,
+        limit: u64,
+    ) -> Result<MusicDtoList, JellyfinError> {
+        let start_index = start_index.to_string();
+        let limit = limit.to_string();
         let params = vec![
             ("parentId", library_id),
             ("IncludeItemTypes", "Audio"),
@@ -115,13 +193,12 @@ impl Jellyfin {
             ("fields", "DateCreated"),
             ("ImageTypeLimit", "1"),
             ("EnableImageTypes", "Primary"),
-            ("StartIndex", "0"),
+            ("StartIndex", &start_index),
+            ("Limit", &limit),
         ];
+
         let response = self.get("Items", Some(&params)).await?;
         let body = self.handle_response(response).await?;
-        if let Err(e) = cache.save_to_disk(body.as_bytes()) {
-            warn!("Failed to save library to cache: {}", e);
-        }
         Ok(serde_json::from_str(&body)?)
     }
 

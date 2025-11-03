@@ -130,10 +130,6 @@ impl Application {
                     match result {
                         Ok(library) => {
                             let library_cnt = library.items.len() as u64;
-                            info!(
-                                "Jellyfin library size: {} received: {} ",
-                                library.total_record_count, library_cnt
-                            );
                             app.imp().library.replace(library.items);
                             app.emit_by_name::<()>("library-refreshed", &[&library_cnt]);
                         }
