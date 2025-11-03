@@ -8,7 +8,7 @@ use crate::async_utils::spawn_tokio;
 use crate::audio::model::AudioModel;
 use crate::cache::ImageCache;
 use crate::config::{self, retrieve_jellyfin_api_token, settings};
-use crate::jellyfin::api::{MusicDto, MusicDtoList};
+use crate::jellyfin::api::{MusicDto, MusicDtoList, PlaylistDtoList};
 use crate::jellyfin::{Jellyfin, JellyfinError};
 use log::{error, info};
 use std::cell::RefCell;
@@ -120,6 +120,7 @@ impl Application {
         self.emit_by_name::<()>("library-refresh-start", &[]);
         let library_id = self.imp().library_id.borrow().clone();
         let jellyfin = self.jellyfin();
+        let playlist_jellyfin = jellyfin.clone();
         spawn_tokio(
             async move { jellyfin.get_library(&library_id, refresh).await },
             glib::clone!(
@@ -135,6 +136,36 @@ impl Application {
                             );
                             app.imp().library.replace(library.items);
                             app.emit_by_name::<()>("library-refreshed", &[&library_cnt]);
+                        }
+                        Err(err) => match err {
+                            JellyfinError::AuthenticationFailed { message } => {
+                                log::error!("Authentication failed: {}", message);
+                                app.emit_by_name::<()>("force-logout", &[]);
+                            }
+                            _ => {
+                                log::error!("Failed to refresh library: {}", err);
+                                app.emit_by_name::<()>(
+                                    "global-error",
+                                    &[&String::from("Failed to refresh library")],
+                                )
+                            }
+                        },
+                    }
+                },
+            ),
+        );
+
+        spawn_tokio(
+            async move { playlist_jellyfin.get_playlists().await },
+            glib::clone!(
+                #[weak(rename_to=app)]
+                self,
+                move |result: Result<PlaylistDtoList, JellyfinError>| {
+                    match result {
+                        Ok(playlists) => {
+                            let playlists_cnt = playlists.items.len() as u64;
+                            dbg!(&playlists.items);
+                            info!("Jellyfin playlists received: {} ", playlists_cnt);
                         }
                         Err(err) => match err {
                             JellyfinError::AuthenticationFailed { message } => {

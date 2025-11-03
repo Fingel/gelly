@@ -8,7 +8,7 @@ use serde_json::json;
 use thiserror::Error;
 
 use crate::cache::LibraryCache;
-use crate::jellyfin::api::{LibraryDtoList, MusicDtoList};
+use crate::jellyfin::api::{LibraryDtoList, MusicDtoList, PlaylistDtoList};
 
 pub mod api;
 pub mod utils;
@@ -116,13 +116,28 @@ impl Jellyfin {
             ("ImageTypeLimit", "1"),
             ("EnableImageTypes", "Primary"),
             ("StartIndex", "0"),
-            ("Limit", "1000"),
         ];
         let response = self.get("Items", Some(&params)).await?;
         let body = self.handle_response(response).await?;
         if let Err(e) = cache.save_to_disk(body.as_bytes()) {
             warn!("Failed to save library to cache: {}", e);
         }
+        Ok(serde_json::from_str(&body)?)
+    }
+
+    pub async fn get_playlists(&self) -> Result<PlaylistDtoList, JellyfinError> {
+        let params = vec![
+            ("IncludeItemTypes", "Playlist"),
+            ("sortBy", "DateCreated"),
+            ("sortOrder", "Descending"),
+            ("recursive", "true"),
+            ("fields", "DateCreated"),
+            ("ImageTypeLimit", "1"),
+            ("EnableImageTypes", "Primary"),
+            ("StartIndex", "0"),
+        ];
+        let response = self.get("Items", Some(&params)).await?;
+        let body = self.handle_response(response).await?;
         Ok(serde_json::from_str(&body)?)
     }
 
