@@ -17,7 +17,7 @@ pub fn artists_from_library(library: &[MusicDto]) -> Vec<ArtistModel> {
     let mut seen_artist_ids = HashSet::new();
     let mut artists: Vec<ArtistModel> = library
         .iter()
-        .flat_map(|dto| &dto.artist_items)
+        .flat_map(|dto| &dto.album_artists)
         .filter(|artist| seen_artist_ids.insert(&artist.id))
         .map(ArtistModel::from)
         .collect();
@@ -30,7 +30,11 @@ pub fn albums_for_artist(artist_id: &str, library: &[MusicDto]) -> Vec<AlbumMode
     let mut seen_album_ids = HashSet::new();
     let albums: Vec<AlbumModel> = library
         .iter()
-        .filter(|dto| dto.artist_items.iter().any(|artist| artist.id == artist_id))
+        .filter(|dto| {
+            dto.album_artists
+                .iter()
+                .any(|artist| artist.id == artist_id)
+        })
         .filter(|dto| seen_album_ids.insert(&dto.album_id))
         .map(AlbumModel::from)
         .collect();

@@ -43,7 +43,7 @@ pub struct MusicDto {
     pub run_time_ticks: u64,
     pub user_data: UserDataDto,
     pub album: String,
-    pub artist_items: Vec<ArtistItemsDto>,
+    pub album_artists: Vec<ArtistItemsDto>,
     pub album_id: String,
     pub media_type: String,
     pub normalization_gain: Option<f64>,

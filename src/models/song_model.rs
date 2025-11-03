@@ -31,7 +31,7 @@ impl SongModel {
 impl From<&MusicDto> for SongModel {
     fn from(dto: &MusicDto) -> Self {
         let artists = dto
-            .artist_items
+            .album_artists
             .iter()
             .map(|artist| artist.name.clone())
             .collect();
