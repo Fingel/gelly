@@ -116,67 +116,58 @@ impl Application {
         self.imp().audio_model.borrow().clone()
     }
 
+    fn handle_jellyfin_error(&self, error: JellyfinError, operation: &str) {
+        match error {
+            JellyfinError::AuthenticationFailed { message } => {
+                log::error!("Authentication failed during {}: {}", operation, message);
+                self.emit_by_name::<()>("force-logout", &[]);
+            }
+            _ => {
+                log::error!("Failed to {}: {}", operation, error);
+                self.emit_by_name::<()>("global-error", &[&format!("Failed to {}", operation)])
+            }
+        }
+    }
+
     pub fn refresh_library(&self, refresh: bool) {
         self.emit_by_name::<()>("library-refresh-start", &[]);
         let library_id = self.imp().library_id.borrow().clone();
         let jellyfin = self.jellyfin();
-        let playlist_jellyfin = jellyfin.clone();
         spawn_tokio(
-            async move { jellyfin.get_library(&library_id, refresh).await },
+            async move {
+                let (library_result, playlist_result) = futures::future::join(
+                    jellyfin.get_library(&library_id, refresh),
+                    jellyfin.get_playlists(),
+                )
+                .await;
+                (library_result, playlist_result)
+            },
             glib::clone!(
                 #[weak(rename_to=app)]
                 self,
-                move |result: Result<MusicDtoList, JellyfinError>| {
-                    match result {
+                move |results: (
+                    Result<MusicDtoList, JellyfinError>,
+                    Result<PlaylistDtoList, JellyfinError>
+                )| {
+                    let (library_result, playlist_result) = results;
+                    let mut library_cnt = 0u64;
+                    match library_result {
                         Ok(library) => {
-                            let library_cnt = library.items.len() as u64;
+                            library_cnt = library.items.len() as u64;
                             app.imp().library.replace(library.items);
-                            app.emit_by_name::<()>("library-refreshed", &[&library_cnt]);
                         }
-                        Err(err) => match err {
-                            JellyfinError::AuthenticationFailed { message } => {
-                                log::error!("Authentication failed: {}", message);
-                                app.emit_by_name::<()>("force-logout", &[]);
-                            }
-                            _ => {
-                                log::error!("Failed to refresh library: {}", err);
-                                app.emit_by_name::<()>(
-                                    "global-error",
-                                    &[&String::from("Failed to refresh library")],
-                                )
-                            }
-                        },
+                        Err(err) => app.handle_jellyfin_error(err, "refresh_library"),
                     }
-                },
-            ),
-        );
-
-        spawn_tokio(
-            async move { playlist_jellyfin.get_playlists().await },
-            glib::clone!(
-                #[weak(rename_to=app)]
-                self,
-                move |result: Result<PlaylistDtoList, JellyfinError>| {
-                    match result {
+                    match playlist_result {
                         Ok(playlists) => {
                             let playlists_cnt = playlists.items.len() as u64;
-                            dbg!(&playlists.items);
+                            app.imp().playlists.replace(playlists.items);
                             info!("Jellyfin playlists received: {} ", playlists_cnt);
                         }
-                        Err(err) => match err {
-                            JellyfinError::AuthenticationFailed { message } => {
-                                log::error!("Authentication failed: {}", message);
-                                app.emit_by_name::<()>("force-logout", &[]);
-                            }
-                            _ => {
-                                log::error!("Failed to refresh library: {}", err);
-                                app.emit_by_name::<()>(
-                                    "global-error",
-                                    &[&String::from("Failed to refresh library")],
-                                )
-                            }
-                        },
+                        Err(err) => app.handle_jellyfin_error(err, "refresh_playlists"),
                     }
+
+                    app.emit_by_name::<()>("library-refreshed", &[&library_cnt]);
                 },
             ),
         );
@@ -193,13 +184,7 @@ impl Application {
                 move |result: Result<(), JellyfinError>| {
                     match result {
                         Ok(()) => app.emit_by_name::<()>("library-rescan-requested", &[]),
-                        Err(err) => {
-                            log::error!("Failed to rescan library: {}", err);
-                            app.emit_by_name::<()>(
-                                "global-error",
-                                &[&String::from("Failed to rescan library")],
-                            )
-                        }
+                        Err(err) => app.handle_jellyfin_error(err, "request_library_rescan"),
                     }
                 }
             ),
@@ -235,12 +220,13 @@ mod imp {
     use crate::audio::model::AudioModel;
     use crate::cache::ImageCache;
     use crate::jellyfin::Jellyfin;
-    use crate::jellyfin::api::MusicDto;
+    use crate::jellyfin::api::{MusicDto, PlaylistDto};
 
     #[derive(Default)]
     pub struct Application {
         pub jellyfin: RefCell<Jellyfin>,
         pub library: Rc<RefCell<Vec<MusicDto>>>,
+        pub playlists: Rc<RefCell<Vec<PlaylistDto>>>,
         pub library_id: RefCell<String>,
         pub image_cache: RefCell<Option<ImageCache>>,
         pub audio_model: RefCell<Option<AudioModel>>,
