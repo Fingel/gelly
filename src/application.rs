@@ -141,7 +141,7 @@ impl Application {
             async move {
                 let (library_result, playlist_result) = futures::future::join(
                     jellyfin.get_library(&library_id, refresh),
-                    jellyfin.get_playlists(),
+                    jellyfin.get_playlists(refresh),
                 )
                 .await;
                 (library_result, playlist_result)

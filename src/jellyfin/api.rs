@@ -51,14 +51,14 @@ pub struct MusicDto {
     pub index_number: Option<u32>,
 }
 
-#[derive(Clone, Debug, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "PascalCase")]
 pub struct PlaylistDtoList {
     pub items: Vec<PlaylistDto>,
     pub total_record_count: u64,
 }
 
-#[derive(Clone, Debug, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "PascalCase")]
 pub struct PlaylistDto {
     pub name: String,

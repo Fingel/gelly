@@ -100,7 +100,7 @@ impl Jellyfin {
     ) -> Result<MusicDtoList, JellyfinError> {
         let cache = LibraryCache::new().expect("Could not create library cache");
         if !refresh
-            && let Ok(cached_data) = cache.load_from_disk()
+            && let Ok(cached_data) = cache.load_from_disk("library.json")
             && let Ok(music_list) = serde_json::from_slice::<MusicDtoList>(&cached_data)
         {
             debug!("Loaded library from cache");
@@ -168,7 +168,7 @@ impl Jellyfin {
         };
 
         if let Ok(json_data) = serde_json::to_string(&final_result)
-            && let Err(e) = cache.save_to_disk(json_data.as_bytes())
+            && let Err(e) = cache.save_to_disk("library.json", json_data.as_bytes())
         {
             warn!("Failed to save library to cache: {}", e);
         }
@@ -202,7 +202,18 @@ impl Jellyfin {
         Ok(serde_json::from_str(&body)?)
     }
 
-    pub async fn get_playlists(&self) -> Result<PlaylistDtoList, JellyfinError> {
+    pub async fn get_playlists(&self, refresh: bool) -> Result<PlaylistDtoList, JellyfinError> {
+        let cache = LibraryCache::new().expect("Could not create library cache");
+        if !refresh
+            && let Ok(cached_data) = cache.load_from_disk("playlists.json")
+            && let Ok(playlist_list) = serde_json::from_slice::<PlaylistDtoList>(&cached_data)
+        {
+            debug!("Loaded playlists from cache");
+            return Ok(playlist_list);
+        } else {
+            dbg!("Could not load playlists from cache");
+        }
+
         let params = vec![
             ("IncludeItemTypes", "Playlist"),
             ("sortBy", "DateCreated"),
@@ -215,7 +226,15 @@ impl Jellyfin {
         ];
         let response = self.get("Items", Some(&params)).await?;
         let body = self.handle_response(response).await?;
-        Ok(serde_json::from_str(&body)?)
+        let final_result = serde_json::from_str(&body)?;
+
+        if let Ok(json_data) = serde_json::to_string(&final_result)
+            && let Err(e) = cache.save_to_disk("playlists.json", json_data.as_bytes())
+        {
+            warn!("Failed to save playlists to cache: {}", e);
+        }
+
+        Ok(final_result)
     }
 
     pub async fn request_library_rescan(&self, library_id: &str) -> Result<(), JellyfinError> {

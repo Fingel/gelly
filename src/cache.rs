@@ -42,14 +42,15 @@ impl LibraryCache {
         Ok(Self { cache_dir })
     }
 
-    pub fn save_to_disk(&self, library_data: &[u8]) -> Result<(), CacheError> {
-        let path = self.cache_dir.join("library.json");
-        fs::write(path, library_data)?;
+    // TODO: use enums instead of strings for fname here
+    pub fn save_to_disk(&self, fname: &str, data: &[u8]) -> Result<(), CacheError> {
+        let path = self.cache_dir.join(fname);
+        fs::write(path, data)?;
         Ok(())
     }
 
-    pub fn load_from_disk(&self) -> Result<Vec<u8>, CacheError> {
-        let path = self.cache_dir.join("library.json");
+    pub fn load_from_disk(&self, fname: &str) -> Result<Vec<u8>, CacheError> {
+        let path = self.cache_dir.join(fname);
         Ok(fs::read(path)?)
     }
 }
