@@ -162,6 +162,18 @@
                                       </object>
                                     </child>
                                     <child>
+                                      <object class="AdwViewStackPage" id="playlists">
+                                        <property name="name">playlists</property>
+                                        <property name="title" translatable="yes">Playlists</property>
+                                        <property name="icon-name">text-editor-symbolic</property>
+                                        <property name="use-underline">true</property>
+                                        <property name="child">
+                                          <object class="GellyPlaylistList" id="playlist_list">
+                                          </object>
+                                        </property>
+                                      </object>
+                                    </child>
+                                    <child>
                                       <object class="AdwViewStackPage" id="nowplaying">
                                         <property name="name">nowplaying</property>
                                         <property name="title" translatable="yes">Now Playing</property>

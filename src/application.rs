@@ -8,7 +8,7 @@ use crate::async_utils::spawn_tokio;
 use crate::audio::model::AudioModel;
 use crate::cache::ImageCache;
 use crate::config::{self, retrieve_jellyfin_api_token, settings};
-use crate::jellyfin::api::{MusicDto, MusicDtoList, PlaylistDtoList};
+use crate::jellyfin::api::{MusicDto, MusicDtoList, PlaylistDto, PlaylistDtoList};
 use crate::jellyfin::{Jellyfin, JellyfinError};
 use log::{error, info};
 use std::cell::RefCell;
@@ -108,6 +108,10 @@ impl Application {
         self.imp().library.clone()
     }
 
+    pub fn playlists(&self) -> Rc<RefCell<Vec<PlaylistDto>>> {
+        self.imp().playlists.clone()
+    }
+
     pub fn image_cache(&self) -> Option<ImageCache> {
         self.imp().image_cache.borrow().clone()
     }
@@ -168,6 +172,7 @@ impl Application {
                     }
 
                     app.emit_by_name::<()>("library-refreshed", &[&library_cnt]);
+                    dbg!("emitted library-refreshed");
                 },
             ),
         );

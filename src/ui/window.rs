@@ -47,6 +47,7 @@ impl Window {
         // Setup library refresh callback, then refresh library
         imp.album_list.setup_library_connection();
         imp.artist_list.setup_library_connection();
+        imp.playlist_list.setup_library_connection();
         self.loading_visible(true);
         self.get_application().refresh_library(false);
 
@@ -140,10 +141,10 @@ mod imp {
     };
     use log::{debug, warn};
 
-    use crate::ui::widget_ext::WidgetApplicationExt;
     use crate::ui::{album_list::AlbumList, artist_list::ArtistList};
     use crate::ui::{artist_detail::ArtistDetail, player_bar::PlayerBar};
     use crate::ui::{now_playing::NowPlaying, setup::Setup};
+    use crate::ui::{playlist_list::PlaylistList, widget_ext::WidgetApplicationExt};
     use crate::{application::Application, ui::album_detail::AlbumDetail};
 
     #[derive(CompositeTemplate, Default)]
@@ -171,6 +172,8 @@ mod imp {
         pub artist_detail_page: TemplateChild<adw::NavigationPage>,
         #[template_child]
         pub artist_detail: TemplateChild<ArtistDetail>,
+        #[template_child]
+        pub playlist_list: TemplateChild<PlaylistList>,
         #[template_child]
         pub player_bar: TemplateChild<PlayerBar>,
         #[template_child]
