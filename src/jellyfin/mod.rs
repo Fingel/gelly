@@ -9,7 +9,7 @@ use thiserror::Error;
 use tokio::time::Instant;
 
 use crate::cache::LibraryCache;
-use crate::jellyfin::api::{LibraryDtoList, MusicDtoList, PlaylistDtoList};
+use crate::jellyfin::api::{LibraryDtoList, MusicDtoList, PlaylistDtoList, PlaylistItems};
 
 pub mod api;
 pub mod utils;
@@ -211,7 +211,7 @@ impl Jellyfin {
             debug!("Loaded playlists from cache");
             return Ok(playlist_list);
         } else {
-            dbg!("Could not load playlists from cache");
+            warn!("Could not load playlists from cache");
         }
 
         let params = vec![
@@ -235,6 +235,16 @@ impl Jellyfin {
         }
 
         Ok(final_result)
+    }
+
+    pub async fn get_playlist_items(
+        &self,
+        playlist_id: &str,
+    ) -> Result<PlaylistItems, JellyfinError> {
+        let path = format!("Playlists/{}", playlist_id);
+        let response = self.get(&path, None).await?;
+        let body = self.handle_response(response).await?;
+        Ok(serde_json::from_str(&body)?)
     }
 
     pub async fn request_library_rescan(&self, library_id: &str) -> Result<(), JellyfinError> {

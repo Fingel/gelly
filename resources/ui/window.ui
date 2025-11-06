@@ -94,6 +94,40 @@
                       </object>
                     </child>
                     <child>
+                      <object class="AdwNavigationPage" id="playlist_detail_page">
+                        <property name="title" translatable="yes">Playlist Detail</property>
+                        <child>
+                          <object class="GtkBox">
+                            <property name="orientation">1</property>
+                            <child>
+                              <object class="AdwHeaderBar">
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkScrolledWindow">
+                                <property name="hscrollbar-policy">never</property>
+                                <property name="vscrollbar-policy">automatic</property>
+                                <property name="propagate-natural-height">true</property>
+                                <property name="has-frame">false</property>
+                                <property name="vexpand">true</property>
+                                <child>
+                                  <object class="AdwClamp">
+                                    <property name="margin-bottom">48</property>
+                                    <property name="margin-top">48</property>
+                                    <property name="maximum-size">1000</property>
+                                    <child>
+                                      <object class="GellyPlaylistDetail" id="playlist_detail">
+                                      </object>
+                                    </child>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                    <child>
                       <object class="AdwNavigationPage" id="main_window">
                         <property name="title" translatable="yes">Main</property>
                         <child>

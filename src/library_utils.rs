@@ -52,3 +52,11 @@ pub fn tracks_for_album(album_id: &str, library: &[MusicDto]) -> Vec<MusicDto> {
     tracks.sort_by_key(|t| t.index_number);
     tracks
 }
+
+pub fn tracks_for_ids(ids: Vec<String>, library: &[MusicDto]) -> Vec<MusicDto> {
+    library
+        .iter()
+        .filter(|dto| ids.contains(&dto.id))
+        .cloned()
+        .collect()
+}

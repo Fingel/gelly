@@ -80,3 +80,9 @@ pub struct ArtistItemsDto {
     pub name: String,
     pub id: String,
 }
+
+#[derive(Clone, Debug, Deserialize)]
+#[serde(rename_all = "PascalCase")]
+pub struct PlaylistItems {
+    pub item_ids: Vec<String>,
+}

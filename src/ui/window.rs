@@ -1,5 +1,5 @@
 use crate::config::settings;
-use crate::models::{AlbumModel, ArtistModel};
+use crate::models::{AlbumModel, ArtistModel, PlaylistModel};
 use crate::{application::Application, ui::widget_ext::WidgetApplicationExt};
 use adw::{prelude::*, subclass::prelude::ObjectSubclassIsExt};
 use glib::Object;
@@ -69,6 +69,13 @@ impl Window {
         imp.artist_detail_page.set_title(&artist_model.name());
         imp.main_navigation.push(&imp.artist_detail_page.get());
         imp.artist_detail.set_artist_model(artist_model);
+    }
+
+    pub fn show_playlist_detail(&self, playlist_model: &PlaylistModel) {
+        let imp = self.imp();
+        imp.playlist_detail_page.set_title(&playlist_model.name());
+        imp.main_navigation.push(&imp.playlist_detail_page.get());
+        imp.playlist_detail.set_playlist_model(playlist_model);
     }
 
     pub fn logout(&self) {
@@ -141,7 +148,9 @@ mod imp {
     };
     use log::{debug, warn};
 
-    use crate::ui::{album_list::AlbumList, artist_list::ArtistList};
+    use crate::ui::{
+        album_list::AlbumList, artist_list::ArtistList, playlist_detail::PlaylistDetail,
+    };
     use crate::ui::{artist_detail::ArtistDetail, player_bar::PlayerBar};
     use crate::ui::{now_playing::NowPlaying, setup::Setup};
     use crate::ui::{playlist_list::PlaylistList, widget_ext::WidgetApplicationExt};
@@ -174,6 +183,10 @@ mod imp {
         pub artist_detail: TemplateChild<ArtistDetail>,
         #[template_child]
         pub playlist_list: TemplateChild<PlaylistList>,
+        #[template_child]
+        pub playlist_detail: TemplateChild<PlaylistDetail>,
+        #[template_child]
+        pub playlist_detail_page: TemplateChild<adw::NavigationPage>,
         #[template_child]
         pub player_bar: TemplateChild<PlayerBar>,
         #[template_child]

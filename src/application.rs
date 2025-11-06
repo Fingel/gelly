@@ -10,7 +10,7 @@ use crate::cache::ImageCache;
 use crate::config::{self, retrieve_jellyfin_api_token, settings};
 use crate::jellyfin::api::{MusicDto, MusicDtoList, PlaylistDto, PlaylistDtoList};
 use crate::jellyfin::{Jellyfin, JellyfinError};
-use log::{error, info};
+use log::error;
 use std::cell::RefCell;
 use std::rc::Rc;
 
@@ -164,15 +164,12 @@ impl Application {
                     }
                     match playlist_result {
                         Ok(playlists) => {
-                            let playlists_cnt = playlists.items.len() as u64;
                             app.imp().playlists.replace(playlists.items);
-                            info!("Jellyfin playlists received: {} ", playlists_cnt);
                         }
                         Err(err) => app.handle_jellyfin_error(err, "refresh_playlists"),
                     }
 
                     app.emit_by_name::<()>("library-refreshed", &[&library_cnt]);
-                    dbg!("emitted library-refreshed");
                 },
             ),
         );

@@ -1,7 +1,9 @@
 use crate::{
-    library_utils::tracks_for_album,
+    async_utils::spawn_tokio,
+    jellyfin::{JellyfinError, api::PlaylistItems},
+    library_utils::tracks_for_ids,
     models::{PlaylistModel, SongModel},
-    ui::{playlist, widget_ext::WidgetApplicationExt},
+    ui::widget_ext::WidgetApplicationExt,
 };
 use glib::Object;
 use gtk::{self, gio, glib, subclass::prelude::*};
@@ -38,8 +40,39 @@ impl Playlist {
             .replace(playlist_model.id().to_string());
     }
 
+    fn play_songs(&self, playlist_items: PlaylistItems) {
+        let library = self.get_application().library().clone();
+        let tracks = tracks_for_ids(playlist_items.item_ids, &library.borrow());
+        let songs: Vec<SongModel> = tracks.iter().map(SongModel::from).collect();
+        if let Some(audio_model) = self.get_application().audio_model() {
+            audio_model.set_playlist(songs, 0);
+        } else {
+            self.toast("Audio model not initialized, please restart", None);
+            warn!("No audio model found");
+        }
+    }
+
     pub fn play_playlist(&self) {
-        dbg!("Playing playlist");
+        let playlist_id = self.imp().playlist_id.borrow().clone();
+        let jellyfin = self.get_application().jellyfin();
+        spawn_tokio(
+            async move { jellyfin.get_playlist_items(&playlist_id).await },
+            glib::clone!(
+                #[weak(rename_to=playlist)]
+                self,
+                move |result: Result<PlaylistItems, JellyfinError>| {
+                    match result {
+                        Ok(playlist_items) => {
+                            playlist.play_songs(playlist_items);
+                        }
+                        Err(error) => {
+                            playlist.toast("Unable to load playlist", None);
+                            warn!("Unable to load playlist: {error}");
+                        }
+                    }
+                }
+            ),
+        );
     }
 }
 

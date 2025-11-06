@@ -1,7 +1,7 @@
 use crate::{
     application::Application,
-    models::{ArtistModel, PlaylistModel},
-    ui::{artist::Artist, playlist::Playlist, widget_ext::WidgetApplicationExt, window::Window},
+    models::PlaylistModel,
+    ui::{playlist::Playlist, widget_ext::WidgetApplicationExt, window::Window},
 };
 use glib::Object;
 use gtk::{
@@ -23,7 +23,6 @@ impl PlaylistList {
     }
 
     pub fn pull_playlists(&self) {
-        dbg!("Pulling playlists");
         let playlists = self.get_application().playlists().borrow().clone();
         if playlists.is_empty() {
             self.set_empty(true);
@@ -55,7 +54,7 @@ impl PlaylistList {
             .expect("Item should be a PlaylistModel")
             .clone();
         let window = self.get_root_window();
-        dbg!("Show playlist detail");
+        window.show_playlist_detail(&playlist_model);
     }
 
     pub fn setup_library_connection(&self) {
@@ -67,7 +66,6 @@ impl PlaylistList {
                 #[weak(rename_to = playlist_list)]
                 self,
                 move |_app: Application, _total_record_count: u64| {
-                    dbg!("In refresh closure");
                     playlist_list.pull_playlists();
                 }
             ),
@@ -77,7 +75,6 @@ impl PlaylistList {
     pub fn search_changed(&self, query: &str) {
         let imp = self.imp();
         let store = imp.store.get().expect("Store should be initialized");
-
         if query.is_empty() {
             let selection_model = gtk::SingleSelection::new(Some(store.clone()));
             imp.grid_view.set_model(Some(&selection_model));
@@ -86,19 +83,15 @@ impl PlaylistList {
                 .name_filter
                 .get()
                 .expect("Name filter should be initialized");
-
             name_filter.set_search(Some(query));
-
             let filter_model = FilterListModel::new(Some(store.clone()), Some(name_filter.clone()));
             let selection_model = gtk::SingleSelection::new(Some(filter_model));
-
             imp.grid_view.set_model(Some(&selection_model));
         }
     }
 
     pub fn setup_search_connection(&self) {
         let window = self.get_root_window();
-
         window.connect_closure(
             "search",
             false,

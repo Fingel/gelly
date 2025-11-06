@@ -9,6 +9,7 @@ pub mod image_utils;
 pub mod now_playing;
 pub mod player_bar;
 pub mod playlist;
+pub mod playlist_detail;
 pub mod playlist_list;
 pub mod setup;
 pub mod song;
