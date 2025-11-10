@@ -15,7 +15,7 @@ pub mod api;
 pub mod utils;
 
 static CLIENT_ID: &str = "Gelly"; //TODO: get this from the gtk app config
-static VERSION: &str = "0.1"; //TODO: get this from build script?
+static VERSION: &str = env!("CARGO_PKG_VERSION"); //TODO: get this from build script?
 static UUID: &str = "9770ae10-835f-422b-8125-81b8977b181d"; //TODO: generate and store in settings
 
 #[derive(Error, Debug)]
@@ -44,7 +44,7 @@ pub struct Jellyfin {
 impl Jellyfin {
     pub fn new(host: &str, token: &str, user_id: &str) -> Self {
         let client = Client::builder()
-            .user_agent("Gelly/0.1")
+            .user_agent(format!("Gelly/{}", VERSION))
             .build()
             .expect("Failed to create HTTP client");
 
