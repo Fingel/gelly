@@ -152,8 +152,8 @@ mod imp {
         album_list::AlbumList, artist_list::ArtistList, playlist_detail::PlaylistDetail,
     };
     use crate::ui::{artist_detail::ArtistDetail, player_bar::PlayerBar};
-    use crate::ui::{now_playing::NowPlaying, setup::Setup};
     use crate::ui::{playlist_list::PlaylistList, widget_ext::WidgetApplicationExt};
+    use crate::ui::{queue::Queue, setup::Setup};
     use crate::{application::Application, ui::album_detail::AlbumDetail};
 
     #[derive(CompositeTemplate, Default)]
@@ -190,7 +190,7 @@ mod imp {
         #[template_child]
         pub player_bar: TemplateChild<PlayerBar>,
         #[template_child]
-        pub now_playing: TemplateChild<NowPlaying>,
+        pub queue: TemplateChild<Queue>,
         #[template_child]
         pub progress_bar: TemplateChild<gtk::ProgressBar>,
     }

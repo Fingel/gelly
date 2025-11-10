@@ -70,14 +70,14 @@ impl PlayerBar {
             .build();
 
         audio_model.connect_notify_local(
-            Some("playlist-index"),
+            Some("queue-index"),
             glib::clone!(
                 #[weak(rename_to = player)]
                 self,
                 move |audio_model, _| {
                     player.update_song_info(audio_model);
-                    // Show player bar when a song is loaded (playlist-index >= 0)
-                    if audio_model.playlist_index() >= 0 {
+                    // Show player bar when a song is loaded (queue-index >= 0)
+                    if audio_model.queue_index() >= 0 {
                         player.reveal();
                     }
                 }
@@ -102,7 +102,7 @@ impl PlayerBar {
         self.update_play_pause_button(audio_model.playing());
 
         // Show player bar if there's already a song loaded
-        if audio_model.playlist_index() >= 0 {
+        if audio_model.queue_index() >= 0 {
             self.reveal();
         }
     }

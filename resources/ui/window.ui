@@ -208,13 +208,13 @@
                                       </object>
                                     </child>
                                     <child>
-                                      <object class="AdwViewStackPage" id="nowplaying">
-                                        <property name="name">nowplaying</property>
-                                        <property name="title" translatable="yes">Now Playing</property>
+                                      <object class="AdwViewStackPage" id="queue_page">
+                                        <property name="name">queue</property>
+                                        <property name="title" translatable="yes">Queue</property>
                                         <property name="icon-name">audio-x-generic-symbolic</property>
                                         <property name="use-underline">true</property>
                                         <property name="child">
-                                          <object class="GellyNowPlaying" id="now_playing">
+                                          <object class="GellyQueue" id="queue">
                                           </object>
                                         </property>
                                       </object>

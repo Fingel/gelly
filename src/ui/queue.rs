@@ -4,19 +4,19 @@ use gtk::{gio, glib, prelude::*, subclass::prelude::*};
 use log::warn;
 
 glib::wrapper! {
-    pub struct NowPlaying(ObjectSubclass<imp::NowPlaying>)
+    pub struct Queue(ObjectSubclass<imp::Queue>)
     @extends gtk::Widget, gtk::Box,
         @implements gio::ActionMap, gio::ActionGroup, gtk::Accessible, gtk::Buildable, gtk::ConstraintTarget;
 }
 
-impl NowPlaying {
+impl Queue {
     pub fn new() -> Self {
         Object::builder().build()
     }
 
-    pub fn display_playlist(&self) {
+    pub fn display_queue(&self) {
         if let Some(audio_model) = self.get_application().audio_model() {
-            let tracks = audio_model.playlist();
+            let tracks = audio_model.queue();
             self.imp().track_list.remove_all();
             if tracks.is_empty() {
                 self.set_empty(true);
@@ -50,7 +50,7 @@ impl NowPlaying {
     }
 }
 
-impl Default for NowPlaying {
+impl Default for Queue {
     fn default() -> Self {
         Self::new()
     }
@@ -66,8 +66,8 @@ mod imp {
     };
 
     #[derive(CompositeTemplate, Default)]
-    #[template(resource = "/io/m51/Gelly/ui/now_playing.ui")]
-    pub struct NowPlaying {
+    #[template(resource = "/io/m51/Gelly/ui/queue.ui")]
+    pub struct Queue {
         #[template_child]
         pub empty: TemplateChild<adw::StatusPage>,
         #[template_child]
@@ -75,9 +75,9 @@ mod imp {
     }
 
     #[glib::object_subclass]
-    impl ObjectSubclass for NowPlaying {
-        const NAME: &'static str = "GellyNowPlaying";
-        type Type = super::NowPlaying;
+    impl ObjectSubclass for Queue {
+        const NAME: &'static str = "GellyQueue";
+        type Type = super::Queue;
         type ParentType = gtk::Box;
 
         fn class_init(klass: &mut Self::Class) {
@@ -89,23 +89,23 @@ mod imp {
         }
     }
 
-    impl BoxImpl for NowPlaying {}
-    impl WidgetImpl for NowPlaying {}
-    impl ObjectImpl for NowPlaying {
+    impl BoxImpl for Queue {}
+    impl WidgetImpl for Queue {}
+    impl ObjectImpl for Queue {
         fn constructed(&self) {
             self.parent_constructed();
             self.setup_signals();
             self.obj().connect_map(glib::clone!(
-                #[weak(rename_to = now_playing)]
+                #[weak(rename_to = queue)]
                 self.obj(),
                 move |_| {
-                    now_playing.display_playlist();
+                    queue.display_queue();
                 }
             ));
         }
     }
 
-    impl NowPlaying {
+    impl Queue {
         fn setup_signals(&self) {
             self.track_list.connect_row_activated(glib::clone!(
                 #[weak(rename_to=imp)]

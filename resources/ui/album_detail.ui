@@ -110,7 +110,7 @@
                     <property
                       name="icon-name"
                     >list-add-symbolic</property>
-                    <property name="tooltip-text">Add to playlist</property>
+                    <property name="tooltip-text">Add to queue</property>
                     <style>
                       <class name="circular" />
                     </style>

@@ -98,7 +98,7 @@ impl AudioModel {
         self.mpris_properties_changed([
             Property::PlaybackStatus(status),
             Property::CanPause(self.playing()),
-            Property::CanPlay(!self.playlist().is_empty()),
+            Property::CanPlay(!self.queue().is_empty()),
         ]);
     }
 
@@ -106,11 +106,11 @@ impl AudioModel {
         self.mpris_properties_changed([
             Property::Metadata(self.metadata()),
             Property::CanGoNext({
-                let playlist = self.playlist();
-                let current_index = self.playlist_index();
-                current_index >= 0 && (current_index + 1) < playlist.len() as i32
+                let queue = self.queue();
+                let current_index = self.queue_index();
+                current_index >= 0 && (current_index + 1) < queue.len() as i32
             }),
-            Property::CanGoPrevious(self.playlist_index() > 0),
+            Property::CanGoPrevious(self.queue_index() > 0),
         ]);
     }
 
@@ -331,17 +331,17 @@ impl LocalPlayerInterface for AudioModel {
     }
 
     async fn can_go_next(&self) -> fdo::Result<bool> {
-        let playlist = self.playlist();
-        let current_index = self.playlist_index();
-        Ok(current_index >= 0 && (current_index + 1) < playlist.len() as i32)
+        let queue = self.queue();
+        let current_index = self.queue_index();
+        Ok(current_index >= 0 && (current_index + 1) < queue.len() as i32)
     }
 
     async fn can_go_previous(&self) -> fdo::Result<bool> {
-        Ok(self.playlist_index() > 0)
+        Ok(self.queue_index() > 0)
     }
 
     async fn can_play(&self) -> fdo::Result<bool> {
-        Ok(!self.playlist().is_empty())
+        Ok(!self.queue().is_empty())
     }
 
     async fn can_pause(&self) -> fdo::Result<bool> {

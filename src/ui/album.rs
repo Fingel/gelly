@@ -37,7 +37,7 @@ impl Album {
         let tracks = tracks_for_album(&self.imp().album_id.borrow(), &library.borrow());
         let songs: Vec<SongModel> = tracks.iter().map(SongModel::from).collect();
         if let Some(audio_model) = self.get_application().audio_model() {
-            audio_model.set_playlist(songs, 0);
+            audio_model.set_queue(songs, 0);
         } else {
             self.toast("Audio model not initialized, please restart", None);
             warn!("No audio model found");

@@ -20,7 +20,7 @@ impl AudioModel {
     pub fn new() -> Self {
         let obj: Self = Object::builder().build();
         obj.initialize_player();
-        obj.set_playlist_index(-1);
+        obj.set_queue_index(-1);
         // TODO set these from settings
         obj.set_volume(1.0);
         obj.set_muted(false);
@@ -94,21 +94,21 @@ impl AudioModel {
         uri
     }
 
-    pub fn playlist(&self) -> Vec<SongModel> {
-        self.imp().playlist.borrow().clone()
+    pub fn queue(&self) -> Vec<SongModel> {
+        self.imp().queue.borrow().clone()
     }
 
-    pub fn set_playlist(&self, songs: Vec<SongModel>, start_index: usize) {
-        self.imp().playlist.replace(songs);
+    pub fn set_queue(&self, songs: Vec<SongModel>, start_index: usize) {
+        self.imp().queue.replace(songs);
         self.load_song(start_index as i32);
         self.play();
         self.notify_mpris_can_navigate(true, start_index > 0);
     }
 
-    pub fn append_to_playlist(&self, songs: Vec<SongModel>) {
-        let mut playlist = self.imp().playlist.borrow_mut();
-        playlist.extend(songs);
-        let current_index = self.playlist_index();
+    pub fn append_to_queue(&self, songs: Vec<SongModel>) {
+        let mut queue = self.imp().queue.borrow_mut();
+        queue.extend(songs);
+        let current_index = self.queue_index();
         self.notify_mpris_can_navigate(true, current_index > 0);
     }
 
@@ -118,14 +118,14 @@ impl AudioModel {
     }
 
     fn load_song(&self, index: i32) {
-        if let Some(song) = self.imp().playlist.borrow().get(index as usize).cloned() {
+        if let Some(song) = self.imp().queue.borrow().get(index as usize).cloned() {
             let stream_uri = self.stream_uri(&song.id());
             let player = self.player();
             player.stop();
             self.set_property("position", 0u32);
             self.set_property("duration", 0u32);
             self.set_property("loading", true);
-            self.set_playlist_index(index);
+            self.set_queue_index(index);
             player.set_uri(&stream_uri);
             self.emit_by_name::<()>("song-changed", &[&song.id()]);
             // Notify MPRIS with metadata
@@ -136,22 +136,22 @@ impl AudioModel {
     }
 
     pub fn next(&self) {
-        let next_index = self.playlist_index() + 1;
-        if next_index < self.imp().playlist.borrow().len() as i32 {
+        let next_index = self.queue_index() + 1;
+        if next_index < self.imp().queue.borrow().len() as i32 {
             self.load_song(next_index);
             self.play();
         } else {
             self.load_song(0);
             self.stop();
-            self.emit_by_name::<()>("playlist-finished", &[]);
+            self.emit_by_name::<()>("queue-finished", &[]);
         }
     }
 
     pub fn prev(&self) {
         let prev_index = if self.get_position() > 3 {
-            self.playlist_index()
+            self.queue_index()
         } else {
-            self.playlist_index() - 1
+            self.queue_index() - 1
         };
 
         if prev_index >= 0 {
@@ -196,9 +196,9 @@ impl AudioModel {
     }
 
     pub fn current_song(&self) -> Option<SongModel> {
-        let index = self.imp().playlist_index.get();
+        let index = self.imp().queue_index.get();
         if index >= 0 {
-            self.imp().playlist.borrow().get(index as usize).cloned()
+            self.imp().queue.borrow().get(index as usize).cloned()
         } else {
             None
         }
@@ -240,7 +240,7 @@ mod imp {
     #[properties(wrapper_type = super::AudioModel)]
     pub struct AudioModel {
         #[property(get, set)]
-        pub playlist_index: Cell<i32>,
+        pub queue_index: Cell<i32>,
 
         #[property(get, set)]
         pub playing: Cell<bool>,
@@ -264,7 +264,7 @@ mod imp {
         pub muted: Cell<bool>,
 
         pub player: OnceCell<AudioPlayer>,
-        pub playlist: RefCell<Vec<SongModel>>,
+        pub queue: RefCell<Vec<SongModel>>,
         pub mpris_server: OnceCell<LocalServer<super::AudioModel>>,
     }
     #[glib::object_subclass]
@@ -287,7 +287,7 @@ mod imp {
                     glib::subclass::Signal::builder("song-changed")
                         .param_types([String::static_type()])
                         .build(),
-                    glib::subclass::Signal::builder("playlist-finished").build(),
+                    glib::subclass::Signal::builder("queue-finished").build(),
                     glib::subclass::Signal::builder("error")
                         .param_types([String::static_type()])
                         .build(),
