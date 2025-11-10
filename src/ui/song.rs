@@ -21,6 +21,8 @@ impl Song {
         let imp = self.imp();
         imp.item_id.replace(Some(song.id()));
         imp.title_label.set_label(&song.title());
+        imp.album_label.set_label(&song.album());
+        imp.artist_label.set_label(&song.artists_string());
         imp.number_label.set_label(&song.track_number().to_string());
         imp.duration_label
             .set_label(&format_duration(song.duration()));
@@ -28,6 +30,12 @@ impl Song {
 
     pub fn set_playing(&self, playing: bool) {
         self.imp().playing_icon.set_visible(playing);
+    }
+
+    pub fn show_details(&self) {
+        let imp = self.imp();
+        imp.artist_label.set_visible(true);
+        imp.album_label.set_visible(true);
     }
 
     fn listen_for_song_changes(&self) {
@@ -68,6 +76,10 @@ mod imp {
         pub title_label: TemplateChild<gtk::Label>,
         #[template_child]
         pub number_label: TemplateChild<gtk::Label>,
+        #[template_child]
+        pub artist_label: TemplateChild<gtk::Label>,
+        #[template_child]
+        pub album_label: TemplateChild<gtk::Label>,
         #[template_child]
         pub duration_label: TemplateChild<gtk::Label>,
         #[template_child]

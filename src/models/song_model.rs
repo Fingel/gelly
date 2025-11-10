@@ -26,6 +26,10 @@ impl SongModel {
             .property("duration", duration)
             .build()
     }
+
+    pub fn artists_string(&self) -> String {
+        self.artists().join(", ")
+    }
 }
 
 impl From<&MusicDto> for SongModel {
