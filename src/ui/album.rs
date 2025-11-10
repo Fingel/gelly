@@ -1,7 +1,5 @@
 use crate::{
-    library_utils::tracks_for_album,
-    models::{AlbumModel, SongModel},
-    ui::widget_ext::WidgetApplicationExt,
+    library_utils::songs_for_album, models::AlbumModel, ui::widget_ext::WidgetApplicationExt,
 };
 use glib::Object;
 use gtk::{self, gio, glib, subclass::prelude::*};
@@ -34,8 +32,7 @@ impl Album {
 
     pub fn play_album(&self) {
         let library = self.get_application().library().clone();
-        let tracks = tracks_for_album(&self.imp().album_id.borrow(), &library.borrow());
-        let songs: Vec<SongModel> = tracks.iter().map(SongModel::from).collect();
+        let songs = songs_for_album(&self.imp().album_id.borrow(), &library.borrow());
         if let Some(audio_model) = self.get_application().audio_model() {
             audio_model.set_queue(songs, 0);
         } else {

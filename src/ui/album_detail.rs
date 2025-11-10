@@ -1,7 +1,7 @@
 use crate::{
     jellyfin::utils::format_duration,
-    library_utils::tracks_for_album,
-    models::{AlbumModel, SongModel},
+    library_utils::songs_for_album,
+    models::AlbumModel,
     ui::{song::Song, widget_ext::WidgetApplicationExt},
 };
 use glib::Object;
@@ -36,8 +36,7 @@ impl AlbumDetail {
 
     pub fn pull_tracks(&self) {
         let library = self.get_application().library().clone();
-        let tracks = tracks_for_album(&self.imp().album_id.borrow(), &library.borrow());
-        let songs: Vec<SongModel> = tracks.iter().map(SongModel::from).collect();
+        let songs = songs_for_album(&self.imp().album_id.borrow(), &library.borrow());
         let track_list = &self.imp().track_list;
         track_list.remove_all();
         for song in &songs {

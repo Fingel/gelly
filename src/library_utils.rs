@@ -1,5 +1,5 @@
 use crate::jellyfin::api::MusicDto;
-use crate::models::{AlbumModel, ArtistModel};
+use crate::models::{AlbumModel, ArtistModel, SongModel};
 use std::collections::HashSet;
 
 pub fn albums_from_library(library: &[MusicDto]) -> Vec<AlbumModel> {
@@ -42,21 +42,20 @@ pub fn albums_for_artist(artist_id: &str, library: &[MusicDto]) -> Vec<AlbumMode
     albums
 }
 
-pub fn tracks_for_album(album_id: &str, library: &[MusicDto]) -> Vec<MusicDto> {
-    // TODO: should we be converting to SongModel here?
-    let mut tracks: Vec<MusicDto> = library
+pub fn songs_for_album(album_id: &str, library: &[MusicDto]) -> Vec<SongModel> {
+    let mut tracks: Vec<SongModel> = library
         .iter()
         .filter(|dto| dto.album_id == album_id)
-        .cloned()
+        .map(SongModel::from)
         .collect();
-    tracks.sort_by_key(|t| t.index_number);
+    tracks.sort_by_key(|t| t.track_number());
     tracks
 }
 
-pub fn tracks_for_ids(ids: Vec<String>, library: &[MusicDto]) -> Vec<MusicDto> {
+pub fn songs_for_ids(ids: Vec<String>, library: &[MusicDto]) -> Vec<SongModel> {
     library
         .iter()
         .filter(|dto| ids.contains(&dto.id))
-        .cloned()
+        .map(SongModel::from)
         .collect()
 }

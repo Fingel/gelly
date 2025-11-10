@@ -1,8 +1,8 @@
 use crate::{
     async_utils::spawn_tokio,
     jellyfin::{JellyfinError, api::PlaylistItems, utils::format_duration},
-    library_utils::tracks_for_ids,
-    models::{PlaylistModel, SongModel},
+    library_utils::songs_for_ids,
+    models::PlaylistModel,
     ui::{song::Song, widget_ext::WidgetApplicationExt},
 };
 use glib::Object;
@@ -54,8 +54,7 @@ impl PlaylistDetail {
 
     fn populate_tracks(&self, playlist_items: PlaylistItems) {
         let library = self.get_application().library().clone();
-        let tracks = tracks_for_ids(playlist_items.item_ids, &library.borrow());
-        let songs: Vec<SongModel> = tracks.iter().map(SongModel::from).collect();
+        let songs = songs_for_ids(playlist_items.item_ids, &library.borrow());
         let track_list = &self.imp().track_list;
         track_list.remove_all();
         for (i, song) in songs.iter().enumerate() {

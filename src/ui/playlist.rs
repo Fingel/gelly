@@ -1,8 +1,8 @@
 use crate::{
     async_utils::spawn_tokio,
     jellyfin::{JellyfinError, api::PlaylistItems},
-    library_utils::tracks_for_ids,
-    models::{PlaylistModel, SongModel},
+    library_utils::songs_for_ids,
+    models::PlaylistModel,
     ui::widget_ext::WidgetApplicationExt,
 };
 use glib::Object;
@@ -42,8 +42,7 @@ impl Playlist {
 
     fn play_songs(&self, playlist_items: PlaylistItems) {
         let library = self.get_application().library().clone();
-        let tracks = tracks_for_ids(playlist_items.item_ids, &library.borrow());
-        let songs: Vec<SongModel> = tracks.iter().map(SongModel::from).collect();
+        let songs = songs_for_ids(playlist_items.item_ids, &library.borrow());
         if let Some(audio_model) = self.get_application().audio_model() {
             audio_model.set_queue(songs, 0);
         } else {
