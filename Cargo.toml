@@ -20,6 +20,7 @@ mpris-server = "0.9.0"
 dbus-secret-service = "4.1.0"
 glycin = { version = "3.0.4", features = ["gdk4"] }
 futures = "0.3.31"
+uuid = { version = "1.18.1", features = ["v4"] }
 
 [build-dependencies]
 glib-build-tools = "0.21.0"

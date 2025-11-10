@@ -9,14 +9,14 @@ use thiserror::Error;
 use tokio::time::Instant;
 
 use crate::cache::LibraryCache;
+use crate::config;
 use crate::jellyfin::api::{LibraryDtoList, MusicDtoList, PlaylistDtoList, PlaylistItems};
 
 pub mod api;
 pub mod utils;
 
-static CLIENT_ID: &str = "Gelly"; //TODO: get this from the gtk app config
-static VERSION: &str = env!("CARGO_PKG_VERSION"); //TODO: get this from build script?
-static UUID: &str = "9770ae10-835f-422b-8125-81b8977b181d"; //TODO: generate and store in settings
+static CLIENT_ID: &str = "Gelly";
+static VERSION: &str = env!("CARGO_PKG_VERSION");
 
 #[derive(Error, Debug)]
 pub enum JellyfinError {
@@ -309,10 +309,11 @@ impl Jellyfin {
         } else {
             "".to_string()
         };
+        let uuid = config::application_uuid();
 
         format!(
             "MediaBrowser Client=\"{}\", Device=\"{}\", DeviceId=\"{}\", Version=\"{}\"{}",
-            CLIENT_ID, device, UUID, VERSION, auth
+            CLIENT_ID, device, uuid, VERSION, auth
         )
     }
 

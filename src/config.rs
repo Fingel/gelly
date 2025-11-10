@@ -2,6 +2,7 @@ use dbus_secret_service::{EncryptionType, SecretService};
 use gtk::gio;
 use gtk::gio::prelude::SettingsExt;
 use std::{cell::RefCell, collections::HashMap};
+use uuid::Uuid;
 
 pub static APP_ID: &str = "io.m51.Gelly";
 
@@ -97,4 +98,16 @@ pub fn clear_jellyfin_api_token(host: &str, user_id: &str) {
         }
     };
     item.delete().expect("Unable to remove secret from keyring");
+}
+
+/// Return the client UUID, generating it if it doesn't exist
+pub fn application_uuid() -> String {
+    let uuid = settings().string("uuid").as_str().to_string();
+    if uuid.is_empty() {
+        let uuid = Uuid::new_v4().to_string();
+        settings().set_string("uuid", &uuid).unwrap();
+        uuid
+    } else {
+        uuid
+    }
 }

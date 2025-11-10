@@ -13,6 +13,10 @@
       <default>""</default>
       <summary>Jellyfin Library ID</summary>
     </key>
+    <key name="uuid" type="s">
+      <default>""</default>
+      <summary>Client UUID</summary>
+    </key>
     <key name="window-width" type="i">
       <default>-1</default>
       <summary>Default window width</summary>
