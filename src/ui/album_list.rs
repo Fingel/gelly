@@ -43,16 +43,20 @@ impl AlbumList {
     }
 
     pub fn activate_album(&self, index: u32) {
-        let store = self
-            .imp()
-            .store
-            .get()
-            .expect("AlbumList store should be initialized.");
-        let album_model = store
+        let grid_view = &self.imp().grid_view;
+        let selection_model = grid_view
+            .model()
+            .expect("GridView should have a model")
+            .downcast::<gtk::SingleSelection>()
+            .expect("Model should be a SingleSelection");
+        let current_model = selection_model
+            .model()
+            .expect("SelectionModel should have a model");
+        let album_model = current_model
             .item(index)
             .expect("Item index invalid")
             .downcast_ref::<AlbumModel>()
-            .expect("Item should be an AlbumData")
+            .expect("Item should be an AlbumModel")
             .clone();
         let window = self.get_root_window();
         window.show_album_detail(&album_model);

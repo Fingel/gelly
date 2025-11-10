@@ -42,12 +42,16 @@ impl PlaylistList {
     }
 
     pub fn activate_playlist(&self, index: u32) {
-        let store = self
-            .imp()
-            .store
-            .get()
-            .expect("PlaylistList store should be initialized.");
-        let playlist_model = store
+        let grid_view = &self.imp().grid_view;
+        let selection_model = grid_view
+            .model()
+            .expect("GridView should have a model")
+            .downcast::<gtk::SingleSelection>()
+            .expect("Model should be a SingleSelection");
+        let current_model = selection_model
+            .model()
+            .expect("SelectionModel should have a model");
+        let playlist_model = current_model
             .item(index)
             .expect("Item index invalid")
             .downcast_ref::<PlaylistModel>()
