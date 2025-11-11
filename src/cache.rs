@@ -53,6 +53,12 @@ impl LibraryCache {
         let path = self.cache_dir.join(fname);
         Ok(fs::read(path)?)
     }
+
+    pub fn clear(&self) -> Result<(), CacheError> {
+        fs::remove_dir_all(&self.cache_dir)?;
+        fs::create_dir_all(&self.cache_dir)?;
+        Ok(())
+    }
 }
 
 #[derive(Debug, Clone)]

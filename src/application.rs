@@ -194,12 +194,11 @@ impl Application {
     }
 
     pub fn logout(&self) {
-        self.imp().jellyfin.replace(Jellyfin::default());
+        let jellyfin = Jellyfin::default();
+        jellyfin.clear_cache();
+        self.imp().jellyfin.replace(jellyfin);
         self.imp().library.replace(Vec::new());
         self.imp().library_id.replace(String::new());
-        settings()
-            .set_string("library-id", "")
-            .expect("Failed to clear library ID");
         config::logout();
     }
 }
