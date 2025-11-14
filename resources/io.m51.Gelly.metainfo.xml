@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright 2025 Austin Riba -->
 <component type="desktop-application">
   <id>io.m51.Gelly</id>
   <name>Gelly</name>
@@ -7,6 +8,7 @@
   <description>
     <p>
       Gelly is a Jellyfin Media Server client focused specifically on music playback.
+      Simply connect to a Jellyfin server and listen to your entire library!
     </p>
     <ul>
       <li>Browse your music collection by artist or album</li>
@@ -24,15 +26,15 @@
   <url type="bugtracker">https://github.com/Fingel/gelly/issues</url>
   <screenshots>
     <screenshot type="default">
-      <image>https://github.com/user-attachments/assets/8c914d2f-52a0-4cfa-9113-0855a0209568</image>
+      <image>https://github.com/user-attachments/assets/ab37e090-5c70-4eec-a365-0da3a9b201e8</image>
       <caption>Main window showing music library</caption>
     </screenshot>
   </screenshots>
   <releases>
-    <release version="0.1.0" date="2025-10-14">
+    <release version="0.5.0" date="2025-11-13">
       <description>
         <p>
-          This release includes initial support for music playback and browsing.
+         Initial Flatpak release.
         </p>
       </description>
     </release>
@@ -40,4 +42,12 @@
   <provides>
     <binary>gelly</binary>
   </provides>
+  <categories>
+    <category>Audio</category>
+    <category>Music</category>
+  </categories>
+  <keywords>
+    <keyword>Jellyfin</keyword>
+  </keywords>
+  <icon type="stock">io.m51.Gelly</icon>
 </component>
