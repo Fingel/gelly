@@ -31,6 +31,13 @@
     </screenshot>
   </screenshots>
   <releases>
+    <release version="0.5.3" date="2025-11-14">
+      <description>
+        <p>
+        Fixes a bug where music items that couldn't be deserialized prevented the library from being loaded.
+        </p>
+      </description>
+    </release>
     <release version="0.5.2" date="2025-11-14">
       <description>
         <p>
