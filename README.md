@@ -2,6 +2,10 @@
 
 Gelly is [Jellyfin Media Server](https://jellyfin.org/) client focused on music playback.
 
+<a href='https://flathub.org/apps/io.m51.Gelly'>
+  <img width='240' alt='Get it on Flathub' src='https://flathub.org/api/badge?locale=en'/>
+</a>
+
 <img width="1106" height="844" alt="Screenshot from 2025-11-13 18-28-37" src="https://github.com/user-attachments/assets/ab37e090-5c70-4eec-a365-0da3a9b201e8" />
 
 ## Features
@@ -17,14 +21,17 @@ Gelly is [Jellyfin Media Server](https://jellyfin.org/) client focused on music 
 
 ## Installation
 
+### Flatpak
+
+Gelly is available on Flatpak as [io.m51.Gelly](https://flathub.org/apps/io.m51.Gelly)
+
+    flatpak install io.m51.Gelly
+
 ### Arch Linux
 
 Gelly is available on the [aur](https://aur.archlinux.org/packages/gelly):
 
     paru -S gelly
-
-Flatpak packaging is planned. For now, non-aur users will need to build
-from source. See Development.
 
 ## Development
 
