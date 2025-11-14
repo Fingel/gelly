@@ -1,4 +1,5 @@
-use serde::{Deserialize, Serialize};
+use serde::{Deserialize, Deserializer, Serialize};
+use serde_json::Value;
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "PascalCase")]
@@ -26,9 +27,29 @@ pub struct LibraryDtoList {
     pub items: Vec<LibraryDto>,
 }
 
+fn deserialize_music_items_skip_errors<'de, D>(deserializer: D) -> Result<Vec<MusicDto>, D::Error>
+where
+    D: Deserializer<'de>,
+{
+    let items = Vec::<Value>::deserialize(deserializer)?;
+    let result: Vec<MusicDto> = items
+        .into_iter()
+        .filter_map(|item| match MusicDto::deserialize(item) {
+            Ok(music_dto) => Some(music_dto),
+            Err(e) => {
+                log::warn!("Failed to deserialize music item, skipping: {}", e);
+                None
+            }
+        })
+        .collect();
+
+    Ok(result)
+}
+
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "PascalCase")]
 pub struct MusicDtoList {
+    #[serde(deserialize_with = "deserialize_music_items_skip_errors")]
     pub items: Vec<MusicDto>,
     pub total_record_count: u64,
 }
