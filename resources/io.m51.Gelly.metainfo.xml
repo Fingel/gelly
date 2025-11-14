@@ -31,7 +31,7 @@
     </screenshot>
   </screenshots>
   <releases>
-    <release version="0.5.1" date="2025-11-14">
+    <release version="0.5.2" date="2025-11-14">
       <description>
         <p>
            Packaging updates for Flathub.
@@ -42,13 +42,13 @@
       <description>
         <p>
          Initial Flatpak release.
+         </p>
          <ul>
            <li>High quality audio playback</li>
            <li>Browse albums, artists and playlists</li>
            <li>MPRIS support</li>
            <li>Request library rescanning</li>
          </ul>
-        </p>
       </description>
     </release>
   </releases>
@@ -63,4 +63,8 @@
     <keyword>Jellyfin</keyword>
   </keywords>
   <icon type="stock">io.m51.Gelly</icon>
+  <branding>
+    <color type="primary" scheme_preference="light">#cdab8f</color>
+    <color type="primary" scheme_preference="dark">#63452c</color>
+  </branding>
 </component>
