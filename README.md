@@ -2,7 +2,7 @@
 
 Gelly is [Jellyfin Media Server](https://jellyfin.org/) client focused on music playback.
 
-<img width="1124" height="912" alt="Screenshot from 2025-11-11 07-28-37" src="https://github.com/user-attachments/assets/982bd98d-e7c8-49b6-9120-6e13ef386bf1" />
+<img width="1106" height="844" alt="Screenshot from 2025-11-13 18-28-37" src="https://github.com/user-attachments/assets/ab37e090-5c70-4eec-a365-0da3a9b201e8" />
 
 ## Features
 
