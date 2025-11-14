@@ -31,10 +31,23 @@
     </screenshot>
   </screenshots>
   <releases>
+    <release version="0.5.1" date="2025-11-14">
+      <description>
+        <p>
+           Packaging updates for Flathub.
+        </p>
+      </description>
+    </release>
     <release version="0.5.0" date="2025-11-13">
       <description>
         <p>
          Initial Flatpak release.
+         <ul>
+           <li>High quality audio playback</li>
+           <li>Browse albums, artists and playlists</li>
+           <li>MPRIS support</li>
+           <li>Request library rescanning</li>
+         </ul>
         </p>
       </description>
     </release>
