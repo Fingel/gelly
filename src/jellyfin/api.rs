@@ -1,6 +1,28 @@
 use serde::{Deserialize, Deserializer, Serialize};
 use serde_json::Value;
 
+/// For the endpoints that return a collection of items, we want to skip any
+/// items that do not deserialize so that we can still return a usable library.
+fn deserialize_items_skip_errors<'de, D, T>(deserializer: D) -> Result<Vec<T>, D::Error>
+where
+    D: Deserializer<'de>,
+    T: Deserialize<'de>,
+{
+    let items = Vec::<Value>::deserialize(deserializer)?;
+    let result: Vec<T> = items
+        .into_iter()
+        .filter_map(|item| match T::deserialize(item) {
+            Ok(d_item) => Some(d_item),
+            Err(e) => {
+                log::warn!("Failed to deserialize jellyfin item, skipping: {}", e);
+                None
+            }
+        })
+        .collect();
+
+    Ok(result)
+}
+
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "PascalCase")]
 pub struct AuthenticateResponse {
@@ -27,29 +49,10 @@ pub struct LibraryDtoList {
     pub items: Vec<LibraryDto>,
 }
 
-fn deserialize_music_items_skip_errors<'de, D>(deserializer: D) -> Result<Vec<MusicDto>, D::Error>
-where
-    D: Deserializer<'de>,
-{
-    let items = Vec::<Value>::deserialize(deserializer)?;
-    let result: Vec<MusicDto> = items
-        .into_iter()
-        .filter_map(|item| match MusicDto::deserialize(item) {
-            Ok(music_dto) => Some(music_dto),
-            Err(e) => {
-                log::warn!("Failed to deserialize music item, skipping: {}", e);
-                None
-            }
-        })
-        .collect();
-
-    Ok(result)
-}
-
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "PascalCase")]
 pub struct MusicDtoList {
-    #[serde(deserialize_with = "deserialize_music_items_skip_errors")]
+    #[serde(deserialize_with = "deserialize_items_skip_errors")]
     pub items: Vec<MusicDto>,
     pub total_record_count: u64,
 }
@@ -75,6 +78,7 @@ pub struct MusicDto {
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "PascalCase")]
 pub struct PlaylistDtoList {
+    #[serde(deserialize_with = "deserialize_items_skip_errors")]
     pub items: Vec<PlaylistDto>,
     pub total_record_count: u64,
 }
