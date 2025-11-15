@@ -5,6 +5,7 @@ use std::{cell::RefCell, collections::HashMap};
 use uuid::Uuid;
 
 pub static APP_ID: &str = "io.m51.Gelly";
+pub static VERSION: &str = env!("CARGO_PKG_VERSION");
 
 thread_local! {
     static SETTINGS: RefCell<Option<gio::Settings>> = const { RefCell::new(None) };

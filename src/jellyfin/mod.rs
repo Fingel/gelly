@@ -16,7 +16,6 @@ pub mod api;
 pub mod utils;
 
 static CLIENT_ID: &str = "Gelly";
-static VERSION: &str = env!("CARGO_PKG_VERSION");
 
 #[derive(Error, Debug)]
 pub enum JellyfinError {
@@ -45,7 +44,7 @@ pub struct Jellyfin {
 impl Jellyfin {
     pub fn new(host: &str, token: &str, user_id: &str) -> Self {
         let client = Client::builder()
-            .user_agent(format!("Gelly/{}", VERSION))
+            .user_agent(format!("Gelly/{}", config::VERSION))
             .build()
             .expect("Failed to create HTTP client");
 
@@ -325,7 +324,11 @@ impl Jellyfin {
 
         format!(
             "MediaBrowser Client=\"{}\", Device=\"{}\", DeviceId=\"{}\", Version=\"{}\"{}",
-            CLIENT_ID, device, uuid, VERSION, auth
+            CLIENT_ID,
+            device,
+            uuid,
+            config::VERSION,
+            auth
         )
     }
 

@@ -1,5 +1,6 @@
 use crate::config::settings;
 use crate::models::{AlbumModel, ArtistModel, PlaylistModel};
+use crate::ui::about_dialog;
 use crate::{application::Application, ui::widget_ext::WidgetApplicationExt};
 use adw::{prelude::*, subclass::prelude::ObjectSubclassIsExt};
 use glib::Object;
@@ -76,6 +77,10 @@ impl Window {
         imp.playlist_detail_page.set_title(&playlist_model.name());
         imp.main_navigation.push(&imp.playlist_detail_page.get());
         imp.playlist_detail.set_playlist_model(playlist_model);
+    }
+
+    pub fn show_about_dialog(&self) {
+        about_dialog::show(self);
     }
 
     pub fn logout(&self) {
@@ -272,12 +277,23 @@ mod imp {
                 ))
                 .build();
 
+            let action_about = ActionEntry::builder("about")
+                .activate(glib::clone!(
+                    #[weak(rename_to=window)]
+                    self,
+                    move |_, _, _| {
+                        window.obj().show_about_dialog();
+                    }
+                ))
+                .build();
+
             self.obj().add_action_entries([
                 action_logout,
                 action_clear_cache,
                 action_refresh_library,
                 action_request_library_rescan,
                 action_search,
+                action_about,
             ]);
 
             self.obj().connect_map(glib::clone!(
