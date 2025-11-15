@@ -6,7 +6,7 @@ Gelly is [Jellyfin Media Server](https://jellyfin.org/) client focused on music 
   <img width='240' alt='Get it on Flathub' src='https://flathub.org/api/badge?locale=en'/>
 </a>
 
-<img width="1106" height="844" alt="Screenshot from 2025-11-13 18-28-37" src="https://github.com/user-attachments/assets/ab37e090-5c70-4eec-a365-0da3a9b201e8" />
+<img width="1265" height="1144" alt="gelly2" src="https://github.com/user-attachments/assets/56b32599-1070-4e77-8b32-81bc6071e4ed" />
 
 ## Features
 
