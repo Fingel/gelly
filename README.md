@@ -1,10 +1,6 @@
 # Gelly
 
-Gelly is [Jellyfin Media Server](https://jellyfin.org/) client focused on music playback.
-
-<a href='https://flathub.org/apps/io.m51.Gelly'>
-  <img width='240' alt='Get it on Flathub' src='https://flathub.org/api/badge?locale=en'/>
-</a>
+Gelly is a native, lightweight [Jellyfin Media Server](https://jellyfin.org/) client focused on music playback written in Rust and GTK.
 
 <img width="1265" height="1144" alt="gelly2" src="https://github.com/user-attachments/assets/56b32599-1070-4e77-8b32-81bc6071e4ed" />
 
@@ -18,10 +14,16 @@ Gelly is [Jellyfin Media Server](https://jellyfin.org/) client focused on music 
 - [x] Remote playlist management
     - [ ] Edit playlists
 - [ ] Eye candy
+- [ ] Playlist modes
+- [ ] Offline support
 
 ## Installation
 
 ### Flatpak
+
+<a href='https://flathub.org/apps/io.m51.Gelly'>
+  <img width='240' alt='Get it on Flathub' src='https://flathub.org/api/badge?locale=en'/>
+</a>
 
 Gelly is available on Flatpak as [io.m51.Gelly](https://flathub.org/apps/io.m51.Gelly)
 
