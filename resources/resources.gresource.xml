@@ -17,6 +17,7 @@
     <file compressed="true" preprocess="xml-stripblanks">ui/playlist.ui</file>
     <file compressed="true" preprocess="xml-stripblanks">ui/playlist_list.ui</file>
     <file compressed="true" preprocess="xml-stripblanks">ui/playlist_detail.ui</file>
+    <file compressed="true" preprocess="xml-stripblanks">ui/media_card.ui</file>
     <file alias="metainfo.xml" compressed="true">io.m51.Gelly.metainfo.xml</file>
   </gresource>
 </gresources>

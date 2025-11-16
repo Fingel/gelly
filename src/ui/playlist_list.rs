@@ -1,12 +1,12 @@
 use crate::{
     application::Application,
     models::PlaylistModel,
-    ui::{playlist::Playlist, widget_ext::WidgetApplicationExt, window::Window},
+    ui::{list_helpers::*, playlist::Playlist, widget_ext::WidgetApplicationExt, window::Window},
 };
 use glib::Object;
 use gtk::{
-    FilterListModel, ListItem, PropertyExpression, StringFilter, gio,
-    glib::{self, object::Cast},
+    gio,
+    glib::{self},
     prelude::*,
     subclass::prelude::*,
 };
@@ -42,23 +42,14 @@ impl PlaylistList {
     }
 
     pub fn activate_playlist(&self, index: u32) {
-        let grid_view = &self.imp().grid_view;
-        let selection_model = grid_view
-            .model()
-            .expect("GridView should have a model")
-            .downcast::<gtk::SingleSelection>()
-            .expect("Model should be a SingleSelection");
-        let current_model = selection_model
-            .model()
-            .expect("SelectionModel should have a model");
-        let playlist_model = current_model
-            .item(index)
-            .expect("Item index invalid")
-            .downcast_ref::<PlaylistModel>()
-            .expect("Item should be a PlaylistModel")
-            .clone();
         let window = self.get_root_window();
-        window.show_playlist_detail(&playlist_model);
+        handle_grid_activation::<PlaylistModel, _>(
+            &self.imp().grid_view,
+            index,
+            |playlist_model| {
+                window.show_playlist_detail(playlist_model);
+            },
+        );
     }
 
     pub fn setup_library_connection(&self) {
@@ -79,19 +70,11 @@ impl PlaylistList {
     pub fn search_changed(&self, query: &str) {
         let imp = self.imp();
         let store = imp.store.get().expect("Store should be initialized");
-        if query.is_empty() {
-            let selection_model = gtk::SingleSelection::new(Some(store.clone()));
-            imp.grid_view.set_model(Some(&selection_model));
-        } else {
-            let name_filter = imp
-                .name_filter
-                .get()
-                .expect("Name filter should be initialized");
-            name_filter.set_search(Some(query));
-            let filter_model = FilterListModel::new(Some(store.clone()), Some(name_filter.clone()));
-            let selection_model = gtk::SingleSelection::new(Some(filter_model));
-            imp.grid_view.set_model(Some(&selection_model));
-        }
+        let name_filter = imp
+            .name_filter
+            .get()
+            .expect("Name filter should be initialized");
+        apply_single_filter_search(query, store, name_filter, &imp.grid_view);
     }
 
     pub fn setup_search_connection(&self) {
@@ -112,15 +95,7 @@ impl PlaylistList {
     fn setup_model(&self) {
         let imp = self.imp();
         let store = gio::ListStore::new::<PlaylistModel>();
-        let name_expression = PropertyExpression::new(
-            PlaylistModel::static_type(),
-            None::<&gtk::Expression>,
-            "name",
-        );
-        let name_filter = StringFilter::new(Some(name_expression));
-        name_filter.set_ignore_case(true);
-        name_filter.set_match_mode(gtk::StringFilterMatchMode::Substring);
-
+        let name_filter = create_string_filter::<PlaylistModel>("name");
         imp.store
             .set(store.clone())
             .expect("PlaylistList store should only be set once");
@@ -134,14 +109,14 @@ impl PlaylistList {
         factory.connect_setup(move |_, list_item| {
             let placeholder = Playlist::new();
             let item = list_item
-                .downcast_ref::<ListItem>()
+                .downcast_ref::<gtk::ListItem>()
                 .expect("Needs to be a ListItem");
             item.set_child(Some(&placeholder));
         });
 
         factory.connect_bind(move |_, list_item| {
             let list_item = list_item
-                .downcast_ref::<ListItem>()
+                .downcast_ref::<gtk::ListItem>()
                 .expect("Needs to be a ListItem");
             let playlist_model = list_item
                 .item()
@@ -199,7 +174,6 @@ mod imp {
         type Type = super::PlaylistList;
         type ParentType = gtk::Box;
 
-        //TODO: are the following two methods necessary?
         fn class_init(klass: &mut Self::Class) {
             klass.bind_template();
         }

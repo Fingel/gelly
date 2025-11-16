@@ -8,82 +8,9 @@
     <property name="margin-top">6</property>
     <property name="margin-bottom">6</property>
     <child>
-      <object class="GtkBox" id="inner">
-        <property name="halign">3</property>
-        <property name="valign">1</property>
-        <property name="orientation">1</property>
-        <property name="width-request">250</property>
-        <property name="height-request">250</property>
-        <child>
-          <object class="GtkOverlay">
-            <child>
-              <object class="GtkEventControllerMotion" id="motion_controller">
-              </object>
-            </child>
-            <child type="overlay">
-              <object class="GtkRevealer" id="play_revealer">
-                <property name="halign">center</property>
-                <property name="valign">center</property>
-                <property name="reveal-child">false</property>
-                <property name="transition-type">crossfade</property>
-                <property name="transition-duration">200</property>
-                <child>
-                  <object class="GtkButton" id="overlay_play">
-                    <property name="width-request">50</property>
-                    <property name="height-request">50</property>
-                    <child>
-                      <object class="GtkImage">
-                        <property name="icon-name">media-playback-start-symbolic</property>
-                        <property name="icon-size">2</property>
-                      </object>
-                    </child>
-                    <style>
-                      <class name="circular"/>
-                      <class name="suggested-action"/>
-                    </style>
-                  </object>
-                </child>
-              </object>
-            </child>
-            <child>
-              <object class="GellyAlbumArt" id="album_image">
-                <property name="size">200</property>
-              </object>
-            </child>
-          </object>
-        </child>
-        <child>
-          <object class="GtkLabel" id="name_label">
-            <property name="ellipsize">3</property>
-            <property name="justify">0</property>
-          </object>
-        </child>
-        <child>
-          <object class="GtkBox">
-            <property name="halign">center</property>
-            <property name="orientation">horizontal</property>
-            <child>
-              <object class="GtkLabel" id="child_count_label">
-                <property name="ellipsize">3</property>
-                <property name="justify">0</property>
-                <style>
-                  <class name="dimmed"/>
-                </style>
-              </object>
-            </child>
-            <child>
-              <object class="GtkLabel">
-                <property name="margin-start">2</property>
-                <property name="label" translatable="yes">songs</property>
-                <property name="ellipsize">3</property>
-                <property name="justify">0</property>
-                <style>
-                  <class name="dimmed"/>
-                </style>
-              </object>
-            </child>
-          </object>
-        </child>
+      <object class="GellyMediaCard" id="media_card">
+        <property name="has-play-button">true</property>
+        <property name="has-secondary-label">true</property>
       </object>
     </child>
   </template>
