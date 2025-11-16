@@ -7,6 +7,7 @@ pub mod artist;
 pub mod artist_detail;
 pub mod artist_list;
 pub mod image_utils;
+pub mod list_helpers;
 pub mod media_card;
 pub mod media_traits;
 pub mod player_bar;
