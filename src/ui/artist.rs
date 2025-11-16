@@ -12,15 +12,10 @@ impl Artist {
         Object::builder().build()
     }
 
-    pub fn set_name(&self, name: &str) {
-        self.imp().name_label.set_text(name);
-    }
-
     pub fn set_artist_model(&self, artist_model: &ArtistModel) {
-        self.set_name(&artist_model.name());
-        self.imp()
-            .artist_image
-            .set_item_id(&artist_model.id(), None);
+        let card = &self.imp().media_card;
+        card.set_primary_text(&artist_model.name());
+        card.set_image_id(&artist_model.id());
     }
 }
 
@@ -30,6 +25,7 @@ impl Default for Artist {
     }
 }
 mod imp {
+    use crate::ui::media_card::MediaCard;
     use adw::subclass::prelude::*;
     use glib::subclass::InitializingObject;
     use gtk::{
@@ -37,15 +33,11 @@ mod imp {
         glib::{self},
     };
 
-    use crate::ui::album_art::AlbumArt;
-
     #[derive(CompositeTemplate, Default)]
     #[template(resource = "/io/m51/Gelly/ui/artist.ui")]
     pub struct Artist {
         #[template_child]
-        pub name_label: TemplateChild<gtk::Label>,
-        #[template_child]
-        pub artist_image: TemplateChild<AlbumArt>,
+        pub media_card: TemplateChild<MediaCard>,
     }
 
     #[glib::object_subclass]
