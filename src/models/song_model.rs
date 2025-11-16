@@ -7,6 +7,7 @@ glib::wrapper! {
 }
 
 impl SongModel {
+    #[allow(clippy::too_many_arguments)]
     pub fn new(
         id: &str,
         title: &str,
@@ -14,6 +15,7 @@ impl SongModel {
         album: &str,
         album_id: &str,
         track_number: u32,
+        parent_track_number: u32,
         duration: u64,
     ) -> Self {
         Object::builder()
@@ -23,6 +25,7 @@ impl SongModel {
             .property("album", album)
             .property("album-id", album_id)
             .property("track-number", track_number)
+            .property("parent-track-number", parent_track_number)
             .property("duration", duration)
             .build()
     }
@@ -47,6 +50,7 @@ impl From<&MusicDto> for SongModel {
             &dto.album,
             &dto.album_id,
             dto.index_number.unwrap_or(0),
+            dto.parent_index_number.unwrap_or(0),
             dto.run_time_ticks,
         )
     }
@@ -77,6 +81,9 @@ mod imp {
 
         #[property(get, set, name = "track-number")]
         track_number: RefCell<u32>,
+
+        #[property(get, set, name = "parent-track-number")]
+        parent_track_number: RefCell<u32>,
 
         #[property(get, set)]
         duration: RefCell<u64>,

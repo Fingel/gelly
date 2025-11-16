@@ -73,6 +73,7 @@ pub struct MusicDto {
     pub normalization_gain: Option<f64>,
     pub production_year: Option<u32>,
     pub index_number: Option<u32>,
+    pub parent_index_number: Option<u32>,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]

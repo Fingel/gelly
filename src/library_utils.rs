@@ -48,7 +48,7 @@ pub fn songs_for_album(album_id: &str, library: &[MusicDto]) -> Vec<SongModel> {
         .filter(|dto| dto.album_id == album_id)
         .map(SongModel::from)
         .collect();
-    tracks.sort_by_key(|t| t.track_number());
+    tracks.sort_by_key(|t| (t.parent_track_number(), t.track_number()));
     tracks
 }
 
