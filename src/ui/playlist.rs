@@ -3,7 +3,7 @@ use crate::{
     jellyfin::{JellyfinError, api::PlaylistItems},
     library_utils::songs_for_ids,
     models::PlaylistModel,
-    ui::{media_traits::Playable, widget_ext::WidgetApplicationExt},
+    ui::widget_ext::WidgetApplicationExt,
 };
 use glib::Object;
 use gtk::{self, gio, glib, subclass::prelude::*};
@@ -39,9 +39,7 @@ impl Playlist {
             warn!("No audio model found");
         }
     }
-}
 
-impl Playable for Playlist {
     fn play(&self) {
         let playlist_id = self.imp().playlist_id.borrow().clone();
         let jellyfin = self.get_application().jellyfin();
@@ -64,10 +62,6 @@ impl Playable for Playlist {
             ),
         );
     }
-
-    fn get_id(&self) -> String {
-        self.imp().playlist_id.borrow().clone()
-    }
 }
 
 impl Default for Playlist {
@@ -76,7 +70,7 @@ impl Default for Playlist {
     }
 }
 mod imp {
-    use crate::ui::{media_card::MediaCard, media_traits::Playable};
+    use crate::ui::media_card::MediaCard;
     use adw::subclass::prelude::*;
     use glib::subclass::InitializingObject;
     use gtk::{

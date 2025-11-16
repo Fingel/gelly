@@ -1,7 +1,5 @@
 use crate::{
-    library_utils::songs_for_album,
-    models::AlbumModel,
-    ui::{media_traits::Playable, widget_ext::WidgetApplicationExt},
+    library_utils::songs_for_album, models::AlbumModel, ui::widget_ext::WidgetApplicationExt,
 };
 use glib::Object;
 use gtk::{self, gio, glib, subclass::prelude::*};
@@ -24,9 +22,7 @@ impl Album {
         card.set_image_id(&album_model.id());
         self.imp().album_id.replace(album_model.id().to_string());
     }
-}
 
-impl Playable for Album {
     fn play(&self) {
         let library = self.get_application().library().clone();
         let songs = songs_for_album(&self.imp().album_id.borrow(), &library.borrow());
@@ -37,10 +33,6 @@ impl Playable for Album {
             warn!("No audio model found");
         }
     }
-
-    fn get_id(&self) -> String {
-        self.imp().album_id.borrow().clone()
-    }
 }
 
 impl Default for Album {
@@ -50,7 +42,7 @@ impl Default for Album {
 }
 
 mod imp {
-    use crate::ui::{media_card::MediaCard, media_traits::Playable};
+    use crate::ui::media_card::MediaCard;
     use adw::subclass::prelude::*;
     use glib::subclass::InitializingObject;
     use gtk::{
