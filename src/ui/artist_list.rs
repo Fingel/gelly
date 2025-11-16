@@ -105,13 +105,29 @@ impl ArtistList {
         let selection_model = gtk::SingleSelection::new(Some(store));
         let factory = gtk::SignalListItemFactory::new();
 
-        setup_media_factory::<ArtistModel, Artist, _, _>(
-            &factory,
-            Artist::new,
-            |artist_model, artist_widget| {
-                artist_widget.set_artist_model(artist_model);
-            },
-        );
+        factory.connect_setup(move |_, list_item| {
+            let placeholder = Artist::new();
+            let item = list_item
+                .downcast_ref::<gtk::ListItem>()
+                .expect("Needs to be a ListItem");
+            item.set_child(Some(&placeholder))
+        });
+
+        factory.connect_bind(move |_, list_item| {
+            let list_item = list_item
+                .downcast_ref::<gtk::ListItem>()
+                .expect("Needs to be a ListItem");
+            let artist_model = list_item
+                .item()
+                .and_downcast::<ArtistModel>()
+                .expect("Item should be an ArtistData");
+            let artist_widget = list_item
+                .child()
+                .and_downcast::<Artist>()
+                .expect("Child has to be an Artist");
+
+            artist_widget.set_artist_model(&artist_model);
+        });
 
         imp.grid_view.set_model(Some(&selection_model));
         imp.grid_view.set_factory(Some(&factory));

@@ -106,13 +106,28 @@ impl PlaylistList {
         let selection_model = gtk::SingleSelection::new(Some(store));
         let factory = gtk::SignalListItemFactory::new();
 
-        setup_media_factory::<PlaylistModel, Playlist, _, _>(
-            &factory,
-            Playlist::new,
-            |playlist_model, playlist_widget| {
-                playlist_widget.set_playlist_model(playlist_model);
-            },
-        );
+        factory.connect_setup(move |_, list_item| {
+            let placeholder = Playlist::new();
+            let item = list_item
+                .downcast_ref::<gtk::ListItem>()
+                .expect("Needs to be a ListItem");
+            item.set_child(Some(&placeholder));
+        });
+
+        factory.connect_bind(move |_, list_item| {
+            let list_item = list_item
+                .downcast_ref::<gtk::ListItem>()
+                .expect("Needs to be a ListItem");
+            let playlist_model = list_item
+                .item()
+                .and_downcast::<PlaylistModel>()
+                .expect("Item should be a PlaylistModel");
+            let playlist_widget = list_item
+                .child()
+                .and_downcast::<Playlist>()
+                .expect("child should be a Playlist");
+            playlist_widget.set_playlist_model(&playlist_model);
+        });
 
         imp.grid_view.set_model(Some(&selection_model));
         imp.grid_view.set_factory(Some(&factory));

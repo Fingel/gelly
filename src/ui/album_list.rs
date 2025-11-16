@@ -115,13 +115,29 @@ impl AlbumList {
         let selection_model = gtk::SingleSelection::new(Some(store));
         let factory = gtk::SignalListItemFactory::new();
 
-        setup_media_factory::<AlbumModel, Album, _, _>(
-            &factory,
-            Album::new,
-            |album_model, album_widget| {
-                album_widget.set_album_model(album_model);
-            },
-        );
+        factory.connect_setup(move |_, list_item| {
+            let placeholder = Album::new();
+            let item = list_item
+                .downcast_ref::<gtk::ListItem>()
+                .expect("Needs to be a ListItem");
+            item.set_child(Some(&placeholder))
+        });
+
+        factory.connect_bind(move |_, list_item| {
+            let list_item = list_item
+                .downcast_ref::<gtk::ListItem>()
+                .expect("Needs to be a ListItem");
+            let album_model = list_item
+                .item()
+                .and_downcast::<AlbumModel>()
+                .expect("Item should be an AlbumData");
+            let album_widget = list_item
+                .child()
+                .and_downcast::<Album>()
+                .expect("Child has to be an Album");
+
+            album_widget.set_album_model(&album_model);
+        });
 
         imp.grid_view.set_model(Some(&selection_model));
         imp.grid_view.set_factory(Some(&factory));

@@ -1,43 +1,4 @@
-use gtk::{
-    AnyFilter, FilterListModel, ListItem, PropertyExpression, StringFilter, gio, glib, prelude::*,
-};
-
-/// Generic factory setup for media list items
-pub fn setup_media_factory<T, W, F, C>(
-    factory: &gtk::SignalListItemFactory,
-    widget_constructor: C,
-    bind_fn: F,
-) where
-    T: glib::object::IsA<glib::Object> + Clone + 'static,
-    W: glib::object::IsA<gtk::Widget> + Clone + 'static,
-    C: Fn() -> W + Clone + 'static,
-    F: Fn(&T, &W) + 'static,
-{
-    let widget_constructor_setup = widget_constructor.clone();
-    factory.connect_setup(move |_, list_item| {
-        let placeholder = widget_constructor_setup();
-        let item = list_item
-            .downcast_ref::<ListItem>()
-            .expect("Needs to be a ListItem");
-        item.set_child(Some(&placeholder));
-    });
-
-    factory.connect_bind(move |_, list_item| {
-        let list_item = list_item
-            .downcast_ref::<ListItem>()
-            .expect("Needs to be a ListItem");
-        let model = list_item
-            .item()
-            .and_downcast::<T>()
-            .expect("Item should be correct model type");
-        let widget = list_item
-            .child()
-            .and_downcast::<W>()
-            .expect("Child should be correct widget type");
-
-        bind_fn(&model, &widget);
-    });
-}
+use gtk::{AnyFilter, FilterListModel, PropertyExpression, StringFilter, gio, glib, prelude::*};
 
 /// Create a string filter for a given property
 pub fn create_string_filter<T>(property: &str) -> gtk::StringFilter
