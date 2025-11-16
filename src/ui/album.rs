@@ -24,17 +24,6 @@ impl Album {
         card.set_image_id(&album_model.id());
         self.imp().album_id.replace(album_model.id().to_string());
     }
-
-    pub fn play_album(&self) {
-        let library = self.get_application().library().clone();
-        let songs = songs_for_album(&self.imp().album_id.borrow(), &library.borrow());
-        if let Some(audio_model) = self.get_application().audio_model() {
-            audio_model.set_queue(songs, 0);
-        } else {
-            self.toast("Audio model not initialized, please restart", None);
-            warn!("No audio model found");
-        }
-    }
 }
 
 impl Playable for Album {
@@ -61,16 +50,14 @@ impl Default for Album {
 }
 
 mod imp {
-    use std::cell::RefCell;
-
+    use crate::ui::{media_card::MediaCard, media_traits::Playable};
     use adw::subclass::prelude::*;
     use glib::subclass::InitializingObject;
     use gtk::{
         CompositeTemplate,
         glib::{self},
     };
-
-    use crate::ui::{media_card::MediaCard, media_traits::Playable};
+    use std::cell::RefCell;
 
     #[derive(CompositeTemplate, Default)]
     #[template(resource = "/io/m51/Gelly/ui/album.ui")]
