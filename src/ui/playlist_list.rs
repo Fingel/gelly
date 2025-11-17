@@ -24,20 +24,18 @@ impl PlaylistList {
 
     pub fn pull_playlists(&self) {
         let playlists = self.get_application().playlists().borrow().clone();
-        if playlists.is_empty() {
-            self.set_empty(true);
-        } else {
-            self.set_empty(false);
-            let store = self
-                .imp()
-                .store
-                .get()
-                .expect("PlaylistList store should be initialized");
-            store.remove_all();
-            for playlist in playlists {
-                let playlist_obj = PlaylistModel::from(&playlist);
-                store.append(&playlist_obj);
-            }
+        self.set_empty(false);
+        let store = self
+            .imp()
+            .store
+            .get()
+            .expect("PlaylistList store should be initialized");
+        store.remove_all();
+        let shuffle = PlaylistModel::new("shuffle_library", "Shuffle Library", 100);
+        store.append(&shuffle);
+        for playlist in playlists {
+            let playlist_obj = PlaylistModel::from(&playlist);
+            store.append(&playlist_obj);
         }
     }
 

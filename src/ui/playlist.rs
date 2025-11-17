@@ -1,7 +1,7 @@
 use crate::{
     async_utils::spawn_tokio,
     jellyfin::{JellyfinError, api::PlaylistItems},
-    library_utils::songs_for_ids,
+    library_utils::{shuffle_songs, songs_for_ids},
     models::PlaylistModel,
     ui::widget_ext::WidgetApplicationExt,
 };
@@ -42,25 +42,36 @@ impl Playlist {
 
     fn play(&self) {
         let playlist_id = self.imp().playlist_id.borrow().clone();
-        let jellyfin = self.get_application().jellyfin();
-        spawn_tokio(
-            async move { jellyfin.get_playlist_items(&playlist_id).await },
-            glib::clone!(
-                #[weak(rename_to=playlist)]
-                self,
-                move |result: Result<PlaylistItems, JellyfinError>| {
-                    match result {
-                        Ok(playlist_items) => {
-                            playlist.play_songs(playlist_items);
-                        }
-                        Err(error) => {
-                            playlist.toast("Unable to load playlist", None);
-                            warn!("Unable to load playlist: {error}");
+        if playlist_id == "shuffle_library" {
+            let library = self.get_application().library().clone();
+            let songs = shuffle_songs(&library.borrow().clone(), 100);
+            if let Some(audio_model) = self.get_application().audio_model() {
+                audio_model.set_queue(songs, 0);
+            } else {
+                self.toast("Audio model not initialized, please restart", None);
+                warn!("No audio model found");
+            }
+        } else {
+            let jellyfin = self.get_application().jellyfin();
+            spawn_tokio(
+                async move { jellyfin.get_playlist_items(&playlist_id).await },
+                glib::clone!(
+                    #[weak(rename_to=playlist)]
+                    self,
+                    move |result: Result<PlaylistItems, JellyfinError>| {
+                        match result {
+                            Ok(playlist_items) => {
+                                playlist.play_songs(playlist_items);
+                            }
+                            Err(error) => {
+                                playlist.toast("Unable to load playlist", None);
+                                warn!("Unable to load playlist: {error}");
+                            }
                         }
                     }
-                }
-            ),
-        );
+                ),
+            );
+        }
     }
 }
 

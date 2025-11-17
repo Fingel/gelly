@@ -1,5 +1,6 @@
 use crate::jellyfin::api::MusicDto;
 use crate::models::{AlbumModel, ArtistModel, SongModel};
+use rand::prelude::*;
 use std::collections::HashSet;
 
 pub fn albums_from_library(library: &[MusicDto]) -> Vec<AlbumModel> {
@@ -58,4 +59,10 @@ pub fn songs_for_ids(ids: Vec<String>, library: &[MusicDto]) -> Vec<SongModel> {
         .filter(|dto| ids.contains(&dto.id))
         .map(SongModel::from)
         .collect()
+}
+
+pub fn shuffle_songs(library: &[MusicDto], num: usize) -> Vec<SongModel> {
+    let mut rng = rand::rng();
+    let chosen = library.choose_multiple(&mut rng, num);
+    chosen.into_iter().map(SongModel::from).collect()
 }

@@ -1,8 +1,8 @@
 use crate::{
     async_utils::spawn_tokio,
     jellyfin::{JellyfinError, api::PlaylistItems, utils::format_duration},
-    library_utils::songs_for_ids,
-    models::PlaylistModel,
+    library_utils::{shuffle_songs, songs_for_ids},
+    models::{PlaylistModel, SongModel},
     ui::{song::Song, widget_ext::WidgetApplicationExt},
 };
 use glib::Object;
@@ -30,31 +30,35 @@ impl PlaylistDetail {
 
     fn pull_tracks(&self) {
         let playlist_id = self.imp().playlist_id.borrow().clone();
-        let jellyfin = self.get_application().jellyfin();
-        spawn_tokio(
-            async move { jellyfin.get_playlist_items(&playlist_id).await },
-            glib::clone!(
-                #[weak(rename_to=playlist_detail)]
-                self,
-                move |result: Result<PlaylistItems, JellyfinError>| {
-                    match result {
-                        Ok(playlist_items) => {
-                            playlist_detail.populate_tracks(playlist_items);
-                        }
-                        Err(error) => {
-                            playlist_detail
-                                .toast("Could not load playlist, please try again.", None);
-                            warn!("Unable to load playlist: {error}");
+        if playlist_id == "shuffle_library" {
+            let library = self.get_application().library().clone();
+            let songs = shuffle_songs(&library.borrow().clone(), 100);
+            self.populate_tracks_with_songs(songs);
+        } else {
+            let jellyfin = self.get_application().jellyfin();
+            spawn_tokio(
+                async move { jellyfin.get_playlist_items(&playlist_id).await },
+                glib::clone!(
+                    #[weak(rename_to=playlist_detail)]
+                    self,
+                    move |result: Result<PlaylistItems, JellyfinError>| {
+                        match result {
+                            Ok(playlist_items) => {
+                                playlist_detail.select_songs_from_library(playlist_items);
+                            }
+                            Err(error) => {
+                                playlist_detail
+                                    .toast("Could not load playlist, please try again.", None);
+                                warn!("Unable to load playlist: {error}");
+                            }
                         }
                     }
-                }
-            ),
-        );
+                ),
+            );
+        }
     }
 
-    fn populate_tracks(&self, playlist_items: PlaylistItems) {
-        let library = self.get_application().library().clone();
-        let songs = songs_for_ids(playlist_items.item_ids, &library.borrow());
+    fn populate_tracks_with_songs(&self, songs: Vec<SongModel>) {
         let track_list = &self.imp().track_list;
         track_list.remove_all();
         for (i, song) in songs.iter().enumerate() {
@@ -76,6 +80,12 @@ impl PlaylistDetail {
         }
         self.imp().songs.replace(songs);
         self.update_track_metadata();
+    }
+
+    fn select_songs_from_library(&self, playlist_items: PlaylistItems) {
+        let library = self.get_application().library().clone();
+        let songs = songs_for_ids(playlist_items.item_ids, &library.borrow());
+        self.populate_tracks_with_songs(songs);
     }
 
     pub fn song_selected(&self, index: usize) {
