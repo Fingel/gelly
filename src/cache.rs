@@ -19,7 +19,6 @@ pub enum CacheError {
 }
 
 fn get_cache_directory(name: &str) -> Result<PathBuf, CacheError> {
-    // TODO: see if these directories are actually correct
     let cache_dir = if let Ok(xdg_cache) = std::env::var("XDG_CACHE_HOME") {
         PathBuf::from(xdg_cache)
     } else if let Ok(home) = std::env::var("HOME") {
