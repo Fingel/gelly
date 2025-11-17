@@ -31,6 +31,14 @@
     </screenshot>
   </screenshots>
   <releases>
+    <release version="0.6.1" date="2025-11-17">
+      <description>
+        <p>
+          Properly order tracks in albums with multiple discs. Fix potential deserialization errors for
+          items without a "container" field.
+        </p>
+      </description>
+    </release>
     <release version="0.6.0" date="2025-11-16">
       <description>
         <p>
