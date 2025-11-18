@@ -31,6 +31,13 @@
     </screenshot>
   </screenshots>
   <releases>
+    <release version="0.7.0" date="2025-11-17">
+      <description>
+        <p>
+          Add smart playlist handling. For now, 100 random songs playlist is available.
+        </p>
+      </description>
+    </release>
     <release version="0.6.1" date="2025-11-17">
       <description>
         <p>
