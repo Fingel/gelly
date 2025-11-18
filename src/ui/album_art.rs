@@ -70,12 +70,6 @@ impl AlbumArt {
             self.imp().item_id.borrow().clone()
         };
 
-        // TODO fix this hack
-        if item_id.len() < 16 {
-            self.show_error();
-            return;
-        }
-
         let fallback_id = self.imp().fallback_image.borrow().clone();
 
         if self.imp().is_loading.get() || self.imp().is_loaded.get() {

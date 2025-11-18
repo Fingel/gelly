@@ -104,8 +104,6 @@ mod imp {
         #[template_child]
         pub media_card: TemplateChild<MediaCard>,
 
-        // Store the PlaylistModel instead of just the ID
-        // TODO why is this an optional
         pub playlist_model: RefCell<Option<PlaylistModel>>,
     }
 
