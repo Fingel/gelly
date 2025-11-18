@@ -1,7 +1,6 @@
 use crate::{
     async_utils::spawn_tokio,
-    jellyfin::{JellyfinError, api::PlaylistItems, utils::format_duration},
-    library_utils::{shuffle_songs, songs_for_ids},
+    jellyfin::{JellyfinError, api::MusicDto, utils::format_duration},
     models::{PlaylistModel, SongModel},
     ui::{song::Song, widget_ext::WidgetApplicationExt},
 };
@@ -22,40 +21,52 @@ impl PlaylistDetail {
 
     pub fn set_playlist_model(&self, playlist_model: &PlaylistModel) {
         let imp = self.imp();
-        imp.playlist_id.replace(playlist_model.id());
+        imp.playlist_model.replace(Some(playlist_model.clone()));
         imp.name_label.set_text(&playlist_model.name());
         imp.album_image.set_item_id(&playlist_model.id(), None);
         self.pull_tracks();
     }
 
+    fn get_playlist_model(&self) -> Option<PlaylistModel> {
+        self.imp().playlist_model.borrow().clone()
+    }
+
     fn pull_tracks(&self) {
-        let playlist_id = self.imp().playlist_id.borrow().clone();
-        if playlist_id == "shuffle_library" {
-            let library = self.get_application().library().clone();
-            let songs = shuffle_songs(&library.borrow().clone(), 100);
-            self.populate_tracks_with_songs(songs);
-        } else {
-            let jellyfin = self.get_application().jellyfin();
-            spawn_tokio(
-                async move { jellyfin.get_playlist_items(&playlist_id).await },
-                glib::clone!(
-                    #[weak(rename_to=playlist_detail)]
-                    self,
-                    move |result: Result<PlaylistItems, JellyfinError>| {
-                        match result {
-                            Ok(playlist_items) => {
-                                playlist_detail.select_songs_from_library(playlist_items);
-                            }
-                            Err(error) => {
-                                playlist_detail
-                                    .toast("Could not load playlist, please try again.", None);
-                                warn!("Unable to load playlist: {error}");
-                            }
+        let Some(playlist_model) = self.get_playlist_model() else {
+            warn!("No playlist model set");
+            return;
+        };
+
+        let playlist_id = playlist_model.id().to_string();
+        let playlist_type = playlist_model.playlist_type();
+        let library_data = self.get_application().library().borrow().clone();
+        let jellyfin = self.get_application().jellyfin();
+
+        spawn_tokio(
+            async move {
+                playlist_type
+                    .load_song_data(&playlist_id, &jellyfin, &library_data)
+                    .await
+            },
+            glib::clone!(
+                #[weak(rename_to=playlist_detail)]
+                self,
+                move |result: Result<Vec<MusicDto>, JellyfinError>| {
+                    match result {
+                        Ok(music_data) => {
+                            let songs: Vec<SongModel> =
+                                music_data.iter().map(SongModel::from).collect();
+                            playlist_detail.populate_tracks_with_songs(songs);
+                        }
+                        Err(error) => {
+                            playlist_detail
+                                .toast("Could not load playlist, please try again.", None);
+                            warn!("Unable to load playlist: {error}");
                         }
                     }
-                ),
-            );
-        }
+                }
+            ),
+        );
     }
 
     fn populate_tracks_with_songs(&self, songs: Vec<SongModel>) {
@@ -80,12 +91,6 @@ impl PlaylistDetail {
         }
         self.imp().songs.replace(songs);
         self.update_track_metadata();
-    }
-
-    fn select_songs_from_library(&self, playlist_items: PlaylistItems) {
-        let library = self.get_application().library().clone();
-        let songs = songs_for_ids(playlist_items.item_ids, &library.borrow());
-        self.populate_tracks_with_songs(songs);
     }
 
     pub fn song_selected(&self, index: usize) {
@@ -147,7 +152,10 @@ mod imp {
         prelude::*,
     };
 
-    use crate::{models::SongModel, ui::album_art::AlbumArt};
+    use crate::{
+        models::{PlaylistModel, SongModel},
+        ui::album_art::AlbumArt,
+    };
 
     #[derive(CompositeTemplate, Default)]
     #[template(resource = "/io/m51/Gelly/ui/playlist_detail.ui")]
@@ -167,7 +175,7 @@ mod imp {
         #[template_child]
         pub enqueue: TemplateChild<gtk::Button>,
 
-        pub playlist_id: RefCell<String>,
+        pub playlist_model: RefCell<Option<PlaylistModel>>,
         pub songs: RefCell<Vec<SongModel>>,
         pub song_change_signal_connected: Cell<bool>,
     }

@@ -1,8 +1,7 @@
 use crate::{
     async_utils::spawn_tokio,
-    jellyfin::{JellyfinError, api::PlaylistItems},
-    library_utils::{shuffle_songs, songs_for_ids},
-    models::PlaylistModel,
+    jellyfin::{JellyfinError, api::MusicDto},
+    models::{PlaylistModel, SongModel},
     ui::widget_ext::WidgetApplicationExt,
 };
 use glib::Object;
@@ -25,13 +24,15 @@ impl Playlist {
         card.set_secondary_text(&format!("{} songs", playlist_model.child_count()));
         card.set_image_id(&playlist_model.id());
         self.imp()
-            .playlist_id
-            .replace(playlist_model.id().to_string());
+            .playlist_model
+            .replace(Some(playlist_model.clone()));
     }
 
-    fn play_songs(&self, playlist_items: PlaylistItems) {
-        let library = self.get_application().library().clone();
-        let songs = songs_for_ids(playlist_items.item_ids, &library.borrow());
+    fn get_playlist_model(&self) -> Option<PlaylistModel> {
+        self.imp().playlist_model.borrow().clone()
+    }
+
+    fn play_songs(&self, songs: Vec<SongModel>) {
         if let Some(audio_model) = self.get_application().audio_model() {
             audio_model.set_queue(songs, 0);
         } else {
@@ -41,37 +42,40 @@ impl Playlist {
     }
 
     fn play(&self) {
-        let playlist_id = self.imp().playlist_id.borrow().clone();
-        if playlist_id == "shuffle_library" {
-            let library = self.get_application().library().clone();
-            let songs = shuffle_songs(&library.borrow().clone(), 100);
-            if let Some(audio_model) = self.get_application().audio_model() {
-                audio_model.set_queue(songs, 0);
-            } else {
-                self.toast("Audio model not initialized, please restart", None);
-                warn!("No audio model found");
-            }
-        } else {
-            let jellyfin = self.get_application().jellyfin();
-            spawn_tokio(
-                async move { jellyfin.get_playlist_items(&playlist_id).await },
-                glib::clone!(
-                    #[weak(rename_to=playlist)]
-                    self,
-                    move |result: Result<PlaylistItems, JellyfinError>| {
-                        match result {
-                            Ok(playlist_items) => {
-                                playlist.play_songs(playlist_items);
-                            }
-                            Err(error) => {
-                                playlist.toast("Unable to load playlist", None);
-                                warn!("Unable to load playlist: {error}");
-                            }
+        let Some(playlist_model) = self.get_playlist_model() else {
+            warn!("No playlist model set");
+            return;
+        };
+
+        let playlist_id = playlist_model.id().to_string();
+        let playlist_type = playlist_model.playlist_type();
+        let library_data = self.get_application().library().borrow().clone();
+        let jellyfin = self.get_application().jellyfin();
+
+        spawn_tokio(
+            async move {
+                playlist_type
+                    .load_song_data(&playlist_id, &jellyfin, &library_data)
+                    .await
+            },
+            glib::clone!(
+                #[weak(rename_to=playlist)]
+                self,
+                move |result: Result<Vec<MusicDto>, JellyfinError>| {
+                    match result {
+                        Ok(music_data) => {
+                            let songs: Vec<SongModel> =
+                                music_data.iter().map(SongModel::from).collect();
+                            playlist.play_songs(songs);
+                        }
+                        Err(error) => {
+                            playlist.toast("Unable to load playlist", None);
+                            warn!("Unable to load playlist: {error}");
                         }
                     }
-                ),
-            );
-        }
+                }
+            ),
+        );
     }
 }
 
@@ -81,7 +85,7 @@ impl Default for Playlist {
     }
 }
 mod imp {
-    use crate::ui::media_card::MediaCard;
+    use crate::{models::PlaylistModel, ui::media_card::MediaCard};
     use adw::subclass::prelude::*;
     use glib::subclass::InitializingObject;
     use gtk::{
@@ -96,7 +100,9 @@ mod imp {
         #[template_child]
         pub media_card: TemplateChild<MediaCard>,
 
-        pub playlist_id: RefCell<String>,
+        // Store the PlaylistModel instead of just the ID
+        // TODO why is this an optional
+        pub playlist_model: RefCell<Option<PlaylistModel>>,
     }
 
     #[glib::object_subclass]

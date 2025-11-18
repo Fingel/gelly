@@ -795,6 +795,7 @@ name = "gelly"
 version = "0.6.0"
 dependencies = [
  "async-channel",
+ "async-trait",
  "dbus-secret-service",
  "env_logger",
  "futures",
