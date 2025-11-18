@@ -14,7 +14,9 @@ Gelly is a native, lightweight [Jellyfin Media Server](https://jellyfin.org/) cl
 - [x] Remote playlist management
     - [ ] Edit playlists
 - [ ] Eye candy
-- [ ] Playlist modes
+- [ ] Smart Playlists 
+    - [x] Shuffle songs 
+    - [ ] Most played
 - [ ] Offline support
 
 ## Installation
