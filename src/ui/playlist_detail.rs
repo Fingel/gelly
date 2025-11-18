@@ -1,12 +1,11 @@
 use crate::{
     async_utils::spawn_tokio,
-    jellyfin::{JellyfinError, api::PlaylistItems, utils::format_duration},
-    library_utils::songs_for_ids,
-    models::PlaylistModel,
+    jellyfin::{JellyfinError, api::MusicDto, utils::format_duration},
+    models::{PlaylistModel, SongModel},
     ui::{song::Song, widget_ext::WidgetApplicationExt},
 };
 use glib::Object;
-use gtk::{gio, glib, subclass::prelude::*};
+use gtk::{gio, glib, prelude::*, subclass::prelude::*};
 use log::warn;
 
 glib::wrapper! {
@@ -22,24 +21,60 @@ impl PlaylistDetail {
 
     pub fn set_playlist_model(&self, playlist_model: &PlaylistModel) {
         let imp = self.imp();
-        imp.playlist_id.replace(playlist_model.id());
+        imp.playlist_model.replace(Some(playlist_model.clone()));
         imp.name_label.set_text(&playlist_model.name());
-        imp.album_image.set_item_id(&playlist_model.id(), None);
+        if playlist_model.is_smart() {
+            self.use_static_icon(playlist_model.playlist_type().icon_name());
+        } else {
+            self.use_playlist_icon(&playlist_model.id());
+        }
         self.pull_tracks();
     }
 
+    fn use_static_icon(&self, name: &str) {
+        let imp = self.imp();
+        imp.album_image.set_visible(false);
+        imp.static_icon.set_icon_name(Some(name));
+        imp.static_icon.set_visible(true);
+    }
+
+    fn use_playlist_icon(&self, id: &str) {
+        let imp = self.imp();
+        imp.static_icon.set_visible(false);
+        imp.album_image.set_item_id(id, None);
+        imp.album_image.set_visible(true);
+    }
+
+    fn get_playlist_model(&self) -> Option<PlaylistModel> {
+        self.imp().playlist_model.borrow().clone()
+    }
+
     fn pull_tracks(&self) {
-        let playlist_id = self.imp().playlist_id.borrow().clone();
+        let Some(playlist_model) = self.get_playlist_model() else {
+            warn!("No playlist model set");
+            return;
+        };
+
+        let playlist_id = playlist_model.id().to_string();
+        let playlist_type = playlist_model.playlist_type();
+        let library_data = self.get_application().library().borrow().clone();
         let jellyfin = self.get_application().jellyfin();
+
         spawn_tokio(
-            async move { jellyfin.get_playlist_items(&playlist_id).await },
+            async move {
+                playlist_type
+                    .load_song_data(&playlist_id, &jellyfin, &library_data)
+                    .await
+            },
             glib::clone!(
                 #[weak(rename_to=playlist_detail)]
                 self,
-                move |result: Result<PlaylistItems, JellyfinError>| {
+                move |result: Result<Vec<MusicDto>, JellyfinError>| {
                     match result {
-                        Ok(playlist_items) => {
-                            playlist_detail.populate_tracks(playlist_items);
+                        Ok(music_data) => {
+                            let songs: Vec<SongModel> =
+                                music_data.iter().map(SongModel::from).collect();
+                            playlist_detail.populate_tracks_with_songs(songs);
                         }
                         Err(error) => {
                             playlist_detail
@@ -52,9 +87,7 @@ impl PlaylistDetail {
         );
     }
 
-    fn populate_tracks(&self, playlist_items: PlaylistItems) {
-        let library = self.get_application().library().clone();
-        let songs = songs_for_ids(playlist_items.item_ids, &library.borrow());
+    fn populate_tracks_with_songs(&self, songs: Vec<SongModel>) {
         let track_list = &self.imp().track_list;
         track_list.remove_all();
         for (i, song) in songs.iter().enumerate() {
@@ -137,13 +170,18 @@ mod imp {
         prelude::*,
     };
 
-    use crate::{models::SongModel, ui::album_art::AlbumArt};
+    use crate::{
+        models::{PlaylistModel, SongModel},
+        ui::album_art::AlbumArt,
+    };
 
     #[derive(CompositeTemplate, Default)]
     #[template(resource = "/io/m51/Gelly/ui/playlist_detail.ui")]
     pub struct PlaylistDetail {
         #[template_child]
         pub album_image: TemplateChild<AlbumArt>,
+        #[template_child]
+        pub static_icon: TemplateChild<gtk::Image>,
         #[template_child]
         pub name_label: TemplateChild<gtk::Label>,
         #[template_child]
@@ -157,7 +195,7 @@ mod imp {
         #[template_child]
         pub enqueue: TemplateChild<gtk::Button>,
 
-        pub playlist_id: RefCell<String>,
+        pub playlist_model: RefCell<Option<PlaylistModel>>,
         pub songs: RefCell<Vec<SongModel>>,
         pub song_change_signal_connected: Cell<bool>,
     }

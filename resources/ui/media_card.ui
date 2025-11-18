@@ -47,8 +47,24 @@
               </object>
             </child>
             <child>
-              <object class="GellyAlbumArt" id="image">
-                <property name="size">200</property>
+              <object class="GtkBox">
+                <property name="orientation">vertical</property>
+                <child>
+                  <object class="GellyAlbumArt" id="image">
+                    <property name="size">200</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkImage" id="static_icon">
+                    <property name="height-request">200</property>
+                    <property name="width-request">200</property>
+                    <property name="icon-name">audio-x-generic-symbolic</property>
+                    <property name="pixel-size">100</property>
+                    <property name="halign">center</property>
+                    <property name="valign">center</property>
+                    <property name="visible">false</property>
+                  </object>
+                </child>
               </object>
             </child>
           </object>

@@ -1,6 +1,9 @@
 use crate::{
     application::Application,
-    models::PlaylistModel,
+    models::{
+        PlaylistModel,
+        playlist_type::{DEFAULT_SMART_COUNT, PlaylistType},
+    },
     ui::{list_helpers::*, playlist::Playlist, widget_ext::WidgetApplicationExt, window::Window},
 };
 use glib::Object;
@@ -24,20 +27,20 @@ impl PlaylistList {
 
     pub fn pull_playlists(&self) {
         let playlists = self.get_application().playlists().borrow().clone();
-        if playlists.is_empty() {
-            self.set_empty(true);
-        } else {
-            self.set_empty(false);
-            let store = self
-                .imp()
-                .store
-                .get()
-                .expect("PlaylistList store should be initialized");
-            store.remove_all();
-            for playlist in playlists {
-                let playlist_obj = PlaylistModel::from(&playlist);
-                store.append(&playlist_obj);
-            }
+        self.set_empty(false);
+        let store = self
+            .imp()
+            .store
+            .get()
+            .expect("PlaylistList store should be initialized");
+        store.remove_all();
+        let shuffle_playlist = PlaylistModel::new_smart(PlaylistType::ShuffleLibrary {
+            count: DEFAULT_SMART_COUNT,
+        });
+        store.append(&shuffle_playlist);
+        for playlist in playlists {
+            let playlist_obj = PlaylistModel::from(&playlist);
+            store.append(&playlist_obj);
         }
     }
 

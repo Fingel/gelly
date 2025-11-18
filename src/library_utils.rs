@@ -52,10 +52,17 @@ pub fn songs_for_album(album_id: &str, library: &[MusicDto]) -> Vec<SongModel> {
     tracks
 }
 
-pub fn songs_for_ids(ids: Vec<String>, library: &[MusicDto]) -> Vec<SongModel> {
+pub fn songs_for_ids(ids: Vec<String>, library: &[MusicDto]) -> Vec<MusicDto> {
     library
         .iter()
         .filter(|dto| ids.contains(&dto.id))
-        .map(SongModel::from)
+        .cloned()
         .collect()
+}
+
+pub fn shuffle_songs(library: &[MusicDto], num: u64) -> Vec<MusicDto> {
+    use rand::prelude::*;
+    let mut rng = rand::rng();
+    let chosen = library.choose_multiple(&mut rng, num as usize);
+    chosen.into_iter().cloned().collect()
 }
