@@ -46,6 +46,7 @@ pub struct LibraryDto {
 #[derive(Clone, Debug, Deserialize)]
 #[serde(rename_all = "PascalCase")]
 pub struct LibraryDtoList {
+    #[serde(deserialize_with = "deserialize_items_skip_errors")]
     pub items: Vec<LibraryDto>,
 }
 
