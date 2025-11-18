@@ -69,4 +69,11 @@ impl PlaylistType {
             PlaylistType::ShuffleLibrary { count } => Some(*count),
         }
     }
+
+    pub fn icon_name(&self) -> &str {
+        match self {
+            PlaylistType::ShuffleLibrary { count: _ } => "media-playlist-shuffle-symbolic",
+            _ => "audio-x-generic-symbolic",
+        }
+    }
 }

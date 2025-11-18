@@ -5,7 +5,7 @@ use crate::{
     ui::{song::Song, widget_ext::WidgetApplicationExt},
 };
 use glib::Object;
-use gtk::{gio, glib, subclass::prelude::*};
+use gtk::{gio, glib, prelude::*, subclass::prelude::*};
 use log::warn;
 
 glib::wrapper! {
@@ -23,8 +23,26 @@ impl PlaylistDetail {
         let imp = self.imp();
         imp.playlist_model.replace(Some(playlist_model.clone()));
         imp.name_label.set_text(&playlist_model.name());
-        imp.album_image.set_item_id(&playlist_model.id(), None);
+        if playlist_model.is_smart() {
+            self.use_static_icon(playlist_model.playlist_type().icon_name());
+        } else {
+            self.use_playlist_icon(&playlist_model.id());
+        }
         self.pull_tracks();
+    }
+
+    fn use_static_icon(&self, name: &str) {
+        let imp = self.imp();
+        imp.album_image.set_visible(false);
+        imp.static_icon.set_icon_name(Some(name));
+        imp.static_icon.set_visible(true);
+    }
+
+    fn use_playlist_icon(&self, id: &str) {
+        let imp = self.imp();
+        imp.static_icon.set_visible(false);
+        imp.album_image.set_item_id(id, None);
+        imp.album_image.set_visible(true);
     }
 
     fn get_playlist_model(&self) -> Option<PlaylistModel> {
@@ -162,6 +180,8 @@ mod imp {
     pub struct PlaylistDetail {
         #[template_child]
         pub album_image: TemplateChild<AlbumArt>,
+        #[template_child]
+        pub static_icon: TemplateChild<gtk::Image>,
         #[template_child]
         pub name_label: TemplateChild<gtk::Label>,
         #[template_child]

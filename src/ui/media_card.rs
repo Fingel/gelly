@@ -27,6 +27,15 @@ impl MediaCard {
         self.imp().image.set_item_id(id, None);
     }
 
+    pub fn set_static_icon(&self, icon_name: &str) {
+        self.imp().static_icon.set_icon_name(Some(icon_name));
+    }
+
+    pub fn display_icon(&self) {
+        self.imp().static_icon.set_visible(true);
+        self.imp().image.set_visible(false);
+    }
+
     pub fn connect_play_clicked<F>(&self, f: F)
     where
         F: Fn() + 'static,
@@ -71,6 +80,8 @@ mod imp {
         pub motion_controller: TemplateChild<gtk::EventControllerMotion>,
         #[template_child]
         pub overlay_play: TemplateChild<gtk::Button>,
+        #[template_child]
+        pub static_icon: TemplateChild<gtk::Image>,
 
         #[property(get, set)]
         has_play_button: Cell<bool>,
