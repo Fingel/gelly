@@ -1,4 +1,4 @@
-use dbus_secret_service::{EncryptionType, SecretService};
+use dbus_secret_service::{EncryptionType, Error, SecretService};
 use gtk::gio;
 use gtk::gio::prelude::SettingsExt;
 use std::{cell::RefCell, collections::HashMap};
@@ -34,21 +34,20 @@ pub fn logout() {
         .expect("Failed to clear library-id");
 }
 
-pub fn store_jellyfin_api_token(host: &str, user_id: &str, api_token: &str) {
-    let ss = SecretService::connect(EncryptionType::Plain).unwrap();
-    let collection = ss.get_default_collection().unwrap();
+pub fn store_jellyfin_api_token(host: &str, user_id: &str, api_token: &str) -> Result<(), Error> {
+    let ss = SecretService::connect(EncryptionType::Plain)?;
+    let collection = ss.get_default_collection()?;
     let mut properties = HashMap::new();
     properties.insert("host", host);
     properties.insert("user-id", user_id);
-    collection
-        .create_item(
-            "Jellyfin API Token",
-            properties,
-            api_token.as_bytes(),
-            true,
-            "text/plain",
-        )
-        .expect("Failed to store API token");
+    collection.create_item(
+        "Jellyfin API Token",
+        properties,
+        api_token.as_bytes(),
+        true,
+        "text/plain",
+    )?;
+    Ok(())
 }
 
 pub fn retrieve_jellyfin_api_token(host: &str, user_id: &str) -> Option<String> {

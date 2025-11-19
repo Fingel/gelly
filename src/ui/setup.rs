@@ -1,3 +1,5 @@
+use std::error::Error;
+
 use crate::async_utils::spawn_tokio;
 use crate::config::{settings, store_jellyfin_api_token};
 use crate::jellyfin::{Jellyfin, JellyfinError};
@@ -99,8 +101,15 @@ impl Setup {
                             let token = jellyfin.token.clone();
                             let host = jellyfin.host.clone();
                             app.imp().jellyfin.replace(jellyfin);
-                            setup.save_server_settings(&host, &user_id, &token);
-                            setup.show_library_setup();
+                            match setup.save_server_settings(&host, &user_id, &token) {
+                                Ok(_) => {
+                                    setup.show_library_setup();
+                                }
+                                Err(err) => {
+                                    setup.toast("Failed to save credentials. Do you have a keyring daemon running?", None);
+                                    error!("Failed to save server settings. Aborting: {}", err);
+                                }
+                            }
                         }
                         Err(err) => setup.handle_connection_error(err),
                     }
@@ -109,14 +118,16 @@ impl Setup {
         );
     }
 
-    fn save_server_settings(&self, host: &str, user_id: &str, token: &str) {
-        settings()
-            .set_string("hostname", host)
-            .expect("Failed to save hostname");
-        settings()
-            .set_string("user-id", user_id)
-            .expect("Failed to save user-id");
-        store_jellyfin_api_token(host, user_id, token);
+    fn save_server_settings(
+        &self,
+        host: &str,
+        user_id: &str,
+        token: &str,
+    ) -> Result<(), Box<dyn Error>> {
+        settings().set_string("hostname", host)?;
+        settings().set_string("user-id", user_id)?;
+        store_jellyfin_api_token(host, user_id, token)?;
+        Ok(())
     }
 
     fn handle_connection_error(&self, error: JellyfinError) {
@@ -244,6 +255,8 @@ mod imp {
         pub library_combo: TemplateChild<adw::ComboRow>,
         #[template_child]
         pub library_button: TemplateChild<adw::ButtonRow>,
+        #[template_child]
+        pub cancel_library_button: TemplateChild<adw::ButtonRow>,
         pub libraries: RefCell<Vec<LibraryDto>>,
     }
 
@@ -301,6 +314,14 @@ mod imp {
                 move |_| {
                     let obj = imp.obj();
                     obj.handle_library_button_click();
+                }
+            ));
+
+            self.cancel_library_button.connect_activated(glib::clone!(
+                #[weak(rename_to=imp)]
+                self,
+                move |_| {
+                    imp.obj().show_server_setup();
                 }
             ));
 
