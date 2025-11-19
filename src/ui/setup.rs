@@ -101,15 +101,11 @@ impl Setup {
                             let token = jellyfin.token.clone();
                             let host = jellyfin.host.clone();
                             app.imp().jellyfin.replace(jellyfin);
-                            match setup.save_server_settings(&host, &user_id, &token) {
-                                Ok(_) => {
-                                    setup.show_library_setup();
-                                }
-                                Err(err) => {
-                                    setup.toast("Failed to save credentials. Do you have a keyring daemon running?", None);
-                                    error!("Failed to save server settings. Aborting: {}", err);
-                                }
+                            if let Err(err) = setup.save_server_settings(&host, &user_id, &token) {
+                                setup.toast("Credentials could not be saved. Do you have a keyring daemon running?", None);
+                                error!("Failed to save server settings. Aborting: {}", err);
                             }
+                            setup.show_library_setup();
                         }
                         Err(err) => setup.handle_connection_error(err),
                     }
