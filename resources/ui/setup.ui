@@ -130,6 +130,14 @@
                                 </style>
                               </object>
                             </child>
+                            <child>
+                              <object class="AdwButtonRow" id="cancel_library_button">
+                                <property name="title">Cancel</property>
+                                <style>
+                                  <class name="destructive-action"/>
+                                </style>
+                              </object>
+                            </child>
                           </object>
                         </child>
                       </object>

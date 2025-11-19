@@ -244,6 +244,8 @@ mod imp {
         pub library_combo: TemplateChild<adw::ComboRow>,
         #[template_child]
         pub library_button: TemplateChild<adw::ButtonRow>,
+        #[template_child]
+        pub cancel_library_button: TemplateChild<adw::ButtonRow>,
         pub libraries: RefCell<Vec<LibraryDto>>,
     }
 
@@ -301,6 +303,14 @@ mod imp {
                 move |_| {
                     let obj = imp.obj();
                     obj.handle_library_button_click();
+                }
+            ));
+
+            self.cancel_library_button.connect_activated(glib::clone!(
+                #[weak(rename_to=imp)]
+                self,
+                move |_| {
+                    imp.obj().show_server_setup();
                 }
             ));
 
