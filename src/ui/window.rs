@@ -104,7 +104,8 @@ impl Window {
         let width = settings.int("window-width");
         let height = settings.int("window-height");
         let maximized = settings.boolean("window-maximized");
-
+        let width = if width < 0 { 875 } else { width };
+        let height = if height < 0 { 900 } else { height };
         self.set_default_size(width, height);
         if maximized {
             self.maximize();
