@@ -31,6 +31,14 @@
     </screenshot>
   </screenshots>
   <releases>
+    <release version="0.7.2" date="2025-11-20">
+      <description>
+        <ul>
+          <li>Small screen size fixes</li>
+          <li>Fix MPRIS album art not updating properly.</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.7.1" date="2025-11-18">
       <description>
         <p>
