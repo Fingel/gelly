@@ -68,16 +68,20 @@ impl AudioModel {
             .obj()
             .current_song()
             .map_or_else(Metadata::new, |song| {
-                let cache_dir = ImageCache::new().expect("Failed to create image cache");
-                let art_path = cache_dir.get_cache_file_path(&song.id());
-                let art_url = format!("file://{}", art_path.to_string_lossy());
-                Metadata::builder()
+                let mut metadata = Metadata::builder()
                     .artist(song.artists())
                     .album(song.album())
                     .title(song.title())
-                    .art_url(art_url)
                     .length(Time::from_secs(song.duration() as i64))
-                    .build()
+                    .build();
+                if let Ok(cache_dir) = ImageCache::new() {
+                    let art_path = cache_dir.get_cache_file_path(&song.id());
+                    if art_path.exists() {
+                        let art_url = format!("file://{}", art_path.to_string_lossy());
+                        metadata.set_art_url(Some(art_url));
+                    }
+                }
+                metadata
             })
     }
 
