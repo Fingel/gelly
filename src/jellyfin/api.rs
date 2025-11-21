@@ -65,7 +65,6 @@ pub struct MusicDto {
     pub id: String,
     pub date_created: String,
     pub run_time_ticks: u64,
-    pub user_data: UserDataDto,
     pub album: String,
     pub album_artists: Vec<ArtistItemsDto>,
     pub album_id: String,
@@ -89,14 +88,6 @@ pub struct PlaylistDto {
     pub name: String,
     pub id: String,
     pub child_count: u64,
-}
-
-#[derive(Clone, Debug, Serialize, Deserialize)]
-#[serde(rename_all = "PascalCase")]
-pub struct UserDataDto {
-    pub play_count: u64,
-    pub is_favorite: bool,
-    pub played: bool,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
