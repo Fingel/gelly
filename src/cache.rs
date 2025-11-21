@@ -1,5 +1,14 @@
-use std::{collections::HashSet, fs, os::unix, path::PathBuf, sync::Arc, time::Duration};
+use std::{
+    collections::HashSet,
+    fs,
+    io::{Read, Write},
+    os::unix,
+    path::PathBuf,
+    sync::Arc,
+    time::Duration,
+};
 
+use flate2::{Compression, read::GzDecoder, write::GzEncoder};
 use log::{debug, warn};
 use thiserror::Error;
 use tokio::sync::Mutex;
@@ -44,13 +53,20 @@ impl LibraryCache {
     // TODO: use enums instead of strings for fname here
     pub fn save_to_disk(&self, fname: &str, data: &[u8]) -> Result<(), CacheError> {
         let path = self.cache_dir.join(fname);
-        fs::write(path, data)?;
+        let file = fs::File::create(path)?;
+        let mut encoder = GzEncoder::new(file, Compression::default());
+        encoder.write_all(data)?;
+        encoder.finish()?;
         Ok(())
     }
 
     pub fn load_from_disk(&self, fname: &str) -> Result<Vec<u8>, CacheError> {
         let path = self.cache_dir.join(fname);
-        Ok(fs::read(path)?)
+        let file = fs::File::open(path)?;
+        let mut decoder = GzDecoder::new(file);
+        let mut json_str = Vec::new();
+        decoder.read_to_end(&mut json_str)?;
+        Ok(json_str)
     }
 
     pub fn clear(&self) -> Result<(), CacheError> {

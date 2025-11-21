@@ -101,11 +101,13 @@ impl Jellyfin {
         library_id: &str,
         refresh: bool,
     ) -> Result<MusicDtoList, JellyfinError> {
+        let now = Instant::now();
         if !refresh
-            && let Ok(cached_data) = self.cache.load_from_disk("library.json")
+            && let Ok(cached_data) = self.cache.load_from_disk("library.json.gz")
             && let Ok(music_list) = serde_json::from_slice::<MusicDtoList>(&cached_data)
         {
-            debug!("Loaded library from cache");
+            let duration = now.elapsed();
+            debug!("Loaded library from cache in {:?}", duration);
             return Ok(music_list);
         }
 
@@ -172,7 +174,7 @@ impl Jellyfin {
         if let Ok(json_data) = serde_json::to_string(&final_result)
             && let Err(e) = self
                 .cache
-                .save_to_disk("library.json", json_data.as_bytes())
+                .save_to_disk("library.json.gz", json_data.as_bytes())
         {
             warn!("Failed to save library to cache: {}", e);
         }
