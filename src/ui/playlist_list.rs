@@ -25,22 +25,38 @@ impl PlaylistList {
         Object::builder().build()
     }
 
+    pub fn smart_playlists(&self) -> Vec<PlaylistModel> {
+        vec![
+            PlaylistModel::new_smart(PlaylistType::ShuffleLibrary {
+                count: DEFAULT_SMART_COUNT,
+            }),
+            PlaylistModel::new_smart(PlaylistType::MostPlayed {
+                count: DEFAULT_SMART_COUNT,
+            }),
+        ]
+    }
+
     pub fn pull_playlists(&self) {
-        let playlists = self.get_application().playlists().borrow().clone();
-        self.set_empty(false);
         let store = self
             .imp()
             .store
             .get()
             .expect("PlaylistList store should be initialized");
+        let playlists = self
+            .get_application()
+            .playlists()
+            .borrow()
+            .clone()
+            .iter()
+            .map(PlaylistModel::from)
+            .collect::<Vec<_>>();
+        self.set_empty(false);
         store.remove_all();
-        let shuffle_playlist = PlaylistModel::new_smart(PlaylistType::ShuffleLibrary {
-            count: DEFAULT_SMART_COUNT,
-        });
-        store.append(&shuffle_playlist);
+        for playlist in self.smart_playlists() {
+            store.append(&playlist);
+        }
         for playlist in playlists {
-            let playlist_obj = PlaylistModel::from(&playlist);
-            store.append(&playlist_obj);
+            store.append(&playlist);
         }
     }
 

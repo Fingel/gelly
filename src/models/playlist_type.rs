@@ -1,6 +1,6 @@
 use crate::{
     jellyfin::{Jellyfin, JellyfinError, api::MusicDto},
-    library_utils::{shuffle_songs, songs_for_ids},
+    library_utils::{most_played_songs, shuffle_songs, songs_for_ids},
 };
 
 pub const DEFAULT_SMART_COUNT: u64 = 100;
@@ -9,6 +9,7 @@ pub const DEFAULT_SMART_COUNT: u64 = 100;
 pub enum PlaylistType {
     Regular,
     ShuffleLibrary { count: u64 },
+    MostPlayed { count: u64 },
 }
 
 impl PlaylistType {
@@ -16,6 +17,7 @@ impl PlaylistType {
         match self {
             PlaylistType::Regular => None,
             PlaylistType::ShuffleLibrary { count } => Some(format!("smart:shuffle:{count}")),
+            PlaylistType::MostPlayed { count } => Some(format!("smart:most_played:{count}")),
         }
     }
 
@@ -33,6 +35,13 @@ impl PlaylistType {
                     .unwrap_or(DEFAULT_SMART_COUNT);
                 Self::ShuffleLibrary { count }
             }
+            Some(&"most_played") => {
+                let count = parts
+                    .get(2)
+                    .and_then(|s| s.parse().ok())
+                    .unwrap_or(DEFAULT_SMART_COUNT);
+                Self::MostPlayed { count }
+            }
             _ => Self::Regular,
         }
     }
@@ -41,6 +50,7 @@ impl PlaylistType {
         match self {
             PlaylistType::Regular => "Playlist".to_string(),
             PlaylistType::ShuffleLibrary { count } => format!("{} Shuffled Songs", count),
+            PlaylistType::MostPlayed { count } => format!("{} Most Played", count),
         }
     }
 
@@ -60,6 +70,10 @@ impl PlaylistType {
                 let songs = shuffle_songs(library, *count);
                 Ok(songs)
             }
+            PlaylistType::MostPlayed { count } => {
+                let songs = most_played_songs(library, *count);
+                Ok(songs)
+            }
         }
     }
 
@@ -67,12 +81,14 @@ impl PlaylistType {
         match self {
             PlaylistType::Regular => None,
             PlaylistType::ShuffleLibrary { count } => Some(*count),
+            PlaylistType::MostPlayed { count } => Some(*count),
         }
     }
 
     pub fn icon_name(&self) -> &str {
         match self {
             PlaylistType::ShuffleLibrary { count: _ } => "media-playlist-shuffle-symbolic",
+            PlaylistType::MostPlayed { count: _ } => "view-sort-descending-rtl-symbolic",
             _ => "audio-x-generic-symbolic",
         }
     }

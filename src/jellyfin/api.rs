@@ -96,7 +96,6 @@ pub struct PlaylistDto {
 pub struct UserDataDto {
     pub play_count: u64,
     pub is_favorite: bool,
-    pub played: bool,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]

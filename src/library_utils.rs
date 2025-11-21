@@ -66,3 +66,13 @@ pub fn shuffle_songs(library: &[MusicDto], num: u64) -> Vec<MusicDto> {
     let chosen = library.choose_multiple(&mut rng, num as usize);
     chosen.into_iter().cloned().collect()
 }
+
+pub fn most_played_songs(library: &[MusicDto], num: u64) -> Vec<MusicDto> {
+    let mut songs: Vec<MusicDto> = library
+        .iter()
+        .filter(|dto| dto.user_data.play_count > 0)
+        .cloned()
+        .collect();
+    songs.sort_by_key(|dto| std::cmp::Reverse(dto.user_data.play_count));
+    songs.iter().take(num as usize).cloned().collect()
+}
