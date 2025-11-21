@@ -145,7 +145,7 @@ mod imp {
     use std::sync::OnceLock;
 
     use adw::subclass::prelude::*;
-    use glib::subclass::InitializingObject;
+    use glib::subclass::{InitializingObject, Signal};
     use gtk::{
         CompositeTemplate,
         gio::{ActionEntry, prelude::ActionMapExtManual},
@@ -278,6 +278,16 @@ mod imp {
                 ))
                 .build();
 
+            let action_sort = ActionEntry::builder("sort")
+                .activate(glib::clone!(
+                    #[weak(rename_to=window)]
+                    self,
+                    move |_, _, _| {
+                        window.obj().emit_by_name::<()>("sort", &[]);
+                    }
+                ))
+                .build();
+
             let action_about = ActionEntry::builder("about")
                 .activate(glib::clone!(
                     #[weak(rename_to=window)]
@@ -294,6 +304,7 @@ mod imp {
                 action_refresh_library,
                 action_request_library_rescan,
                 action_search,
+                action_sort,
                 action_about,
             ]);
 
@@ -372,9 +383,14 @@ mod imp {
             ));
         }
 
-        fn signals() -> &'static [glib::subclass::Signal] {
-            static SIGNALS: OnceLock<Vec<glib::subclass::Signal>> = OnceLock::new();
-            SIGNALS.get_or_init(|| vec![glib::subclass::Signal::builder("search").build()])
+        fn signals() -> &'static [Signal] {
+            static SIGNALS: OnceLock<Vec<Signal>> = OnceLock::new();
+            SIGNALS.get_or_init(|| {
+                vec![
+                    Signal::builder("search").build(),
+                    Signal::builder("sort").build(),
+                ]
+            })
         }
     }
 

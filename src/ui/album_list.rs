@@ -18,6 +18,13 @@ glib::wrapper! {
         @implements gio::ActionMap, gio::ActionGroup, gtk::Accessible, gtk::Buildable, gtk::ConstraintTarget;
 }
 
+#[derive(Debug, Clone, Copy)]
+enum SortOption {
+    AlbumName,
+    AlbumArtist,
+    DateAdded,
+}
+
 impl AlbumList {
     pub fn new() -> Self {
         Object::builder().build()
@@ -81,7 +88,11 @@ impl AlbumList {
         apply_multi_filter_search(query, store, &filters, &imp.grid_view);
     }
 
-    pub fn setup_search_connection(&self) {
+    fn sort_changed(&self, sort: SortOption) {
+        dbg!(sort);
+    }
+
+    pub fn setup_search_sort_connection(&self) {
         let window = self.get_root_window();
 
         window.connect_closure(
@@ -92,6 +103,20 @@ impl AlbumList {
                 self,
                 move |_: Window| {
                     album_list.imp().search_bar.set_search_mode(true);
+                    album_list.imp().sort_bar.set_search_mode(false);
+                }
+            ),
+        );
+
+        window.connect_closure(
+            "sort",
+            false,
+            glib::closure_local!(
+                #[weak(rename_to = album_list)]
+                self,
+                move |_: Window| {
+                    album_list.imp().sort_bar.set_search_mode(true);
+                    album_list.imp().search_bar.set_search_mode(false);
                 }
             ),
         );
@@ -159,6 +184,7 @@ mod imp {
 
     use std::cell::OnceCell;
 
+    use super::SortOption;
     use adw::subclass::prelude::*;
     use glib::subclass::InitializingObject;
     use gtk::{CompositeTemplate, gio, glib, prelude::*};
@@ -174,6 +200,10 @@ mod imp {
         pub search_bar: TemplateChild<gtk::SearchBar>,
         #[template_child]
         pub search_entry: TemplateChild<gtk::SearchEntry>,
+        #[template_child]
+        pub sort_bar: TemplateChild<gtk::SearchBar>,
+        #[template_child]
+        pub sort_dropdown: TemplateChild<gtk::DropDown>,
 
         pub store: OnceCell<gio::ListStore>,
         pub name_filter: OnceCell<gtk::StringFilter>,
@@ -216,11 +246,25 @@ mod imp {
                 }
             ));
 
+            self.sort_dropdown.connect_selected_notify(glib::clone!(
+                #[weak(rename_to = album_list)]
+                self.obj(),
+                move |drop_down| {
+                    let sort_option = match drop_down.selected() {
+                        0 => SortOption::AlbumName,
+                        1 => SortOption::AlbumArtist,
+                        2 => SortOption::DateAdded,
+                        _ => SortOption::AlbumName,
+                    };
+                    album_list.sort_changed(sort_option);
+                }
+            ));
+
             self.obj().connect_realize(glib::clone!(
                 #[weak (rename_to = album_list)]
                 self.obj(),
                 move |_| {
-                    album_list.setup_search_connection();
+                    album_list.setup_search_sort_connection();
                 }
             ));
         }

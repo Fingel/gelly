@@ -26,6 +26,25 @@
           </object>
         </child>
         <child>
+          <object class="GtkSearchBar" id="sort_bar">
+            <property name="show-close-button">true</property>
+            <property name="search-mode-enabled">false</property>
+            <child>
+              <object class="GtkDropDown" id="sort_dropdown">
+                <property name="model">
+                  <object class="GtkStringList">
+                    <items>
+                      <item translatable="yes">Album Name</item>
+                      <item translatable="yes">Album Artist</item>
+                      <item translatable="yes">Date Added</item>
+                    </items>
+                  </object>
+                </property>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
           <object class="GtkScrolledWindow">
             <property name="hscrollbar-policy">never</property>
             <property name="vscrollbar-policy">automatic</property>
