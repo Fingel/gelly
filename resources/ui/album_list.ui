@@ -34,9 +34,9 @@
                 <property name="model">
                   <object class="GtkStringList">
                     <items>
+                      <item translatable="yes">Date Added</item>
                       <item translatable="yes">Album Name</item>
                       <item translatable="yes">Album Artist</item>
-                      <item translatable="yes">Date Added</item>
                     </items>
                   </object>
                 </property>
