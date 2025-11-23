@@ -37,6 +37,18 @@ Gelly is available on the [aur](https://aur.archlinux.org/packages/gelly):
 
     paru -S gelly
 
+## Using Self Signed Certificates with Jellyfin
+
+There is currently [an issue with Flatpak](https://gitlab.com/freedesktop-sdk/freedesktop-sdk/-/issues/1905) 
+that prevents sandboxed applications from reading the host's certifcate store. This means if you are
+hosting Jellyfin on a server with self-signed certificates which you have installed on the system
+where you are trying to use the Gelly Flatpak, it will probably fail to connect.
+
+[#15](https://github.com/Fingel/gelly/issues/15) tracks this issue. The workaround for now is to 
+use an alternative installation method other than Flatpak ir to connect without TLS. 
+I am looking for someone to help test using alternative TLS backends for reqwest 
+that might fix this issue.
+
 ## Development
 
 Gelly leverages [gtk-rs](https://gtk-rs.org/) for the UI and
@@ -47,8 +59,3 @@ Gelly does *not* require any nightly features from Rust.
 
 The [justfile](justfile) contains recipes, simply running the default recipe `just` should be enough
 to build and launch Gelly.
-
-
-## Windows/OSX
-Although there isn't anything preventing Gelly from being cross platform, it is not my focus.
-I would accept reasonable PRs to enable other platforms.
