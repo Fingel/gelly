@@ -19,9 +19,9 @@ glib::wrapper! {
 }
 
 #[derive(Debug, Clone, Copy)]
-pub enum SortOption {
-    AlbumName,
-    AlbumArtist,
+pub enum AlbumSort {
+    Name,
+    Artist,
     DateAdded,
     Year,
 }
@@ -107,11 +107,11 @@ impl AlbumList {
     fn handle_sort_changed(&self) {
         let imp = self.imp();
         let sort_option = match imp.sort_dropdown.selected() {
-            0 => SortOption::DateAdded,
-            1 => SortOption::AlbumName,
-            2 => SortOption::AlbumArtist,
-            3 => SortOption::Year,
-            _ => SortOption::DateAdded,
+            0 => AlbumSort::DateAdded,
+            1 => AlbumSort::Name,
+            2 => AlbumSort::Artist,
+            3 => AlbumSort::Year,
+            _ => AlbumSort::DateAdded,
         };
         let sort_direction = match imp.sort_direction.active() {
             0 => SortDirection::Ascending,
@@ -121,7 +121,7 @@ impl AlbumList {
         self.sort_changed(sort_option, sort_direction);
     }
 
-    fn sort_changed(&self, sort: SortOption, direction: SortDirection) {
+    fn sort_changed(&self, sort: AlbumSort, direction: SortDirection) {
         let imp = self.imp();
         let sorter = gtk::CustomSorter::new(move |obj1, obj2| {
             let (obj1, obj2) = match direction {
@@ -132,21 +132,21 @@ impl AlbumList {
             let album2 = obj2.downcast_ref::<AlbumModel>().unwrap();
 
             match sort {
-                SortOption::AlbumName => album1
+                AlbumSort::Name => album1
                     .name()
                     .to_lowercase()
                     .cmp(&album2.name().to_lowercase())
                     .into(),
-                SortOption::AlbumArtist => album1
+                AlbumSort::Artist => album1
                     .artists_string()
                     .to_lowercase()
                     .cmp(&album2.artists_string().to_lowercase())
                     .into(),
-                SortOption::DateAdded => {
+                AlbumSort::DateAdded => {
                     // Reverse order for newest first
                     album2.date_created().cmp(&album1.date_created()).into()
                 }
-                SortOption::Year => album1.year().cmp(&album2.year()).into(),
+                AlbumSort::Year => album1.year().cmp(&album2.year()).into(),
             }
         });
         imp.current_sorter.replace(Some(sorter.clone()));
