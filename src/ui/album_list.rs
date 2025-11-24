@@ -23,6 +23,7 @@ pub enum SortOption {
     AlbumName,
     AlbumArtist,
     DateAdded,
+    Year,
 }
 
 impl AlbumList {
@@ -109,6 +110,7 @@ impl AlbumList {
             0 => SortOption::DateAdded,
             1 => SortOption::AlbumName,
             2 => SortOption::AlbumArtist,
+            3 => SortOption::Year,
             _ => SortOption::DateAdded,
         };
         let sort_direction = match imp.sort_direction.active() {
@@ -144,6 +146,7 @@ impl AlbumList {
                     // Reverse order for newest first
                     album2.date_created().cmp(&album1.date_created()).into()
                 }
+                SortOption::Year => album1.year().cmp(&album2.year()).into(),
             }
         });
         imp.current_sorter.replace(Some(sorter.clone()));
