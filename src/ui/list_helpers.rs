@@ -2,6 +2,12 @@ use gtk::{
     FilterListModel, PropertyExpression, SortListModel, Sorter, StringFilter, gio, glib, prelude::*,
 };
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum SortDirection {
+    Ascending,
+    Descending,
+}
+
 /// Create a string filter for a given property
 pub fn create_string_filter<T>(property: &str) -> gtk::StringFilter
 where

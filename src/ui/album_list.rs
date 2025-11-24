@@ -103,9 +103,29 @@ impl AlbumList {
         apply_multi_filter_search(query, sorter.upcast(), store, &filters, &imp.grid_view);
     }
 
-    fn sort_changed(&self, sort: SortOption) {
+    fn handle_sort_changed(&self) {
+        let imp = self.imp();
+        let sort_option = match imp.sort_dropdown.selected() {
+            0 => SortOption::DateAdded,
+            1 => SortOption::AlbumName,
+            2 => SortOption::AlbumArtist,
+            _ => SortOption::DateAdded,
+        };
+        let sort_direction = match imp.sort_direction.active() {
+            0 => SortDirection::Ascending,
+            1 => SortDirection::Descending,
+            _ => SortDirection::Ascending,
+        };
+        self.sort_changed(sort_option, sort_direction);
+    }
+
+    fn sort_changed(&self, sort: SortOption, direction: SortDirection) {
         let imp = self.imp();
         let sorter = gtk::CustomSorter::new(move |obj1, obj2| {
+            let (obj1, obj2) = match direction {
+                SortDirection::Ascending => (obj1, obj2),
+                SortDirection::Descending => (obj2, obj1),
+            };
             let album1 = obj1.downcast_ref::<AlbumModel>().unwrap();
             let album2 = obj2.downcast_ref::<AlbumModel>().unwrap();
 
@@ -225,7 +245,6 @@ mod imp {
 
     use std::cell::{OnceCell, RefCell};
 
-    use super::SortOption;
     use adw::subclass::prelude::*;
     use glib::subclass::InitializingObject;
     use gtk::{CompositeTemplate, gio, glib, prelude::*};
@@ -245,6 +264,8 @@ mod imp {
         pub sort_bar: TemplateChild<gtk::SearchBar>,
         #[template_child]
         pub sort_dropdown: TemplateChild<gtk::DropDown>,
+        #[template_child]
+        pub sort_direction: TemplateChild<adw::ToggleGroup>,
 
         pub store: OnceCell<gio::ListStore>,
         pub name_filter: OnceCell<gtk::StringFilter>,
@@ -291,14 +312,16 @@ mod imp {
             self.sort_dropdown.connect_selected_notify(glib::clone!(
                 #[weak(rename_to = album_list)]
                 self.obj(),
-                move |drop_down| {
-                    let sort_option = match drop_down.selected() {
-                        0 => SortOption::DateAdded,
-                        1 => SortOption::AlbumName,
-                        2 => SortOption::AlbumArtist,
-                        _ => SortOption::DateAdded,
-                    };
-                    album_list.sort_changed(sort_option);
+                move |_| {
+                    album_list.handle_sort_changed();
+                }
+            ));
+
+            self.sort_direction.connect_active_notify(glib::clone!(
+                #[weak(rename_to = album_list)]
+                self.obj(),
+                move |_| {
+                    album_list.handle_sort_changed();
                 }
             ));
 
