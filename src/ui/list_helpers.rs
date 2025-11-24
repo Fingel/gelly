@@ -23,17 +23,20 @@ where
 /// Generic search implementation for single filter
 pub fn apply_single_filter_search(
     query: &str,
+    sorter: Sorter,
     store: &gio::ListStore,
     filter: &gtk::StringFilter,
     grid_view: &gtk::GridView,
 ) {
     if query.is_empty() {
-        let selection_model = gtk::SingleSelection::new(Some(store.clone()));
+        let sort_model = SortListModel::new(Some(store.clone()), Some(sorter));
+        let selection_model = gtk::SingleSelection::new(Some(sort_model));
         grid_view.set_model(Some(&selection_model));
     } else {
         filter.set_search(Some(query));
         let filter_model = FilterListModel::new(Some(store.clone()), Some(filter.clone()));
-        let selection_model = gtk::SingleSelection::new(Some(filter_model));
+        let sort_model = SortListModel::new(Some(filter_model), Some(sorter));
+        let selection_model = gtk::SingleSelection::new(Some(sort_model));
         grid_view.set_model(Some(&selection_model));
     }
 }
