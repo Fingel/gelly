@@ -20,11 +20,10 @@ glib::wrapper! {
         @implements gio::ActionMap, gio::ActionGroup, gtk::Accessible, gtk::Buildable, gtk::ConstraintTarget;
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug)]
 pub enum PlaylistSort {
     Name,
     NumSongs,
-    // TODO: get Date Added in here
 }
 
 impl PlaylistList {

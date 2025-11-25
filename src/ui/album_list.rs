@@ -18,7 +18,7 @@ glib::wrapper! {
         @implements gio::ActionMap, gio::ActionGroup, gtk::Accessible, gtk::Buildable, gtk::ConstraintTarget;
 }
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug)]
 pub enum AlbumSort {
     Name,
     Artist,
