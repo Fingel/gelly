@@ -105,11 +105,15 @@ impl AudioPlayer {
     }
 
     pub fn set_volume(&self, volume: f64) {
-        self.playbin.set_property("volume", volume.clamp(0.0, 1.0));
+        // cubic to linear
+        let linear_volume = volume.powi(3).clamp(0.0, 1.0);
+        self.playbin.set_property("volume", linear_volume);
     }
 
     pub fn get_volume(&self) -> f64 {
-        self.playbin.property::<f64>("volume")
+        // linear to cubic
+        let linear_volume = self.playbin.property::<f64>("volume");
+        linear_volume.cbrt().clamp(0.0, 1.0)
     }
 
     pub fn set_mute(&self, muted: bool) {
