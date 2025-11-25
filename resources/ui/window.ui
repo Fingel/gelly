@@ -140,6 +140,13 @@
                                     <property name="tooltip-text" translatable="yes">Search</property>
                                   </object>
                                 </child>
+                                <child type="start">
+                                  <object class="GtkButton" id="sort_button">
+                                    <property name="action-name">win.sort</property>
+                                    <property name="icon-name">view-sort-descending-symbolic</property>
+                                    <property name="tooltip-text" translatable="yes">Sort</property>
+                                  </object>
+                                </child>
                                 <child type="end">
                                   <object class="GtkMenuButton" id="button_menu">
                                     <property name="menu-model">menu_app</property>

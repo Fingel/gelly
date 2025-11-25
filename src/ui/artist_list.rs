@@ -6,7 +6,7 @@ use crate::{
 };
 use glib::Object;
 use gtk::{
-    gio,
+    SingleSelection, SortListModel, gio,
     glib::{self},
     prelude::*,
     subclass::prelude::*,
@@ -16,6 +16,11 @@ glib::wrapper! {
     pub struct ArtistList(ObjectSubclass<imp::ArtistList>)
     @extends gtk::Widget, gtk::Box,
         @implements gio::ActionMap, gio::ActionGroup, gtk::Accessible, gtk::Buildable, gtk::ConstraintTarget;
+}
+
+#[derive(Debug)]
+pub enum ArtistSort {
+    Name,
 }
 
 impl ArtistList {
@@ -64,8 +69,7 @@ impl ArtistList {
         );
     }
 
-    //todo: add to list_helpers?
-    pub fn setup_search_connection(&self) {
+    pub fn setup_search_sort_connection(&self) {
         let window = self.get_root_window();
 
         window.connect_closure(
@@ -76,9 +80,31 @@ impl ArtistList {
                 self,
                 move |_: Window| {
                     artist_list.imp().search_bar.set_search_mode(true);
+                    artist_list.imp().sort_bar.set_search_mode(false);
                 }
             ),
         );
+
+        window.connect_closure(
+            "sort",
+            false,
+            glib::closure_local!(
+                #[weak(rename_to = artist_list)]
+                self,
+                move |_: Window| {
+                    artist_list.imp().search_bar.set_search_mode(false);
+                    artist_list.imp().sort_bar.set_search_mode(true);
+                }
+            ),
+        );
+    }
+
+    pub fn get_default_sorter(&self) -> gtk::CustomSorter {
+        gtk::CustomSorter::new(|obj1, obj2| {
+            let artist1 = obj1.downcast_ref::<ArtistModel>().unwrap();
+            let artist2 = obj2.downcast_ref::<ArtistModel>().unwrap();
+            artist1.name().cmp(&artist2.name()).into()
+        })
     }
 
     pub fn search_changed(&self, query: &str) {
@@ -88,7 +114,54 @@ impl ArtistList {
             .name_filter
             .get()
             .expect("Name filter should be initialized");
-        apply_single_filter_search(query, store, name_filter, &imp.grid_view);
+        let sorter = if let Some(current_sorter) = imp.current_sorter.borrow().as_ref() {
+            current_sorter.clone()
+        } else {
+            let default_sorter = self.get_default_sorter();
+            imp.current_sorter.replace(Some(default_sorter.clone()));
+            default_sorter
+        };
+        apply_single_filter_search(query, sorter.upcast(), store, name_filter, &imp.grid_view);
+    }
+
+    fn handle_sort_changed(&self) {
+        let imp = self.imp();
+        let sort_option = match imp.sort_dropdown.selected() {
+            0 => ArtistSort::Name,
+            _ => ArtistSort::Name,
+        };
+        let sort_direction = match imp.sort_direction.active() {
+            0 => SortDirection::Ascending,
+            1 => SortDirection::Descending,
+            _ => SortDirection::Ascending,
+        };
+
+        self.sort_changed(sort_option, sort_direction);
+    }
+
+    fn sort_changed(&self, sort: ArtistSort, direction: SortDirection) {
+        let imp = self.imp();
+        let sorter = gtk::CustomSorter::new(move |obj1, obj2| {
+            let (obj1, obj2) = match direction {
+                SortDirection::Ascending => (obj1, obj2),
+                SortDirection::Descending => (obj2, obj1),
+            };
+            let artist1 = obj1.downcast_ref::<ArtistModel>().unwrap();
+            let artist2 = obj2.downcast_ref::<ArtistModel>().unwrap();
+
+            match sort {
+                ArtistSort::Name => artist1
+                    .name()
+                    .to_lowercase()
+                    .cmp(&artist2.name().to_lowercase())
+                    .into(),
+            }
+        });
+        imp.current_sorter.replace(Some(sorter.clone()));
+        let store = imp.store.get().expect("Store should be initialized");
+        let sort_model = SortListModel::new(Some(store.clone()), Some(sorter));
+        let selection_model = SingleSelection::new(Some(sort_model));
+        imp.grid_view.set_model(Some(&selection_model));
     }
 
     fn setup_model(&self) {
@@ -146,7 +219,7 @@ impl Default for ArtistList {
 }
 
 mod imp {
-    use std::cell::OnceCell;
+    use std::cell::{OnceCell, RefCell};
 
     use adw::subclass::prelude::*;
     use glib::subclass::InitializingObject;
@@ -163,9 +236,16 @@ mod imp {
         pub search_bar: TemplateChild<gtk::SearchBar>,
         #[template_child]
         pub search_entry: TemplateChild<gtk::SearchEntry>,
+        #[template_child]
+        pub sort_bar: TemplateChild<gtk::SearchBar>,
+        #[template_child]
+        pub sort_dropdown: TemplateChild<gtk::DropDown>,
+        #[template_child]
+        pub sort_direction: TemplateChild<adw::ToggleGroup>,
 
         pub store: OnceCell<gio::ListStore>,
         pub name_filter: OnceCell<gtk::StringFilter>,
+        pub current_sorter: RefCell<Option<gtk::CustomSorter>>,
     }
 
     #[glib::object_subclass]
@@ -204,11 +284,27 @@ mod imp {
                 }
             ));
 
+            self.sort_dropdown.connect_selected_notify(glib::clone!(
+                #[weak(rename_to = artist_list)]
+                self.obj(),
+                move |_| {
+                    artist_list.handle_sort_changed();
+                }
+            ));
+
+            self.sort_direction.connect_active_notify(glib::clone!(
+                #[weak(rename_to = artist_list)]
+                self.obj(),
+                move |_| {
+                    artist_list.handle_sort_changed();
+                }
+            ));
+
             self.obj().connect_realize(glib::clone!(
                 #[weak (rename_to = artist_list)]
                 self.obj(),
                 move |_| {
-                    artist_list.setup_search_connection();
+                    artist_list.setup_search_sort_connection();
                 }
             ));
         }

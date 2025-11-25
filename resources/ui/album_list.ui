@@ -1,6 +1,6 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <interface>
-  <requires lib="gtk" version="4.0"/>
+  <requires lib="gtk" version="4.0" />
   <template class="GellyAlbumList" parent="GtkBox">
     <property name="orientation">vertical</property>
     <child>
@@ -21,6 +21,51 @@
             <child>
               <object class="GtkSearchEntry" id="search_entry">
                 <property name="placeholder-text">Search Albums</property>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="GtkSearchBar" id="sort_bar">
+            <property name="show-close-button">true</property>
+            <property name="search-mode-enabled">false</property>
+            <child>
+              <object class="GtkBox">
+                <property name="orientation">horizontal</property>
+                <property name="spacing">6</property>
+                <child>
+                  <object class="GtkDropDown" id="sort_dropdown">
+                    <property name="model">
+                      <object class="GtkStringList">
+                        <items>
+                          <item translatable="yes">Recently Added</item>
+                          <item translatable="yes">Name</item>
+                          <item translatable="yes">Album Artist</item>
+                          <item translatable="yes">Year</item>
+                        </items>
+                      </object>
+                    </property>
+                  </object>
+                </child>
+                <child>
+                  <object class="AdwToggleGroup" id="sort_direction">
+                    <property name="active-name">ascending</property>
+                    <child>
+                      <object class="AdwToggle">
+                        <property name="icon-name">view-sort-ascending-symbolic</property>
+                        <property name="tooltip" translatable="yes">Ascending</property>
+                        <property name="name">ascending</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="AdwToggle">
+                        <property name="icon-name">view-sort-descending-symbolic</property>
+                        <property name="tooltip" translatable="yes">Descending</property>
+                        <property name="name">descending</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
               </object>
             </child>
           </object>
