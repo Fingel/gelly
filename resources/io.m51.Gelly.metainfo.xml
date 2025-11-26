@@ -31,6 +31,15 @@
     </screenshot>
   </screenshots>
   <releases>
+    <release version="0.8.0" date="2025-11-26">
+      <description>
+        <ul>
+          <li>Ability to sort albums, artists and playlists.</li>
+          <li>Full keyboard navigation support.</li>
+          <li>Fixed an issue with volume scaling being off.</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.7.2" date="2025-11-20">
       <description>
         <ul>
