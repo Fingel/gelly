@@ -58,6 +58,30 @@ impl Window {
         }
     }
 
+    pub fn show_album_list(&self) {
+        let imp = self.imp();
+        imp.main_navigation.replace(&[imp.main_window.get()]);
+        imp.stack.set_visible_child(&imp.album_list.get());
+    }
+
+    pub fn show_artist_list(&self) {
+        let imp = self.imp();
+        imp.main_navigation.replace(&[imp.main_window.get()]);
+        imp.stack.set_visible_child(&imp.artist_list.get());
+    }
+
+    pub fn show_playlist_list(&self) {
+        let imp = self.imp();
+        imp.main_navigation.replace(&[imp.main_window.get()]);
+        imp.stack.set_visible_child(&imp.playlist_list.get());
+    }
+
+    pub fn show_queue(&self) {
+        let imp = self.imp();
+        imp.main_navigation.replace(&[imp.main_window.get()]);
+        imp.stack.set_visible_child(&imp.queue.get());
+    }
+
     pub fn show_album_detail(&self, album_model: &AlbumModel) {
         let imp = self.imp();
         imp.album_detail_page.set_title(&album_model.name());
@@ -339,6 +363,46 @@ mod imp {
                 ))
                 .build();
 
+            let action_album_list = ActionEntry::builder("show-album-list")
+                .activate(glib::clone!(
+                    #[weak(rename_to=window)]
+                    self,
+                    move |_, _, _| {
+                        window.obj().show_album_list();
+                    }
+                ))
+                .build();
+
+            let action_artist_list = ActionEntry::builder("show-artist-list")
+                .activate(glib::clone!(
+                    #[weak(rename_to=window)]
+                    self,
+                    move |_, _, _| {
+                        window.obj().show_artist_list();
+                    }
+                ))
+                .build();
+
+            let action_playlist_list = ActionEntry::builder("show-playlist-list")
+                .activate(glib::clone!(
+                    #[weak(rename_to=window)]
+                    self,
+                    move |_, _, _| {
+                        window.obj().show_playlist_list();
+                    }
+                ))
+                .build();
+
+            let action_queue = ActionEntry::builder("show-queue")
+                .activate(glib::clone!(
+                    #[weak(rename_to=window)]
+                    self,
+                    move |_, _, _| {
+                        window.obj().show_queue();
+                    }
+                ))
+                .build();
+
             self.obj().add_action_entries([
                 action_logout,
                 action_clear_cache,
@@ -349,6 +413,10 @@ mod imp {
                 action_play_selected,
                 action_about,
                 action_shortcuts,
+                action_album_list,
+                action_artist_list,
+                action_playlist_list,
+                action_queue,
             ]);
 
             self.obj().connect_map(glib::clone!(
