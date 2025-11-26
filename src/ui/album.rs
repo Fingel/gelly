@@ -1,9 +1,6 @@
-use crate::{
-    library_utils::songs_for_album, models::AlbumModel, ui::widget_ext::WidgetApplicationExt,
-};
+use crate::{library_utils::play_album, models::AlbumModel, ui::widget_ext::WidgetApplicationExt};
 use glib::Object;
 use gtk::{self, gio, glib, subclass::prelude::*};
-use log::warn;
 
 glib::wrapper! {
     pub struct Album(ObjectSubclass<imp::Album>)
@@ -23,15 +20,8 @@ impl Album {
         self.imp().album_id.replace(album_model.id().to_string());
     }
 
-    fn play(&self) {
-        let library = self.get_application().library().clone();
-        let songs = songs_for_album(&self.imp().album_id.borrow(), &library.borrow());
-        if let Some(audio_model) = self.get_application().audio_model() {
-            audio_model.set_queue(songs, 0);
-        } else {
-            self.toast("Audio model not initialized, please restart", None);
-            warn!("No audio model found");
-        }
+    pub fn play(&self) {
+        play_album(&self.imp().album_id.borrow(), &self.get_application());
     }
 }
 

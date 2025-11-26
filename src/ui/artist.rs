@@ -1,4 +1,6 @@
-use crate::models::ArtistModel;
+use crate::{
+    library_utils::play_artist, models::ArtistModel, ui::widget_ext::WidgetApplicationExt,
+};
 use glib::Object;
 use gtk::{gio, glib, subclass::prelude::*};
 
@@ -16,6 +18,11 @@ impl Artist {
         let card = &self.imp().media_card;
         card.set_primary_text(&artist_model.name());
         card.set_image_id(&artist_model.id());
+        self.imp().artist_id.replace(artist_model.id().to_string());
+    }
+
+    pub fn play(&self) {
+        play_artist(&self.imp().artist_id.borrow(), &self.get_application());
     }
 }
 
@@ -25,6 +32,8 @@ impl Default for Artist {
     }
 }
 mod imp {
+    use std::cell::RefCell;
+
     use crate::ui::media_card::MediaCard;
     use adw::subclass::prelude::*;
     use glib::subclass::InitializingObject;
@@ -38,6 +47,8 @@ mod imp {
     pub struct Artist {
         #[template_child]
         pub media_card: TemplateChild<MediaCard>,
+
+        pub artist_id: RefCell<String>,
     }
 
     #[glib::object_subclass]
@@ -55,6 +66,17 @@ mod imp {
         }
     }
     impl BoxImpl for Artist {}
-    impl ObjectImpl for Artist {}
+    impl ObjectImpl for Artist {
+        fn constructed(&self) {
+            self.parent_constructed();
+            self.media_card.connect_play_clicked(glib::clone!(
+                #[weak(rename_to = artist)]
+                self.obj(),
+                move || {
+                    artist.play();
+                }
+            ));
+        }
+    }
     impl WidgetImpl for Artist {}
 }

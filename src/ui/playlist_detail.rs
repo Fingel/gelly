@@ -1,6 +1,6 @@
 use crate::{
-    async_utils::spawn_tokio,
     jellyfin::{JellyfinError, api::MusicDto, utils::format_duration},
+    library_utils::songs_for_playlist,
     models::{PlaylistModel, SongModel},
     ui::{song::Song, widget_ext::WidgetApplicationExt},
 };
@@ -54,18 +54,10 @@ impl PlaylistDetail {
             warn!("No playlist model set");
             return;
         };
-
-        let playlist_id = playlist_model.id().to_string();
-        let playlist_type = playlist_model.playlist_type();
-        let library_data = self.get_application().library().borrow().clone();
-        let jellyfin = self.get_application().jellyfin();
-
-        spawn_tokio(
-            async move {
-                playlist_type
-                    .load_song_data(&playlist_id, &jellyfin, &library_data)
-                    .await
-            },
+        let app = self.get_application();
+        songs_for_playlist(
+            &playlist_model,
+            &app,
             glib::clone!(
                 #[weak(rename_to=playlist_detail)]
                 self,

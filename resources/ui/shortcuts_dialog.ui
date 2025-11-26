@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <object class="AdwShortcutsDialog" id="shortcuts-dialog">
+    <child>
+      <object class="AdwShortcutsSection">
+        <property name="title">General</property>
+        <child>
+          <object class="AdwShortcutsItem">
+            <property name="title">Refresh Library</property>
+            <property name="subtitle">Refresh the music library</property>
+            <property name="action-name">win.refresh-library</property>
+          </object>
+        </child>
+        <child>
+          <object class="AdwShortcutsItem">
+            <property name="title">Request Library Rescan</property>
+            <property name="subtitle">Ask Jellyfin to rescan the library for new or modified files</property>
+            <property name="action-name">win.request-library-rescan</property>
+          </object>
+        </child>
+        <child>
+          <object class="AdwShortcutsItem">
+            <property name="title">Search</property>
+            <property name="action-name">win.search</property>
+          </object>
+        </child>
+        <child>
+          <object class="AdwShortcutsItem">
+            <property name="title">Show Shortcuts</property>
+            <property name="subtitle">Show keyboard shortcuts</property>
+            <property name="action-name">win.shortcuts</property>
+          </object>
+        </child>
+        <child>
+          <object class="AdwShortcutsItem">
+            <property name="title">Quit</property>
+            <property name="subtitle">Quit the application</property>
+            <property name="action-name">window.close</property>
+          </object>
+        </child>
+      </object>
+    </child>
+    <child>
+      <object class="AdwShortcutsSection">
+        <property name="title">Navigation</property>
+        <child>
+          <object class="AdwShortcutsItem">
+            <property name="title">Focus Albums</property>
+            <property name="action-name">win.show-album-list</property>
+          </object>
+        </child>
+        <child>
+          <object class="AdwShortcutsItem">
+            <property name="title">Focus Artists</property>
+            <property name="action-name">win.show-artist-list</property>
+          </object>
+        </child>
+        <child>
+          <object class="AdwShortcutsItem">
+            <property name="title">Focus Playlist</property>
+            <property name="action-name">win.show-playlist-list</property>
+          </object>
+        </child>
+        <child>
+          <object class="AdwShortcutsItem">
+            <property name="title">Focus Queue</property>
+            <property name="action-name">win.show-queue</property>
+          </object>
+        </child>
+      </object>
+    </child>
+    <child>
+      <object class="AdwShortcutsSection">
+        <property name="title">Playback</property>
+        <child>
+          <object class="AdwShortcutsItem">
+            <property name="title">Play Selected</property>
+            <property name="subtitle">Play the currently selected item in the list</property>
+            <property name="action-name">win.play-selected</property>
+          </object>
+        </child>
+      </object>
+    </child>
+  </object>
+</interface>

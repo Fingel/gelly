@@ -1,6 +1,6 @@
 use crate::config::settings;
 use crate::models::{AlbumModel, ArtistModel, PlaylistModel};
-use crate::ui::about_dialog;
+use crate::ui::{about_dialog, shortcuts_dialog};
 use crate::{application::Application, ui::widget_ext::WidgetApplicationExt};
 use adw::{prelude::*, subclass::prelude::ObjectSubclassIsExt};
 use glib::Object;
@@ -58,6 +58,30 @@ impl Window {
         }
     }
 
+    pub fn show_album_list(&self) {
+        let imp = self.imp();
+        imp.main_navigation.replace(&[imp.main_window.get()]);
+        imp.stack.set_visible_child(&imp.album_list.get());
+    }
+
+    pub fn show_artist_list(&self) {
+        let imp = self.imp();
+        imp.main_navigation.replace(&[imp.main_window.get()]);
+        imp.stack.set_visible_child(&imp.artist_list.get());
+    }
+
+    pub fn show_playlist_list(&self) {
+        let imp = self.imp();
+        imp.main_navigation.replace(&[imp.main_window.get()]);
+        imp.stack.set_visible_child(&imp.playlist_list.get());
+    }
+
+    pub fn show_queue(&self) {
+        let imp = self.imp();
+        imp.main_navigation.replace(&[imp.main_window.get()]);
+        imp.stack.set_visible_child(&imp.queue.get());
+    }
+
     pub fn show_album_detail(&self, album_model: &AlbumModel) {
         let imp = self.imp();
         imp.album_detail_page.set_title(&album_model.name());
@@ -81,6 +105,10 @@ impl Window {
 
     pub fn show_about_dialog(&self) {
         about_dialog::show(self);
+    }
+
+    pub fn show_shortcuts_dialog(&self) {
+        shortcuts_dialog::show(self);
     }
 
     pub fn logout(&self) {
@@ -169,6 +197,8 @@ mod imp {
         pub toaster: TemplateChild<adw::ToastOverlay>,
         #[template_child]
         pub setup_stack: TemplateChild<gtk::Stack>,
+        #[template_child]
+        pub stack: TemplateChild<adw::ViewStack>,
         #[template_child]
         pub setup: TemplateChild<Setup>,
         #[template_child]
@@ -288,12 +318,87 @@ mod imp {
                 ))
                 .build();
 
+            let action_play_selected = ActionEntry::builder("play-selected")
+                .activate(glib::clone!(
+                    #[weak(rename_to=window)]
+                    self,
+                    move |_, _, _| {
+                        let imp = window;
+
+                        // Check if we're on main window and get current widget
+                        if let Some(visible_child) = imp.main_navigation.visible_page()
+                            && visible_child == imp.main_window.get()
+                            && let Some(current_widget) = imp.stack.visible_child()
+                        {
+                            // TODO: trait so we can just call play_selected?
+                            if current_widget == imp.album_list.get() {
+                                imp.album_list.play_selected_album();
+                            } else if current_widget == imp.playlist_list.get() {
+                                imp.playlist_list.play_selected_playlist();
+                            } else if current_widget == imp.artist_list.get() {
+                                imp.artist_list.play_selected_artist();
+                            }
+                        }
+                    }
+                ))
+                .build();
+
             let action_about = ActionEntry::builder("about")
                 .activate(glib::clone!(
                     #[weak(rename_to=window)]
                     self,
                     move |_, _, _| {
                         window.obj().show_about_dialog();
+                    }
+                ))
+                .build();
+
+            let action_shortcuts = ActionEntry::builder("shortcuts")
+                .activate(glib::clone!(
+                    #[weak(rename_to=window)]
+                    self,
+                    move |_, _, _| {
+                        window.obj().show_shortcuts_dialog();
+                    }
+                ))
+                .build();
+
+            let action_album_list = ActionEntry::builder("show-album-list")
+                .activate(glib::clone!(
+                    #[weak(rename_to=window)]
+                    self,
+                    move |_, _, _| {
+                        window.obj().show_album_list();
+                    }
+                ))
+                .build();
+
+            let action_artist_list = ActionEntry::builder("show-artist-list")
+                .activate(glib::clone!(
+                    #[weak(rename_to=window)]
+                    self,
+                    move |_, _, _| {
+                        window.obj().show_artist_list();
+                    }
+                ))
+                .build();
+
+            let action_playlist_list = ActionEntry::builder("show-playlist-list")
+                .activate(glib::clone!(
+                    #[weak(rename_to=window)]
+                    self,
+                    move |_, _, _| {
+                        window.obj().show_playlist_list();
+                    }
+                ))
+                .build();
+
+            let action_queue = ActionEntry::builder("show-queue")
+                .activate(glib::clone!(
+                    #[weak(rename_to=window)]
+                    self,
+                    move |_, _, _| {
+                        window.obj().show_queue();
                     }
                 ))
                 .build();
@@ -305,7 +410,13 @@ mod imp {
                 action_request_library_rescan,
                 action_search,
                 action_sort,
+                action_play_selected,
                 action_about,
+                action_shortcuts,
+                action_album_list,
+                action_artist_list,
+                action_playlist_list,
+                action_queue,
             ]);
 
             self.obj().connect_map(glib::clone!(
@@ -389,6 +500,7 @@ mod imp {
                 vec![
                     Signal::builder("search").build(),
                     Signal::builder("sort").build(),
+                    Signal::builder("play-selected").build(),
                 ]
             })
         }

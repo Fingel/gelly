@@ -1,5 +1,9 @@
+use crate::application::Application;
+use crate::async_utils::spawn_tokio;
+use crate::jellyfin::JellyfinError;
 use crate::jellyfin::api::MusicDto;
-use crate::models::{AlbumModel, ArtistModel, SongModel};
+use crate::models::{AlbumModel, ArtistModel, PlaylistModel, SongModel};
+use rand::prelude::*;
 use std::collections::HashSet;
 
 pub fn albums_from_library(library: &[MusicDto]) -> Vec<AlbumModel> {
@@ -61,8 +65,50 @@ pub fn songs_for_ids(ids: Vec<String>, library: &[MusicDto]) -> Vec<MusicDto> {
 }
 
 pub fn shuffle_songs(library: &[MusicDto], num: u64) -> Vec<MusicDto> {
-    use rand::prelude::*;
     let mut rng = rand::rng();
     let chosen = library.choose_multiple(&mut rng, num as usize);
     chosen.into_iter().cloned().collect()
+}
+
+pub fn songs_for_playlist(
+    playlist_model: &PlaylistModel,
+    app: &Application,
+    cb: impl Fn(Result<Vec<MusicDto>, JellyfinError>) + 'static,
+) {
+    let library_data = app.library().borrow().clone();
+    let jellyfin = app.jellyfin();
+    let id = playlist_model.id().to_string();
+    let playlist_type = playlist_model.playlist_type();
+    spawn_tokio(
+        async move {
+            playlist_type
+                .load_song_data(&id, &jellyfin, &library_data)
+                .await
+        },
+        cb,
+    );
+}
+
+pub fn play_album(id: &str, app: &Application) {
+    let library = app.library().clone();
+    let songs = songs_for_album(id, &library.borrow());
+    if let Some(audio_model) = app.audio_model() {
+        audio_model.set_queue(songs, 0);
+    } else {
+        log::warn!("No audio model found");
+    }
+}
+
+pub fn play_artist(id: &str, app: &Application) {
+    let library = app.library().clone();
+    let albums = albums_for_artist(id, &library.borrow());
+    let songs: Vec<SongModel> = albums
+        .iter()
+        .flat_map(|album| songs_for_album(&album.id(), &library.borrow()))
+        .collect();
+    if let Some(audio_model) = app.audio_model() {
+        audio_model.set_queue(songs, 0);
+    } else {
+        log::warn!("No audio model found");
+    }
 }
