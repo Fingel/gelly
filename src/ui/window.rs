@@ -170,6 +170,8 @@ mod imp {
         #[template_child]
         pub setup_stack: TemplateChild<gtk::Stack>,
         #[template_child]
+        pub stack: TemplateChild<adw::ViewStack>,
+        #[template_child]
         pub setup: TemplateChild<Setup>,
         #[template_child]
         pub main_navigation: TemplateChild<adw::NavigationView>,
@@ -288,6 +290,31 @@ mod imp {
                 ))
                 .build();
 
+            let action_play_selected = ActionEntry::builder("play-selected")
+                .activate(glib::clone!(
+                    #[weak(rename_to=window)]
+                    self,
+                    move |_, _, _| {
+                        let imp = window;
+
+                        // Check if we're on main window and get current widget
+                        if let Some(visible_child) = imp.main_navigation.visible_page()
+                            && visible_child == imp.main_window.get()
+                            && let Some(current_widget) = imp.stack.visible_child()
+                        {
+                            // TODO: trait so we can just call play_selected?
+                            if current_widget == imp.album_list.get() {
+                                imp.album_list.play_selected_album();
+                            } else if current_widget == imp.playlist_list.get() {
+                                imp.playlist_list.play_selected_playlist();
+                            } else if current_widget == imp.artist_list.get() {
+                                imp.artist_list.play_selected_artist();
+                            }
+                        }
+                    }
+                ))
+                .build();
+
             let action_about = ActionEntry::builder("about")
                 .activate(glib::clone!(
                     #[weak(rename_to=window)]
@@ -305,6 +332,7 @@ mod imp {
                 action_request_library_rescan,
                 action_search,
                 action_sort,
+                action_play_selected,
                 action_about,
             ]);
 
@@ -389,6 +417,7 @@ mod imp {
                 vec![
                     Signal::builder("search").build(),
                     Signal::builder("sort").build(),
+                    Signal::builder("play-selected").build(),
                 ]
             })
         }

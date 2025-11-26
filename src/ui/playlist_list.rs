@@ -1,7 +1,9 @@
 use crate::{
     application::Application,
+    jellyfin::{JellyfinError, api::MusicDto},
+    library_utils::songs_for_playlist,
     models::{
-        PlaylistModel,
+        PlaylistModel, SongModel,
         playlist_type::{DEFAULT_SMART_COUNT, PlaylistType},
     },
     ui::{list_helpers::*, playlist::Playlist, widget_ext::WidgetApplicationExt, window::Window},
@@ -13,6 +15,7 @@ use gtk::{
     prelude::*,
     subclass::prelude::*,
 };
+use log::warn;
 
 glib::wrapper! {
     pub struct PlaylistList(ObjectSubclass<imp::PlaylistList>)
@@ -145,7 +148,7 @@ impl PlaylistList {
         imp.grid_view.set_model(Some(&selection_model));
     }
 
-    pub fn setup_search_sort_connection(&self) {
+    pub fn setup_shortcuts_connection(&self) {
         let window = self.get_root_window();
         window.connect_closure(
             "search",
@@ -217,6 +220,46 @@ impl PlaylistList {
     fn set_empty(&self, empty: bool) {
         self.imp().empty.set_visible(empty);
         self.imp().grid_view.set_visible(!empty);
+    }
+
+    pub fn play_selected_playlist(&self) {
+        if let Some(selection) = self.imp().grid_view.model()
+            && let Some(single_selection) = selection.downcast_ref::<gtk::SingleSelection>()
+            && let Some(selected_item) = single_selection.selected_item()
+            && let Some(playlist_model) = selected_item.downcast_ref::<PlaylistModel>()
+        {
+            let app = self.get_application();
+            songs_for_playlist(
+                playlist_model,
+                &app,
+                glib::clone!(
+                    #[weak(rename_to=playlist_list)]
+                    self,
+                    move |result: Result<Vec<MusicDto>, JellyfinError>| {
+                        match result {
+                            Ok(music_data) => {
+                                let songs: Vec<SongModel> =
+                                    music_data.iter().map(SongModel::from).collect();
+                                if let Some(audio_model) =
+                                    playlist_list.get_application().audio_model()
+                                {
+                                    audio_model.set_queue(songs, 0);
+                                } else {
+                                    playlist_list
+                                        .toast("No audio model found, please restart.", None);
+                                    log::warn!("No audio model found");
+                                }
+                            }
+                            Err(error) => {
+                                playlist_list
+                                    .toast("Could not load playlist, please try again.", None);
+                                warn!("Unable to load playlist: {error}");
+                            }
+                        }
+                    }
+                ),
+            );
+        }
     }
 }
 
@@ -312,7 +355,7 @@ mod imp {
                 #[weak (rename_to = playlist_list)]
                 self.obj(),
                 move |_| {
-                    playlist_list.setup_search_sort_connection();
+                    playlist_list.setup_shortcuts_connection();
                 }
             ));
         }

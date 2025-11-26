@@ -1,6 +1,6 @@
 use crate::{
     application::Application,
-    library_utils::albums_from_library,
+    library_utils::{albums_from_library, play_album},
     models::AlbumModel,
     ui::{album::Album, list_helpers::*, widget_ext::WidgetApplicationExt, window::Window},
 };
@@ -156,7 +156,7 @@ impl AlbumList {
         imp.grid_view.set_model(Some(&selection_model));
     }
 
-    pub fn setup_search_sort_connection(&self) {
+    pub fn setup_shortcuts_connection(&self) {
         let window = self.get_root_window();
 
         window.connect_closure(
@@ -235,6 +235,16 @@ impl AlbumList {
     fn set_empty(&self, empty: bool) {
         self.imp().empty.set_visible(empty);
         self.imp().grid_view.set_visible(!empty);
+    }
+
+    pub fn play_selected_album(&self) {
+        if let Some(selection) = self.imp().grid_view.model()
+            && let Some(single_selection) = selection.downcast_ref::<gtk::SingleSelection>()
+            && let Some(selected_item) = single_selection.selected_item()
+            && let Some(album_model) = selected_item.downcast_ref::<AlbumModel>()
+        {
+            play_album(&album_model.id(), &self.get_application());
+        }
     }
 }
 
@@ -332,7 +342,7 @@ mod imp {
                 #[weak (rename_to = album_list)]
                 self.obj(),
                 move |_| {
-                    album_list.setup_search_sort_connection();
+                    album_list.setup_shortcuts_connection();
                 }
             ));
         }

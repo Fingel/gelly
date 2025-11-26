@@ -26,6 +26,7 @@ fn main() -> glib::ExitCode {
     app.set_accels_for_action("win.refresh-library", &["<Ctrl>r"]);
     app.set_accels_for_action("win.request-library-rescan", &["<Ctrl><Shift>r"]);
     app.set_accels_for_action("win.search", &["<Ctrl>f"]);
+    app.set_accels_for_action("win.play-selected", &["<Ctrl>p"]);
     app.set_accels_for_action("window.close", &["<Ctrl>q"]);
     info!("Application started");
     app.run()
