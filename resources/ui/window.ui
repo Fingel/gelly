@@ -269,6 +269,10 @@
         <attribute name="action">win.clear-cache</attribute>
       </item>
       <item>
+        <attribute name="label" translatable="yes">Keyboard Shortcuts</attribute>
+        <attribute name="action">win.shortcuts</attribute>
+      </item>
+      <item>
         <attribute name="label" translatable="yes">About Gelly</attribute>
         <attribute name="action">win.about</attribute>
       </item>

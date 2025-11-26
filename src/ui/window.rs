@@ -1,6 +1,6 @@
 use crate::config::settings;
 use crate::models::{AlbumModel, ArtistModel, PlaylistModel};
-use crate::ui::about_dialog;
+use crate::ui::{about_dialog, shortcuts_dialog};
 use crate::{application::Application, ui::widget_ext::WidgetApplicationExt};
 use adw::{prelude::*, subclass::prelude::ObjectSubclassIsExt};
 use glib::Object;
@@ -81,6 +81,10 @@ impl Window {
 
     pub fn show_about_dialog(&self) {
         about_dialog::show(self);
+    }
+
+    pub fn show_shortcuts_dialog(&self) {
+        shortcuts_dialog::show(self);
     }
 
     pub fn logout(&self) {
@@ -325,6 +329,16 @@ mod imp {
                 ))
                 .build();
 
+            let action_shortcuts = ActionEntry::builder("shortcuts")
+                .activate(glib::clone!(
+                    #[weak(rename_to=window)]
+                    self,
+                    move |_, _, _| {
+                        window.obj().show_shortcuts_dialog();
+                    }
+                ))
+                .build();
+
             self.obj().add_action_entries([
                 action_logout,
                 action_clear_cache,
@@ -334,6 +348,7 @@ mod imp {
                 action_sort,
                 action_play_selected,
                 action_about,
+                action_shortcuts,
             ]);
 
             self.obj().connect_map(glib::clone!(

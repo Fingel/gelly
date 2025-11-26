@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <object class="AdwShortcutsDialog" id="shortcuts-dialog">
+    <child>
+      <object class="AdwShortcutsSection">
+        <property name="title">General</property>
+
+        <!-- Refresh Library -->
+        <child>
+          <object class="AdwShortcutsItem">
+            <property name="title">Refresh Library</property>
+            <property name="subtitle">Refresh your music library</property>
+            <property name="action-name">win.refresh-library</property>
+          </object>
+        </child>
+
+        <!-- Request Library Rescan -->
+        <child>
+          <object class="AdwShortcutsItem">
+            <property name="title">Request Library Rescan</property>
+            <property name="subtitle">Request server to rescan library</property>
+            <property name="action-name">win.request-library-rescan</property>
+          </object>
+        </child>
+
+        <!-- Search -->
+        <child>
+          <object class="AdwShortcutsItem">
+            <property name="title">Search</property>
+            <property name="subtitle">Search in the current view</property>
+            <property name="action-name">win.search</property>
+          </object>
+        </child>
+
+        <!-- Play Selected -->
+        <child>
+          <object class="AdwShortcutsItem">
+            <property name="title">Play Selected</property>
+            <property name="subtitle">Play the currently selected item</property>
+            <property name="action-name">win.play-selected</property>
+          </object>
+        </child>
+
+        <!-- Show Shortcuts -->
+        <child>
+          <object class="AdwShortcutsItem">
+            <property name="title">Show Shortcuts</property>
+            <property name="subtitle">Show keyboard shortcuts</property>
+            <property name="action-name">win.shortcuts</property>
+          </object>
+        </child>
+
+        <!-- Quit -->
+        <child>
+          <object class="AdwShortcutsItem">
+            <property name="title">Quit</property>
+            <property name="subtitle">Quit the application</property>
+            <property name="action-name">window.close</property>
+          </object>
+        </child>
+
+      </object>
+    </child>
+  </object>
+</interface>

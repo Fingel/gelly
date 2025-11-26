@@ -15,6 +15,7 @@ pub mod playlist_detail;
 pub mod playlist_list;
 pub mod queue;
 pub mod setup;
+pub mod shortcuts_dialog;
 pub mod song;
 pub mod widget_ext;
 pub mod window;
