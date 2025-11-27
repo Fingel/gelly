@@ -204,6 +204,8 @@ mod imp {
         pub volume_button: TemplateChild<gtk::MenuButton>,
         #[template_child]
         pub volume_scale: TemplateChild<gtk::Scale>,
+        #[template_child]
+        pub play_mode: TemplateChild<gtk::Button>,
 
         pub audio_model: OnceCell<AudioModel>,
 
@@ -258,6 +260,18 @@ mod imp {
             self.volume_button.set_icon_name(icon_name);
         }
 
+        fn toggle_play_mode(&self) {
+            let audio_model = self.audio_model();
+            let shuffled = !audio_model.imp().shuffle_enabled.get();
+            audio_model.set_shuffle(shuffled);
+            let icon_name = if shuffled {
+                "media-playlist-shuffle-symbolic"
+            } else {
+                "media-playlist-consecutive-symbolic"
+            };
+            self.play_mode.set_icon_name(icon_name);
+        }
+
         fn setup_signals(&self) {
             self.play_pause_button.connect_clicked(glib::clone!(
                 #[weak(rename_to = imp)]
@@ -289,6 +303,14 @@ mod imp {
                 move |_| {
                     imp.volume_scale.set_value(0.0);
                     imp.update_volume_icon(0.0);
+                }
+            ));
+
+            self.play_mode.connect_clicked(glib::clone!(
+                #[weak(rename_to = imp)]
+                self,
+                move |_| {
+                    imp.toggle_play_mode();
                 }
             ));
 
