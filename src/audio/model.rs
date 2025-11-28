@@ -238,7 +238,7 @@ impl AudioModel {
         self.current_song().map(|s| s.id()).unwrap_or_default()
     }
 
-    pub fn set_shuffle(&self, enabled: bool) {
+    pub fn set_shuffle_enabled(&self, enabled: bool) {
         self.imp().shuffle_enabled.set(enabled);
         if enabled {
             self.new_shuffle_cycle();
@@ -269,6 +269,7 @@ impl AudioModel {
         let next_pos = current_pos + 1;
 
         if next_pos < shuffle_order.len() {
+            // Play next song in shuffle
             self.imp().shuffle_index.set(next_pos);
             let song_index = shuffle_order[next_pos];
             self.load_song(song_index as i32);

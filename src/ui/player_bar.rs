@@ -263,7 +263,7 @@ mod imp {
         fn toggle_play_mode(&self) {
             let audio_model = self.audio_model();
             let shuffled = !audio_model.imp().shuffle_enabled.get();
-            audio_model.set_shuffle(shuffled);
+            audio_model.set_shuffle_enabled(shuffled);
             let icon_name = if shuffled {
                 "media-playlist-shuffle-symbolic"
             } else {
