@@ -147,6 +147,15 @@
             <property name="vexpand">false</property>
             <property name="hexpand">false</property>
             <child>
+              <object class="GtkButton" id="play_mode">
+                <property name="icon-name">media-playlist-consecutive-symbolic</property>
+                <property name="tooltip-text">Play Mode</property>
+                <style>
+                  <class name="flat" />
+                </style>
+              </object>
+            </child>
+            <child>
               <object class="GtkMenuButton" id="volume_button">
                 <property name="icon-name">audio-volume-high-symbolic</property>
                 <property name="tooltip-text">Volume</property>

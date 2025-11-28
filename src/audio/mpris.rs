@@ -292,10 +292,11 @@ impl LocalPlayerInterface for AudioModel {
     }
 
     async fn shuffle(&self) -> fdo::Result<bool> {
-        Ok(false) // TODO - could implement shuffle later
+        Ok(self.imp().shuffle_enabled.get())
     }
 
-    async fn set_shuffle(&self, _shuffle: bool) -> mpris_server::zbus::Result<()> {
+    async fn set_shuffle(&self, shuffle: bool) -> mpris_server::zbus::Result<()> {
+        self.set_shuffle_enabled(shuffle);
         Ok(())
     }
 
