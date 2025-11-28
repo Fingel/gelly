@@ -41,12 +41,19 @@ impl Queue {
 
     fn set_empty(&self, empty: bool) {
         self.imp().empty.set_visible(empty);
-        self.imp().track_list.set_visible(!empty);
+        self.imp().queue_box.set_visible(!empty);
     }
 
     pub fn song_selected(&self, index: usize) {
         if let Some(audio_model) = self.get_application().audio_model() {
             audio_model.play_song(index);
+        }
+    }
+
+    pub fn clear_queue(&self) {
+        if let Some(audio_model) = self.get_application().audio_model() {
+            audio_model.clear_queue();
+            self.display_queue();
         }
     }
 }
@@ -73,6 +80,10 @@ mod imp {
         pub empty: TemplateChild<adw::StatusPage>,
         #[template_child]
         pub track_list: TemplateChild<gtk::ListBox>,
+        #[template_child]
+        pub queue_box: TemplateChild<gtk::Box>,
+        #[template_child]
+        pub clear_queue: TemplateChild<gtk::Button>,
     }
 
     #[glib::object_subclass]
@@ -114,6 +125,14 @@ mod imp {
                 move |_track_list, row| {
                     let index = row.index();
                     imp.obj().song_selected(index as usize);
+                }
+            ));
+
+            self.clear_queue.connect_clicked(glib::clone!(
+                #[weak(rename_to=imp)]
+                self,
+                move |_| {
+                    imp.obj().clear_queue();
                 }
             ));
         }

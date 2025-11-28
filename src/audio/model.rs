@@ -118,6 +118,11 @@ impl AudioModel {
         }
     }
 
+    pub fn clear_queue(&self) {
+        self.imp().queue.replace(Vec::new());
+        self.notify_mpris_can_navigate(false, false);
+    }
+
     pub fn play_song(&self, index: usize) {
         self.load_song(index as i32);
         self.play();
@@ -137,6 +142,7 @@ impl AudioModel {
             // Notify MPRIS with metadata
             self.notify_mpris_track_changed();
         } else {
+            self.stop();
             warn!("Failed to load song at index {}", index);
         }
     }
@@ -163,7 +169,6 @@ impl AudioModel {
             self.load_song(next_index);
             self.play();
         } else {
-            self.load_song(0);
             self.stop();
             self.emit_by_name::<()>("queue-finished", &[]);
         }
@@ -276,7 +281,6 @@ impl AudioModel {
             self.play();
         } else {
             self.new_shuffle_cycle();
-            self.load_song(0);
             self.stop();
             self.emit_by_name::<()>("queue-finished", &[]);
         }

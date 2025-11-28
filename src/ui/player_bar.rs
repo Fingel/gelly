@@ -55,6 +55,7 @@ impl PlayerBar {
                 self,
                 move |_audio_model: AudioModel| {
                     player.update_play_pause_button(false);
+                    player.hide();
                 }
             ),
         );
@@ -153,6 +154,10 @@ impl PlayerBar {
 
     fn reveal(&self) {
         self.imp().action_bar.set_revealed(true);
+    }
+
+    fn hide(&self) {
+        self.imp().action_bar.set_revealed(false);
     }
 }
 
