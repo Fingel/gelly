@@ -26,11 +26,18 @@
   <url type="bugtracker">https://github.com/Fingel/gelly/issues</url>
   <screenshots>
     <screenshot type="default">
-      <image>https://github.com/user-attachments/assets/56b32599-1070-4e77-8b32-81bc6071e4ed</image>
+      <image>https://github.com/user-attachments/assets/b176afc6-c5c5-43b6-8f1c-bfed0b9768e7</image>
       <caption>Main window showing music library</caption>
     </screenshot>
   </screenshots>
   <releases>
+    <release version="0.9.0" date="2025-11-27">
+      <description>
+        <ul>
+          <li>Add shuffle playback mode.</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.8.0" date="2025-11-26">
       <description>
         <ul>
