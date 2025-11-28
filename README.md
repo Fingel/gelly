@@ -2,7 +2,8 @@
 
 Gelly is a native, lightweight [Jellyfin Media Server](https://jellyfin.org/) client focused on music playback written in Rust and GTK.
 
-<img width="1265" height="1144" alt="gelly2" src="https://github.com/user-attachments/assets/56b32599-1070-4e77-8b32-81bc6071e4ed" />
+<img width="1035" height="1030" alt="gellynov27" src="https://github.com/user-attachments/assets/b176afc6-c5c5-43b6-8f1c-bfed0b9768e7" />
+
 
 ## Features
 
