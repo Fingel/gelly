@@ -48,7 +48,7 @@ impl PlayerBar {
         );
 
         audio_model.connect_closure(
-            "stop",
+            "queue-finished",
             false,
             glib::closure_local!(
                 #[weak(rename_to = player)]
