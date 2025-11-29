@@ -167,6 +167,10 @@ impl Window {
             ),
         );
     }
+
+    pub fn update_queue_badge(&self, count: u32) {
+        self.imp().queue_page.set_badge_number(count);
+    }
 }
 
 mod imp {
@@ -182,13 +186,14 @@ mod imp {
     };
     use log::{debug, warn};
 
-    use crate::ui::{
-        album_list::AlbumList, artist_list::ArtistList, playlist_detail::PlaylistDetail,
-    };
     use crate::ui::{artist_detail::ArtistDetail, player_bar::PlayerBar};
     use crate::ui::{playlist_list::PlaylistList, widget_ext::WidgetApplicationExt};
     use crate::ui::{queue::Queue, setup::Setup};
     use crate::{application::Application, ui::album_detail::AlbumDetail};
+    use crate::{
+        audio::model::AudioModel,
+        ui::{album_list::AlbumList, artist_list::ArtistList, playlist_detail::PlaylistDetail},
+    };
 
     #[derive(CompositeTemplate, Default)]
     #[template(resource = "/io/m51/Gelly/ui/window.ui")]
@@ -225,6 +230,8 @@ mod imp {
         pub playlist_detail_page: TemplateChild<adw::NavigationPage>,
         #[template_child]
         pub player_bar: TemplateChild<PlayerBar>,
+        #[template_child]
+        pub queue_page: TemplateChild<adw::ViewStackPage>,
         #[template_child]
         pub queue: TemplateChild<Queue>,
         #[template_child]
@@ -490,6 +497,20 @@ mod imp {
                             }
                         ),
                     );
+
+                    if let Some(audio_model) = app.audio_model() {
+                        audio_model.connect_closure(
+                            "queue-changed",
+                            false,
+                            glib::closure_local!(
+                                #[weak]
+                                window,
+                                move |_model: AudioModel, _total: u32, unplayed: u32| {
+                                    window.update_queue_badge(unplayed);
+                                }
+                            ),
+                        );
+                    }
                 }
             ));
         }

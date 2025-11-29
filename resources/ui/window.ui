@@ -218,6 +218,7 @@
                                         <property name="title" translatable="yes">Queue</property>
                                         <property name="icon-name">audio-x-generic-symbolic</property>
                                         <property name="use-underline">true</property>
+                                        <property name="badge-number">0</property>
                                         <property name="child">
                                           <object class="GellyQueue" id="queue">
                                           </object>

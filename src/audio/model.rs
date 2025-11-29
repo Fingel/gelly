@@ -17,6 +17,11 @@ glib::wrapper! {
     pub struct AudioModel(ObjectSubclass<imp::AudioModel>);
 }
 
+struct QueueStats {
+    total: u32,
+    unplayed: u32,
+}
+
 impl AudioModel {
     pub fn new() -> Self {
         let obj: Self = Object::builder().build();
@@ -100,12 +105,23 @@ impl AudioModel {
     }
 
     pub fn set_queue(&self, songs: Vec<SongModel>, start_index: usize) {
+        let len = songs.len() as u32;
         self.imp().queue.replace(songs);
         self.load_song(start_index as i32);
         self.play();
         self.notify_mpris_can_navigate(true, start_index > 0);
         if self.imp().shuffle_enabled.get() {
             self.new_shuffle_cycle();
+        }
+        self.emit_by_name("queue-changed", &[&len, &len])
+    }
+
+    fn queue_stats(&self) -> QueueStats {
+        // Need to implement unplayed
+        let total = self.queue().len() as u32;
+        QueueStats {
+            total,
+            unplayed: total,
         }
     }
 
@@ -116,11 +132,14 @@ impl AudioModel {
         if self.imp().shuffle_enabled.get() {
             self.new_shuffle_cycle();
         }
+        let stats = self.queue_stats();
+        self.emit_by_name("queue-changed", &[&stats.total, &stats.unplayed])
     }
 
     pub fn clear_queue(&self) {
         self.imp().queue.replace(Vec::new());
         self.notify_mpris_can_navigate(false, false);
+        self.emit_by_name("queue-changed", &[&0u32, &0u32])
     }
 
     pub fn play_song(&self, index: usize) {
@@ -392,6 +411,9 @@ mod imp {
                     glib::subclass::Signal::builder("request-stream-uri")
                         .param_types([String::static_type()])
                         .return_type::<String>()
+                        .build(),
+                    glib::subclass::Signal::builder("queue-changed")
+                        .param_types([u32::static_type(), u32::static_type()])
                         .build(),
                 ]
             })
