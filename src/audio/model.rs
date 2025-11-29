@@ -271,14 +271,12 @@ impl AudioModel {
     fn next_shuffled(&self) {
         let shuffle_order = self.get_shuffle_order();
         let current_pos = self.imp().shuffle_index.get();
-        let next_pos = current_pos + 1;
 
-        if next_pos < shuffle_order.len() {
-            // Play next song in shuffle
-            self.imp().shuffle_index.set(next_pos);
-            let song_index = shuffle_order[next_pos];
+        if current_pos < shuffle_order.len() {
+            let song_index = shuffle_order[current_pos];
             self.load_song(song_index as i32);
             self.play();
+            self.imp().shuffle_index.set(current_pos + 1);
         } else {
             self.new_shuffle_cycle();
             self.stop();
