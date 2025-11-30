@@ -51,12 +51,12 @@ impl From<&MusicDto> for AlbumModel {
             .iter()
             .map(|artist| artist.name.clone())
             .collect();
-
+        let date_created = dto.date_created.clone().unwrap_or("".to_string());
         AlbumModel::new(
             &dto.album,
             &dto.album_id,
             artists,
-            &dto.date_created,
+            &date_created,
             &dto.production_year,
         )
     }
