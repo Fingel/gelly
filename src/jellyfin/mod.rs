@@ -252,6 +252,44 @@ impl Jellyfin {
         Ok(serde_json::from_str(&body)?)
     }
 
+    pub async fn add_playlist_item(
+        &self,
+        playlist_id: &str,
+        item_id: &str,
+    ) -> Result<(), JellyfinError> {
+        let path = format!("Playlists/{}/Items", playlist_id);
+        let params = vec![("ids", item_id), ("userId", &self.user_id)];
+        let response = self.post(&path, Some(&params), None).await?;
+        self.handle_response(response).await?;
+        Ok(())
+    }
+
+    pub async fn move_playlist_item(
+        &self,
+        playlist_id: &str,
+        item_id: &str,
+        new_index: i32,
+    ) -> Result<(), JellyfinError> {
+        let path = format!(
+            "Playlists/{}/Items/{}/Move/{}",
+            playlist_id, item_id, new_index
+        );
+        let response = self.post(&path, None, None).await?;
+        self.handle_response(response).await?;
+        Ok(())
+    }
+
+    pub async fn remove_playlist_item(
+        &self,
+        playlist_id: &str,
+        item_id: &str,
+    ) -> Result<(), JellyfinError> {
+        let path = format!("Playlists/{}/Items/", playlist_id);
+        let params = vec![("entryIds", item_id)];
+        self.delete(&path, Some(&params)).await?;
+        Ok(())
+    }
+
     pub fn clear_cache(&self) {
         if let Err(e) = self.cache.clear() {
             warn!("Failed to clear cache: {}", e);
@@ -357,11 +395,7 @@ impl Jellyfin {
         params: Option<&[(&str, &str)]>,
         body: Option<String>,
     ) -> Result<Response, JellyfinError> {
-        let url = format!(
-            "{}/{}",
-            self.host.trim_end_matches('/'),
-            endpoint.trim_start_matches('/')
-        );
+        let url = self.format_url(endpoint);
         debug!("Sending POST request to {}", url);
         let request = self
             .client
@@ -379,11 +413,7 @@ impl Jellyfin {
         endpoint: &str,
         params: Option<&[(&str, &str)]>,
     ) -> Result<Response, JellyfinError> {
-        let url = format!(
-            "{}/{}",
-            self.host.trim_end_matches('/'),
-            endpoint.trim_start_matches('/')
-        );
+        let url = self.format_url(endpoint);
         debug!("Sending GET request to {}", url);
         let request = self
             .client
@@ -392,6 +422,30 @@ impl Jellyfin {
             .header("Authorization", self.auth_header());
         let response = request.send().await?;
         Ok(response)
+    }
+
+    async fn delete(
+        &self,
+        endpoint: &str,
+        params: Option<&[(&str, &str)]>,
+    ) -> Result<Response, JellyfinError> {
+        let url = self.format_url(endpoint);
+        debug!("Sending DELETE request to {}", url);
+        let request = self
+            .client
+            .delete(&url)
+            .query(params.unwrap_or(&[]))
+            .header("Authorization", self.auth_header());
+        let response = request.send().await?;
+        Ok(response)
+    }
+
+    fn format_url(&self, endpoint: &str) -> String {
+        format!(
+            "{}/{}",
+            self.host.trim_end_matches('/'),
+            endpoint.trim_start_matches('/')
+        )
     }
 
     /// Responsible for error handling when reading responses from Jellyfin
