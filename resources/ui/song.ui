@@ -9,6 +9,19 @@
         <property name="focusable">False</property>
         <property name="spacing">6</property>
         <child>
+          <object class="GtkBox" id="drag_handle_box">
+            <property name="visible">false</property>
+            <child>
+              <object class="GtkImage" id="drag-handle">
+                <property name="icon-name">list-drag-handle-symbolic</property>
+                <style>
+                  <class name="dim-label"/>
+                </style>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
           <object class="GtkBox" id="box3">
             <property name="width_request">48</property>
             <property name="focusable">False</property>
@@ -94,6 +107,20 @@
                 <attributes>
                   <attribute name="font-features" value="tnum=1"/>
                 </attributes>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="GtkBox" id="song_actions_box">
+            <property name="margin-start">6</property>
+            <property name="visible">False</property>
+            <child>
+              <object class="GtkButton" id="song_menu">
+                <property name="icon-name">view-more-symbolic</property>
+                <style>
+                  <class name="flat"/>
+                </style>
               </object>
             </child>
           </object>

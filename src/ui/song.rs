@@ -36,6 +36,8 @@ impl Song {
         let imp = self.imp();
         imp.artist_label.set_visible(true);
         imp.album_label.set_visible(true);
+        imp.drag_handle_box.set_visible(true);
+        imp.song_actions_box.set_visible(true);
     }
 
     fn listen_for_song_changes(&self) {
@@ -84,6 +86,10 @@ mod imp {
         pub duration_label: TemplateChild<gtk::Label>,
         #[template_child]
         pub playing_icon: TemplateChild<gtk::Image>,
+        #[template_child]
+        pub drag_handle_box: TemplateChild<gtk::Box>,
+        #[template_child]
+        pub song_actions_box: TemplateChild<gtk::Box>,
 
         pub item_id: RefCell<Option<String>>,
     }
