@@ -48,6 +48,10 @@ impl Song {
         self.imp().playing_icon.set_visible(playing);
     }
 
+    pub fn set_track_number(&self, track_number: u32) {
+        self.imp().number_label.set_label(&track_number.to_string());
+    }
+
     pub fn show_details(&self) {
         let imp = self.imp();
         imp.artist_label.set_visible(true);
@@ -83,6 +87,36 @@ impl Song {
         //Drag Target
         let drop_target = DropTarget::new(Song::static_type(), DragAction::MOVE);
         drop_target.set_preload(true); // deserialize data immediately over drop zone, fine for song lists
+        // For auto scrolling
+        // TODO: This seems like a giant hack
+        drop_target.connect_enter(glib::clone!(
+            #[weak(rename_to = target_song)]
+            self,
+            #[upgrade_or]
+            DragAction::empty(),
+            move |_, _, _| {
+                target_song.grab_focus();
+                glib::idle_add_local_once(glib::clone!(
+                    #[weak]
+                    target_song,
+                    move || {
+                        if let Some(listbox) = target_song
+                            .parent()
+                            .and_then(|p| p.downcast::<gtk::ListBox>().ok())
+                        {
+                            let current_index = target_song.index();
+
+                            // Try to focus the next widget to ensure it's visible
+                            if let Some(next_row) = listbox.row_at_index(current_index + 1) {
+                                next_row.grab_focus();
+                            }
+                        }
+                    }
+                ));
+                DragAction::MOVE
+            }
+        ));
+
         drop_target.connect_drop(glib::clone!(
             #[weak(rename_to = target_song)]
             self,

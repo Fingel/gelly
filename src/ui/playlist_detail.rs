@@ -154,7 +154,15 @@ impl PlaylistDetail {
         let item_id = song_being_moved.id();
         songs.remove(source_index);
         songs.insert(target_index, song_being_moved);
-        self.populate_tracks_with_songs(songs);
+        self.imp().songs.replace(songs);
+
+        let track_list = &self.imp().track_list;
+        if let Some(source_row) = track_list.row_at_index(source_index as i32) {
+            // Remove and reinsert the widget
+            track_list.remove(&source_row);
+            track_list.insert(&source_row, target_index as i32);
+            self.update_all_track_numbers();
+        }
 
         // Persist the change
         let playlist_id = playlist_model.id();
@@ -186,6 +194,17 @@ impl PlaylistDetail {
                 }
             }
         ));
+    }
+
+    fn update_all_track_numbers(&self) {
+        let track_list = &self.imp().track_list;
+        for i in 0..track_list.observe_children().n_items() {
+            if let Some(row) = track_list.row_at_index(i as i32)
+                && let Some(song_widget) = row.downcast_ref::<Song>()
+            {
+                song_widget.set_track_number(i + 1);
+            }
+        }
     }
 
     pub fn song_selected(&self, index: usize) {
