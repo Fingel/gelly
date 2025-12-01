@@ -1,5 +1,11 @@
 use glib::Object;
-use gtk::{gio, glib, prelude::*, subclass::prelude::*};
+use gtk::{
+    DragSource, DropTarget,
+    gdk::{ContentProvider, Drag, DragAction},
+    gio, glib,
+    prelude::*,
+    subclass::prelude::*,
+};
 
 use crate::{
     audio::model::AudioModel, jellyfin::utils::format_duration, models::SongModel,
@@ -15,6 +21,16 @@ glib::wrapper! {
 impl Song {
     pub fn new() -> Self {
         Object::builder().build()
+    }
+
+    pub fn new_with_dnd() -> Self {
+        let song = Self::new();
+        song.setup_drag_and_drop();
+        song
+    }
+
+    pub fn new_ghost() -> Self {
+        Object::builder().property("is-ghost", true).build()
     }
 
     pub fn set_song_data(&self, song: &SongModel) {
@@ -36,11 +52,81 @@ impl Song {
         let imp = self.imp();
         imp.artist_label.set_visible(true);
         imp.album_label.set_visible(true);
-        imp.drag_handle_box.set_visible(true);
         imp.song_actions_box.set_visible(true);
     }
 
+    pub fn setup_drag_and_drop(&self) {
+        let imp = self.imp();
+        imp.drag_handle_box.set_visible(true);
+        let drag_source = DragSource::new();
+
+        // Drag Source
+        drag_source.set_actions(DragAction::MOVE);
+        drag_source.connect_prepare(glib::clone!(
+            #[weak(rename_to = song)]
+            self,
+            #[upgrade_or_default]
+            move |_, _, _| {
+                let content = ContentProvider::for_value(&song.to_value());
+                Some(content)
+            }
+        ));
+        drag_source.connect_drag_begin(glib::clone!(
+            #[weak(rename_to = song)]
+            self,
+            move |_, drag| {
+                song.create_drag_icon(drag);
+            }
+        ));
+        self.add_controller(drag_source);
+
+        //Drag Target
+        let drop_target = DropTarget::new(Song::static_type(), DragAction::MOVE);
+        drop_target.set_preload(true); // deserialize data immediately over drop zone, fine for song lists
+        drop_target.connect_drop(glib::clone!(
+            #[weak(rename_to = target_song)]
+            self,
+            #[upgrade_or]
+            false,
+            move |_, value, _, _| {
+                if let Ok(source_song) = value.get::<Song>() {
+                    let source_index = source_song.index() as usize;
+                    let target_index = target_song.index() as usize;
+                    if source_index != target_index {
+                        target_song.emit_by_name::<()>("widget-moved", &[&source_song.index()]);
+                        return true;
+                    }
+                }
+                false
+            }
+        ));
+        self.add_controller(drop_target);
+    }
+
+    /// Build a ghost song widget which will appear when dragging a song.
+    fn create_drag_icon(&self, drag: &Drag) {
+        let drag_widget = gtk::ListBox::new();
+        drag_widget.set_size_request(self.width(), self.height());
+        let drag_song = Song::new_ghost();
+        let di = drag_song.imp();
+        di.title_label.set_label(&self.imp().title_label.label());
+        di.album_label.set_label(&self.imp().album_label.label());
+        di.artist_label.set_label(&self.imp().artist_label.label());
+        di.number_label.set_label(&self.imp().number_label.label());
+        di.duration_label
+            .set_label(&self.imp().duration_label.label());
+        drag_song.show_details();
+        drag_widget.set_opacity(0.9);
+        drag_widget.append(&drag_song);
+        let drag_icon = gtk::DragIcon::for_drag(drag);
+        drag_icon.set_child(Some(&drag_widget));
+    }
+
     fn listen_for_song_changes(&self) {
+        if self.is_ghost() {
+            return; // Don't connect for ghost (drag and drop) widgets
+        }
+
         if let Some(audio_model) = self.get_application().audio_model() {
             audio_model.connect_closure(
                 "song-changed",
@@ -65,14 +151,22 @@ impl Default for Song {
 }
 
 mod imp {
-    use std::cell::RefCell;
+    use std::{
+        cell::{Cell, RefCell},
+        sync::OnceLock,
+    };
 
     use adw::subclass::prelude::*;
     use glib::subclass::InitializingObject;
-    use gtk::{CompositeTemplate, glib, prelude::*};
+    use gtk::{
+        CompositeTemplate,
+        glib::{self, Properties, subclass::Signal},
+        prelude::*,
+    };
 
-    #[derive(CompositeTemplate, Default)]
+    #[derive(CompositeTemplate, Default, Properties)]
     #[template(resource = "/io/m51/Gelly/ui/song.ui")]
+    #[properties(wrapper_type = super::Song)]
     pub struct Song {
         #[template_child]
         pub title_label: TemplateChild<gtk::Label>,
@@ -92,6 +186,9 @@ mod imp {
         pub song_actions_box: TemplateChild<gtk::Box>,
 
         pub item_id: RefCell<Option<String>>,
+
+        #[property(get, construct_only, name = "is-ghost", default = false)]
+        pub is_ghost: Cell<bool>,
     }
 
     #[glib::object_subclass]
@@ -108,7 +205,20 @@ mod imp {
             obj.init_template();
         }
     }
+
+    #[glib::derived_properties]
     impl ObjectImpl for Song {
+        fn signals() -> &'static [Signal] {
+            static SIGNALS: OnceLock<Vec<Signal>> = OnceLock::new();
+            SIGNALS.get_or_init(|| {
+                vec![
+                    Signal::builder("widget-moved")
+                        .param_types([i32::static_type()])
+                        .build(),
+                ]
+            })
+        }
+
         fn constructed(&self) {
             self.parent_constructed();
             self.obj().connect_map(glib::clone!(

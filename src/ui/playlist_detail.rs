@@ -82,8 +82,32 @@ impl PlaylistDetail {
     fn populate_tracks_with_songs(&self, songs: Vec<SongModel>) {
         let track_list = &self.imp().track_list;
         track_list.remove_all();
+        // Smart playlists cannot be reordered
+        let is_smart_playlist = self
+            .get_playlist_model()
+            .map(|p| p.is_smart())
+            .unwrap_or(true);
+
         for (i, song) in songs.iter().enumerate() {
-            let song_widget = Song::new();
+            let song_widget = if is_smart_playlist {
+                Song::new()
+            } else {
+                let song_widget = Song::new_with_dnd();
+                song_widget.connect_closure(
+                    "widget-moved",
+                    false,
+                    glib::closure_local!(
+                        #[weak(rename_to= playlist_detail)]
+                        self,
+                        move |song_widget: Song, source_index: i32| {
+                            let target_index = song_widget.index() as usize;
+                            let source_index = source_index as usize;
+                            playlist_detail.handle_song_moved(source_index, target_index)
+                        }
+                    ),
+                );
+                song_widget
+            };
             // we don't want the track number here, we want the playlist index
             song.set_track_number(i as u32 + 1);
             song_widget.set_song_data(song);
@@ -101,6 +125,67 @@ impl PlaylistDetail {
         }
         self.imp().songs.replace(songs);
         self.update_track_metadata();
+    }
+
+    fn handle_song_moved(&self, source_index: usize, target_index: usize) {
+        if source_index == target_index {
+            return;
+        }
+        let Some(playlist_model) = self.get_playlist_model() else {
+            warn!("No playlist model found");
+            return;
+        };
+        if playlist_model.is_smart() {
+            warn!("Attempted to re-order a smart playlist");
+            return;
+        }
+
+        let mut songs = self.imp().songs.borrow_mut().clone();
+        if source_index >= songs.len() || target_index >= songs.len() {
+            warn!(
+                "Invalid reorder indices: {} -> {} (length: {})",
+                source_index,
+                target_index,
+                songs.len()
+            );
+            return;
+        }
+        let song_being_moved = songs[source_index].clone();
+        let item_id = song_being_moved.id();
+        songs.remove(source_index);
+        songs.insert(target_index, song_being_moved);
+        self.populate_tracks_with_songs(songs);
+
+        // Persist the change
+        let playlist_id = playlist_model.id();
+        let app = self.get_application();
+
+        glib::spawn_future_local(glib::clone!(
+            #[weak(rename_to = playlist_detail)]
+            self,
+            async move {
+                let jellyfin_client = app.jellyfin();
+                match jellyfin_client
+                    .move_playlist_item(&playlist_id, &item_id, target_index as i32)
+                    .await
+                {
+                    Ok(_) => {
+                        log::debug!(
+                            "Successfully moved playlist item '{}' from position {} to {}",
+                            item_id,
+                            source_index,
+                            target_index
+                        );
+                    }
+                    Err(error) => {
+                        log::error!("Failed to move playlist item: {}", error);
+                        playlist_detail.toast("Failed to save playlist order.", None);
+                        // Revert to server state
+                        playlist_detail.pull_tracks();
+                    }
+                }
+            }
+        ));
     }
 
     pub fn song_selected(&self, index: usize) {
