@@ -92,21 +92,49 @@ impl Song {
         drop_target.connect_enter(glib::clone!(
             #[weak(rename_to = target_song)]
             self,
+            #[weak(rename_to = dt)]
+            drop_target,
             #[upgrade_or]
             DragAction::empty(),
             move |_, _, _| {
                 target_song.grab_focus();
+
                 glib::idle_add_local_once(glib::clone!(
                     #[weak]
                     target_song,
+                    #[weak]
+                    dt,
                     move || {
                         if let Some(listbox) = target_song
                             .parent()
                             .and_then(|p| p.downcast::<gtk::ListBox>().ok())
                         {
                             let current_index = target_song.index();
+                            // Since we use set_preload(true), try to get the value directly
+                            if let Some(value) = dt.value()
+                                && let Ok(source_song) = value.get::<Song>()
+                            {
+                                let source_index = source_song.index();
 
-                            // Try to focus the next widget to ensure it's visible
+                                // Determine scroll direction based on drag direction
+                                if source_index > current_index {
+                                    // Dragging from below to above - scroll up (focus previous)
+                                    if let Some(prev_row) =
+                                        listbox.row_at_index(current_index.saturating_sub(1))
+                                    {
+                                        prev_row.grab_focus();
+                                    }
+                                } else if source_index < current_index {
+                                    // Dragging from above to below - scroll down (focus next)
+                                    if let Some(next_row) = listbox.row_at_index(current_index + 1)
+                                    {
+                                        next_row.grab_focus();
+                                    }
+                                }
+                                return;
+                            }
+
+                            // Fallback to the original behavior if we can't get source info
                             if let Some(next_row) = listbox.row_at_index(current_index + 1) {
                                 next_row.grab_focus();
                             }
