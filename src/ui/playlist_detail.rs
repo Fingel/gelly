@@ -2,7 +2,7 @@ use crate::{
     jellyfin::{JellyfinError, api::MusicDto, utils::format_duration},
     library_utils::songs_for_playlist,
     models::{PlaylistModel, SongModel},
-    ui::{song::Song, widget_ext::WidgetApplicationExt},
+    ui::{drag_scrollable::DragScrollable, song::Song, widget_ext::WidgetApplicationExt},
 };
 use glib::Object;
 use gtk::{gio, glib, prelude::*, subclass::prelude::*};
@@ -156,6 +156,7 @@ impl PlaylistDetail {
         songs.insert(target_index, song_being_moved);
         self.imp().songs.replace(songs);
 
+        // We do this instead of re-drawing all widgets to avoid the jump in scroll.
         let track_list = &self.imp().track_list;
         if let Some(source_row) = track_list.row_at_index(source_index as i32) {
             // Remove and reinsert the widget
@@ -294,6 +295,7 @@ mod imp {
         pub playlist_model: RefCell<Option<PlaylistModel>>,
         pub songs: RefCell<Vec<SongModel>>,
         pub song_change_signal_connected: Cell<bool>,
+        pub last_drag_focused: Cell<Option<i32>>,
     }
 
     #[glib::object_subclass]
@@ -346,5 +348,15 @@ mod imp {
                 }
             ));
         }
+    }
+}
+
+impl DragScrollable for PlaylistDetail {
+    fn get_last_drag_focused(&self) -> Option<i32> {
+        self.imp().last_drag_focused.get()
+    }
+
+    fn set_last_drag_focused(&self, index: Option<i32>) {
+        self.imp().last_drag_focused.set(index);
     }
 }

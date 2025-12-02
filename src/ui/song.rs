@@ -8,8 +8,10 @@ use gtk::{
 };
 
 use crate::{
-    audio::model::AudioModel, jellyfin::utils::format_duration, models::SongModel,
-    ui::widget_ext::WidgetApplicationExt,
+    audio::model::AudioModel,
+    jellyfin::utils::format_duration,
+    models::SongModel,
+    ui::{drag_scrollable, widget_ext::WidgetApplicationExt},
 };
 
 glib::wrapper! {
@@ -88,12 +90,9 @@ impl Song {
         let drop_target = DropTarget::new(Song::static_type(), DragAction::MOVE);
         drop_target.set_preload(true); // deserialize data immediately over drop zone, fine for song lists
         // For auto scrolling
-        // TODO: This seems like a giant hack
         drop_target.connect_enter(glib::clone!(
             #[weak(rename_to = target_song)]
             self,
-            #[weak(rename_to = dt)]
-            drop_target,
             #[upgrade_or]
             DragAction::empty(),
             move |_, _, _| {
@@ -102,43 +101,9 @@ impl Song {
                 glib::idle_add_local_once(glib::clone!(
                     #[weak]
                     target_song,
-                    #[weak]
-                    dt,
                     move || {
-                        if let Some(listbox) = target_song
-                            .parent()
-                            .and_then(|p| p.downcast::<gtk::ListBox>().ok())
-                        {
-                            let current_index = target_song.index();
-                            // Since we use set_preload(true), try to get the value directly
-                            if let Some(value) = dt.value()
-                                && let Ok(source_song) = value.get::<Song>()
-                            {
-                                let source_index = source_song.index();
-
-                                // Determine scroll direction based on drag direction
-                                if source_index > current_index {
-                                    // Dragging from below to above - scroll up (focus previous)
-                                    if let Some(prev_row) =
-                                        listbox.row_at_index(current_index.saturating_sub(1))
-                                    {
-                                        prev_row.grab_focus();
-                                    }
-                                } else if source_index < current_index {
-                                    // Dragging from above to below - scroll down (focus next)
-                                    if let Some(next_row) = listbox.row_at_index(current_index + 1)
-                                    {
-                                        next_row.grab_focus();
-                                    }
-                                }
-                                return;
-                            }
-
-                            // Fallback to the original behavior if we can't get source info
-                            if let Some(next_row) = listbox.row_at_index(current_index + 1) {
-                                next_row.grab_focus();
-                            }
-                        }
+                        // Here be dragons, venture into this module at your own peril
+                        drag_scrollable::handle_drag_scroll(&target_song);
                     }
                 ));
                 DragAction::MOVE
@@ -151,6 +116,8 @@ impl Song {
             #[upgrade_or]
             false,
             move |_, value, _, _| {
+                drag_scrollable::clear_drag_state(&target_song);
+
                 if let Ok(source_song) = value.get::<Song>() {
                     let source_index = source_song.index() as usize;
                     let target_index = target_song.index() as usize;
@@ -162,6 +129,7 @@ impl Song {
                 false
             }
         ));
+
         self.add_controller(drop_target);
     }
 
