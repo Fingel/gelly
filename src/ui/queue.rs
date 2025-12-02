@@ -1,4 +1,4 @@
-use crate::ui::{song::Song, widget_ext::WidgetApplicationExt};
+use crate::ui::{drag_scrollable::DragScrollable, song::Song, widget_ext::WidgetApplicationExt};
 use glib::Object;
 use gtk::{gio, glib, prelude::*, subclass::prelude::*};
 use log::warn;
@@ -24,18 +24,65 @@ impl Queue {
                 self.set_empty(false);
                 let current_track = audio_model.current_song_id();
                 for track in &tracks {
-                    let song_widget = Song::new();
+                    let song_widget = Song::new_with_dnd();
                     song_widget.set_song_data(track);
                     self.imp().track_list.append(&song_widget);
                     song_widget.show_details();
                     if track.id() == current_track {
                         song_widget.set_playing(true);
                     }
+                    song_widget.connect_closure(
+                        "widget-moved",
+                        false,
+                        glib::closure_local!(
+                            #[weak(rename_to= queue)]
+                            self,
+                            move |song_widget: Song, source_index: i32| {
+                                let target_index = song_widget.index() as usize;
+                                let source_index = source_index as usize;
+                                queue.handle_song_moved(source_index, target_index)
+                            }
+                        ),
+                    );
                 }
             }
         } else {
             self.toast("Audio model not initialized, please restart", None);
             warn!("No audio model found");
+        }
+    }
+
+    fn handle_song_moved(&self, source_index: usize, target_index: usize) {
+        if source_index == target_index {
+            return;
+        }
+        let Some(audio_model) = self.get_application().audio_model() else {
+            warn!("No audio model found");
+            return;
+        };
+        let mut songs = audio_model.queue();
+        if source_index >= songs.len() || target_index >= songs.len() {
+            warn!(
+                "Invalid reorder indices: {} -> {} (length: {})",
+                source_index,
+                target_index,
+                songs.len()
+            );
+            return;
+        }
+        let song_being_moved = songs[source_index].clone();
+        songs.remove(source_index);
+        songs.insert(target_index, song_being_moved);
+        audio_model.replace_queue(songs);
+        if source_index == audio_model.queue_index() as usize {
+            audio_model.set_queue_index(target_index as i32);
+        }
+
+        let track_list = &self.imp().track_list;
+        if let Some(source_row) = track_list.row_at_index(source_index as i32) {
+            // Remove and reinsert the widget
+            track_list.remove(&source_row);
+            track_list.insert(&source_row, target_index as i32);
         }
     }
 
@@ -65,6 +112,8 @@ impl Default for Queue {
 }
 
 mod imp {
+    use std::cell::Cell;
+
     use adw::subclass::prelude::*;
     use glib::subclass::InitializingObject;
     use gtk::{
@@ -84,6 +133,8 @@ mod imp {
         pub queue_box: TemplateChild<gtk::Box>,
         #[template_child]
         pub clear_queue: TemplateChild<gtk::Button>,
+
+        pub last_drag_focused: Cell<Option<i32>>,
     }
 
     #[glib::object_subclass]
@@ -136,5 +187,15 @@ mod imp {
                 }
             ));
         }
+    }
+}
+
+impl DragScrollable for Queue {
+    fn get_last_drag_focused(&self) -> Option<i32> {
+        self.imp().last_drag_focused.get()
+    }
+
+    fn set_last_drag_focused(&self, index: Option<i32>) {
+        self.imp().last_drag_focused.set(index);
     }
 }

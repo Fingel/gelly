@@ -109,6 +109,10 @@ impl AudioModel {
         }
     }
 
+    pub fn replace_queue(&self, songs: Vec<SongModel>) {
+        self.imp().queue.replace(songs);
+    }
+
     pub fn append_to_queue(&self, songs: Vec<SongModel>) {
         self.imp().queue.borrow_mut().extend(songs);
         let current_index = self.queue_index();

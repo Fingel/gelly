@@ -75,13 +75,12 @@ pub fn find_drag_scrollable_ancestor(
         return Some(Box::new(playlist_detail));
     }
 
-    // Add Queue when ready
-    // if let Some(queue) = widget
-    //     .ancestor(crate::ui::queue::Queue::static_type())
-    //     .and_then(|w| w.downcast::<crate::ui::queue::Queue>().ok())
-    // {
-    //     return Some(Box::new(queue));
-    // }
+    if let Some(queue) = widget
+        .ancestor(crate::ui::queue::Queue::static_type())
+        .and_then(|w| w.downcast::<crate::ui::queue::Queue>().ok())
+    {
+        return Some(Box::new(queue));
+    }
 
     None
 }
