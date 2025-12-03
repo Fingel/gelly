@@ -104,3 +104,11 @@ pub fn play_artist(id: &str, app: &Application) {
         log::warn!("No audio model found");
     }
 }
+
+pub fn find_song(id: &str, app: &Application) -> Option<SongModel> {
+    app.library()
+        .borrow()
+        .iter()
+        .find(|song| song.id == id)
+        .map(SongModel::from)
+}

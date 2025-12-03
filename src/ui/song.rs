@@ -10,6 +10,7 @@ use gtk::{
 use crate::{
     audio::model::AudioModel,
     jellyfin::utils::format_duration,
+    library_utils::find_song,
     models::SongModel,
     ui::{drag_scrollable, widget_ext::WidgetApplicationExt},
 };
@@ -25,9 +26,10 @@ impl Song {
         Object::builder().build()
     }
 
-    pub fn new_with(dnd: bool, in_playlist: bool) -> Self {
+    pub fn new_with(dnd: bool, in_playlist: bool, in_queue: bool) -> Self {
         let song: Self = Object::builder()
             .property("in-playlist", in_playlist)
+            .property("in-queue", in_queue)
             .build();
         if dnd {
             song.setup_drag_and_drop();
@@ -186,14 +188,16 @@ impl Song {
 
     fn create_menu_model(&self) -> gio::Menu {
         let in_playlist = self.imp().in_playlist.get();
+        let in_queue = self.imp().in_queue.get();
         let menu = gio::Menu::new();
 
         // Queue section
-        let queue_section = gio::Menu::new();
-        queue_section.append(Some("Queue Next"), Some("song.queue_next"));
-        queue_section.append(Some("Queue Last"), Some("song.queue_last"));
-        menu.append_section(None, &queue_section);
-
+        if !in_queue {
+            let queue_section = gio::Menu::new();
+            queue_section.append(Some("Queue Next"), Some("song.queue_next"));
+            queue_section.append(Some("Queue Last"), Some("song.queue_last"));
+            menu.append_section(None, &queue_section);
+        }
         // Playlist section
         let playlist_section = gio::Menu::new();
         playlist_section.append(Some("Add to Playlist…"), Some("song.add_playlist"));
@@ -269,13 +273,23 @@ impl Song {
 
     fn on_queue_next(&self) {
         if let Some(song_id) = self.imp().item_id.borrow().clone() {
-            self.emit_by_name::<()>("queue-next-requested", &[&song_id]);
+            let app = self.get_application();
+            if let Some(audio_model) = app.audio_model()
+                && let Some(song) = find_song(&song_id, &app)
+            {
+                audio_model.prepend_to_queue(vec![song]);
+            }
         }
     }
 
     fn on_queue_last(&self) {
         if let Some(song_id) = self.imp().item_id.borrow().clone() {
-            self.emit_by_name::<()>("queue-last-requested", &[&song_id]);
+            let app = self.get_application();
+            if let Some(audio_model) = app.audio_model()
+                && let Some(song) = find_song(&song_id, &app)
+            {
+                audio_model.append_to_queue(vec![song]);
+            }
         }
     }
 }
@@ -321,10 +335,12 @@ mod imp {
         #[template_child]
         pub song_menu: TemplateChild<gtk::MenuButton>,
 
-        pub item_id: RefCell<Option<String>>,
+        pub item_id: RefCell<Option<String>>, // TODO: Why is this an option?
 
         #[property(get, construct_only, name = "in-playlist", default = false)]
         pub in_playlist: Cell<bool>,
+        #[property(get, construct_only, name = "in-queue", default = false)]
+        pub in_queue: Cell<bool>,
 
         #[property(get, construct_only, name = "is-ghost", default = false)]
         pub is_ghost: Cell<bool>,

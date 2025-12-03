@@ -92,6 +92,12 @@ impl AudioPlayer {
         }
     }
 
+    pub fn is_playing(&self) -> bool {
+        let (state_result, current_state, _pending_state) =
+            self.pipeline.state(gst::ClockTime::ZERO);
+        state_result.is_ok() && current_state == gst::State::Playing
+    }
+
     pub fn get_position(&self) -> Option<u64> {
         self.pipeline
             .query_position::<gst::ClockTime>()
