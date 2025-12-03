@@ -17,7 +17,7 @@ use crate::{
 glib::wrapper! {
     pub struct Song(ObjectSubclass<imp::Song>)
     @extends gtk::Widget, gtk::ListBoxRow,
-        @implements gio::ActionMap, gio::ActionGroup, gtk::Accessible, gtk::Buildable, gtk::ConstraintTarget, gtk::Actionable;
+        @implements gtk::Accessible, gtk::Buildable, gtk::ConstraintTarget, gtk::Actionable;
 }
 
 impl Song {
@@ -25,9 +25,13 @@ impl Song {
         Object::builder().build()
     }
 
-    pub fn new_with_dnd() -> Self {
-        let song = Self::new();
-        song.setup_drag_and_drop();
+    pub fn new_with(dnd: bool, in_playlist: bool) -> Self {
+        let song: Self = Object::builder()
+            .property("in-playlist", in_playlist)
+            .build();
+        if dnd {
+            song.setup_drag_and_drop();
+        }
         song
     }
 
@@ -58,7 +62,6 @@ impl Song {
         let imp = self.imp();
         imp.artist_label.set_visible(true);
         imp.album_label.set_visible(true);
-        imp.song_actions_box.set_visible(true);
     }
 
     pub fn setup_drag_and_drop(&self) {
@@ -172,6 +175,109 @@ impl Song {
             );
         }
     }
+
+    fn setup_menu(&self) {
+        let menu_model = self.create_menu_model();
+        let popover_menu = gtk::PopoverMenu::from_model(Some(&menu_model));
+        self.imp().song_menu.set_popover(Some(&popover_menu));
+
+        self.setup_actions();
+    }
+
+    fn create_menu_model(&self) -> gio::Menu {
+        let in_playlist = self.imp().in_playlist.get();
+        let menu = gio::Menu::new();
+
+        // Queue section
+        let queue_section = gio::Menu::new();
+        queue_section.append(Some("Queue Next"), Some("song.queue_next"));
+        queue_section.append(Some("Queue Last"), Some("song.queue_last"));
+        menu.append_section(None, &queue_section);
+
+        // Playlist section
+        let playlist_section = gio::Menu::new();
+        playlist_section.append(Some("Add to Playlist…"), Some("song.add_playlist"));
+
+        // Only add "Remove from Playlist" if we're actually in a playlist
+        if in_playlist {
+            playlist_section.append(Some("Remove from Playlist"), Some("song.remove_playlist"));
+        }
+
+        menu.append_section(None, &playlist_section);
+
+        menu
+    }
+
+    fn setup_actions(&self) {
+        let action_group = gio::SimpleActionGroup::new();
+
+        let add_playlist_action = gio::SimpleAction::new("add_playlist", None);
+        add_playlist_action.connect_activate(glib::clone!(
+            #[weak(rename_to = song)]
+            self,
+            move |_, _| {
+                song.on_add_to_playlist();
+            }
+        ));
+        action_group.add_action(&add_playlist_action);
+
+        let remove_playlist_action = gio::SimpleAction::new("remove_playlist", None);
+        remove_playlist_action.connect_activate(glib::clone!(
+            #[weak(rename_to = song)]
+            self,
+            move |_, _| {
+                song.on_remove_from_playlist();
+            }
+        ));
+        action_group.add_action(&remove_playlist_action);
+
+        let queue_next_action = gio::SimpleAction::new("queue_next", None);
+        queue_next_action.connect_activate(glib::clone!(
+            #[weak(rename_to = song)]
+            self,
+            move |_, _| {
+                song.on_queue_next();
+            }
+        ));
+        action_group.add_action(&queue_next_action);
+
+        let queue_last_action = gio::SimpleAction::new("queue_last", None);
+        queue_last_action.connect_activate(glib::clone!(
+            #[weak(rename_to = song)]
+            self,
+            move |_, _| {
+                song.on_queue_last();
+            }
+        ));
+        action_group.add_action(&queue_last_action);
+
+        self.insert_action_group("song", Some(&action_group));
+    }
+
+    fn on_add_to_playlist(&self) {
+        if let Some(song_id) = self.imp().item_id.borrow().clone() {
+            self.emit_by_name::<()>("add-to-playlist-requested", &[&song_id]);
+        }
+    }
+
+    fn on_remove_from_playlist(&self) {
+        if let Some(song_id) = self.imp().item_id.borrow().clone() {
+            dbg!("remove from playlist");
+            self.emit_by_name::<()>("remove-from-playlist-requested", &[&song_id]);
+        }
+    }
+
+    fn on_queue_next(&self) {
+        if let Some(song_id) = self.imp().item_id.borrow().clone() {
+            self.emit_by_name::<()>("queue-next-requested", &[&song_id]);
+        }
+    }
+
+    fn on_queue_last(&self) {
+        if let Some(song_id) = self.imp().item_id.borrow().clone() {
+            self.emit_by_name::<()>("queue-last-requested", &[&song_id]);
+        }
+    }
 }
 
 impl Default for Song {
@@ -213,9 +319,12 @@ mod imp {
         #[template_child]
         pub drag_handle_box: TemplateChild<gtk::Box>,
         #[template_child]
-        pub song_actions_box: TemplateChild<gtk::Box>,
+        pub song_menu: TemplateChild<gtk::MenuButton>,
 
         pub item_id: RefCell<Option<String>>,
+
+        #[property(get, construct_only, name = "in-playlist", default = false)]
+        pub in_playlist: Cell<bool>,
 
         #[property(get, construct_only, name = "is-ghost", default = false)]
         pub is_ghost: Cell<bool>,
@@ -245,12 +354,25 @@ mod imp {
                     Signal::builder("widget-moved")
                         .param_types([i32::static_type()])
                         .build(),
+                    Signal::builder("add-to-playlist-requested")
+                        .param_types([String::static_type()])
+                        .build(),
+                    Signal::builder("remove-from-playlist-requested")
+                        .param_types([String::static_type()])
+                        .build(),
+                    Signal::builder("queue-next-requested")
+                        .param_types([String::static_type()])
+                        .build(),
+                    Signal::builder("queue-last-requested")
+                        .param_types([String::static_type()])
+                        .build(),
                 ]
             })
         }
 
         fn constructed(&self) {
             self.parent_constructed();
+            self.obj().setup_menu();
             self.obj().connect_map(glib::clone!(
                 #[weak(rename_to = song)]
                 self.obj(),

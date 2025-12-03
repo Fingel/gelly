@@ -92,7 +92,7 @@ impl PlaylistDetail {
             let song_widget = if is_smart_playlist {
                 Song::new()
             } else {
-                let song_widget = Song::new_with_dnd();
+                let song_widget = Song::new_with(true, true);
                 song_widget.connect_closure(
                     "widget-moved",
                     false,

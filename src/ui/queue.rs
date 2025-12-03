@@ -24,7 +24,7 @@ impl Queue {
                 self.set_empty(false);
                 let current_track = audio_model.current_song_id();
                 for track in &tracks {
-                    let song_widget = Song::new_with_dnd();
+                    let song_widget = Song::new_with(true, false);
                     song_widget.set_song_data(track);
                     self.imp().track_list.append(&song_widget);
                     song_widget.show_details();

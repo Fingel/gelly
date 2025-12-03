@@ -114,9 +114,8 @@
         <child>
           <object class="GtkBox" id="song_actions_box">
             <property name="margin-start">6</property>
-            <property name="visible">False</property>
             <child>
-              <object class="GtkButton" id="song_menu">
+              <object class="GtkMenuButton" id="song_menu">
                 <property name="icon-name">view-more-symbolic</property>
                 <style>
                   <class name="flat"/>
