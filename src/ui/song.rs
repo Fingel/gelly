@@ -260,14 +260,14 @@ impl Song {
 
     fn on_add_to_playlist(&self) {
         if let Some(song_id) = self.imp().item_id.borrow().clone() {
-            self.emit_by_name::<()>("add-to-playlist-requested", &[&song_id]);
+            self.emit_by_name::<()>("add-to-playlist", &[&song_id]);
         }
     }
 
     fn on_remove_from_playlist(&self) {
         if let Some(song_id) = self.imp().item_id.borrow().clone() {
             dbg!("remove from playlist");
-            self.emit_by_name::<()>("remove-from-playlist-requested", &[&song_id]);
+            self.emit_by_name::<()>("remove-from-playlist", &[&song_id]);
         }
     }
 
@@ -370,16 +370,10 @@ mod imp {
                     Signal::builder("widget-moved")
                         .param_types([i32::static_type()])
                         .build(),
-                    Signal::builder("add-to-playlist-requested")
+                    Signal::builder("add-to-playlist")
                         .param_types([String::static_type()])
                         .build(),
-                    Signal::builder("remove-from-playlist-requested")
-                        .param_types([String::static_type()])
-                        .build(),
-                    Signal::builder("queue-next-requested")
-                        .param_types([String::static_type()])
-                        .build(),
-                    Signal::builder("queue-last-requested")
+                    Signal::builder("remove-from-playlist")
                         .param_types([String::static_type()])
                         .build(),
                 ]

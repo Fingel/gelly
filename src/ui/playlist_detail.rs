@@ -106,6 +106,18 @@ impl PlaylistDetail {
                         }
                     ),
                 );
+                song_widget.connect_closure(
+                    "remove-from-playlist",
+                    false,
+                    glib::closure_local!(
+                        #[weak(rename_to= playlist_detail)]
+                        self,
+                        move |_: Song, song_id: String| {
+                            playlist_detail.handle_remove_from_playlist(song_id)
+                            // TODO: trigger application refresh of playlists
+                        }
+                    ),
+                );
                 song_widget
             };
             // we don't want the track number here, we want the playlist index
@@ -195,6 +207,56 @@ impl PlaylistDetail {
                 }
             }
         ));
+    }
+
+    fn handle_remove_from_playlist(&self, song_id: String) {
+        let Some(playlist_model) = self.get_playlist_model() else {
+            warn!("No playlist model found");
+            return;
+        };
+        if playlist_model.is_smart() {
+            warn!("Attempted to re-order a smart playlist");
+            return;
+        }
+        let mut songs = self.imp().songs.borrow_mut().clone();
+        if let Some(index) = songs.iter().position(|s| s.id() == song_id) {
+            songs.remove(index);
+            self.imp().songs.replace(songs);
+            let track_list = &self.imp().track_list;
+            if let Some(source_row) = track_list.row_at_index(index as i32) {
+                track_list.remove(&source_row);
+            }
+            self.update_all_track_numbers();
+            // Persist the change
+            let playlist_id = playlist_model.id();
+            let app = self.get_application();
+
+            glib::spawn_future_local(glib::clone!(
+                #[weak(rename_to = playlist_detail)]
+                self,
+                async move {
+                    let jellyfin_client = app.jellyfin();
+                    match jellyfin_client
+                        .remove_playlist_item(&playlist_id, &song_id)
+                        .await
+                    {
+                        Ok(_) => {
+                            log::debug!(
+                                "Sucessfully removed {} from playlist {}",
+                                song_id,
+                                playlist_id
+                            );
+                        }
+                        Err(error) => {
+                            log::error!("Failed to remove song from playlist: {}", error);
+                            playlist_detail.toast("Failed to modify playlist.", None);
+                            // Revert to server state
+                            playlist_detail.pull_tracks();
+                        }
+                    }
+                }
+            ));
+        }
     }
 
     fn update_all_track_numbers(&self) {
