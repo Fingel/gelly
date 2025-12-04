@@ -2,7 +2,11 @@ use crate::{
     jellyfin::{JellyfinError, api::MusicDto, utils::format_duration},
     library_utils::songs_for_playlist,
     models::{PlaylistModel, SongModel},
-    ui::{drag_scrollable::DragScrollable, song::Song, widget_ext::WidgetApplicationExt},
+    ui::{
+        drag_scrollable::DragScrollable,
+        song::{Song, SongOptions},
+        widget_ext::WidgetApplicationExt,
+    },
 };
 use glib::Object;
 use gtk::{gio, glib, prelude::*, subclass::prelude::*};
@@ -92,7 +96,11 @@ impl PlaylistDetail {
             let song_widget = if is_smart_playlist {
                 Song::new()
             } else {
-                let song_widget = Song::new_with(true, true, false);
+                let song_widget = Song::new_with(SongOptions {
+                    dnd: true,
+                    in_playlist: true,
+                    in_queue: false,
+                });
                 song_widget.connect_closure(
                     "widget-moved",
                     false,

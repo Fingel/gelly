@@ -21,17 +21,23 @@ glib::wrapper! {
         @implements gtk::Accessible, gtk::Buildable, gtk::ConstraintTarget, gtk::Actionable;
 }
 
+pub struct SongOptions {
+    pub dnd: bool,
+    pub in_playlist: bool,
+    pub in_queue: bool,
+}
+
 impl Song {
     pub fn new() -> Self {
         Object::builder().build()
     }
 
-    pub fn new_with(dnd: bool, in_playlist: bool, in_queue: bool) -> Self {
+    pub fn new_with(options: SongOptions) -> Self {
         let song: Self = Object::builder()
-            .property("in-playlist", in_playlist)
-            .property("in-queue", in_queue)
+            .property("in-playlist", options.in_playlist)
+            .property("in-queue", options.in_queue)
             .build();
-        if dnd {
+        if options.dnd {
             song.setup_drag_and_drop();
         }
         song
