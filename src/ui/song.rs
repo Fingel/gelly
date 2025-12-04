@@ -301,7 +301,8 @@ impl Song {
             return;
         };
 
-        let jellyfin = self.get_application().jellyfin();
+        let app = self.get_application();
+        let jellyfin = app.jellyfin();
         let playlist_id = playlist_id.to_string();
         spawn_tokio(
             async move { jellyfin.add_playlist_item(&playlist_id, &song_id).await },
@@ -312,6 +313,7 @@ impl Song {
                     match result {
                         Ok(()) => {
                             song.toast("Added song to playlist", None);
+                            app.refresh_playlists(true);
                         }
                         Err(e) => {
                             song.toast("Failed to add song to playlist", None);

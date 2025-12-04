@@ -67,7 +67,7 @@ impl PlaylistList {
     pub fn setup_library_connection(&self) {
         let app = self.get_application();
         app.connect_closure(
-            "library-refreshed",
+            "playlists-refreshed",
             false,
             glib::closure_local!(
                 #[weak(rename_to = playlist_list)]

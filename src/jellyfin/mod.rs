@@ -207,14 +207,13 @@ impl Jellyfin {
     }
 
     pub async fn get_playlists(&self, refresh: bool) -> Result<PlaylistDtoList, JellyfinError> {
+        // TODO caching should probably be done in the application layer
         if !refresh
             && let Ok(cached_data) = self.cache.load_from_disk("playlists.json")
             && let Ok(playlist_list) = serde_json::from_slice::<PlaylistDtoList>(&cached_data)
         {
             debug!("Loaded playlists from cache");
             return Ok(playlist_list);
-        } else {
-            warn!("Could not load playlists from cache");
         }
 
         let params = vec![

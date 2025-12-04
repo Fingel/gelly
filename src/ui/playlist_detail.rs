@@ -1,4 +1,5 @@
 use crate::{
+    async_utils::spawn_tokio,
     jellyfin::{JellyfinError, api::MusicDto, utils::format_duration},
     library_utils::songs_for_playlist,
     models::{PlaylistModel, SongModel},
@@ -122,7 +123,6 @@ impl PlaylistDetail {
                         self,
                         move |_: Song, song_id: String| {
                             playlist_detail.handle_remove_from_playlist(song_id)
-                            // TODO: trigger application refresh of playlists
                         }
                     ),
                 );
@@ -235,35 +235,33 @@ impl PlaylistDetail {
                 track_list.remove(&source_row);
             }
             self.update_all_track_numbers();
+            self.update_track_metadata();
             // Persist the change
             let playlist_id = playlist_model.id();
             let app = self.get_application();
+            let jellyfin = app.jellyfin();
 
-            glib::spawn_future_local(glib::clone!(
-                #[weak(rename_to = playlist_detail)]
-                self,
-                async move {
-                    let jellyfin_client = app.jellyfin();
-                    match jellyfin_client
-                        .remove_playlist_item(&playlist_id, &song_id)
-                        .await
-                    {
-                        Ok(_) => {
-                            log::debug!(
-                                "Sucessfully removed {} from playlist {}",
-                                song_id,
-                                playlist_id
-                            );
-                        }
-                        Err(error) => {
-                            log::error!("Failed to remove song from playlist: {}", error);
-                            playlist_detail.toast("Failed to modify playlist.", None);
-                            // Revert to server state
-                            playlist_detail.pull_tracks();
+            spawn_tokio(
+                async move { jellyfin.remove_playlist_item(&playlist_id, &song_id).await },
+                glib::clone!(
+                    #[weak(rename_to = playlist_detail)]
+                    self,
+                    move |result| {
+                        match result {
+                            Ok(_) => {
+                                log::debug!("Successfully removed item from playlist");
+                                app.refresh_playlists(true);
+                            }
+                            Err(error) => {
+                                log::error!("Failed to remove song from playlist: {}", error);
+                                playlist_detail.toast("Failed to modify playlist.", None);
+                                // Revert to server state
+                                playlist_detail.pull_tracks();
+                            }
                         }
                     }
-                }
-            ));
+                ),
+            );
         }
     }
 
