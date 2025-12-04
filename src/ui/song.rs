@@ -77,6 +77,7 @@ impl Song {
     pub fn setup_drag_and_drop(&self) {
         let imp = self.imp();
         imp.drag_handle_box.set_visible(true);
+        imp.drag_handle.set_cursor_from_name(Some("grab"));
         let drag_source = DragSource::new();
 
         // Drag Source
@@ -187,11 +188,9 @@ impl Song {
     }
 
     fn setup_menu(&self) {
+        // We want to populate the menu lazily so playlists are always up to date
         let empty_menu = gio::Menu::new();
         let popover_menu = gtk::PopoverMenu::from_model(Some(&empty_menu));
-        // TODO: do we need this? or can we connect to the song_menu button itself
-        // and create the menu lazily without an empty one first?
-        // We want to populate the menu lazily so playlists are always up to date
         popover_menu.connect_show(glib::clone!(
             #[weak(rename_to=song)]
             self,
@@ -392,6 +391,8 @@ mod imp {
         pub playing_icon: TemplateChild<gtk::Image>,
         #[template_child]
         pub drag_handle_box: TemplateChild<gtk::Box>,
+        #[template_child]
+        pub drag_handle: TemplateChild<gtk::Image>,
         #[template_child]
         pub song_menu: TemplateChild<gtk::MenuButton>,
 

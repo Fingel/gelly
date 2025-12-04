@@ -12,7 +12,7 @@
           <object class="GtkBox" id="drag_handle_box">
             <property name="visible">false</property>
             <child>
-              <object class="GtkImage" id="drag-handle">
+              <object class="GtkImage" id="drag_handle">
                 <property name="icon-name">list-drag-handle-symbolic</property>
                 <style>
                   <class name="dim-label"/>
