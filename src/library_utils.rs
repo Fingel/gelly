@@ -56,14 +56,6 @@ pub fn songs_for_album(album_id: &str, library: &[MusicDto]) -> Vec<SongModel> {
     tracks
 }
 
-pub fn songs_for_ids(ids: Vec<String>, library: &[MusicDto]) -> Vec<MusicDto> {
-    library
-        .iter()
-        .filter(|dto| ids.contains(&dto.id))
-        .cloned()
-        .collect()
-}
-
 pub fn shuffle_songs(library: &[MusicDto], num: u64) -> Vec<MusicDto> {
     let mut rng = rand::rng();
     let chosen = library.choose_multiple(&mut rng, num as usize);
@@ -111,4 +103,12 @@ pub fn play_artist(id: &str, app: &Application) {
     } else {
         log::warn!("No audio model found");
     }
+}
+
+pub fn find_song(id: &str, app: &Application) -> Option<SongModel> {
+    app.library()
+        .borrow()
+        .iter()
+        .find(|song| song.id == id)
+        .map(SongModel::from)
 }

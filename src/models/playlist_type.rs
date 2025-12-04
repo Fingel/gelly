@@ -1,6 +1,6 @@
 use crate::{
     jellyfin::{Jellyfin, JellyfinError, api::MusicDto},
-    library_utils::{shuffle_songs, songs_for_ids},
+    library_utils::shuffle_songs,
 };
 
 pub const DEFAULT_SMART_COUNT: u64 = 100;
@@ -53,8 +53,7 @@ impl PlaylistType {
         match self {
             PlaylistType::Regular => {
                 let playlist_items = jellyfin.get_playlist_items(playlist_id).await?;
-                let songs = songs_for_ids(playlist_items.item_ids, library);
-                Ok(songs)
+                Ok(playlist_items.items)
             }
             PlaylistType::ShuffleLibrary { count } => {
                 let songs = shuffle_songs(library, *count);

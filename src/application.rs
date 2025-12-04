@@ -138,41 +138,48 @@ impl Application {
         let library_id = self.imp().library_id.borrow().clone();
         let jellyfin = self.jellyfin();
         spawn_tokio(
-            async move {
-                let (library_result, playlist_result) = futures::future::join(
-                    jellyfin.get_library(&library_id, refresh),
-                    jellyfin.get_playlists(refresh),
-                )
-                .await;
-                (library_result, playlist_result)
-            },
+            async move { jellyfin.get_library(&library_id, refresh).await },
             glib::clone!(
                 #[weak(rename_to=app)]
                 self,
-                move |results: (
-                    Result<MusicDtoList, JellyfinError>,
-                    Result<PlaylistDtoList, JellyfinError>
-                )| {
-                    let (library_result, playlist_result) = results;
-                    let mut library_cnt = 0u64;
-                    match library_result {
+                move |result: Result<MusicDtoList, JellyfinError>| {
+                    match result {
                         Ok(library) => {
-                            library_cnt = library.items.len() as u64;
+                            let library_cnt = library.items.len() as u64;
                             app.imp().library.replace(library.items);
+                            app.emit_by_name::<()>("library-refreshed", &[&library_cnt]);
                         }
                         Err(err) => app.handle_jellyfin_error(err, "refresh_library"),
                     }
-                    match playlist_result {
-                        Ok(playlists) => {
-                            app.imp().playlists.replace(playlists.items);
-                        }
-                        Err(err) => app.handle_jellyfin_error(err, "refresh_playlists"),
-                    }
-
-                    app.emit_by_name::<()>("library-refreshed", &[&library_cnt]);
                 },
             ),
         );
+    }
+
+    pub fn refresh_playlists(&self, refresh_cache: bool) {
+        let jellyfin = self.jellyfin();
+        spawn_tokio(
+            async move { jellyfin.get_playlists(refresh_cache).await },
+            glib::clone!(
+                #[weak(rename_to=app)]
+                self,
+                move |result: Result<PlaylistDtoList, JellyfinError>| {
+                    match result {
+                        Ok(playlists) => {
+                            let playlist_cnt = playlists.items.len() as u64;
+                            app.imp().playlists.replace(playlists.items);
+                            app.emit_by_name::<()>("playlists-refreshed", &[&playlist_cnt]);
+                        }
+                        Err(err) => app.handle_jellyfin_error(err, "refresh_playlists"),
+                    }
+                }
+            ),
+        )
+    }
+
+    pub fn refresh_all(&self, refresh_cache: bool) {
+        self.refresh_library(refresh_cache);
+        self.refresh_playlists(refresh_cache);
     }
 
     pub fn request_library_rescan(&self) {
@@ -247,6 +254,9 @@ mod imp {
                 vec![
                     Signal::builder("library-refresh-start").build(),
                     Signal::builder("library-refreshed")
+                        .param_types([u64::static_type()])
+                        .build(),
+                    Signal::builder("playlists-refreshed")
                         .param_types([u64::static_type()])
                         .build(),
                     Signal::builder("library-rescan-requested").build(),

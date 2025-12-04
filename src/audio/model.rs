@@ -109,9 +109,27 @@ impl AudioModel {
         }
     }
 
+    pub fn replace_queue(&self, songs: Vec<SongModel>) {
+        self.imp().queue.replace(songs);
+    }
+
     pub fn append_to_queue(&self, songs: Vec<SongModel>) {
         self.imp().queue.borrow_mut().extend(songs);
         let current_index = self.queue_index();
+        self.notify_mpris_can_navigate(true, current_index > 0);
+        if self.imp().shuffle_enabled.get() {
+            self.new_shuffle_cycle();
+        }
+    }
+
+    pub fn prepend_to_queue(&self, songs: Vec<SongModel>) {
+        let current_index = self.imp().queue_index.get();
+        let index = if current_index < 1 && !self.player().is_playing() {
+            0
+        } else {
+            current_index + 1
+        } as usize;
+        self.imp().queue.borrow_mut().splice(index..index, songs);
         self.notify_mpris_can_navigate(true, current_index > 0);
         if self.imp().shuffle_enabled.get() {
             self.new_shuffle_cycle();

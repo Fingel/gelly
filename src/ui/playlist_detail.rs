@@ -1,8 +1,13 @@
 use crate::{
+    async_utils::spawn_tokio,
     jellyfin::{JellyfinError, api::MusicDto, utils::format_duration},
     library_utils::songs_for_playlist,
     models::{PlaylistModel, SongModel},
-    ui::{song::Song, widget_ext::WidgetApplicationExt},
+    ui::{
+        drag_scrollable::DragScrollable,
+        song::{Song, SongOptions},
+        widget_ext::WidgetApplicationExt,
+    },
 };
 use glib::Object;
 use gtk::{gio, glib, prelude::*, subclass::prelude::*};
@@ -82,8 +87,47 @@ impl PlaylistDetail {
     fn populate_tracks_with_songs(&self, songs: Vec<SongModel>) {
         let track_list = &self.imp().track_list;
         track_list.remove_all();
+        // Smart playlists cannot be reordered
+        let is_smart_playlist = self
+            .get_playlist_model()
+            .map(|p| p.is_smart())
+            .unwrap_or(true);
+
         for (i, song) in songs.iter().enumerate() {
-            let song_widget = Song::new();
+            let song_widget = if is_smart_playlist {
+                Song::new()
+            } else {
+                let song_widget = Song::new_with(SongOptions {
+                    dnd: true,
+                    in_playlist: true,
+                    in_queue: false,
+                });
+                song_widget.connect_closure(
+                    "widget-moved",
+                    false,
+                    glib::closure_local!(
+                        #[weak(rename_to= playlist_detail)]
+                        self,
+                        move |song_widget: Song, source_index: i32| {
+                            let target_index = song_widget.index() as usize;
+                            let source_index = source_index as usize;
+                            playlist_detail.handle_song_moved(source_index, target_index)
+                        }
+                    ),
+                );
+                song_widget.connect_closure(
+                    "remove-from-playlist",
+                    false,
+                    glib::closure_local!(
+                        #[weak(rename_to= playlist_detail)]
+                        self,
+                        move |_: Song, song_id: String| {
+                            playlist_detail.handle_remove_from_playlist(song_id)
+                        }
+                    ),
+                );
+                song_widget
+            };
             // we don't want the track number here, we want the playlist index
             song.set_track_number(i as u32 + 1);
             song_widget.set_song_data(song);
@@ -101,6 +145,135 @@ impl PlaylistDetail {
         }
         self.imp().songs.replace(songs);
         self.update_track_metadata();
+    }
+
+    fn handle_song_moved(&self, source_index: usize, target_index: usize) {
+        if source_index == target_index {
+            return;
+        }
+        let Some(playlist_model) = self.get_playlist_model() else {
+            warn!("No playlist model found");
+            return;
+        };
+        if playlist_model.is_smart() {
+            warn!("Attempted to re-order a smart playlist");
+            return;
+        }
+
+        let mut songs = self.imp().songs.borrow_mut().clone();
+        if source_index >= songs.len() || target_index >= songs.len() {
+            warn!(
+                "Invalid reorder indices: {} -> {} (length: {})",
+                source_index,
+                target_index,
+                songs.len()
+            );
+            return;
+        }
+        let song_being_moved = songs[source_index].clone();
+        let item_id = song_being_moved.id();
+        songs.remove(source_index);
+        songs.insert(target_index, song_being_moved);
+        self.imp().songs.replace(songs);
+
+        // We do this instead of re-drawing all widgets to avoid the jump in scroll.
+        let track_list = &self.imp().track_list;
+        if let Some(source_row) = track_list.row_at_index(source_index as i32) {
+            // Remove and reinsert the widget
+            track_list.remove(&source_row);
+            track_list.insert(&source_row, target_index as i32);
+            self.update_all_track_numbers();
+        }
+
+        // Persist the change
+        let playlist_id = playlist_model.id();
+        let app = self.get_application();
+
+        glib::spawn_future_local(glib::clone!(
+            #[weak(rename_to = playlist_detail)]
+            self,
+            async move {
+                let jellyfin_client = app.jellyfin();
+                match jellyfin_client
+                    .move_playlist_item(&playlist_id, &item_id, target_index as i32)
+                    .await
+                {
+                    Ok(_) => {
+                        log::debug!(
+                            "Successfully moved playlist item '{}' from position {} to {}",
+                            item_id,
+                            source_index,
+                            target_index
+                        );
+                    }
+                    Err(error) => {
+                        log::error!("Failed to move playlist item: {}", error);
+                        playlist_detail.toast("Failed to save playlist order.", None);
+                        // Revert to server state
+                        playlist_detail.pull_tracks();
+                    }
+                }
+            }
+        ));
+    }
+
+    fn handle_remove_from_playlist(&self, song_id: String) {
+        let Some(playlist_model) = self.get_playlist_model() else {
+            warn!("No playlist model found");
+            return;
+        };
+        if playlist_model.is_smart() {
+            warn!("Attempted to re-order a smart playlist");
+            return;
+        }
+        let mut songs = self.imp().songs.borrow_mut().clone();
+        if let Some(index) = songs.iter().position(|s| s.id() == song_id) {
+            songs.remove(index);
+            self.imp().songs.replace(songs);
+            let track_list = &self.imp().track_list;
+            if let Some(source_row) = track_list.row_at_index(index as i32) {
+                track_list.remove(&source_row);
+            }
+            self.update_all_track_numbers();
+            self.update_track_metadata();
+            // Persist the change
+            let playlist_id = playlist_model.id();
+            let app = self.get_application();
+            let jellyfin = app.jellyfin();
+
+            spawn_tokio(
+                async move { jellyfin.remove_playlist_item(&playlist_id, &song_id).await },
+                glib::clone!(
+                    #[weak(rename_to = playlist_detail)]
+                    self,
+                    move |result| {
+                        match result {
+                            Ok(_) => {
+                                log::debug!("Successfully removed item from playlist");
+                                app.refresh_playlists(true);
+                            }
+                            Err(error) => {
+                                log::error!("Failed to remove song from playlist: {}", error);
+                                playlist_detail.toast("Failed to modify playlist.", None);
+                                // Revert to server state
+                                playlist_detail.pull_tracks();
+                            }
+                        }
+                    }
+                ),
+            );
+        }
+    }
+
+    fn update_all_track_numbers(&self) {
+        let track_list = &self.imp().track_list;
+        for i in 0..track_list.observe_children().n_items() {
+            if let Some(row) = track_list.row_at_index(i as i32)
+                && let Some(song_widget) = row.downcast_ref::<Song>()
+            {
+                song_widget.set_track_number(i + 1);
+            }
+        }
     }
 
     pub fn song_selected(&self, index: usize) {
@@ -190,6 +363,7 @@ mod imp {
         pub playlist_model: RefCell<Option<PlaylistModel>>,
         pub songs: RefCell<Vec<SongModel>>,
         pub song_change_signal_connected: Cell<bool>,
+        pub last_drag_focused: Cell<Option<i32>>,
     }
 
     #[glib::object_subclass]
@@ -242,5 +416,15 @@ mod imp {
                 }
             ));
         }
+    }
+}
+
+impl DragScrollable for PlaylistDetail {
+    fn get_last_drag_focused(&self) -> Option<i32> {
+        self.imp().last_drag_focused.get()
+    }
+
+    fn set_last_drag_focused(&self, index: Option<i32>) {
+        self.imp().last_drag_focused.set(index);
     }
 }
