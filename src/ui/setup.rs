@@ -130,7 +130,10 @@ impl Setup {
         match error {
             JellyfinError::Transport(err) => {
                 self.host_error();
-                self.toast("Error connecting to host", None);
+                self.toast(
+                    "Connection error. Please supply a full URL (http://example.com:8096)",
+                    None,
+                );
                 debug!("Transport error: {}", err);
             }
             JellyfinError::Http { status, message } => {

@@ -44,7 +44,9 @@
                         </style>
                         <child>
                           <object class="AdwEntryRow" id="host_entry">
-                          <property name="title">Host</property>
+                          <property name="title">Host URL</property>
+                          <property name="input-purpose">url</property>
+                          <property name="tooltip-text">Enter the complete server address including protocol (http:// or https://) and port number (:8096)</property>
                           </object>
                         </child>
                         <child>
