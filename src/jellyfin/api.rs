@@ -100,6 +100,7 @@ pub struct ArtistItemsDto {
 #[derive(Clone, Debug, Deserialize)]
 #[serde(rename_all = "PascalCase")]
 pub struct PlaylistItems {
+    #[serde(deserialize_with = "deserialize_items_skip_errors")]
     pub items: Vec<MusicDto>,
     pub total_record_count: u64,
 }
