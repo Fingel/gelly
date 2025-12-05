@@ -26,6 +26,7 @@ modules:
       - cargo build --offline --release --all-features
       - install -Dm0755 target/release/gelly ${FLATPAK_DEST}/bin/gelly
       - install -Dm644 resources/${FLATPAK_ID}.svg ${FLATPAK_DEST}/share/icons/hicolor/scalable/apps/${FLATPAK_ID}.svg
+      - install -Dm644 resources/${FLATPAK_ID}-symbolic.svg ${FLATPAK_DEST}/share/icons/hicolor/symbolic/apps/${FLATPAK_ID}-symbolic.svg
       - install -Dm644 resources/${FLATPAK_ID}.desktop ${FLATPAK_DEST}/share/applications/${FLATPAK_ID}.desktop
       - install -Dm644 resources/${FLATPAK_ID}.metainfo.xml ${FLATPAK_DEST}/share/metainfo/${FLATPAK_ID}.metainfo.xml
       - install -Dm644 resources/${FLATPAK_ID}.gschema.xml ${FLATPAK_DEST}/share/glib-2.0/schemas/${FLATPAK_ID}.gschema.xml

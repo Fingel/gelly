@@ -10,5 +10,6 @@ pub fn show(parent: &Window) {
     }
 
     dialog.set_developers(&["Austin Riba <austin@m51.io>"]);
+    dialog.set_artists(&["Jakub Steiner"]);
     dialog.present(Some(parent));
 }

@@ -7,11 +7,11 @@
   <summary>Jellyfin client focused on music</summary>
   <description>
     <p>
-      Gelly is a Jellyfin Media Server client focused specifically on music playback.
-      Simply connect to a Jellyfin server and listen to your entire library!
+      A native, lightweight Jellyfin client designed specifically for enjoying
+      your music library.
     </p>
     <ul>
-      <li>Browse your music collection by artist or album</li>
+      <li>Browse your music collection by artist, album and playlist</li>
       <li>Modern GTK/Adwaita interface with MPRIS support</li>
       <li>Written in Rust</li>
     </ul>
@@ -26,11 +26,20 @@
   <url type="bugtracker">https://github.com/Fingel/gelly/issues</url>
   <screenshots>
     <screenshot type="default">
-      <image>https://github.com/user-attachments/assets/b176afc6-c5c5-43b6-8f1c-bfed0b9768e7</image>
+      <image>https://github.com/user-attachments/assets/26e1221d-580f-4da1-aaea-6d0efa6030b7</image>
       <caption>Main window showing music library</caption>
     </screenshot>
   </screenshots>
   <releases>
+    <release version="0.10.0" date="2025-12-04">
+      <description>
+        <ul>
+          <li>New icon! Thank you Jakub Steiner</li>
+          <li>Playlist management - add, remove and reorder tracks</li>
+          <li>Drag and drop tracks in the queue to reorder them</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.9.0" date="2025-11-27">
       <description>
         <ul>
@@ -124,7 +133,7 @@
   </keywords>
   <icon type="stock">io.m51.Gelly</icon>
   <branding>
-    <color type="primary" scheme_preference="light">#cdab8f</color>
-    <color type="primary" scheme_preference="dark">#63452c</color>
+    <color type="primary" scheme_preference="light">#ebc06d</color>
+    <color type="primary" scheme_preference="dark">#292522</color>
   </branding>
 </component>

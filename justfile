@@ -17,6 +17,7 @@ install: release
     sudo install -Dm644 resources/io.m51.Gelly.metainfo.xml {{prefix}}/share/metainfo/io.m51.Gelly.metainfo.xml
     sudo install -Dm644 resources/io.m51.Gelly.gschema.xml {{prefix}}/share/glib-2.0/schemas/io.m51.Gelly.gschema.xml
     sudo install -Dm644 resources/io.m51.Gelly.svg {{prefix}}/share/icons/hicolor/scalable/apps/io.m51.Gelly.svg
+    sudo install -Dm644 resources/io.m51.Gelly-symbolic.svg {{prefix}}/share/icons/hicolor/symbolic/apps/io.m51.Gelly-symbolic.svg
     sudo glib-compile-schemas {{prefix}}/share/glib-2.0/schemas/
 
 uninstall:
@@ -25,4 +26,5 @@ uninstall:
     sudo rm {{prefix}}/share/metainfo/io.m51.Gelly.metainfo.xml
     sudo rm {{prefix}}/share/glib-2.0/schemas/io.m51.Gelly.gschema.xml
     sudo rm {{prefix}}/share/icons/hicolor/scalable/apps/io.m51.Gelly.svg
+    sudo rm {{prefix}}/share/icons/hicolor/symbolic/apps/io.m51.Gelly-symbolic.svg
     sudo glib-compile-schemas {{prefix}}/share/glib-2.0/schemas/
