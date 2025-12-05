@@ -31,6 +31,13 @@
     </screenshot>
   </screenshots>
   <releases>
+    <release version="0.10.1" date="2025-12-04">
+      <description>
+        <ul>
+          <li>Fix a bug causing playlists to not load.</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.10.0" date="2025-12-04">
       <description>
         <ul>
