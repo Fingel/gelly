@@ -51,11 +51,27 @@ that might fix this issue.
 
 ## Development
 
-Gelly leverages [gtk-rs](https://gtk-rs.org/) for the UI and
-[gstreamer](https://gstreamer.freedesktop.org/) for playback. Thus you will need
-development libraries installed for both GTK and gstreamer to build from source.
+Gelly doesn't have many dependencies. Make sure you have the development libraries 
+for the following installed:
 
-Gelly does *not* require any nightly features from Rust.
+* GTK
+* Libadwaita
+* Gstreamer
 
-The [justfile](justfile) contains recipes, simply running the default recipe `just` should be enough
-to build and launch Gelly.
+The name of these packages depends on your distribution, but usually something like, 
+for example, `gstreamer-dev`. Note that Arch Linux includes development libs with the main
+package, btw, so you don't need to install anything extra.
+
+You will also need a rust compiler installed. Gelly does *not* require any nightly 
+features from Rust. 
+
+To make things easy, also install the [just](https://github.com/casey/just) command runner.
+
+Gelly leverages [gtk-rs](https://gtk-rs.org/) for GTK bindings. The majority of the code
+in Gelly is related to these bindings.
+
+Building and launching Gelly should then simply be a matter of:
+
+    just
+  
+See the recipes in the [justfile](justfile) for other useful commands.
