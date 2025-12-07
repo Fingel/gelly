@@ -75,3 +75,7 @@ Building and launching Gelly should then simply be a matter of:
     just
   
 See the recipes in the [justfile](justfile) for other useful commands.
+
+
+## Contributing
+See [CONTRIBUTING.md](CONTRIBUTING.md)
