@@ -156,6 +156,7 @@ impl AudioModel {
             self.set_property("loading", true);
             self.set_queue_index(index);
             player.set_uri(&stream_uri);
+            self.imp().uri.replace(Some(stream_uri));
             self.emit_by_name::<()>("song-changed", &[&song.id()]);
             // Notify MPRIS with metadata
             self.notify_mpris_track_changed();
@@ -222,6 +223,10 @@ impl AudioModel {
         self.set_property("position", position);
         // Some MRPIS clients care about this I guess
         self.notify_mpris_seeked(position);
+    }
+
+    pub fn get_uri(&self) -> Option<String> {
+        self.imp().uri.borrow().clone()
     }
 
     pub fn get_position(&self) -> u64 {
@@ -380,6 +385,7 @@ mod imp {
         pub shuffle_enabled: Cell<bool>,
         pub shuffle_index: Cell<usize>,
         pub shuffle_seed: Cell<u64>,
+        pub uri: RefCell<Option<String>>,
     }
     #[glib::object_subclass]
     impl ObjectSubclass for AudioModel {

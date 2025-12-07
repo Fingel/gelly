@@ -129,6 +129,20 @@
                     </style>
                   </object>
                 </child>
+                <child>
+                  <object class="GtkButton" id="info_button">
+                    <property name="margin-start">2</property>
+                    <child>
+                      <object class="GtkImage" id="info_icon">
+                        <property name="icon-name">help-about-symbolic</property>
+                        <property name="icon-size">1</property>
+                      </object>
+                    </child>
+                    <style>
+                      <class name="flat"/>
+                    </style>
+                  </object>
+                </child>
               </object>
             </child>
           </object>
