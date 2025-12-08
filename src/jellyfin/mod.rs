@@ -334,7 +334,7 @@ impl Jellyfin {
         // Prioritize FLAC for lossless audio, with fallbacks for compatibility
         let containers = "flac,opus,mp3,aac,m4a,ogg,wav,webm|opus,webm|webma,webma";
         format!(
-            "{}/Audio/{item_id}/universal?api_key={}&userId={}&container={}&audioCodec=aac&transcodingContainer=ts",
+            "{}/Audio/{item_id}/universal?api_key={}&userId={}&container={}&audioCodec=aac&transcodingContainer=ts&transcodingProtocol=hls",
             self.host.trim_end_matches("/"),
             self.token,
             self.user_id,
