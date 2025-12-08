@@ -148,7 +148,7 @@
   </keywords>
   <icon type="stock">io.m51.Gelly</icon>
   <branding>
-    <color type="primary" scheme_preference="light">#ebc06d</color>
-    <color type="primary" scheme_preference="dark">#995128</color>
+    <color type="primary" scheme_preference="light">#78d6b3</color>
+    <color type="primary" scheme_preference="dark">#325a4a</color>
   </branding>
 </component>
