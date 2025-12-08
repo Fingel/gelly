@@ -10,7 +10,9 @@ use tokio::time::Instant;
 
 use crate::cache::LibraryCache;
 use crate::config;
-use crate::jellyfin::api::{LibraryDtoList, MusicDtoList, PlaylistDtoList, PlaylistItems};
+use crate::jellyfin::api::{
+    LibraryDtoList, MusicDtoList, PlaybackInfo, PlaylistDtoList, PlaylistItems,
+};
 
 pub mod api;
 pub mod utils;
@@ -332,12 +334,20 @@ impl Jellyfin {
         // Prioritize FLAC for lossless audio, with fallbacks for compatibility
         let containers = "flac,opus,mp3,aac,m4a,ogg,wav,webm|opus,webm|webma,webma";
         format!(
-            "{}/Audio/{item_id}/universal?api_key={}&userId={}&container={}",
+            "{}/Audio/{item_id}/universal?api_key={}&userId={}&container={}&audioCodec=aac&transcodingContainer=ts",
             self.host.trim_end_matches("/"),
             self.token,
             self.user_id,
             containers
         )
+    }
+
+    pub async fn get_playback_info(&self, item_id: &str) -> Result<PlaybackInfo, JellyfinError> {
+        let response = self
+            .get(&format!("Items/{}/PlaybackInfo", item_id), None)
+            .await?;
+        let body = self.handle_response(response).await?;
+        Ok(serde_json::from_str(&body)?)
     }
 
     fn get_hostname(&self) -> &'static str {

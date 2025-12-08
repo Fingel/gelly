@@ -104,3 +104,33 @@ pub struct PlaylistItems {
     pub items: Vec<MusicDto>,
     pub total_record_count: u64,
 }
+
+#[derive(Clone, Debug, Deserialize)]
+#[serde(rename_all = "PascalCase")]
+pub struct MediaStream {
+    #[serde(rename = "Type")]
+    pub type_: Option<String>,
+    pub codec: Option<String>,
+    pub bit_rate: Option<u64>,
+    pub sample_rate: Option<u64>,
+    pub channels: Option<u32>,
+}
+
+#[derive(Clone, Debug, Deserialize)]
+#[serde(rename_all = "PascalCase")]
+pub struct MediaSource {
+    #[serde(deserialize_with = "deserialize_items_skip_errors")]
+    pub media_streams: Vec<MediaStream>,
+    pub container: Option<String>,
+    pub size: Option<u64>,
+    pub supports_direct_stream: Option<bool>,
+    pub supports_direct_play: Option<bool>,
+    pub supports_transcoding: Option<bool>,
+}
+
+#[derive(Clone, Debug, Deserialize)]
+#[serde(rename_all = "PascalCase")]
+pub struct PlaybackInfo {
+    #[serde(deserialize_with = "deserialize_items_skip_errors")]
+    pub media_sources: Vec<MediaSource>,
+}

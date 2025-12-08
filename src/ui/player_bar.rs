@@ -170,7 +170,10 @@ impl Default for PlayerBar {
 mod imp {
     use std::cell::{OnceCell, RefCell};
 
-    use crate::{audio::model::AudioModel, ui::album_art::AlbumArt};
+    use crate::{
+        audio::{model::AudioModel, stream_info::discover_stream_info},
+        ui::{album_art::AlbumArt, stream_info_dialog, widget_ext::WidgetApplicationExt},
+    };
     use adw::subclass::prelude::*;
     use glib::{Properties, subclass::InitializingObject};
     use gtk::{
@@ -178,6 +181,7 @@ mod imp {
         glib::{self},
         prelude::*,
     };
+    use log::warn;
 
     #[derive(CompositeTemplate, Default, Properties)]
     #[template(resource = "/io/m51/Gelly/ui/player_bar.ui")]
@@ -211,6 +215,8 @@ mod imp {
         pub volume_scale: TemplateChild<gtk::Scale>,
         #[template_child]
         pub play_mode: TemplateChild<gtk::Button>,
+        #[template_child]
+        pub info_button: TemplateChild<gtk::Button>,
 
         pub audio_model: OnceCell<AudioModel>,
 
@@ -277,6 +283,32 @@ mod imp {
             self.play_mode.set_icon_name(icon_name);
         }
 
+        fn show_info_dialog(&self) {
+            if let Some(uri) = self.audio_model().get_uri()
+                && let Some(song_model) = self.audio_model().current_song()
+            {
+                let song_id = song_model.id();
+                let jellyfin = self.obj().get_application().jellyfin();
+                discover_stream_info(
+                    &uri,
+                    &song_id,
+                    &jellyfin,
+                    glib::clone!(
+                        #[weak(rename_to = player_bar)]
+                        self,
+                        move |info| {
+                            stream_info_dialog::show(
+                                player_bar.obj().get_gtk_window().as_ref(),
+                                info,
+                            );
+                        }
+                    ),
+                );
+            } else {
+                warn!("Could not get current stream URI");
+            }
+        }
+
         fn setup_signals(&self) {
             self.play_pause_button.connect_clicked(glib::clone!(
                 #[weak(rename_to = imp)]
@@ -316,6 +348,14 @@ mod imp {
                 self,
                 move |_| {
                     imp.toggle_play_mode();
+                }
+            ));
+
+            self.info_button.connect_clicked(glib::clone!(
+                #[weak(rename_to = imp)]
+                self,
+                move |_| {
+                    imp.show_info_dialog();
                 }
             ));
 
