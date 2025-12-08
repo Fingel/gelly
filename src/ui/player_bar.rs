@@ -284,9 +284,15 @@ mod imp {
         }
 
         fn show_info_dialog(&self) {
-            if let Some(uri) = self.audio_model().get_uri() {
+            if let Some(uri) = self.audio_model().get_uri()
+                && let Some(song_model) = self.audio_model().current_song()
+            {
+                let song_id = song_model.id();
+                let jellyfin = self.obj().get_application().jellyfin();
                 discover_stream_info(
                     &uri,
+                    &song_id,
+                    &jellyfin,
                     glib::clone!(
                         #[weak(rename_to = player_bar)]
                         self,

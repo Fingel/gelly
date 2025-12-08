@@ -1,24 +1,58 @@
 use gstreamer as gst;
 use gstreamer_pbutils::{Discoverer, prelude::*};
 use gtk::glib;
+use thiserror::Error;
 
-use crate::async_utils::spawn_tokio;
+use crate::{
+    async_utils::spawn_tokio,
+    jellyfin::{Jellyfin, JellyfinError},
+};
+
+#[derive(Error, Debug)]
+pub enum StreamInfoError {
+    #[error("glib error: {0}")]
+    Glib(#[from] glib::Error),
+
+    #[error("Jellyfin error: {0}")]
+    Jellyfin(#[from] JellyfinError),
+}
 
 #[derive(Default, Debug)]
 pub struct StreamInfo {
+    // Gstreamer properties
     pub codec: Option<String>,
     pub sample_rate: Option<i32>,
     pub channels: Option<i32>,
     pub bit_rate: Option<u32>,
     pub container_format: Option<String>,
     pub encoder: Option<String>,
+
+    // Jellyfin Properties
+    pub original_codec: Option<String>,
+    pub original_bit_rate: Option<u64>,
+    pub original_sample_rate: Option<u64>,
+    pub original_channels: Option<u32>,
+    pub original_container_format: Option<String>,
+    pub file_size: Option<u64>,
+    pub supports_direct_stream: Option<bool>,
+    pub supports_direct_play: Option<bool>,
+    pub supports_transcoding: Option<bool>,
 }
 
-pub fn discover_stream_info(uri: &str, callback: impl FnOnce(StreamInfo) + 'static) {
+pub fn discover_stream_info(
+    uri: &str,
+    song_id: &str,
+    jellyfin: &Jellyfin,
+    callback: impl FnOnce(StreamInfo) + 'static,
+) {
     let uri = uri.to_string();
+    let item_id = song_id.to_string();
+    let jellyfin = jellyfin.clone();
+
     spawn_tokio(
         async move {
-            tokio::task::spawn_blocking(move || -> Result<StreamInfo, glib::Error> {
+            let jellyfin_info = jellyfin.get_playback_info(&item_id).await?;
+            tokio::task::spawn_blocking(move || -> Result<StreamInfo, StreamInfoError> {
                 let discoverer = Discoverer::new(gst::ClockTime::from_seconds(10))?;
                 let info = discoverer.discover_uri(&uri)?;
                 let mut stream_info = StreamInfo::default();
@@ -58,12 +92,31 @@ pub fn discover_stream_info(uri: &str, callback: impl FnOnce(StreamInfo) + 'stat
                     }
                 }
 
+                // Jellyfin stuff
+                if let Some(media_source) = jellyfin_info.media_sources.first() {
+                    stream_info.original_container_format = media_source.container.clone();
+                    stream_info.file_size = media_source.size;
+                    stream_info.supports_direct_play = media_source.supports_direct_play;
+                    stream_info.supports_direct_stream = media_source.supports_direct_stream;
+                    stream_info.supports_transcoding = media_source.supports_transcoding;
+
+                    for media_stream in &media_source.media_streams {
+                        if media_stream.type_ == Some("Audio".to_string()) {
+                            stream_info.original_codec = media_stream.codec.clone();
+                            stream_info.original_bit_rate = media_stream.bit_rate;
+                            stream_info.original_sample_rate = media_stream.sample_rate;
+                            stream_info.original_channels = media_stream.channels;
+                            break;
+                        }
+                    }
+                }
+
                 Ok(stream_info)
             })
             .await
             .unwrap_or(Ok(StreamInfo::default()))
         },
-        move |result: Result<StreamInfo, glib::Error>| {
+        move |result: Result<StreamInfo, StreamInfoError>| {
             let stream_info = result.unwrap_or_default();
             callback(stream_info);
         },
