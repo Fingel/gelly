@@ -31,6 +31,14 @@
     </screenshot>
   </screenshots>
   <releases>
+    <release version="0.10.2" date="2025-12-07">
+      <description>
+        <ul>
+          <li>Added an info dialog for streaming properties</li>
+          <li>Fix a bug that would potentially cause Jellyfin to fail transcoding.</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.10.1" date="2025-12-04">
       <description>
         <ul>
