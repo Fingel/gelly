@@ -23,24 +23,6 @@ glib::wrapper! {
 impl DetailPage for PlaylistDetail {
     type Model = PlaylistModel;
 
-    fn title(&self) -> String {
-        self.imp()
-            .model
-            .borrow()
-            .as_ref()
-            .map(|m| m.name())
-            .unwrap_or_default()
-    }
-
-    fn id(&self) -> String {
-        self.imp()
-            .model
-            .borrow()
-            .as_ref()
-            .map(|m| m.id())
-            .unwrap_or_default()
-    }
-
     fn set_model(&self, model: &PlaylistModel) {
         let imp = self.imp();
         imp.model.replace(Some(model.clone()));
@@ -51,6 +33,10 @@ impl DetailPage for PlaylistDetail {
             self.use_playlist_icon(&model.id());
         }
         self.pull_tracks();
+    }
+
+    fn get_model(&self) -> Option<Self::Model> {
+        self.imp().model.borrow().clone()
     }
 }
 
@@ -73,12 +59,8 @@ impl PlaylistDetail {
         imp.album_image.set_visible(true);
     }
 
-    fn get_playlist_model(&self) -> Option<PlaylistModel> {
-        self.imp().model.borrow().clone()
-    }
-
     fn pull_tracks(&self) {
-        let Some(playlist_model) = self.get_playlist_model() else {
+        let Some(playlist_model) = self.get_model() else {
             warn!("No playlist model set");
             return;
         };
@@ -111,10 +93,7 @@ impl PlaylistDetail {
         let track_list = &self.imp().track_list;
         track_list.remove_all();
         // Smart playlists cannot be reordered
-        let is_smart_playlist = self
-            .get_playlist_model()
-            .map(|p| p.is_smart())
-            .unwrap_or(true);
+        let is_smart_playlist = self.get_model().map(|p| p.is_smart()).unwrap_or(true);
 
         for (i, song) in songs.iter().enumerate() {
             let song_widget = if is_smart_playlist {
@@ -174,7 +153,7 @@ impl PlaylistDetail {
         if source_index == target_index {
             return;
         }
-        let Some(playlist_model) = self.get_playlist_model() else {
+        let Some(playlist_model) = self.get_model() else {
             warn!("No playlist model found");
             return;
         };
@@ -241,7 +220,7 @@ impl PlaylistDetail {
     }
 
     fn handle_remove_from_playlist(&self, song_id: String) {
-        let Some(playlist_model) = self.get_playlist_model() else {
+        let Some(playlist_model) = self.get_model() else {
             warn!("No playlist model found");
             return;
         };

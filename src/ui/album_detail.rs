@@ -17,24 +17,6 @@ glib::wrapper! {
 impl DetailPage for AlbumDetail {
     type Model = AlbumModel;
 
-    fn title(&self) -> String {
-        self.imp()
-            .model
-            .borrow()
-            .as_ref()
-            .map(|m| m.name())
-            .unwrap_or_default()
-    }
-
-    fn id(&self) -> String {
-        self.imp()
-            .model
-            .borrow()
-            .as_ref()
-            .map(|m| m.id())
-            .unwrap_or_default()
-    }
-
     fn set_model(&self, model: &AlbumModel) {
         let imp = self.imp();
         imp.model.replace(Some(model.clone()));
@@ -48,6 +30,10 @@ impl DetailPage for AlbumDetail {
         }
         imp.album_image.set_item_id(&model.id(), None);
         self.pull_tracks();
+    }
+
+    fn get_model(&self) -> Option<Self::Model> {
+        self.imp().model.borrow().clone()
     }
 }
 

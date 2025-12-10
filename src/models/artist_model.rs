@@ -1,10 +1,20 @@
 use glib::Object;
 use gtk::{glib, subclass::prelude::*};
 
-use crate::jellyfin::api::ArtistItemsDto;
+use crate::{jellyfin::api::ArtistItemsDto, models::model_traits::ItemModel};
 
 glib::wrapper! {
     pub struct ArtistModel(ObjectSubclass<imp::ArtistModel>);
+}
+
+impl ItemModel for ArtistModel {
+    fn display_name(&self) -> String {
+        self.name()
+    }
+
+    fn item_id(&self) -> String {
+        self.id()
+    }
 }
 
 impl ArtistModel {

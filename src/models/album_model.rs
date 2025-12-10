@@ -1,9 +1,19 @@
-use crate::jellyfin::api::MusicDto;
+use crate::{jellyfin::api::MusicDto, models::model_traits::ItemModel};
 use glib::Object;
 use gtk::{glib, subclass::prelude::*};
 
 glib::wrapper! {
     pub struct AlbumModel(ObjectSubclass<imp::AlbumData>);
+}
+
+impl ItemModel for AlbumModel {
+    fn display_name(&self) -> String {
+        self.name()
+    }
+
+    fn item_id(&self) -> String {
+        self.id()
+    }
 }
 
 /// Simple GObject to provide album data, and to convert from the API response from jellyfin.

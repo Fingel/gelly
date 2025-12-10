@@ -1,12 +1,22 @@
 use crate::{
     jellyfin::api::PlaylistDto,
-    models::{PlaylistType, playlist_type::DEFAULT_SMART_COUNT},
+    models::{PlaylistType, model_traits::ItemModel, playlist_type::DEFAULT_SMART_COUNT},
 };
 use glib::Object;
 use gtk::glib;
 
 glib::wrapper! {
     pub struct PlaylistModel(ObjectSubclass<imp::PlaylistModel>);
+}
+
+impl ItemModel for PlaylistModel {
+    fn display_name(&self) -> String {
+        self.name()
+    }
+
+    fn item_id(&self) -> String {
+        self.id()
+    }
 }
 
 impl PlaylistModel {

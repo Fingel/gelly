@@ -1,5 +1,6 @@
 pub mod album_model;
 pub mod artist_model;
+pub mod model_traits;
 pub mod playlist_model;
 pub mod playlist_type;
 pub mod song_model;

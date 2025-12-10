@@ -15,27 +15,13 @@ glib::wrapper! {
 impl DetailPage for ArtistDetail {
     type Model = ArtistModel;
 
-    fn title(&self) -> String {
-        self.imp()
-            .model
-            .borrow()
-            .as_ref()
-            .map(|m| m.name())
-            .unwrap_or_default()
-    }
-
-    fn id(&self) -> String {
-        self.imp()
-            .model
-            .borrow()
-            .as_ref()
-            .map(|m| m.id())
-            .unwrap_or_default()
-    }
-
     fn set_model(&self, model: &ArtistModel) {
         self.imp().model.replace(Some(model.clone()));
         self.pull_albums();
+    }
+
+    fn get_model(&self) -> Option<Self::Model> {
+        self.imp().model.borrow().clone()
     }
 }
 
