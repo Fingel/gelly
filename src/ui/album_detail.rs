@@ -2,7 +2,7 @@ use crate::{
     jellyfin::utils::format_duration,
     library_utils::songs_for_album,
     models::AlbumModel,
-    ui::{song::Song, widget_ext::WidgetApplicationExt},
+    ui::{page_traits::DetailPage, song::Song, widget_ext::WidgetApplicationExt},
 };
 use glib::Object;
 use gtk::{gio, glib, prelude::*, subclass::prelude::*};
@@ -14,29 +14,51 @@ glib::wrapper! {
         @implements gio::ActionMap, gio::ActionGroup, gtk::Accessible, gtk::Buildable, gtk::ConstraintTarget;
 }
 
+impl DetailPage for AlbumDetail {
+    type Model = AlbumModel;
+
+    fn title(&self) -> String {
+        self.imp()
+            .model
+            .borrow()
+            .as_ref()
+            .map(|m| m.name())
+            .unwrap_or_default()
+    }
+
+    fn id(&self) -> String {
+        self.imp()
+            .model
+            .borrow()
+            .as_ref()
+            .map(|m| m.id())
+            .unwrap_or_default()
+    }
+
+    fn set_model(&self, model: &AlbumModel) {
+        let imp = self.imp();
+        imp.model.replace(Some(model.clone()));
+        imp.name_label.set_text(&model.name());
+        imp.artist_label.set_text(&model.artists_string());
+        if model.year() > 0 {
+            imp.year_label.set_text(&model.year().to_string());
+            imp.year_label.set_visible(true);
+        } else {
+            imp.year_label.set_visible(false);
+        }
+        imp.album_image.set_item_id(&model.id(), None);
+        self.pull_tracks();
+    }
+}
+
 impl AlbumDetail {
     pub fn new() -> Self {
         Object::builder().build()
     }
 
-    pub fn set_album_model(&self, album_model: &AlbumModel) {
-        let imp = self.imp();
-        imp.album_id.replace(album_model.id());
-        imp.name_label.set_text(&album_model.name());
-        imp.artist_label.set_text(&album_model.artists_string());
-        if album_model.year() > 0 {
-            imp.year_label.set_text(&album_model.year().to_string());
-            imp.year_label.set_visible(true);
-        } else {
-            imp.year_label.set_visible(false);
-        }
-        imp.album_image.set_item_id(&album_model.id(), None);
-        self.pull_tracks();
-    }
-
     pub fn pull_tracks(&self) {
         let library = self.get_application().library().clone();
-        let songs = songs_for_album(&self.imp().album_id.borrow(), &library.borrow());
+        let songs = songs_for_album(&self.id(), &library.borrow());
         let track_list = &self.imp().track_list;
         track_list.remove_all();
         for song in &songs {
@@ -116,7 +138,10 @@ mod imp {
         prelude::*,
     };
 
-    use crate::{models::SongModel, ui::album_art::AlbumArt};
+    use crate::{
+        models::{AlbumModel, SongModel},
+        ui::album_art::AlbumArt,
+    };
 
     #[derive(CompositeTemplate, Default)]
     #[template(resource = "/io/m51/Gelly/ui/album_detail.ui")]
@@ -140,7 +165,7 @@ mod imp {
         #[template_child]
         pub enqueue: TemplateChild<gtk::Button>,
 
-        pub album_id: RefCell<String>,
+        pub model: RefCell<Option<AlbumModel>>,
         pub songs: RefCell<Vec<SongModel>>,
         pub song_change_signal_connected: Cell<bool>,
     }

@@ -5,6 +5,7 @@ use crate::{
     models::{PlaylistModel, SongModel},
     ui::{
         drag_scrollable::DragScrollable,
+        page_traits::DetailPage,
         song::{Song, SongOptions},
         widget_ext::WidgetApplicationExt,
     },
@@ -19,21 +20,43 @@ glib::wrapper! {
         @implements gio::ActionMap, gio::ActionGroup, gtk::Accessible, gtk::Buildable, gtk::ConstraintTarget;
 }
 
+impl DetailPage for PlaylistDetail {
+    type Model = PlaylistModel;
+
+    fn title(&self) -> String {
+        self.imp()
+            .model
+            .borrow()
+            .as_ref()
+            .map(|m| m.name())
+            .unwrap_or_default()
+    }
+
+    fn id(&self) -> String {
+        self.imp()
+            .model
+            .borrow()
+            .as_ref()
+            .map(|m| m.id())
+            .unwrap_or_default()
+    }
+
+    fn set_model(&self, model: &PlaylistModel) {
+        let imp = self.imp();
+        imp.model.replace(Some(model.clone()));
+        imp.name_label.set_text(&model.name());
+        if model.is_smart() {
+            self.use_static_icon(model.playlist_type().icon_name());
+        } else {
+            self.use_playlist_icon(&model.id());
+        }
+        self.pull_tracks();
+    }
+}
+
 impl PlaylistDetail {
     pub fn new() -> Self {
         Object::builder().build()
-    }
-
-    pub fn set_playlist_model(&self, playlist_model: &PlaylistModel) {
-        let imp = self.imp();
-        imp.playlist_model.replace(Some(playlist_model.clone()));
-        imp.name_label.set_text(&playlist_model.name());
-        if playlist_model.is_smart() {
-            self.use_static_icon(playlist_model.playlist_type().icon_name());
-        } else {
-            self.use_playlist_icon(&playlist_model.id());
-        }
-        self.pull_tracks();
     }
 
     fn use_static_icon(&self, name: &str) {
@@ -51,7 +74,7 @@ impl PlaylistDetail {
     }
 
     fn get_playlist_model(&self) -> Option<PlaylistModel> {
-        self.imp().playlist_model.borrow().clone()
+        self.imp().model.borrow().clone()
     }
 
     fn pull_tracks(&self) {
@@ -360,7 +383,7 @@ mod imp {
         #[template_child]
         pub enqueue: TemplateChild<gtk::Button>,
 
-        pub playlist_model: RefCell<Option<PlaylistModel>>,
+        pub model: RefCell<Option<PlaylistModel>>,
         pub songs: RefCell<Vec<SongModel>>,
         pub song_change_signal_connected: Cell<bool>,
         pub last_drag_focused: Cell<Option<i32>>,

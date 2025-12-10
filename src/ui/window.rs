@@ -1,5 +1,6 @@
 use crate::config::settings;
 use crate::models::{AlbumModel, ArtistModel, PlaylistModel};
+use crate::ui::page_traits::DetailPage;
 use crate::ui::{about_dialog, shortcuts_dialog};
 use crate::{application::Application, ui::widget_ext::WidgetApplicationExt};
 use adw::{prelude::*, subclass::prelude::ObjectSubclassIsExt};
@@ -58,49 +59,45 @@ impl Window {
         }
     }
 
-    pub fn show_album_list(&self) {
+    pub fn show_page(&self, page: &impl IsA<gtk::Widget>) {
         let imp = self.imp();
         imp.main_navigation.replace(&[imp.main_window.get()]);
-        imp.stack.set_visible_child(&imp.album_list.get());
+        imp.stack.set_visible_child(page);
     }
 
-    pub fn show_artist_list(&self) {
-        let imp = self.imp();
-        imp.main_navigation.replace(&[imp.main_window.get()]);
-        imp.stack.set_visible_child(&imp.artist_list.get());
-    }
-
-    pub fn show_playlist_list(&self) {
-        let imp = self.imp();
-        imp.main_navigation.replace(&[imp.main_window.get()]);
-        imp.stack.set_visible_child(&imp.playlist_list.get());
-    }
-
-    pub fn show_queue(&self) {
-        let imp = self.imp();
-        imp.main_navigation.replace(&[imp.main_window.get()]);
-        imp.stack.set_visible_child(&imp.queue.get());
+    pub fn show_detail_page<T: DetailPage>(
+        &self,
+        page: &impl IsA<adw::NavigationPage>,
+        widget: &T,
+        model: &T::Model,
+    ) {
+        self.imp().main_navigation.push(page);
+        widget.set_model(model);
+        page.set_title(&widget.title());
     }
 
     pub fn show_album_detail(&self, album_model: &AlbumModel) {
-        let imp = self.imp();
-        imp.album_detail_page.set_title(&album_model.name());
-        imp.main_navigation.push(&imp.album_detail_page.get());
-        imp.album_detail.set_album_model(album_model);
+        self.show_detail_page(
+            &self.imp().album_detail_page.get(),
+            &self.imp().album_detail.get(),
+            album_model,
+        );
     }
 
     pub fn show_artist_detail(&self, artist_model: &ArtistModel) {
-        let imp = self.imp();
-        imp.artist_detail_page.set_title(&artist_model.name());
-        imp.main_navigation.push(&imp.artist_detail_page.get());
-        imp.artist_detail.set_artist_model(artist_model);
+        self.show_detail_page(
+            &self.imp().artist_detail_page.get(),
+            &self.imp().artist_detail.get(),
+            artist_model,
+        );
     }
 
     pub fn show_playlist_detail(&self, playlist_model: &PlaylistModel) {
-        let imp = self.imp();
-        imp.playlist_detail_page.set_title(&playlist_model.name());
-        imp.main_navigation.push(&imp.playlist_detail_page.get());
-        imp.playlist_detail.set_playlist_model(playlist_model);
+        self.show_detail_page(
+            &self.imp().playlist_detail_page.get(),
+            &self.imp().playlist_detail.get(),
+            playlist_model,
+        );
     }
 
     pub fn show_about_dialog(&self) {
@@ -368,7 +365,7 @@ mod imp {
                     #[weak(rename_to=window)]
                     self,
                     move |_, _, _| {
-                        window.obj().show_album_list();
+                        window.obj().show_page(&window.album_list.get());
                     }
                 ))
                 .build();
@@ -378,7 +375,7 @@ mod imp {
                     #[weak(rename_to=window)]
                     self,
                     move |_, _, _| {
-                        window.obj().show_artist_list();
+                        window.obj().show_page(&window.artist_list.get());
                     }
                 ))
                 .build();
@@ -388,7 +385,7 @@ mod imp {
                     #[weak(rename_to=window)]
                     self,
                     move |_, _, _| {
-                        window.obj().show_playlist_list();
+                        window.obj().show_page(&window.playlist_list.get());
                     }
                 ))
                 .build();
@@ -398,7 +395,7 @@ mod imp {
                     #[weak(rename_to=window)]
                     self,
                     move |_, _, _| {
-                        window.obj().show_queue();
+                        window.obj().show_page(&window.queue.get());
                     }
                 ))
                 .build();
