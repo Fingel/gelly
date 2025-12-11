@@ -40,12 +40,12 @@ Gelly is available on the [aur](https://aur.archlinux.org/packages/gelly):
 ## Using Self Signed Certificates with Jellyfin
 
 There is currently [an issue with Flatpak](https://gitlab.com/freedesktop-sdk/freedesktop-sdk/-/issues/1905) 
-that prevents sandboxed applications from reading the host's certifcate store. This means if you are
+that prevents sandboxed applications from reading the host's certificate store. This means if you are
 hosting Jellyfin on a server with self-signed certificates which you have installed on the system
 where you are trying to use the Gelly Flatpak, it will probably fail to connect.
 
 [#15](https://github.com/Fingel/gelly/issues/15) tracks this issue. The workaround for now is to 
-use an alternative installation method other than Flatpak ir to connect without TLS. 
+use an alternative installation method other than Flatpak or to connect without TLS. 
 I am looking for someone to help test using alternative TLS backends for reqwest 
 that might fix this issue.
 
