@@ -1,6 +1,6 @@
 use crate::config::settings;
 use crate::models::{AlbumModel, ArtistModel, PlaylistModel};
-use crate::ui::page_traits::DetailPage;
+use crate::ui::page_traits::{DetailPage, TopPage};
 use crate::ui::{about_dialog, shortcuts_dialog};
 use crate::{application::Application, ui::widget_ext::WidgetApplicationExt};
 use adw::{prelude::*, subclass::prelude::ObjectSubclassIsExt};
@@ -9,6 +9,7 @@ use gtk::{
     gio,
     glib::{self},
 };
+use log::error;
 
 glib::wrapper! {
     pub struct Window(ObjectSubclass<imp::Window>)
@@ -59,10 +60,32 @@ impl Window {
         }
     }
 
-    pub fn show_page(&self, page: &impl IsA<gtk::Widget>) {
+    fn show_visible_page(&self) {
+        if let Some(visible_child) = self.imp().stack.visible_child() {
+            let imp = self.imp();
+            if visible_child == imp.album_list.get().upcast::<gtk::Widget>() {
+                self.show_page(&imp.album_list.get());
+            } else if visible_child == imp.artist_list.get().upcast::<gtk::Widget>() {
+                self.show_page(&imp.artist_list.get());
+            } else if visible_child == imp.playlist_list.get().upcast::<gtk::Widget>() {
+                self.show_page(&imp.playlist_list.get());
+            } else if visible_child == imp.queue.get().upcast::<gtk::Widget>() {
+                self.show_page(&imp.queue.get());
+            } else {
+                error!("Unknown page widget");
+            }
+        }
+    }
+
+    pub fn show_page<T>(&self, page: &T)
+    where
+        T: IsA<gtk::Widget>,
+        T: TopPage,
+    {
         let imp = self.imp();
         imp.main_navigation.replace(&[imp.main_window.get()]);
-        imp.stack.set_visible_child(page);
+        imp.search_button.set_visible(page.can_search());
+        imp.sort_button.set_visible(page.can_sort());
     }
 
     pub fn show_detail_page<T: DetailPage>(
@@ -164,6 +187,26 @@ impl Window {
             ),
         );
     }
+
+    fn call_on_visible_page<F>(&self, action: F)
+    where
+        F: Fn(&dyn TopPage),
+    {
+        if let Some(visible_child) = self.imp().stack.visible_child() {
+            let imp = self.imp();
+            if visible_child == imp.album_list.get().upcast::<gtk::Widget>() {
+                action(&imp.album_list.get());
+            } else if visible_child == imp.artist_list.get().upcast::<gtk::Widget>() {
+                action(&imp.artist_list.get());
+            } else if visible_child == imp.playlist_list.get().upcast::<gtk::Widget>() {
+                action(&imp.playlist_list.get());
+            } else if visible_child == imp.queue.get().upcast::<gtk::Widget>() {
+                action(&imp.queue.get());
+            } else {
+                error!("Unknown page widget");
+            }
+        }
+    }
 }
 
 mod imp {
@@ -226,6 +269,10 @@ mod imp {
         pub queue: TemplateChild<Queue>,
         #[template_child]
         pub progress_bar: TemplateChild<gtk::ProgressBar>,
+        #[template_child]
+        pub sort_button: TemplateChild<gtk::Button>,
+        #[template_child]
+        pub search_button: TemplateChild<gtk::Button>,
     }
 
     #[glib::object_subclass]
@@ -300,7 +347,10 @@ mod imp {
                     #[weak(rename_to=window)]
                     self,
                     move |_, _, _| {
-                        window.obj().emit_by_name::<()>("search", &[]);
+                        window.obj().call_on_visible_page(|page| {
+                            page.reveal_search_bar(true);
+                            page.reveal_sort_bar(false);
+                        });
                     }
                 ))
                 .build();
@@ -310,7 +360,10 @@ mod imp {
                     #[weak(rename_to=window)]
                     self,
                     move |_, _, _| {
-                        window.obj().emit_by_name::<()>("sort", &[]);
+                        window.obj().call_on_visible_page(|page| {
+                            page.reveal_search_bar(false);
+                            page.reveal_sort_bar(true);
+                        });
                     }
                 ))
                 .build();
@@ -320,22 +373,9 @@ mod imp {
                     #[weak(rename_to=window)]
                     self,
                     move |_, _, _| {
-                        let imp = window;
-
-                        // Check if we're on main window and get current widget
-                        if let Some(visible_child) = imp.main_navigation.visible_page()
-                            && visible_child == imp.main_window.get()
-                            && let Some(current_widget) = imp.stack.visible_child()
-                        {
-                            // TODO: trait so we can just call play_selected?
-                            if current_widget == imp.album_list.get() {
-                                imp.album_list.play_selected_album();
-                            } else if current_widget == imp.playlist_list.get() {
-                                imp.playlist_list.play_selected_playlist();
-                            } else if current_widget == imp.artist_list.get() {
-                                imp.artist_list.play_selected_artist();
-                            }
-                        }
+                        window.obj().call_on_visible_page(|page| {
+                            page.play_selected();
+                        });
                     }
                 ))
                 .build();
@@ -365,7 +405,7 @@ mod imp {
                     #[weak(rename_to=window)]
                     self,
                     move |_, _, _| {
-                        window.obj().show_page(&window.album_list.get());
+                        window.stack.set_visible_child(&window.album_list.get());
                     }
                 ))
                 .build();
@@ -375,7 +415,7 @@ mod imp {
                     #[weak(rename_to=window)]
                     self,
                     move |_, _, _| {
-                        window.obj().show_page(&window.artist_list.get());
+                        window.stack.set_visible_child(&window.artist_list.get());
                     }
                 ))
                 .build();
@@ -385,7 +425,7 @@ mod imp {
                     #[weak(rename_to=window)]
                     self,
                     move |_, _, _| {
-                        window.obj().show_page(&window.playlist_list.get());
+                        window.stack.set_visible_child(&window.playlist_list.get());
                     }
                 ))
                 .build();
@@ -395,7 +435,7 @@ mod imp {
                     #[weak(rename_to=window)]
                     self,
                     move |_, _, _| {
-                        window.obj().show_page(&window.queue.get());
+                        window.stack.set_visible_child(&window.queue.get());
                     }
                 ))
                 .build();
@@ -415,6 +455,17 @@ mod imp {
                 action_playlist_list,
                 action_queue,
             ]);
+
+            self.stack.connect_notify_local(
+                Some("visible-child"),
+                glib::clone!(
+                    #[weak(rename_to = window)]
+                    self,
+                    move |_, _| {
+                        window.obj().show_visible_page();
+                    }
+                ),
+            );
 
             self.obj().connect_map(glib::clone!(
                 #[weak(rename_to = window)]

@@ -1,5 +1,6 @@
 use crate::ui::{
     drag_scrollable::DragScrollable,
+    page_traits::TopPage,
     song::{Song, SongOptions},
     widget_ext::WidgetApplicationExt,
 };
@@ -11,6 +12,24 @@ glib::wrapper! {
     pub struct Queue(ObjectSubclass<imp::Queue>)
     @extends gtk::Widget, gtk::Box,
         @implements gio::ActionMap, gio::ActionGroup, gtk::Accessible, gtk::Buildable, gtk::ConstraintTarget;
+}
+
+impl TopPage for Queue {
+    fn can_search(&self) -> bool {
+        false
+    }
+
+    fn can_sort(&self) -> bool {
+        false
+    }
+
+    fn can_new(&self) -> bool {
+        false
+    }
+
+    fn reveal_search_bar(&self, _visible: bool) {}
+    fn reveal_sort_bar(&self, _visible: bool) {}
+    fn play_selected(&self) {}
 }
 
 impl Queue {

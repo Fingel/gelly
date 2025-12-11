@@ -6,7 +6,9 @@ use crate::{
         PlaylistModel, SongModel,
         playlist_type::{DEFAULT_SMART_COUNT, PlaylistType},
     },
-    ui::{list_helpers::*, playlist::Playlist, widget_ext::WidgetApplicationExt, window::Window},
+    ui::{
+        list_helpers::*, page_traits::TopPage, playlist::Playlist, widget_ext::WidgetApplicationExt,
+    },
 };
 use glib::Object;
 use gtk::{
@@ -27,6 +29,68 @@ glib::wrapper! {
 pub enum PlaylistSort {
     Name,
     NumSongs,
+}
+
+impl TopPage for PlaylistList {
+    fn can_search(&self) -> bool {
+        true
+    }
+
+    fn can_sort(&self) -> bool {
+        true
+    }
+
+    fn can_new(&self) -> bool {
+        true
+    }
+
+    fn reveal_search_bar(&self, visible: bool) {
+        self.imp().search_bar.set_search_mode(visible);
+    }
+
+    fn reveal_sort_bar(&self, visible: bool) {
+        self.imp().sort_bar.set_search_mode(visible);
+    }
+
+    fn play_selected(&self) {
+        if let Some(selection) = self.imp().grid_view.model()
+            && let Some(single_selection) = selection.downcast_ref::<gtk::SingleSelection>()
+            && let Some(selected_item) = single_selection.selected_item()
+            && let Some(playlist_model) = selected_item.downcast_ref::<PlaylistModel>()
+        {
+            let app = self.get_application();
+            songs_for_playlist(
+                playlist_model,
+                &app,
+                glib::clone!(
+                    #[weak(rename_to=playlist_list)]
+                    self,
+                    move |result: Result<Vec<MusicDto>, JellyfinError>| {
+                        match result {
+                            Ok(music_data) => {
+                                let songs: Vec<SongModel> =
+                                    music_data.iter().map(SongModel::from).collect();
+                                if let Some(audio_model) =
+                                    playlist_list.get_application().audio_model()
+                                {
+                                    audio_model.set_queue(songs, 0);
+                                } else {
+                                    playlist_list
+                                        .toast("No audio model found, please restart.", None);
+                                    log::warn!("No audio model found");
+                                }
+                            }
+                            Err(error) => {
+                                playlist_list
+                                    .toast("Could not load playlist, please try again.", None);
+                                warn!("Unable to load playlist: {error}");
+                            }
+                        }
+                    }
+                ),
+            );
+        }
+    }
 }
 
 impl PlaylistList {
@@ -148,34 +212,6 @@ impl PlaylistList {
         imp.grid_view.set_model(Some(&selection_model));
     }
 
-    pub fn setup_shortcuts_connection(&self) {
-        let window = self.get_root_window();
-        window.connect_closure(
-            "search",
-            false,
-            glib::closure_local!(
-                #[weak(rename_to = playlist_list)]
-                self,
-                move |_: Window| {
-                    playlist_list.imp().search_bar.set_search_mode(true);
-                    playlist_list.imp().sort_bar.set_search_mode(false);
-                }
-            ),
-        );
-        window.connect_closure(
-            "sort",
-            false,
-            glib::closure_local!(
-                #[weak(rename_to = playlist_list)]
-                self,
-                move |_: Window| {
-                    playlist_list.imp().search_bar.set_search_mode(false);
-                    playlist_list.imp().sort_bar.set_search_mode(true);
-                }
-            ),
-        );
-    }
-
     fn setup_model(&self) {
         let imp = self.imp();
         let store = gio::ListStore::new::<PlaylistModel>();
@@ -220,46 +256,6 @@ impl PlaylistList {
     fn set_empty(&self, empty: bool) {
         self.imp().empty.set_visible(empty);
         self.imp().grid_view.set_visible(!empty);
-    }
-
-    pub fn play_selected_playlist(&self) {
-        if let Some(selection) = self.imp().grid_view.model()
-            && let Some(single_selection) = selection.downcast_ref::<gtk::SingleSelection>()
-            && let Some(selected_item) = single_selection.selected_item()
-            && let Some(playlist_model) = selected_item.downcast_ref::<PlaylistModel>()
-        {
-            let app = self.get_application();
-            songs_for_playlist(
-                playlist_model,
-                &app,
-                glib::clone!(
-                    #[weak(rename_to=playlist_list)]
-                    self,
-                    move |result: Result<Vec<MusicDto>, JellyfinError>| {
-                        match result {
-                            Ok(music_data) => {
-                                let songs: Vec<SongModel> =
-                                    music_data.iter().map(SongModel::from).collect();
-                                if let Some(audio_model) =
-                                    playlist_list.get_application().audio_model()
-                                {
-                                    audio_model.set_queue(songs, 0);
-                                } else {
-                                    playlist_list
-                                        .toast("No audio model found, please restart.", None);
-                                    log::warn!("No audio model found");
-                                }
-                            }
-                            Err(error) => {
-                                playlist_list
-                                    .toast("Could not load playlist, please try again.", None);
-                                warn!("Unable to load playlist: {error}");
-                            }
-                        }
-                    }
-                ),
-            );
-        }
     }
 }
 
@@ -348,14 +344,6 @@ mod imp {
                 self.obj(),
                 move |_| {
                     playlist_list.handle_sort_changed();
-                }
-            ));
-
-            self.obj().connect_realize(glib::clone!(
-                #[weak (rename_to = playlist_list)]
-                self.obj(),
-                move |_| {
-                    playlist_list.setup_shortcuts_connection();
                 }
             ));
         }

@@ -2,7 +2,7 @@ use crate::{
     application::Application,
     library_utils::{albums_from_library, play_album},
     models::AlbumModel,
-    ui::{album::Album, list_helpers::*, widget_ext::WidgetApplicationExt, window::Window},
+    ui::{album::Album, list_helpers::*, page_traits::TopPage, widget_ext::WidgetApplicationExt},
 };
 use glib::Object;
 use gtk::{
@@ -24,6 +24,38 @@ pub enum AlbumSort {
     Artist,
     DateAdded,
     Year,
+}
+
+impl TopPage for AlbumList {
+    fn can_search(&self) -> bool {
+        true
+    }
+
+    fn can_sort(&self) -> bool {
+        true
+    }
+
+    fn can_new(&self) -> bool {
+        false
+    }
+
+    fn reveal_search_bar(&self, visible: bool) {
+        self.imp().search_bar.set_search_mode(visible);
+    }
+
+    fn reveal_sort_bar(&self, visible: bool) {
+        self.imp().sort_bar.set_search_mode(visible);
+    }
+
+    fn play_selected(&self) {
+        if let Some(selection) = self.imp().grid_view.model()
+            && let Some(single_selection) = selection.downcast_ref::<gtk::SingleSelection>()
+            && let Some(selected_item) = single_selection.selected_item()
+            && let Some(album_model) = selected_item.downcast_ref::<AlbumModel>()
+        {
+            play_album(&album_model.id(), &self.get_application());
+        }
+    }
 }
 
 impl AlbumList {
@@ -156,36 +188,6 @@ impl AlbumList {
         imp.grid_view.set_model(Some(&selection_model));
     }
 
-    pub fn setup_shortcuts_connection(&self) {
-        let window = self.get_root_window();
-
-        window.connect_closure(
-            "search",
-            false,
-            glib::closure_local!(
-                #[weak(rename_to = album_list)]
-                self,
-                move |_: Window| {
-                    album_list.imp().search_bar.set_search_mode(true);
-                    album_list.imp().sort_bar.set_search_mode(false);
-                }
-            ),
-        );
-
-        window.connect_closure(
-            "sort",
-            false,
-            glib::closure_local!(
-                #[weak(rename_to = album_list)]
-                self,
-                move |_: Window| {
-                    album_list.imp().sort_bar.set_search_mode(true);
-                    album_list.imp().search_bar.set_search_mode(false);
-                }
-            ),
-        );
-    }
-
     fn setup_model(&self) {
         let imp = self.imp();
         let store = gio::ListStore::new::<AlbumModel>();
@@ -235,16 +237,6 @@ impl AlbumList {
     fn set_empty(&self, empty: bool) {
         self.imp().empty.set_visible(empty);
         self.imp().grid_view.set_visible(!empty);
-    }
-
-    pub fn play_selected_album(&self) {
-        if let Some(selection) = self.imp().grid_view.model()
-            && let Some(single_selection) = selection.downcast_ref::<gtk::SingleSelection>()
-            && let Some(selected_item) = single_selection.selected_item()
-            && let Some(album_model) = selected_item.downcast_ref::<AlbumModel>()
-        {
-            play_album(&album_model.id(), &self.get_application());
-        }
     }
 }
 
@@ -335,14 +327,6 @@ mod imp {
                 self.obj(),
                 move |_| {
                     album_list.handle_sort_changed();
-                }
-            ));
-
-            self.obj().connect_realize(glib::clone!(
-                #[weak (rename_to = album_list)]
-                self.obj(),
-                move |_| {
-                    album_list.setup_shortcuts_connection();
                 }
             ));
         }

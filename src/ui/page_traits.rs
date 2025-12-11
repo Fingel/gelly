@@ -16,3 +16,12 @@ pub trait DetailPage {
     fn set_model(&self, model: &Self::Model);
     fn get_model(&self) -> Option<Self::Model>;
 }
+
+pub trait TopPage {
+    fn can_search(&self) -> bool;
+    fn can_sort(&self) -> bool;
+    fn can_new(&self) -> bool;
+    fn reveal_search_bar(&self, visible: bool);
+    fn reveal_sort_bar(&self, visible: bool);
+    fn play_selected(&self);
+}
