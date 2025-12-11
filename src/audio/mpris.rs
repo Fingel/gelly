@@ -1,6 +1,6 @@
 use adw::subclass::prelude::{ObjectSubclassExt, ObjectSubclassIsExt};
 use gtk::{gio, glib, prelude::*};
-use log::{error, info, warn};
+use log::{info, warn};
 use mpris_server::zbus::{self, fdo};
 use mpris_server::{
     LocalPlayerInterface, LocalRootInterface, LocalServer, LoopStatus, Metadata, PlaybackStatus,
