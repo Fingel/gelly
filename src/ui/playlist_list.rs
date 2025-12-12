@@ -1,5 +1,6 @@
 use crate::{
     application::Application,
+    async_utils::spawn_tokio,
     jellyfin::{JellyfinError, api::MusicDto},
     library_utils::songs_for_playlist,
     models::{
@@ -7,7 +8,8 @@ use crate::{
         playlist_type::{DEFAULT_SMART_COUNT, PlaylistType},
     },
     ui::{
-        list_helpers::*, page_traits::TopPage, playlist::Playlist, widget_ext::WidgetApplicationExt,
+        list_helpers::*, page_traits::TopPage, playlist::Playlist, playlist_new_dialog,
+        widget_ext::WidgetApplicationExt,
     },
 };
 use glib::Object;
@@ -17,7 +19,7 @@ use gtk::{
     prelude::*,
     subclass::prelude::*,
 };
-use log::warn;
+use log::{error, warn};
 
 glib::wrapper! {
     pub struct PlaylistList(ObjectSubclass<imp::PlaylistList>)
@@ -91,11 +93,49 @@ impl TopPage for PlaylistList {
             );
         }
     }
+
+    fn create_new(&self) {
+        playlist_new_dialog::show(
+            Some(&self.get_root_window()),
+            glib::clone!(
+                #[weak (rename_to = playlist_list)]
+                self,
+                move |name| {
+                    playlist_list.create_new_playlist(name);
+                }
+            ),
+        );
+    }
 }
 
 impl PlaylistList {
     pub fn new() -> Self {
         Object::builder().build()
+    }
+
+    pub fn create_new_playlist(&self, name: String) {
+        let app = self.get_application();
+        let jellyfin = app.jellyfin();
+        spawn_tokio(
+            async move { jellyfin.new_playlist(&name, vec![]).await },
+            glib::clone!(
+                #[weak (rename_to = playlist_list)]
+                self,
+                move |result| {
+                    match result {
+                        Ok(_id) => {
+                            app.refresh_playlists(true);
+                            playlist_list.toast("Playlist created", None);
+                        }
+                        Err(err) => {
+                            playlist_list
+                                .toast(&format!("Failed to create playlist: {}", err), None);
+                            error!("Failed to create playlist: {}", err);
+                        }
+                    }
+                }
+            ),
+        );
     }
 
     pub fn pull_playlists(&self) {

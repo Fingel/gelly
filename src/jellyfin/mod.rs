@@ -11,7 +11,8 @@ use tokio::time::Instant;
 use crate::cache::LibraryCache;
 use crate::config;
 use crate::jellyfin::api::{
-    LibraryDtoList, MusicDtoList, PlaybackInfo, PlaylistDtoList, PlaylistItems,
+    LibraryDtoList, MusicDtoList, NewPlaylist, NewPlaylistResponse, PlaybackInfo, PlaylistDtoList,
+    PlaylistItems,
 };
 
 pub mod api;
@@ -223,7 +224,7 @@ impl Jellyfin {
             ("sortBy", "DateCreated"),
             ("sortOrder", "Descending"),
             ("recursive", "true"),
-            ("fields", "DateCreated"),
+            ("fields", "DateCreated,ChildCount"),
             ("ImageTypeLimit", "1"),
             ("EnableImageTypes", "Primary"),
             ("StartIndex", "0"),
@@ -289,6 +290,26 @@ impl Jellyfin {
         let params = vec![("entryIds", item_id)];
         self.delete(&path, Some(&params)).await?;
         Ok(())
+    }
+
+    pub async fn new_playlist(
+        &self,
+        name: &str,
+        items: Vec<String>,
+    ) -> Result<String, JellyfinError> {
+        let path = "Playlists/";
+        let body = NewPlaylist {
+            name: name.to_string(),
+            items,
+            user_id: self.user_id.clone(),
+            media_type: "Audio".to_string(),
+            users: vec![],
+            is_public: false,
+        };
+        let response = self.post_json(path, &body).await?;
+        let response = self.handle_response(response).await?;
+        let playlist_response: NewPlaylistResponse = serde_json::from_str(&response)?;
+        Ok(playlist_response.id)
     }
 
     pub fn clear_cache(&self) {

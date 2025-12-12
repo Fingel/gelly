@@ -1,3 +1,5 @@
+use log::warn;
+
 use crate::models::model_traits::ItemModel;
 
 pub trait DetailPage {
@@ -24,4 +26,7 @@ pub trait TopPage {
     fn reveal_search_bar(&self, visible: bool);
     fn reveal_sort_bar(&self, visible: bool);
     fn play_selected(&self);
+    fn create_new(&self) {
+        warn!("New not implemented for this type");
+    }
 }

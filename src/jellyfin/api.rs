@@ -134,3 +134,27 @@ pub struct PlaybackInfo {
     #[serde(deserialize_with = "deserialize_items_skip_errors")]
     pub media_sources: Vec<MediaSource>,
 }
+
+#[derive(Clone, Debug, Serialize)]
+#[serde(rename_all = "PascalCase")]
+pub struct PlaylistUserPermissions {
+    pub user_id: String,
+    pub can_edit: bool,
+}
+
+#[derive(Clone, Debug, Serialize)]
+#[serde(rename_all = "PascalCase")]
+pub struct NewPlaylist {
+    pub name: String,
+    pub items: Vec<String>,
+    pub user_id: String,
+    pub media_type: String,
+    pub users: Vec<PlaylistUserPermissions>,
+    pub is_public: bool,
+}
+
+#[derive(Clone, Debug, Deserialize)]
+#[serde(rename_all = "PascalCase")]
+pub struct NewPlaylistResponse {
+    pub id: String,
+}

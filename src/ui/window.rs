@@ -86,6 +86,7 @@ impl Window {
         imp.main_navigation.replace(&[imp.main_window.get()]);
         imp.search_button.set_visible(page.can_search());
         imp.sort_button.set_visible(page.can_sort());
+        imp.new_button.set_visible(page.can_new());
     }
 
     pub fn show_detail_page<T: DetailPage>(
@@ -273,6 +274,8 @@ mod imp {
         pub sort_button: TemplateChild<gtk::Button>,
         #[template_child]
         pub search_button: TemplateChild<gtk::Button>,
+        #[template_child]
+        pub new_button: TemplateChild<gtk::Button>,
     }
 
     #[glib::object_subclass]
@@ -368,6 +371,18 @@ mod imp {
                 ))
                 .build();
 
+            let action_new = ActionEntry::builder("new")
+                .activate(glib::clone!(
+                    #[weak(rename_to=window)]
+                    self,
+                    move |_, _, _| {
+                        window.obj().call_on_visible_page(|page| {
+                            page.create_new();
+                        });
+                    }
+                ))
+                .build();
+
             let action_play_selected = ActionEntry::builder("play-selected")
                 .activate(glib::clone!(
                     #[weak(rename_to=window)]
@@ -447,6 +462,7 @@ mod imp {
                 action_request_library_rescan,
                 action_search,
                 action_sort,
+                action_new,
                 action_play_selected,
                 action_about,
                 action_shortcuts,

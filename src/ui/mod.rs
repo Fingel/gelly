@@ -15,6 +15,7 @@ pub mod player_bar;
 pub mod playlist;
 pub mod playlist_detail;
 pub mod playlist_list;
+pub mod playlist_new_dialog;
 pub mod queue;
 pub mod setup;
 pub mod shortcuts_dialog;

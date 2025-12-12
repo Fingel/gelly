@@ -138,6 +138,7 @@
                                     <property name="action-name">win.search</property>
                                     <property name="icon-name">edit-find-symbolic</property>
                                     <property name="tooltip-text" translatable="yes">Search</property>
+                                    <property name="visible">true</property>
                                   </object>
                                 </child>
                                 <child type="start">
@@ -145,6 +146,15 @@
                                     <property name="action-name">win.sort</property>
                                     <property name="icon-name">view-sort-descending-symbolic</property>
                                     <property name="tooltip-text" translatable="yes">Sort</property>
+                                    <property name="visible">true</property>
+                                  </object>
+                                </child>
+                                <child type="start">
+                                  <object class="GtkButton" id="new_button">
+                                    <property name="action-name">win.new</property>
+                                    <property name="icon-name">list-add-symbolic</property>
+                                    <property name="tooltip-text" translatable="yes">New</property>
+                                    <property name="visible">false</property>
                                   </object>
                                 </child>
                                 <child type="end">

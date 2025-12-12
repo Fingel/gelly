@@ -100,12 +100,17 @@ impl AudioModel {
     }
 
     pub fn set_queue(&self, songs: Vec<SongModel>, start_index: usize) {
+        let song_len = songs.len();
         self.imp().queue.replace(songs);
-        self.load_song(start_index as i32);
-        self.play();
         self.notify_mpris_can_navigate(true, start_index > 0);
         if self.imp().shuffle_enabled.get() {
             self.new_shuffle_cycle();
+        }
+        if song_len > 0 {
+            self.load_song(start_index as i32);
+            self.play();
+        } else {
+            self.stop();
         }
     }
 
