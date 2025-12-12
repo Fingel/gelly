@@ -61,9 +61,12 @@ impl AlbumArt {
     pub fn show_error(&self) {
         self.set_loading(false);
         self.imp().error_icon.set_visible(true);
+        self.imp().album_image.set_opacity(0.0);
     }
 
     pub fn load_image(&self) {
+        self.imp().error_icon.set_visible(false);
+        self.imp().album_image.set_opacity(1.0);
         let item_id = if self.imp().item_id.borrow().is_empty() {
             return;
         } else {
