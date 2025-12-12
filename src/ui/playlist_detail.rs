@@ -6,13 +6,14 @@ use crate::{
     ui::{
         drag_scrollable::DragScrollable,
         page_traits::DetailPage,
+        playlist_dialogs,
         song::{Song, SongOptions},
         widget_ext::WidgetApplicationExt,
     },
 };
 use glib::Object;
 use gtk::{gio, glib, prelude::*, subclass::prelude::*};
-use log::warn;
+use log::{error, warn};
 
 glib::wrapper! {
     pub struct PlaylistDetail(ObjectSubclass<imp::PlaylistDetail>)
@@ -27,6 +28,7 @@ impl DetailPage for PlaylistDetail {
         let imp = self.imp();
         imp.model.replace(Some(model.clone()));
         imp.name_label.set_text(&model.name());
+        imp.delete.set_sensitive(!model.is_smart());
         if model.is_smart() {
             self.use_static_icon(model.playlist_type().icon_name());
         } else {
@@ -318,6 +320,56 @@ impl PlaylistDetail {
             .playlist_duration
             .set_text(&format_duration(duration));
     }
+
+    fn confirm_delete(&self) {
+        if let Some(model) = self.get_model()
+            && model.is_smart()
+        {
+            self.toast("Smart playlists cannot be deleted", None);
+            return;
+        }
+
+        playlist_dialogs::confirm_delete(
+            Some(&self.get_root_window()),
+            glib::clone!(
+                #[weak (rename_to = playlist_detail)]
+                self,
+                move |delete| {
+                    if delete {
+                        playlist_detail.delete_playlist();
+                    }
+                }
+            ),
+        );
+    }
+
+    fn delete_playlist(&self) {
+        let app = self.get_application();
+        let jellyfin = app.jellyfin();
+        let window = self.get_root_window();
+        let item_id = self.id();
+        spawn_tokio(
+            async move { jellyfin.delete_item(&item_id).await },
+            glib::clone!(
+                #[weak (rename_to = playlist_detail)]
+                self,
+                move |result| {
+                    match result {
+                        Ok(()) => {
+                            app.refresh_playlists(true);
+                            window.go_back();
+                            playlist_detail.toast("Playlist deleted", None);
+                        }
+                        Err(err) => {
+                            playlist_detail
+                                .toast(&format!("Failed to delete playlist: {}", err), None);
+                            error!("Failed to delete playlist: {}", err);
+                        }
+                    }
+                }
+            ),
+        );
+    }
 }
 
 impl Default for PlaylistDetail {
@@ -361,6 +413,8 @@ mod imp {
         pub play_all: TemplateChild<gtk::Button>,
         #[template_child]
         pub enqueue: TemplateChild<gtk::Button>,
+        #[template_child]
+        pub delete: TemplateChild<gtk::Button>,
 
         pub model: RefCell<Option<PlaylistModel>>,
         pub songs: RefCell<Vec<SongModel>>,
@@ -415,6 +469,14 @@ mod imp {
                 self,
                 move |_| {
                     imp.obj().enqueue_playlist();
+                }
+            ));
+
+            self.delete.connect_clicked(glib::clone!(
+                #[weak(rename_to=imp)]
+                self,
+                move |_| {
+                    imp.obj().confirm_delete();
                 }
             ));
         }

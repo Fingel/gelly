@@ -312,6 +312,12 @@ impl Jellyfin {
         Ok(playlist_response.id)
     }
 
+    pub async fn delete_item(&self, item_id: &str) -> Result<(), JellyfinError> {
+        let path = format!("Items/{}", item_id);
+        self.delete(&path, None).await?;
+        Ok(())
+    }
+
     pub fn clear_cache(&self) {
         if let Err(e) = self.cache.clear() {
             warn!("Failed to clear cache: {}", e);

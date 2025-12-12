@@ -104,6 +104,17 @@
                     </style>
                   </object>
                 </child>
+                <child>
+                  <object class="GtkButton" id="delete">
+                    <property
+                      name="icon-name"
+                    >user-trash-symbolic</property>
+                    <property name="tooltip-text">Delete playlist</property>
+                    <style>
+                      <class name="circular" />
+                    </style>
+                  </object>
+                </child>
               </object>
             </child>
           </object>

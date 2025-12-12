@@ -8,7 +8,7 @@ use crate::{
         playlist_type::{DEFAULT_SMART_COUNT, PlaylistType},
     },
     ui::{
-        list_helpers::*, page_traits::TopPage, playlist::Playlist, playlist_new_dialog,
+        list_helpers::*, page_traits::TopPage, playlist::Playlist, playlist_dialogs,
         widget_ext::WidgetApplicationExt,
     },
 };
@@ -95,7 +95,7 @@ impl TopPage for PlaylistList {
     }
 
     fn create_new(&self) {
-        playlist_new_dialog::show(
+        playlist_dialogs::new_playlist(
             Some(&self.get_root_window()),
             glib::clone!(
                 #[weak (rename_to = playlist_list)]

@@ -37,6 +37,10 @@ impl Window {
         self.imp().toaster.add_toast(toast.build());
     }
 
+    pub fn go_back(&self) {
+        self.imp().main_navigation.pop();
+    }
+
     pub fn show_server_setup(&self) {
         let imp = self.imp();
         imp.setup_stack.set_visible_child(&imp.setup.get());
