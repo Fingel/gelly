@@ -5,6 +5,7 @@ use crate::{
     models::{PlaylistModel, SongModel},
     ui::{
         drag_scrollable::DragScrollable,
+        music_context_menu::{ContextActions, construct_menu, create_actiongroup},
         page_traits::DetailPage,
         playlist_dialogs,
         song::{Song, SongOptions},
@@ -12,7 +13,12 @@ use crate::{
     },
 };
 use glib::Object;
-use gtk::{gio, glib, prelude::*, subclass::prelude::*};
+use gtk::{
+    gio::{self, SimpleActionGroup},
+    glib,
+    prelude::*,
+    subclass::prelude::*,
+};
 use log::{error, warn};
 
 glib::wrapper! {
@@ -149,6 +155,96 @@ impl PlaylistDetail {
         }
         self.imp().songs.replace(songs);
         self.update_track_metadata();
+    }
+
+    fn setup_menu(&self) {
+        let options = ContextActions {
+            can_remove_from_playlist: false,
+            in_queue: false,
+            action_prefix: "playlist_detail".to_string(),
+        };
+        let popover_menu = construct_menu(
+            &options,
+            glib::clone!(
+                #[weak(rename_to = playlist_detail)]
+                self,
+                #[upgrade_or_default]
+                move || playlist_detail
+                    .get_application()
+                    .playlists()
+                    .borrow()
+                    .clone()
+            ),
+        );
+        self.imp().action_menu.set_popover(Some(&popover_menu));
+        let action_group = self.create_action_group();
+        self.insert_action_group(&options.action_prefix, Some(&action_group));
+    }
+
+    fn create_action_group(&self) -> SimpleActionGroup {
+        let on_add_to_playlist = glib::clone!(
+            #[weak(rename_to = playlist)]
+            self,
+            move |playlist_id| {
+                playlist.on_add_to_playlist(playlist_id);
+            }
+        );
+
+        let on_queue_next = glib::clone!(
+            #[weak(rename_to = playlist)]
+            self,
+            move || {
+                playlist.enqueue_playlist(false);
+            }
+        );
+
+        let on_queue_last = glib::clone!(
+            #[weak(rename_to = playlist)]
+            self,
+            move || {
+                playlist.enqueue_playlist(true);
+            }
+        );
+
+        create_actiongroup(
+            Some(on_add_to_playlist),
+            None::<fn()>,
+            Some(on_queue_next),
+            Some(on_queue_last),
+        )
+    }
+
+    fn on_add_to_playlist(self, playlist_id: String) {
+        let song_ids = self
+            .imp()
+            .songs
+            .borrow()
+            .iter()
+            .map(|song| song.id())
+            .collect::<Vec<_>>();
+
+        let app = self.get_application();
+        let jellyfin = app.jellyfin();
+        let playlist_id = playlist_id.to_string();
+        spawn_tokio(
+            async move { jellyfin.add_playlist_items(&playlist_id, &song_ids).await },
+            glib::clone!(
+                #[weak(rename_to = playlist)]
+                self,
+                move |result| {
+                    match result {
+                        Ok(()) => {
+                            playlist.toast("Added songs to playlist", None);
+                            app.refresh_playlists(true);
+                        }
+                        Err(e) => {
+                            playlist.toast("Failed to add songs to playlist", None);
+                            warn!("Failed to add songs to playlist: {}", e);
+                        }
+                    }
+                }
+            ),
+        );
     }
 
     fn handle_song_moved(&self, source_index: usize, target_index: usize) {
@@ -300,11 +396,15 @@ impl PlaylistDetail {
         }
     }
 
-    fn enqueue_playlist(&self) {
+    fn enqueue_playlist(&self, to_end: bool) {
         let songs = self.imp().songs.borrow().clone();
         if let Some(audio_model) = self.get_application().audio_model() {
             let song_cnt = songs.len();
-            audio_model.append_to_queue(songs);
+            if to_end {
+                audio_model.append_to_queue(songs);
+            } else {
+                audio_model.prepend_to_queue(songs);
+            }
             self.toast(&format!("{} songs added to queue", song_cnt), None);
         } else {
             self.toast("Audio model not initialized, please restart", None);
@@ -412,7 +512,7 @@ mod imp {
         #[template_child]
         pub play_all: TemplateChild<gtk::Button>,
         #[template_child]
-        pub enqueue: TemplateChild<gtk::Button>,
+        pub action_menu: TemplateChild<gtk::MenuButton>,
         #[template_child]
         pub delete: TemplateChild<gtk::Button>,
 
@@ -440,6 +540,7 @@ mod imp {
     impl ObjectImpl for PlaylistDetail {
         fn constructed(&self) {
             self.parent_constructed();
+            self.obj().setup_menu();
             self.setup_signals();
         }
     }
@@ -461,14 +562,6 @@ mod imp {
                 self,
                 move |_| {
                     imp.obj().play_playlist();
-                }
-            ));
-
-            self.enqueue.connect_clicked(glib::clone!(
-                #[weak(rename_to=imp)]
-                self,
-                move |_| {
-                    imp.obj().enqueue_playlist();
                 }
             ));
 
