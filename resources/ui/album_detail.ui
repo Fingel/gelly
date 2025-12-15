@@ -106,11 +106,11 @@
                   </object>
                 </child>
                 <child>
-                  <object class="GtkButton" id="enqueue">
+                  <object class="GtkMenuButton" id="action_menu">
                     <property
                       name="icon-name"
-                    >list-add-symbolic</property>
-                    <property name="tooltip-text">Add to queue</property>
+                    >view-more-symbolic</property>
+                    <property name="tooltip-text">More Actions</property>
                     <style>
                       <class name="circular" />
                     </style>

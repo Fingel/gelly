@@ -1,11 +1,22 @@
 use crate::{
+    async_utils::spawn_tokio,
     jellyfin::utils::format_duration,
     library_utils::songs_for_album,
     models::AlbumModel,
-    ui::{page_traits::DetailPage, song::Song, widget_ext::WidgetApplicationExt},
+    ui::{
+        music_context_menu::{ContextActions, construct_menu, create_actiongroup},
+        page_traits::DetailPage,
+        song::Song,
+        widget_ext::WidgetApplicationExt,
+    },
 };
 use glib::Object;
-use gtk::{gio, glib, prelude::*, subclass::prelude::*};
+use gtk::{
+    gio::{self, SimpleActionGroup},
+    glib,
+    prelude::*,
+    subclass::prelude::*,
+};
 use log::warn;
 
 glib::wrapper! {
@@ -85,11 +96,15 @@ impl AlbumDetail {
         }
     }
 
-    fn enqueue_album(&self) {
+    fn enqueue_album(&self, to_end: bool) {
         let songs = self.imp().songs.borrow().clone();
         if let Some(audio_model) = self.get_application().audio_model() {
             let song_cnt = songs.len();
-            audio_model.append_to_queue(songs);
+            if to_end {
+                audio_model.append_to_queue(songs);
+            } else {
+                audio_model.prepend_to_queue(songs);
+            }
             self.toast(&format!("{} songs added to queue", song_cnt), None);
         } else {
             self.toast("Audio model not initialized, please restart", None);
@@ -104,6 +119,92 @@ impl AlbumDetail {
         self.imp()
             .album_duration
             .set_text(&format_duration(duration));
+    }
+
+    fn setup_menu(&self) {
+        let options = ContextActions {
+            can_remove_from_playlist: false,
+            in_queue: false,
+            action_prefix: "album".to_string(),
+        };
+        let popover_menu = construct_menu(
+            &options,
+            glib::clone!(
+                #[weak(rename_to = album)]
+                self,
+                #[upgrade_or_default]
+                move || album.get_application().playlists().borrow().clone()
+            ),
+        );
+        self.imp().action_menu.set_popover(Some(&popover_menu));
+        let action_group = self.create_action_group();
+        self.insert_action_group(&options.action_prefix, Some(&action_group));
+    }
+
+    fn create_action_group(&self) -> SimpleActionGroup {
+        let on_add_to_playlist = glib::clone!(
+            #[weak(rename_to = album)]
+            self,
+            move |playlist_id| {
+                album.on_add_to_playlist(playlist_id);
+            }
+        );
+
+        let on_queue_next = glib::clone!(
+            #[weak(rename_to = album)]
+            self,
+            move || {
+                album.enqueue_album(false);
+            }
+        );
+
+        let on_queue_last = glib::clone!(
+            #[weak(rename_to = album)]
+            self,
+            move || {
+                album.enqueue_album(true);
+            }
+        );
+
+        create_actiongroup(
+            Some(on_add_to_playlist),
+            None::<fn()>,
+            Some(on_queue_next),
+            Some(on_queue_last),
+        )
+    }
+
+    fn on_add_to_playlist(&self, playlist_id: String) {
+        let song_ids = self
+            .imp()
+            .songs
+            .borrow()
+            .iter()
+            .map(|song| song.id())
+            .collect::<Vec<_>>();
+
+        let app = self.get_application();
+        let jellyfin = app.jellyfin();
+        let playlist_id = playlist_id.to_string();
+        spawn_tokio(
+            async move { jellyfin.add_playlist_items(&playlist_id, &song_ids).await },
+            glib::clone!(
+                #[weak(rename_to = album)]
+                self,
+                move |result| {
+                    match result {
+                        Ok(()) => {
+                            album.toast("Added album to playlist", None);
+                            app.refresh_playlists(true);
+                        }
+                        Err(e) => {
+                            album.toast("Failed to add album to playlist", None);
+                            warn!("Failed to add album to playlist: {}", e);
+                        }
+                    }
+                }
+            ),
+        );
     }
 }
 
@@ -149,7 +250,7 @@ mod imp {
         #[template_child]
         pub play_all: TemplateChild<gtk::Button>,
         #[template_child]
-        pub enqueue: TemplateChild<gtk::Button>,
+        pub action_menu: TemplateChild<gtk::MenuButton>,
 
         pub model: RefCell<Option<AlbumModel>>,
         pub songs: RefCell<Vec<SongModel>>,
@@ -174,6 +275,7 @@ mod imp {
     impl ObjectImpl for AlbumDetail {
         fn constructed(&self) {
             self.parent_constructed();
+            self.obj().setup_menu();
             self.setup_signals();
         }
     }
@@ -195,14 +297,6 @@ mod imp {
                 self,
                 move |_| {
                     imp.obj().play_album();
-                }
-            ));
-
-            self.enqueue.connect_clicked(glib::clone!(
-                #[weak(rename_to=imp)]
-                self,
-                move |_| {
-                    imp.obj().enqueue_album();
                 }
             ));
         }

@@ -254,13 +254,14 @@ impl Jellyfin {
         Ok(serde_json::from_str(&body)?)
     }
 
-    pub async fn add_playlist_item(
+    pub async fn add_playlist_items(
         &self,
         playlist_id: &str,
-        item_id: &str,
+        item_ids: &[String],
     ) -> Result<(), JellyfinError> {
         let path = format!("Playlists/{}/Items", playlist_id);
-        let params = vec![("ids", item_id), ("userId", &self.user_id)];
+        let ids = item_ids.join(",");
+        let params = vec![("ids", ids.as_str()), ("userId", &self.user_id)];
         let response = self.post(&path, Some(&params), None).await?;
         self.handle_response(response).await?;
         Ok(())

@@ -2,7 +2,8 @@ use glib::Object;
 use gtk::{
     DragSource, DropTarget,
     gdk::{ContentProvider, Drag, DragAction},
-    gio, glib,
+    gio::SimpleActionGroup,
+    glib,
     prelude::*,
     subclass::prelude::*,
 };
@@ -14,7 +15,11 @@ use crate::{
     jellyfin::utils::format_duration,
     library_utils::find_song,
     models::SongModel,
-    ui::{drag_scrollable, widget_ext::WidgetApplicationExt},
+    ui::{
+        drag_scrollable,
+        music_context_menu::{ContextActions, construct_menu, create_actiongroup},
+        widget_ext::WidgetApplicationExt,
+    },
 };
 
 glib::wrapper! {
@@ -188,114 +193,67 @@ impl Song {
     }
 
     fn setup_menu(&self) {
-        // We want to populate the menu lazily so playlists are always up to date
-        let empty_menu = gio::Menu::new();
-        let popover_menu = gtk::PopoverMenu::from_model(Some(&empty_menu));
-        popover_menu.connect_show(glib::clone!(
-            #[weak(rename_to=song)]
-            self,
-            move |popover| {
-                let menu_model = song.create_menu_model();
-                popover.set_menu_model(Some(&menu_model));
-            }
-        ));
+        let options = ContextActions {
+            can_remove_from_playlist: self.imp().in_playlist.get(),
+            in_queue: self.imp().in_queue.get(),
+            action_prefix: "song".to_string(),
+        };
+        let popover_menu = construct_menu(
+            &options,
+            glib::clone!(
+                #[weak(rename_to = song)]
+                self,
+                #[upgrade_or_default]
+                move || song.get_application().playlists().borrow().clone()
+            ),
+        );
         self.imp().song_menu.set_popover(Some(&popover_menu));
-        self.setup_actions();
+        let action_group = self.create_action_group();
+        self.insert_action_group(&options.action_prefix, Some(&action_group));
     }
 
-    fn create_menu_model(&self) -> gio::Menu {
-        let in_playlist = self.imp().in_playlist.get();
-        let in_queue = self.imp().in_queue.get();
-        let menu = gio::Menu::new();
-
-        // Queue section
-        if !in_queue {
-            let queue_section = gio::Menu::new();
-            queue_section.append(Some("Queue Next"), Some("song.queue_next"));
-            queue_section.append(Some("Queue Last"), Some("song.queue_last"));
-            menu.append_section(None, &queue_section);
-        }
-        // Playlist section
-        let playlist_section = gio::Menu::new();
-
-        // Create a sub-menu for each playlist that is created when "Add to playlist..." is selected
-        let playlists = self.get_application().playlists().borrow().clone();
-        if !playlists.is_empty() {
-            let playlist_submenu = gio::Menu::new();
-            for playlist in playlists.iter() {
-                let playlist_name = playlist.name.clone();
-                let playlist_id = playlist.id.clone();
-                let menu_item =
-                    gio::MenuItem::new(Some(&playlist_name), Some("song.add_to_playlist"));
-                menu_item.set_action_and_target_value(
-                    Some("song.add_to_playlist"),
-                    Some(&playlist_id.to_variant()),
-                );
-                playlist_submenu.append_item(&menu_item);
-            }
-            playlist_section.append_submenu(Some("Add to Playlist"), &playlist_submenu);
-        }
-
-        // Only add "Remove from Playlist" if we're actually in a playlist
-        if in_playlist {
-            playlist_section.append(Some("Remove from Playlist"), Some("song.remove_playlist"));
-        }
-
-        menu.append_section(None, &playlist_section);
-
-        menu
-    }
-
-    fn setup_actions(&self) {
-        let action_group = gio::SimpleActionGroup::new();
-
-        let add_to_playlist_action =
-            gio::SimpleAction::new("add_to_playlist", Some(glib::VariantTy::STRING));
-        add_to_playlist_action.connect_activate(glib::clone!(
+    fn create_action_group(&self) -> SimpleActionGroup {
+        let on_add_to_playlist = glib::clone!(
             #[weak(rename_to = song)]
             self,
-            move |_, playlist_id| {
-                if let Some(playlist_id) = playlist_id.and_then(|id| id.get::<String>()) {
-                    song.on_add_to_playlist(&playlist_id);
-                }
+            move |playlist_id| {
+                song.on_add_to_playlist(playlist_id);
             }
-        ));
-        action_group.add_action(&add_to_playlist_action);
+        );
 
-        let remove_playlist_action = gio::SimpleAction::new("remove_playlist", None);
-        remove_playlist_action.connect_activate(glib::clone!(
+        let on_remove_from_playlist = glib::clone!(
             #[weak(rename_to = song)]
             self,
-            move |_, _| {
+            move || {
                 song.on_remove_from_playlist();
             }
-        ));
-        action_group.add_action(&remove_playlist_action);
+        );
 
-        let queue_next_action = gio::SimpleAction::new("queue_next", None);
-        queue_next_action.connect_activate(glib::clone!(
+        let on_queue_next = glib::clone!(
             #[weak(rename_to = song)]
             self,
-            move |_, _| {
+            move || {
                 song.on_queue_next();
             }
-        ));
-        action_group.add_action(&queue_next_action);
+        );
 
-        let queue_last_action = gio::SimpleAction::new("queue_last", None);
-        queue_last_action.connect_activate(glib::clone!(
+        let on_queue_last = glib::clone!(
             #[weak(rename_to = song)]
             self,
-            move |_, _| {
+            move || {
                 song.on_queue_last();
             }
-        ));
-        action_group.add_action(&queue_last_action);
+        );
 
-        self.insert_action_group("song", Some(&action_group));
+        create_actiongroup(
+            Some(on_add_to_playlist),
+            Some(on_remove_from_playlist),
+            Some(on_queue_next),
+            Some(on_queue_last),
+        )
     }
 
-    fn on_add_to_playlist(&self, playlist_id: &str) {
+    fn on_add_to_playlist(&self, playlist_id: String) {
         let Some(song_id) = self.imp().item_id.borrow().clone() else {
             return;
         };
@@ -304,7 +262,7 @@ impl Song {
         let jellyfin = app.jellyfin();
         let playlist_id = playlist_id.to_string();
         spawn_tokio(
-            async move { jellyfin.add_playlist_item(&playlist_id, &song_id).await },
+            async move { jellyfin.add_playlist_items(&playlist_id, &[song_id]).await },
             glib::clone!(
                 #[weak(rename_to = song)]
                 self,

@@ -10,6 +10,7 @@ pub mod drag_scrollable;
 pub mod image_utils;
 pub mod list_helpers;
 pub mod media_card;
+pub mod music_context_menu;
 pub mod page_traits;
 pub mod player_bar;
 pub mod playlist;
