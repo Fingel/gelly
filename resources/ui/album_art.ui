@@ -12,10 +12,14 @@
     <child>
       <object class="GtkOverlay">
         <child>
-          <object class="GtkImage" id="album_image">
+          <object class="GtkFrame" id="image_frame">
             <style>
-              <class name="album-image"/>
+              <class name="album-image-frame"/>
             </style>
+            <property name="child">
+              <object class="GtkImage" id="album_image">
+              </object>
+            </property>
           </object>
         </child>
         <child type="overlay">
