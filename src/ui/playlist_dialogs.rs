@@ -41,6 +41,14 @@ pub fn new_playlist(parent: Option<&Window>, cb: impl Fn(String) + 'static) {
     );
 
     dialog.present(parent);
+
+    glib::idle_add_local_once(glib::clone!(
+        #[weak]
+        name_entry,
+        move || {
+            name_entry.grab_focus();
+        }
+    ));
 }
 
 pub fn confirm_delete(parent: Option<&Window>, cb: impl Fn(bool) + 'static) {
