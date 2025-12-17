@@ -361,12 +361,18 @@ impl Jellyfin {
     pub fn get_stream_uri(&self, item_id: &str) -> String {
         // Prioritize FLAC for lossless audio, with fallbacks for compatibility
         let containers = "flac,opus,mp3,aac,m4a,ogg,wav,webm|opus,webm|webma,webma";
+        let tc_audio_codec = "opus";
+        let tc_container = "mp4";
+        let stream_protocol = "hls";
         format!(
-            "{}/Audio/{item_id}/universal?api_key={}&userId={}&container={}&audioCodec=aac&transcodingContainer=ts&transcodingProtocol=hls",
+            "{}/Audio/{item_id}/universal?api_key={}&userId={}&container={}&audioCodec={}&transcodingContainer={}&transcodingProtocol={}",
             self.host.trim_end_matches("/"),
             self.token,
             self.user_id,
-            containers
+            containers,
+            tc_audio_codec,
+            tc_container,
+            stream_protocol
         )
     }
 

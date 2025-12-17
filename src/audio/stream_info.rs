@@ -83,7 +83,7 @@ pub fn discover_stream_info(
                     if let Some(tags) = audio_stream.tags() {
                         // Bit Rate
                         if let Some(bitrate_tag) = tags.get::<gst::tags::Bitrate>() {
-                            stream_info.bit_rate = Some(bitrate_tag.get());
+                            stream_info.bit_rate = Some(bitrate_tag.get() / 1000);
                         }
                         // Encoder information
                         if let Some(encoder_tag) = tags.get::<gst::tags::Encoder>() {
