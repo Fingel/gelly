@@ -1,12 +1,16 @@
-use crate::ui::{
-    drag_scrollable::DragScrollable,
-    page_traits::TopPage,
-    song::{Song, SongOptions},
-    widget_ext::WidgetApplicationExt,
+use crate::{
+    async_utils::spawn_tokio,
+    ui::{
+        drag_scrollable::DragScrollable,
+        page_traits::TopPage,
+        playlist_dialogs,
+        song::{Song, SongOptions},
+        widget_ext::WidgetApplicationExt,
+    },
 };
 use glib::Object;
 use gtk::{gio, glib, prelude::*, subclass::prelude::*};
-use log::warn;
+use log::{error, warn};
 
 glib::wrapper! {
     pub struct Queue(ObjectSubclass<imp::Queue>)
@@ -130,6 +134,49 @@ impl Queue {
             self.display_queue();
         }
     }
+
+    pub fn save_as_playlist(&self) {
+        let window = self.get_root_window();
+        let Some(audio_model) = self.get_application().audio_model() else {
+            warn!("No audio model found");
+            return;
+        };
+        let song_ids: Vec<String> = audio_model.queue().iter().map(|song| song.id()).collect();
+        playlist_dialogs::new_playlist(
+            Some(&window),
+            glib::clone!(
+                #[weak (rename_to = queue)]
+                self,
+                move |playlist_name| {
+                    queue.create_new_playlist(playlist_name, song_ids.clone());
+                }
+            ),
+        );
+    }
+
+    fn create_new_playlist(&self, name: String, song_ids: Vec<String>) {
+        let app = self.get_application();
+        let jellyfin = app.jellyfin();
+        spawn_tokio(
+            async move { jellyfin.new_playlist(&name, song_ids).await },
+            glib::clone!(
+                #[weak (rename_to = queue)]
+                self,
+                move |result| {
+                    match result {
+                        Ok(_id) => {
+                            app.refresh_playlists(true);
+                            queue.toast("Playlist created", None);
+                        }
+                        Err(err) => {
+                            queue.toast(&format!("Failed to create playlist: {}", err), None);
+                            error!("Failed to create playlist: {}", err);
+                        }
+                    }
+                }
+            ),
+        );
+    }
 }
 
 impl Default for Queue {
@@ -160,6 +207,8 @@ mod imp {
         pub queue_box: TemplateChild<gtk::Box>,
         #[template_child]
         pub clear_queue: TemplateChild<gtk::Button>,
+        #[template_child]
+        pub save_as_playlist: TemplateChild<gtk::Button>,
 
         pub last_drag_focused: Cell<Option<i32>>,
     }
@@ -211,6 +260,14 @@ mod imp {
                 self,
                 move |_| {
                     imp.obj().clear_queue();
+                }
+            ));
+
+            self.save_as_playlist.connect_clicked(glib::clone!(
+                #[weak(rename_to=imp)]
+                self,
+                move |_| {
+                    imp.obj().save_as_playlist();
                 }
             ));
         }

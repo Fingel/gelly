@@ -301,7 +301,7 @@ impl Jellyfin {
         let path = "Playlists/";
         let body = NewPlaylist {
             name: name.to_string(),
-            items,
+            ids: items,
             user_id: self.user_id.clone(),
             media_type: "Audio".to_string(),
             users: vec![],

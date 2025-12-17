@@ -146,7 +146,7 @@ pub struct PlaylistUserPermissions {
 #[serde(rename_all = "PascalCase")]
 pub struct NewPlaylist {
     pub name: String,
-    pub items: Vec<String>,
+    pub ids: Vec<String>,
     pub user_id: String,
     pub media_type: String,
     pub users: Vec<PlaylistUserPermissions>,

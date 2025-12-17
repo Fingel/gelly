@@ -29,6 +29,7 @@
                     <child>
                       <object class="GtkBox" id="queue_toolbar">
                         <property name="orientation">horizontal</property>
+                        <property name="spacing">6</property>
                         <property name="halign">end</property>
                         <style>
                           <class name="toolbar"/>
@@ -36,6 +37,11 @@
                         <child>
                           <object class="GtkButton" id="clear_queue">
                             <property name="label" translatable="yes">Clear All</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkButton" id="save_as_playlist">
+                            <property name="label" translatable="yes">Save as Playlist</property>
                           </object>
                         </child>
                       </object>
