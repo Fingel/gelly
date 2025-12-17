@@ -13,7 +13,6 @@ use crate::{
     async_utils::spawn_tokio,
     audio::model::AudioModel,
     jellyfin::utils::format_duration,
-    library_utils::find_song,
     models::SongModel,
     ui::{
         drag_scrollable,
@@ -292,7 +291,12 @@ impl Song {
         if let Some(song_id) = self.imp().item_id.borrow().clone() {
             let app = self.get_application();
             if let Some(audio_model) = app.audio_model()
-                && let Some(song) = find_song(&song_id, &app)
+                && let Some(song) = app
+                    .library()
+                    .borrow()
+                    .iter()
+                    .find(|song| song.id == song_id)
+                    .map(SongModel::from)
             {
                 audio_model.prepend_to_queue(vec![song]);
             }
@@ -303,7 +307,12 @@ impl Song {
         if let Some(song_id) = self.imp().item_id.borrow().clone() {
             let app = self.get_application();
             if let Some(audio_model) = app.audio_model()
-                && let Some(song) = find_song(&song_id, &app)
+                && let Some(song) = app
+                    .library()
+                    .borrow()
+                    .iter()
+                    .find(|song| song.id == song_id)
+                    .map(SongModel::from)
             {
                 audio_model.append_to_queue(vec![song]);
             }
