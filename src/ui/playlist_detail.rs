@@ -72,6 +72,7 @@ impl PlaylistDetail {
             warn!("No playlist model set");
             return;
         };
+        self.imp().track_list.remove_all();
         let app = self.get_application();
         songs_for_playlist(
             &playlist_model,
@@ -98,8 +99,6 @@ impl PlaylistDetail {
     }
 
     fn populate_tracks_with_songs(&self, songs: Vec<SongModel>) {
-        let track_list = &self.imp().track_list;
-        track_list.remove_all();
         // Smart playlists cannot be reordered
         let is_smart_playlist = self.get_model().map(|p| p.is_smart()).unwrap_or(true);
 
@@ -151,7 +150,7 @@ impl PlaylistDetail {
                 song_widget.set_playing(true);
             }
 
-            track_list.append(&song_widget);
+            self.imp().track_list.append(&song_widget);
         }
         self.imp().songs.replace(songs);
         self.update_track_metadata();
