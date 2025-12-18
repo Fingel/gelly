@@ -11,7 +11,7 @@ schemas:
 release:
     cargo build --release
 
-install: release
+install:
     install -Dm755 target/release/gelly {{prefix}}/bin/gelly
     install -Dm644 resources/io.m51.Gelly.desktop {{prefix}}/share/applications/io.m51.Gelly.desktop
     install -Dm644 resources/io.m51.Gelly.metainfo.xml {{prefix}}/share/metainfo/io.m51.Gelly.metainfo.xml
