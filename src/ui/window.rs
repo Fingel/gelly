@@ -505,25 +505,12 @@ mod imp {
                     );
 
                     app.connect_closure(
-                        "library-refresh-start",
-                        false,
-                        glib::closure_local!(
-                            #[weak]
-                            window,
-                            move |_app: Application| {
-                                window.loading_visible(true);
-                            }
-                        ),
-                    );
-
-                    app.connect_closure(
                         "library-refreshed",
                         false,
                         glib::closure_local!(
                             #[weak]
                             window,
                             move |_app: Application, total_record_count: u64| {
-                                window.loading_visible(false);
                                 window.toast(
                                     &format!("{} items added to library", total_record_count),
                                     None,
@@ -558,6 +545,22 @@ mod imp {
                             }
                         ),
                     );
+
+                    app.connect_closure("http-request-start", false, glib::closure_local!(
+                        #[weak]
+                        window,
+                        move |_app: Application| {
+                            window.loading_visible(true);
+                        }
+                    ));
+
+                    app.connect_closure("http-request-end", false, glib::closure_local!(
+                        #[weak]
+                        window,
+                        move |_app: Application| {
+                            window.loading_visible(false);
+                        }
+                    ));
                 }
             ));
         }

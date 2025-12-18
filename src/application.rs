@@ -13,6 +13,7 @@ use crate::jellyfin::{Jellyfin, JellyfinError};
 use log::error;
 use std::cell::RefCell;
 use std::rc::Rc;
+use std::sync::atomic::Ordering;
 
 glib::wrapper! {
     pub struct Application(ObjectSubclass<imp::Application>)
@@ -137,7 +138,7 @@ impl Application {
         self.emit_by_name::<()>("library-refresh-start", &[]);
         let library_id = self.imp().library_id.borrow().clone();
         let jellyfin = self.jellyfin();
-        spawn_tokio(
+        self.http_with_loading(
             async move { jellyfin.get_library(&library_id, refresh).await },
             glib::clone!(
                 #[weak(rename_to=app)]
@@ -158,7 +159,7 @@ impl Application {
 
     pub fn refresh_playlists(&self, refresh_cache: bool) {
         let jellyfin = self.jellyfin();
-        spawn_tokio(
+        self.http_with_loading(
             async move { jellyfin.get_playlists(refresh_cache).await },
             glib::clone!(
                 #[weak(rename_to=app)]
@@ -208,6 +209,43 @@ impl Application {
         self.imp().library_id.replace(String::new());
         config::logout();
     }
+
+    /// Emit signals when HTTP requests start, and when all are complete.
+    /// Mainly used in window.rs to display the loading pulse.
+    pub fn http_with_loading<F, T, E>(
+        &self,
+        operation: F,
+        callback: impl Fn(Result<T, E>) + 'static,
+    ) where
+        F: Future<Output = Result<T, E>> + Send + 'static,
+        T: Send + 'static,
+        E: Send + 'static,
+    {
+        let previous_count = self
+            .imp()
+            .http_request_count
+            .fetch_add(1, Ordering::Relaxed);
+        if previous_count == 0 {
+            // Only emit signal on first concurrent request
+            self.emit_by_name::<()>("http-request-start", &[]);
+        }
+        spawn_tokio(
+            operation,
+            glib::clone!(
+                #[weak (rename_to = app)]
+                self,
+                move |result| {
+                    let previous_count =
+                        app.imp().http_request_count.fetch_sub(1, Ordering::Relaxed);
+                    if previous_count == 1 {
+                        // Only emit signal when all requests are complete
+                        app.emit_by_name::<()>("http-request-end", &[]);
+                    }
+                    callback(result);
+                }
+            ),
+        );
+    }
 }
 
 impl Default for Application {
@@ -224,6 +262,7 @@ mod imp {
     use std::cell::RefCell;
     use std::rc::Rc;
     use std::sync::OnceLock;
+    use std::sync::atomic::AtomicU32;
 
     use crate::audio::model::AudioModel;
     use crate::cache::ImageCache;
@@ -238,6 +277,7 @@ mod imp {
         pub library_id: RefCell<String>,
         pub image_cache: RefCell<Option<ImageCache>>,
         pub audio_model: RefCell<Option<AudioModel>>,
+        pub http_request_count: AtomicU32,
     }
 
     #[glib::object_subclass]
@@ -264,6 +304,8 @@ mod imp {
                     Signal::builder("global-error")
                         .param_types([String::static_type()])
                         .build(),
+                    Signal::builder("http-request-start").build(),
+                    Signal::builder("http-request-end").build(),
                 ]
             })
         }

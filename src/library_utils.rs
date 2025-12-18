@@ -1,5 +1,4 @@
 use crate::application::Application;
-use crate::async_utils::spawn_tokio;
 use crate::jellyfin::JellyfinError;
 use crate::jellyfin::api::MusicDto;
 use crate::models::{AlbumModel, ArtistModel, PlaylistModel, SongModel};
@@ -70,7 +69,7 @@ pub fn songs_for_playlist(
     let library_data = app.library().borrow().clone();
     let jellyfin = app.jellyfin();
     let playlist_type = playlist_model.playlist_type();
-    spawn_tokio(
+    app.http_with_loading(
         async move { playlist_type.load_song_data(&jellyfin, &library_data).await },
         cb,
     );
