@@ -12,20 +12,25 @@ env:
 jobs:
   build:
     runs-on: ubuntu-latest
+    container: fedora:43
 
     steps:
       - uses: actions/checkout@v4
 
       - name: Install system dependencies
         run: |
-          sudo apt-get update
-          sudo apt-get install -y \
-            libgtk-4-dev \
-            libadwaita-1-dev \
-            libgstreamer1.0-dev \
-            libgstreamer-plugins-base1.0-dev \
-            libdbus-1-dev \
-            pkg-config
+          dnf update -y
+          dnf install -y \
+            gtk4-devel \
+            libadwaita-devel \
+            gstreamer1-devel \
+            gstreamer1-plugins-base-devel \
+            dbus-devel \
+            pkgconf-pkg-config \
+            rust \
+            cargo \
+            gcc \
+            gcc-c++
 
       - name: Check formatting
         run: cargo fmt --check
