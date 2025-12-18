@@ -128,6 +128,7 @@
                     </child>
                     <child>
                       <object class="GtkListBox">
+                        <property name="margin-bottom">24</property>
                         <style>
                           <class name="boxed-list"/>
                         </style>

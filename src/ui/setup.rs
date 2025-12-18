@@ -89,7 +89,8 @@ impl Setup {
         let host = host.to_string();
         let username = username.to_string();
         let password = password.to_string();
-        spawn_tokio(
+        self.imp().connect_button.set_sensitive(false);
+        app.http_with_loading(
             async move { Jellyfin::new_authenticate(&host, &username, &password).await },
             glib::clone!(
                 #[weak(rename_to=setup)]
@@ -100,6 +101,7 @@ impl Setup {
                             let user_id = jellyfin.user_id.clone();
                             let token = jellyfin.token.clone();
                             let host = jellyfin.host.clone();
+                            let app = setup.get_application();
                             app.imp().jellyfin.replace(jellyfin);
                             if let Err(err) = setup.save_server_settings(&host, &user_id, &token) {
                                 setup.toast("Credentials could not be saved. Do you have a keyring daemon running?", None);
@@ -109,6 +111,7 @@ impl Setup {
                         }
                         Err(err) => setup.handle_connection_error(err),
                     }
+                    setup.imp().connect_button.set_sensitive(true);
                 }
             ),
         );
