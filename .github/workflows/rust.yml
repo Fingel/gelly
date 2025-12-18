@@ -29,6 +29,8 @@ jobs:
             pkgconf-pkg-config \
             rust \
             cargo \
+            rustfmt \
+            clippy \
             gcc \
             gcc-c++
 
