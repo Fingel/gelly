@@ -25,6 +25,7 @@ jobs:
             libadwaita-devel \
             gstreamer1-devel \
             gstreamer1-plugins-base-devel \
+            openssl-devel \
             dbus-devel \
             pkgconf-pkg-config \
             rust \
