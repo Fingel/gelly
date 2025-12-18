@@ -13,40 +13,53 @@
     <property name="content">
       <object class="AdwToastOverlay" id="toaster">
         <child>
-          <object class="GtkBox" id="player_box">
-            <property name="orientation">vertical</property>
+          <object class="GtkOverlay">
+            <child type="overlay">
+              <object class="GtkProgressBar" id="progress_bar">
+                <property name="valign">start</property>
+                <property name="visible">false</property>
+                <style>
+                  <class name="osd" />
+                </style>
+              </object>
+            </child>
             <child>
-              <object class="GtkStack" id="setup_stack">
+              <object class="GtkBox" id="player_box">
+                <property name="orientation">vertical</property>
                 <child>
-                  <object class="GellySetup" id="setup">
-                  </object>
-                </child>
-                <child>
-                  <object class="AdwNavigationView" id="main_navigation">
+                  <object class="GtkStack" id="setup_stack">
                     <child>
-                      <object class="AdwNavigationPage" id="album_detail_page">
-                        <property name="title" translatable="yes">Album Detail</property>
+                      <object class="GellySetup" id="setup">
+                      </object>
+                    </child>
+                    <child>
+                      <object class="AdwNavigationView" id="main_navigation">
                         <child>
-                          <object class="GtkBox">
-                            <property name="orientation">1</property>
+                          <object class="AdwNavigationPage" id="album_detail_page">
+                            <property name="title" translatable="yes">Album Detail</property>
                             <child>
-                              <object class="AdwHeaderBar">
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkScrolledWindow">
-                                <property name="hscrollbar-policy">never</property>
-                                <property name="vscrollbar-policy">automatic</property>
-                                <property name="propagate-natural-height">true</property>
-                                <property name="has-frame">false</property>
-                                <property name="vexpand">true</property>
+                              <object class="GtkBox">
+                                <property name="orientation">1</property>
                                 <child>
-                                  <object class="AdwClamp">
-                                    <property name="margin-bottom">48</property>
-                                    <property name="margin-top">48</property>
-                                    <property name="maximum-size">1000</property>
+                                  <object class="AdwHeaderBar">
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="GtkScrolledWindow">
+                                    <property name="hscrollbar-policy">never</property>
+                                    <property name="vscrollbar-policy">automatic</property>
+                                    <property name="propagate-natural-height">true</property>
+                                    <property name="has-frame">false</property>
+                                    <property name="vexpand">true</property>
                                     <child>
-                                      <object class="GellyAlbumDetail" id="album_detail">
+                                      <object class="AdwClamp">
+                                        <property name="margin-bottom">48</property>
+                                        <property name="margin-top">48</property>
+                                        <property name="maximum-size">1000</property>
+                                        <child>
+                                          <object class="GellyAlbumDetail" id="album_detail">
+                                          </object>
+                                        </child>
                                       </object>
                                     </child>
                                   </object>
@@ -55,32 +68,32 @@
                             </child>
                           </object>
                         </child>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="AdwNavigationPage" id="artist_detail_page">
-                        <property name="title" translatable="yes">Artist Detail</property>
                         <child>
-                          <object class="GtkBox">
-                            <property name="orientation">1</property>
+                          <object class="AdwNavigationPage" id="artist_detail_page">
+                            <property name="title" translatable="yes">Artist Detail</property>
                             <child>
-                              <object class="AdwHeaderBar">
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkScrolledWindow">
-                                <property name="hscrollbar-policy">never</property>
-                                <property name="vscrollbar-policy">automatic</property>
-                                <property name="propagate-natural-height">true</property>
-                                <property name="has-frame">false</property>
-                                <property name="vexpand">true</property>
+                              <object class="GtkBox">
+                                <property name="orientation">1</property>
                                 <child>
-                                  <object class="AdwClamp">
-                                    <property name="margin-bottom">48</property>
-                                    <property name="margin-top">48</property>
-                                    <property name="maximum-size">1000</property>
+                                  <object class="AdwHeaderBar">
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="GtkScrolledWindow">
+                                    <property name="hscrollbar-policy">never</property>
+                                    <property name="vscrollbar-policy">automatic</property>
+                                    <property name="propagate-natural-height">true</property>
+                                    <property name="has-frame">false</property>
+                                    <property name="vexpand">true</property>
                                     <child>
-                                      <object class="GellyArtistDetail" id="artist_detail">
+                                      <object class="AdwClamp">
+                                        <property name="margin-bottom">48</property>
+                                        <property name="margin-top">48</property>
+                                        <property name="maximum-size">1000</property>
+                                        <child>
+                                          <object class="GellyArtistDetail" id="artist_detail">
+                                          </object>
+                                        </child>
                                       </object>
                                     </child>
                                   </object>
@@ -89,32 +102,32 @@
                             </child>
                           </object>
                         </child>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="AdwNavigationPage" id="playlist_detail_page">
-                        <property name="title" translatable="yes">Playlist Detail</property>
                         <child>
-                          <object class="GtkBox">
-                            <property name="orientation">1</property>
+                          <object class="AdwNavigationPage" id="playlist_detail_page">
+                            <property name="title" translatable="yes">Playlist Detail</property>
                             <child>
-                              <object class="AdwHeaderBar">
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkScrolledWindow">
-                                <property name="hscrollbar-policy">never</property>
-                                <property name="vscrollbar-policy">automatic</property>
-                                <property name="propagate-natural-height">true</property>
-                                <property name="has-frame">false</property>
-                                <property name="vexpand">true</property>
+                              <object class="GtkBox">
+                                <property name="orientation">1</property>
                                 <child>
-                                  <object class="AdwClamp">
-                                    <property name="margin-bottom">48</property>
-                                    <property name="margin-top">48</property>
-                                    <property name="maximum-size">1000</property>
+                                  <object class="AdwHeaderBar">
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="GtkScrolledWindow">
+                                    <property name="hscrollbar-policy">never</property>
+                                    <property name="vscrollbar-policy">automatic</property>
+                                    <property name="propagate-natural-height">true</property>
+                                    <property name="has-frame">false</property>
+                                    <property name="vexpand">true</property>
                                     <child>
-                                      <object class="GellyPlaylistDetail" id="playlist_detail">
+                                      <object class="AdwClamp">
+                                        <property name="margin-bottom">48</property>
+                                        <property name="margin-top">48</property>
+                                        <property name="maximum-size">1000</property>
+                                        <child>
+                                          <object class="GellyPlaylistDetail" id="playlist_detail">
+                                          </object>
+                                        </child>
                                       </object>
                                     </child>
                                   </object>
@@ -123,64 +136,51 @@
                             </child>
                           </object>
                         </child>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="AdwNavigationPage" id="main_window">
-                        <property name="title" translatable="yes">Main</property>
                         <child>
-                          <object class="GtkBox">
-                            <property name="orientation">1</property>
+                          <object class="AdwNavigationPage" id="main_window">
+                            <property name="title" translatable="yes">Main</property>
                             <child>
-                              <object class="AdwHeaderBar" id="header_bar">
-                                <child type="start">
-                                  <object class="GtkButton" id="search_button">
-                                    <property name="action-name">win.search</property>
-                                    <property name="icon-name">edit-find-symbolic</property>
-                                    <property name="tooltip-text" translatable="yes">Search</property>
-                                    <property name="visible">true</property>
-                                  </object>
-                                </child>
-                                <child type="start">
-                                  <object class="GtkButton" id="sort_button">
-                                    <property name="action-name">win.sort</property>
-                                    <property name="icon-name">view-sort-descending-symbolic</property>
-                                    <property name="tooltip-text" translatable="yes">Sort</property>
-                                    <property name="visible">true</property>
-                                  </object>
-                                </child>
-                                <child type="start">
-                                  <object class="GtkButton" id="new_button">
-                                    <property name="action-name">win.new</property>
-                                    <property name="icon-name">list-add-symbolic</property>
-                                    <property name="tooltip-text" translatable="yes">New</property>
-                                    <property name="visible">false</property>
-                                  </object>
-                                </child>
-                                <child type="end">
-                                  <object class="GtkMenuButton" id="button_menu">
-                                    <property name="menu-model">menu_app</property>
-                                    <property name="icon-name">open-menu-symbolic</property>
-                                    <property name="primary">true</property>
-                                  </object>
-                                </child>
-                                <property name="title-widget">
-                                  <object class="AdwViewSwitcher" id="switcher_title">
-                                    <property name="stack">stack</property>
-                                    <property name="policy">1</property>
-                                  </object>
-                                </property>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkOverlay">
-                                <child type="overlay">
-                                  <object class="GtkProgressBar" id="progress_bar">
-                                    <property name="valign">1</property>
-                                    <property name="visible">false</property>
-                                    <style>
-                                      <class name="osd" />
-                                    </style>
+                              <object class="GtkBox">
+                                <property name="orientation">1</property>
+                                <child>
+                                  <object class="AdwHeaderBar" id="header_bar">
+                                    <child type="start">
+                                      <object class="GtkButton" id="search_button">
+                                        <property name="action-name">win.search</property>
+                                        <property name="icon-name">edit-find-symbolic</property>
+                                        <property name="tooltip-text" translatable="yes">Search</property>
+                                        <property name="visible">true</property>
+                                      </object>
+                                    </child>
+                                    <child type="start">
+                                      <object class="GtkButton" id="sort_button">
+                                        <property name="action-name">win.sort</property>
+                                        <property name="icon-name">view-sort-descending-symbolic</property>
+                                        <property name="tooltip-text" translatable="yes">Sort</property>
+                                        <property name="visible">true</property>
+                                      </object>
+                                    </child>
+                                    <child type="start">
+                                      <object class="GtkButton" id="new_button">
+                                        <property name="action-name">win.new</property>
+                                        <property name="icon-name">list-add-symbolic</property>
+                                        <property name="tooltip-text" translatable="yes">New</property>
+                                        <property name="visible">false</property>
+                                      </object>
+                                    </child>
+                                    <child type="end">
+                                      <object class="GtkMenuButton" id="button_menu">
+                                        <property name="menu-model">menu_app</property>
+                                        <property name="icon-name">open-menu-symbolic</property>
+                                        <property name="primary">true</property>
+                                      </object>
+                                    </child>
+                                    <property name="title-widget">
+                                      <object class="AdwViewSwitcher" id="switcher_title">
+                                        <property name="stack">stack</property>
+                                        <property name="policy">1</property>
+                                      </object>
+                                    </property>
                                   </object>
                                 </child>
                                 <child>
@@ -236,11 +236,11 @@
                                     </child>
                                   </object>
                                 </child>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="AdwViewSwitcherBar" id="switcher_bar">
-                                <property name="stack">stack</property>
+                                <child>
+                                  <object class="AdwViewSwitcherBar" id="switcher_bar">
+                                    <property name="stack">stack</property>
+                                  </object>
+                                </child>
                               </object>
                             </child>
                           </object>
@@ -249,10 +249,10 @@
                     </child>
                   </object>
                 </child>
-              </object>
-            </child>
-            <child>
-              <object class="GellyPlayerBar" id="player_bar">
+                <child>
+                  <object class="GellyPlayerBar" id="player_bar">
+                  </object>
+                </child>
               </object>
             </child>
           </object>

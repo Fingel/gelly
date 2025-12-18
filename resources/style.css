@@ -5,3 +5,7 @@
 .album-image-frame {
     border-radius: 12px;
 }
+
+progressbar.osd {
+    margin-top: 3em;
+}
