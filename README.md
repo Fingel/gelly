@@ -72,7 +72,7 @@ in Gelly is related to these bindings.
 
 Building and launching Gelly should then simply be a matter of:
 
-    just
+    sudo just
   
 See the recipes in the [justfile](justfile) for other useful commands.
 
