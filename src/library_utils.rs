@@ -69,14 +69,9 @@ pub fn songs_for_playlist(
 ) {
     let library_data = app.library().borrow().clone();
     let jellyfin = app.jellyfin();
-    let id = playlist_model.id().to_string();
     let playlist_type = playlist_model.playlist_type();
     spawn_tokio(
-        async move {
-            playlist_type
-                .load_song_data(&id, &jellyfin, &library_data)
-                .await
-        },
+        async move { playlist_type.load_song_data(&jellyfin, &library_data).await },
         cb,
     );
 }

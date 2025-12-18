@@ -147,12 +147,18 @@ impl PlaylistList {
             .get()
             .expect("PlaylistList store should be initialized");
         store.remove_all();
-        let shuffle_playlist = PlaylistModel::new_smart(PlaylistType::ShuffleLibrary {
+        let shuffle_type = PlaylistType::ShuffleLibrary {
             count: DEFAULT_SMART_COUNT,
-        });
+        };
+        let shuffle_playlist = PlaylistModel::new(shuffle_type);
         store.append(&shuffle_playlist);
         for playlist in playlists {
-            let playlist_obj = PlaylistModel::from(&playlist);
+            let playlist_type = PlaylistType::new_regular(
+                playlist.id.clone(),
+                playlist.name.clone(),
+                playlist.child_count,
+            );
+            let playlist_obj = PlaylistModel::new(playlist_type);
             store.append(&playlist_obj);
         }
     }

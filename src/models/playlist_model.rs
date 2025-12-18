@@ -1,6 +1,6 @@
 use crate::{
     jellyfin::api::PlaylistDto,
-    models::{PlaylistType, model_traits::ItemModel, playlist_type::DEFAULT_SMART_COUNT},
+    models::{PlaylistType, model_traits::ItemModel},
 };
 use glib::Object;
 use gtk::glib;
@@ -20,39 +20,36 @@ impl ItemModel for PlaylistModel {
 }
 
 impl PlaylistModel {
-    pub fn new_regular(id: &str, name: &str, child_count: u64) -> Self {
+    pub fn new(playlist_type: PlaylistType) -> Self {
         Object::builder()
-            .property("id", id)
-            .property("name", name)
-            .property("child_count", child_count)
-            .build()
-    }
-
-    pub fn new_smart(playlist_type: PlaylistType) -> Self {
-        Object::builder()
-            .property("id", playlist_type.to_id().unwrap_or_default())
+            .property("id", playlist_type.to_id())
             .property("name", playlist_type.display_name())
-            .property(
-                "child_count",
-                playlist_type
-                    .estimated_count()
-                    .unwrap_or(DEFAULT_SMART_COUNT),
-            )
+            .property("child_count", playlist_type.estimated_count())
             .build()
     }
 
     pub fn is_smart(&self) -> bool {
-        !matches!(self.playlist_type(), PlaylistType::Regular)
+        self.id().starts_with("smart:")
     }
 
     pub fn playlist_type(&self) -> PlaylistType {
-        PlaylistType::from_id(&self.id())
+        // For smart playlists, parse from the synthetic ID
+        if self.is_smart()
+            && let Some(smart_type) = PlaylistType::smart_from_id(&self.id())
+        {
+            return smart_type;
+        }
+
+        // For regular playlists, reconstruct from the model's properties
+        PlaylistType::new_regular(self.id(), self.name(), self.child_count())
     }
 }
 
 impl From<&PlaylistDto> for PlaylistModel {
     fn from(dto: &PlaylistDto) -> Self {
-        Self::new_regular(&dto.id, &dto.name, dto.child_count)
+        let playlist_type =
+            PlaylistType::new_regular(dto.id.clone(), dto.name.clone(), dto.child_count);
+        Self::new(playlist_type)
     }
 }
 

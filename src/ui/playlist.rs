@@ -51,17 +51,12 @@ impl Playlist {
             return;
         };
 
-        let playlist_id = playlist_model.id().to_string();
         let playlist_type = playlist_model.playlist_type();
         let library_data = self.get_application().library().borrow().clone();
         let jellyfin = self.get_application().jellyfin();
 
         spawn_tokio(
-            async move {
-                playlist_type
-                    .load_song_data(&playlist_id, &jellyfin, &library_data)
-                    .await
-            },
+            async move { playlist_type.load_song_data(&jellyfin, &library_data).await },
             glib::clone!(
                 #[weak(rename_to=playlist)]
                 self,
