@@ -70,9 +70,14 @@ To make things easy, also install the [just](https://github.com/casey/just) comm
 Gelly leverages [gtk-rs](https://gtk-rs.org/) for GTK bindings. The majority of the code
 in Gelly is related to these bindings.
 
-Building and launching Gelly should then simply be a matter of:
+Building and launching a development build of Gelly should then simply be a matter of:
 
     just
+
+And installing a release build:
+
+    just release
+    sudo just install
   
 See the recipes in the [justfile](justfile) for other useful commands.
 
