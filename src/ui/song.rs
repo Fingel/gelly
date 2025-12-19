@@ -72,12 +72,6 @@ impl Song {
         self.imp().number_label.set_label(&track_number.to_string());
     }
 
-    pub fn show_details(&self) {
-        let imp = self.imp();
-        imp.artist_label.set_visible(true);
-        imp.album_label.set_visible(true);
-    }
-
     pub fn setup_drag_and_drop(&self) {
         let imp = self.imp();
         imp.drag_handle_box.set_visible(true);
@@ -163,7 +157,6 @@ impl Song {
         di.number_label.set_label(&self.imp().number_label.label());
         di.duration_label
             .set_label(&self.imp().duration_label.label());
-        drag_song.show_details();
         drag_widget.set_opacity(0.9);
         drag_widget.append(&drag_song);
         let drag_icon = gtk::DragIcon::for_drag(drag);

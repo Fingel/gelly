@@ -58,7 +58,6 @@ impl Queue {
                     });
                     song_widget.set_song_data(track);
                     self.imp().track_list.append(&song_widget);
-                    song_widget.show_details();
                     if track.id() == current_track {
                         song_widget.set_playing(true);
                     }

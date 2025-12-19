@@ -64,11 +64,11 @@
         </child>
         <child>
           <object class="GtkBox" id="artist_box">
+            <property name="orientation">vertical</property>
             <property name="focusable">False</property>
             <property name="hexpand">True</property>
             <child>
               <object class="GtkLabel" id="artist_label">
-                <property name="visible">False</property>
                 <property name="focusable">False</property>
                 <property name="halign">start</property>
                 <property name="hexpand">True</property>
@@ -76,20 +76,16 @@
                 <property name="max_width_chars">90</property>
               </object>
             </child>
-          </object>
-        </child>
-        <child>
-          <object class="GtkBox" id="album_box">
-            <property name="focusable">False</property>
-            <property name="hexpand">True</property>
             <child>
               <object class="GtkLabel" id="album_label">
-                <property name="visible">False</property>
                 <property name="focusable">False</property>
                 <property name="halign">start</property>
                 <property name="hexpand">True</property>
                 <property name="ellipsize">end</property>
                 <property name="max_width_chars">90</property>
+                <style>
+                  <class name="dimmed"/>
+                </style>
               </object>
             </child>
           </object>
@@ -135,7 +131,6 @@
     <widgets>
       <widget name="title_box"/>
       <widget name="artist_box"/>
-      <widget name="album_box"/>
     </widgets>
   </object>
 </interface>

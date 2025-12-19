@@ -140,7 +140,6 @@ impl PlaylistDetail {
             // we don't want the track number here, we want the playlist index
             song.set_track_number(i as u32 + 1);
             song_widget.set_song_data(song);
-            song_widget.show_details();
             // Check if currently playing song is in the playlist
             if let Some(audio_model) = self.get_application().audio_model()
                 && audio_model
