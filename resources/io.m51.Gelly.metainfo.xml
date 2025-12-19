@@ -32,6 +32,13 @@
     </screenshot>
   </screenshots>
   <releases>
+    <release version="0.13.1" date="2025-12-19">
+      <description>
+        <ul>
+          <li>Fix a typo in the transcoding settings.</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.13.0" date="2025-12-19">
       <description>
         <ul>
