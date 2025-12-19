@@ -26,7 +26,7 @@ impl TranscodingProfile {
     };
 
     pub const AAC_TS: Self = Self {
-        name: "ACC+TS",
+        name: "AAC+TS",
         codec: "aac",
         container: "ts",
     };
