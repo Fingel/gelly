@@ -37,5 +37,9 @@
       <default>0</default>
       <summary>Maximum Bitrate</summary>
     </key>
+    <key name="refresh-on-startup" type="b">
+      <default>false</default>
+      <summary>Refresh the library on startup</summary>
+    </key>
   </schema>
 </schemalist>

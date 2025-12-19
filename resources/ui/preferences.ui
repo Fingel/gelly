@@ -9,6 +9,24 @@
         <property name="title" translatable="yes">General</property>
         <child>
           <object class="AdwPreferencesGroup">
+            <property name="title" translatable="yes">General</property>
+            <child>
+              <object class="AdwActionRow">
+                <property name="title" translatable="yes">Refresh library on startup</property>
+                <property name="subtitle" translatable="yes">The library can be refreshed using ctrl+r or the menu.</property>
+                <property name="use_underline">True</property>
+                <property name="activatable_widget">refresh_on_startup_switch</property>
+                <child>
+                  <object class="GtkSwitch" id="refresh_on_startup_switch">
+                    <property name="valign">center</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="AdwPreferencesGroup">
           <property name="title" translatable="yes">Transcoding</property>
           <property name="description" translatable="yes">Transcoding is helpful if you are on a bandwidth limited environment. Restrictive settings may cause Jellyfin to transcode audio files.</property>
             <child>

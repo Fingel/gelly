@@ -160,3 +160,7 @@ pub fn get_max_bitrate() -> Option<i32> {
     let value = settings().int("max-bitrate");
     if value == 0 { None } else { Some(value * 1000) }
 }
+
+pub fn get_refresh_on_startup() -> bool {
+    settings().boolean("refresh-on-startup")
+}

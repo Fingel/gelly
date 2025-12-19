@@ -1,4 +1,4 @@
-use crate::config::settings;
+use crate::config::{self, settings};
 use crate::models::{AlbumModel, ArtistModel, PlaylistModel};
 use crate::ui::page_traits::{DetailPage, TopPage};
 use crate::ui::preferences::Preferences;
@@ -26,6 +26,7 @@ impl Window {
             window.show_server_setup();
         } else {
             window.show_main_page();
+            window.maybe_refresh_library();
         }
         window
     }
@@ -168,6 +169,12 @@ impl Window {
         self.set_default_size(width, height);
         if maximized {
             self.maximize();
+        }
+    }
+
+    fn maybe_refresh_library(&self) {
+        if config::get_refresh_on_startup() {
+            self.get_application().refresh_all(true);
         }
     }
 
