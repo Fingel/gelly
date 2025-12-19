@@ -12,8 +12,6 @@
         <property name="halign">3</property>
         <property name="valign">1</property>
         <property name="orientation">1</property>
-        <property name="width-request">250</property>
-        <property name="height-request">250</property>
         <child>
           <object class="GtkOverlay">
             <child>

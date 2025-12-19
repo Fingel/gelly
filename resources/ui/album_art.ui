@@ -2,7 +2,6 @@
 <interface>
   <requires lib="gtk" version="4.0"/>
   <template class="GellyAlbumArt" parent="GtkBox">
-    <property name="size">200</property>
     <property name="halign">center</property>
 		<property name="margin-start">6</property>
     <property name="margin-end">6</property>
