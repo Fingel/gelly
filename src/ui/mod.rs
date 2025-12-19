@@ -17,6 +17,7 @@ pub mod playlist;
 pub mod playlist_detail;
 pub mod playlist_dialogs;
 pub mod playlist_list;
+pub mod preferences;
 pub mod queue;
 pub mod setup;
 pub mod shortcuts_dialog;

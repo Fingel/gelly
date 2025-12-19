@@ -28,6 +28,7 @@ fn main() -> glib::ExitCode {
     app.set_accels_for_action("win.search", &["<Ctrl>f"]);
     app.set_accels_for_action("win.play-selected", &["<Ctrl>p"]);
     app.set_accels_for_action("win.shortcuts", &["<Ctrl>question"]);
+    app.set_accels_for_action("win.preferences", &["<Ctrl>comma"]);
     app.set_accels_for_action("win.show-album-list", &["<Ctrl>1"]);
     app.set_accels_for_action("win.show-artist-list", &["<Ctrl>2"]);
     app.set_accels_for_action("win.show-playlist-list", &["<Ctrl>3"]);

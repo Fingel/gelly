@@ -359,20 +359,26 @@ impl Jellyfin {
     }
 
     pub fn get_stream_uri(&self, item_id: &str) -> String {
-        // Prioritize FLAC for lossless audio, with fallbacks for compatibility
+        let tc_profile = config::get_transcoding_profile();
         let containers = "flac,opus,mp3,aac,m4a,ogg,wav,webm|opus,webm|webma,webma";
-        let tc_audio_codec = "opus";
-        let tc_container = "mp4";
+        let tc_audio_codec = tc_profile.codec;
+        let tc_container = tc_profile.container;
+        let max_bitrate = config::get_max_bitrate().unwrap_or(999999999);
+        debug!(
+            "Stream settings: {} + {} @ {}",
+            tc_audio_codec, tc_container, max_bitrate
+        );
         let stream_protocol = "hls";
         format!(
-            "{}/Audio/{item_id}/universal?api_key={}&userId={}&container={}&audioCodec={}&transcodingContainer={}&transcodingProtocol={}",
+            "{}/Audio/{item_id}/universal?api_key={}&userId={}&container={}&audioCodec={}&transcodingContainer={}&transcodingProtocol={}&maxStreamingBitrate={}",
             self.host.trim_end_matches("/"),
             self.token,
             self.user_id,
             containers,
             tc_audio_codec,
             tc_container,
-            stream_protocol
+            stream_protocol,
+            max_bitrate
         )
     }
 

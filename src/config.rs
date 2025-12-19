@@ -11,6 +11,34 @@ thread_local! {
     static SETTINGS: RefCell<Option<gio::Settings>> = const { RefCell::new(None) };
 }
 
+#[derive(Debug, Clone, PartialEq)]
+pub struct TranscodingProfile {
+    pub name: &'static str,
+    pub codec: &'static str,
+    pub container: &'static str,
+}
+
+impl TranscodingProfile {
+    pub const OPUS_MP4: Self = Self {
+        name: "OPUS+MP4",
+        codec: "opus",
+        container: "mp4",
+    };
+
+    pub const AAC_TS: Self = Self {
+        name: "ACC+TS",
+        codec: "aac",
+        container: "ts",
+    };
+
+    pub const PROFILES: [Self; 2] = [Self::OPUS_MP4, Self::AAC_TS];
+
+    pub fn as_string_list() -> gtk::StringList {
+        let names: Vec<&str> = Self::PROFILES.iter().map(|p| p.name).collect();
+        gtk::StringList::new(&names)
+    }
+}
+
 /// Returns the application settings. Constructor called at most once per thread.
 pub fn settings() -> gio::Settings {
     SETTINGS.with(|s| {
@@ -110,4 +138,25 @@ pub fn application_uuid() -> String {
     } else {
         uuid
     }
+}
+
+pub fn get_transcoding_profile() -> TranscodingProfile {
+    let profile_name = settings().string("transcoding-profile");
+    TranscodingProfile::PROFILES
+        .iter()
+        .find(|&p| p.name == profile_name)
+        .unwrap_or(&TranscodingProfile::OPUS_MP4)
+        .clone()
+}
+
+pub fn set_transcoding_profile(profile: TranscodingProfile) {
+    settings()
+        .set_string("transcoding-profile", profile.name)
+        .unwrap();
+}
+
+pub fn get_max_bitrate() -> Option<i32> {
+    // from settings as kbps
+    let value = settings().int("max-bitrate");
+    if value == 0 { None } else { Some(value * 1000) }
 }

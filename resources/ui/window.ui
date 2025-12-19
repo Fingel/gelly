@@ -271,12 +271,14 @@
         <attribute name="action">win.refresh-library</attribute>
       </item>
       <item>
-        <attribute name="label" translatable="yes">Search</attribute>
-        <attribute name="action">win.search</attribute>
-      </item>
-      <item>
         <attribute name="label" translatable="yes">Clear Image Cache</attribute>
         <attribute name="action">win.clear-cache</attribute>
+      </item>
+    </section>
+    <section>
+      <item>
+        <attribute name="label" translatable="yes">Preferences</attribute>
+        <attribute name="action">win.preferences</attribute>
       </item>
       <item>
         <attribute name="label" translatable="yes">Keyboard Shortcuts</attribute>

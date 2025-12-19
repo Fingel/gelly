@@ -1,6 +1,7 @@
 use crate::config::settings;
 use crate::models::{AlbumModel, ArtistModel, PlaylistModel};
 use crate::ui::page_traits::{DetailPage, TopPage};
+use crate::ui::preferences::Preferences;
 use crate::ui::{about_dialog, shortcuts_dialog};
 use crate::{application::Application, ui::widget_ext::WidgetApplicationExt};
 use adw::{prelude::*, subclass::prelude::ObjectSubclassIsExt};
@@ -134,6 +135,11 @@ impl Window {
 
     pub fn show_shortcuts_dialog(&self) {
         shortcuts_dialog::show(self);
+    }
+
+    pub fn show_preferences_dialog(&self) {
+        let preferences_dialog = Preferences::new();
+        preferences_dialog.present(Some(self));
     }
 
     pub fn logout(&self) {
@@ -419,6 +425,16 @@ mod imp {
                 ))
                 .build();
 
+            let action_preferences = ActionEntry::builder("preferences")
+                .activate(glib::clone!(
+                    #[weak(rename_to=window)]
+                    self,
+                    move |_, _, _| {
+                        window.obj().show_preferences_dialog();
+                    }
+                ))
+                .build();
+
             let action_album_list = ActionEntry::builder("show-album-list")
                 .activate(glib::clone!(
                     #[weak(rename_to=window)]
@@ -470,6 +486,7 @@ mod imp {
                 action_play_selected,
                 action_about,
                 action_shortcuts,
+                action_preferences,
                 action_album_list,
                 action_artist_list,
                 action_playlist_list,

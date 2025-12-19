@@ -7,7 +7,7 @@
         <child>
           <object class="AdwShortcutsItem">
             <property name="title">Refresh Library</property>
-            <property name="subtitle">Refresh the music library</property>
+            <property name="subtitle">Re-downloads the music library</property>
             <property name="action-name">win.refresh-library</property>
           </object>
         </child>
@@ -26,15 +26,19 @@
         </child>
         <child>
           <object class="AdwShortcutsItem">
-            <property name="title">Show Shortcuts</property>
-            <property name="subtitle">Show keyboard shortcuts</property>
+            <property name="title">Preferences</property>
+            <property name="action-name">win.preferences</property>
+          </object>
+        </child>
+        <child>
+          <object class="AdwShortcutsItem">
+            <property name="title">Keyboard Shortcuts</property>
             <property name="action-name">win.shortcuts</property>
           </object>
         </child>
         <child>
           <object class="AdwShortcutsItem">
             <property name="title">Quit</property>
-            <property name="subtitle">Quit the application</property>
             <property name="action-name">window.close</property>
           </object>
         </child>

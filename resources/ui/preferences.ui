@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <template class="GellyPreferences" parent="AdwPreferencesDialog">
+    <property name="content_height">650</property>
+    <property name="content_width">500</property>
+    <child>
+      <object class="AdwPreferencesPage">
+        <property name="icon_name">preferences-system-symbolic</property>
+        <property name="title" translatable="yes">General</property>
+        <child>
+          <object class="AdwPreferencesGroup">
+          <property name="title" translatable="yes">Transcoding</property>
+          <property name="description" translatable="yes">Transcoding is helpful if you are on a bandwidth limited environment. Restrictive settings may cause Jellyfin to transcode audio files.</property>
+            <child>
+              <object class="AdwComboRow" id="transcoding_profile_row">
+                <property name="title" translatable="yes">Transcoding Profile</property>
+                <property name="subtitle" translatable="yes">Only used when direct play is not available.</property>
+                <property name="model">
+                    <object class="GtkStringList">
+                      <items>
+                        <item translatable="no">Opus+MP4</item>
+                        <item translatable="no">ACC+TS</item>
+                      </items>
+                    </object>
+                  </property>
+              </object>
+            </child>
+            <child>
+              <object class="AdwSpinRow" id="maximum_bitrate_row">
+                <property name="title" translatable="yes">Maximum Bitrate (kbps)</property>
+                <property name="subtitle" translatable="yes">A value of 0 means no limit.</property>
+                <property name="use_underline">True</property>
+                <property name="width_chars">7</property>
+                <property name="adjustment">
+                  <object class="GtkAdjustment">
+                    <property name="step_increment">128</property>
+                    <property name="upper">9999999999</property>
+                    <property name="lower">0</property>
+                  </object>
+                </property>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+  </template>
+</interface>

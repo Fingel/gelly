@@ -29,5 +29,13 @@
       <default>false</default>
       <summary>Default window maximized state</summary>
     </key>
+    <key name="transcoding-profile" type="s">
+      <default>"OPUS+MP4"</default>
+      <summary>Transcoding Profile</summary>
+    </key>
+    <key name="max-bitrate" type="i">
+      <default>0</default>
+      <summary>Maximum Bitrate</summary>
+    </key>
   </schema>
 </schemalist>
