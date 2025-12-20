@@ -1,4 +1,4 @@
-use crate::config::{self, settings};
+use crate::config::settings;
 use crate::models::{AlbumModel, ArtistModel, PlaylistModel};
 use crate::ui::page_traits::{DetailPage, TopPage};
 use crate::ui::preferences::Preferences;
@@ -26,7 +26,6 @@ impl Window {
             window.show_server_setup();
         } else {
             window.show_main_page();
-            window.maybe_refresh_library();
         }
         window
     }
@@ -53,12 +52,10 @@ impl Window {
         imp.setup_stack
             .set_visible_child(&imp.main_navigation.get());
         imp.main_navigation.replace(&[imp.main_window.get()]);
-        // Setup library refresh callback, then refresh library
         imp.album_list.setup_library_connection();
         imp.artist_list.setup_library_connection();
         imp.playlist_list.setup_library_connection();
-        self.loading_visible(true);
-        self.get_application().refresh_all(false);
+        // Library is refreshed down at the end of the connect_map signal
 
         // Initialize player bar with audio model
         if let Some(audio_model) = self.get_application().audio_model() {
@@ -172,12 +169,6 @@ impl Window {
         }
     }
 
-    fn maybe_refresh_library(&self) {
-        if config::get_refresh_on_startup() {
-            self.get_application().refresh_all(true);
-        }
-    }
-
     pub fn loading_visible(&self, visible: bool) {
         self.imp().progress_bar.set_visible(visible);
         if visible {
@@ -240,13 +231,14 @@ mod imp {
     };
     use log::{debug, warn};
 
-    use crate::ui::{
-        album_list::AlbumList, artist_list::ArtistList, playlist_detail::PlaylistDetail,
-    };
     use crate::ui::{artist_detail::ArtistDetail, player_bar::PlayerBar};
     use crate::ui::{playlist_list::PlaylistList, widget_ext::WidgetApplicationExt};
     use crate::ui::{queue::Queue, setup::Setup};
     use crate::{application::Application, ui::album_detail::AlbumDetail};
+    use crate::{
+        config,
+        ui::{album_list::AlbumList, artist_list::ArtistList, playlist_detail::PlaylistDetail},
+    };
 
     #[derive(CompositeTemplate, Default)]
     #[template(resource = "/io/m51/Gelly/ui/window.ui")]
@@ -535,10 +527,18 @@ mod imp {
                             #[weak]
                             window,
                             move |_app: Application, total_record_count: u64| {
-                                window.toast(
-                                    &format!("{} items added to library", total_record_count),
-                                    None,
-                                );
+                                // Makes sure if this signal is on another thread that the toast
+                                // is created on the main thread (other thread dies)
+                                glib::spawn_future_local(glib::clone!(
+                                    #[weak]
+                                    window,
+                                    async move {
+                                        window.toast(
+                                            &format!("{} items added to library", total_record_count),
+                                            Some(2),
+                                        );
+                                    }
+                                ));
                             }
                         ),
                     );
@@ -585,6 +585,9 @@ mod imp {
                             window.loading_visible(false);
                         }
                     ));
+
+                    // Refresh library once all signals are connected
+                    app.refresh_all(config::get_refresh_on_startup());
                 }
             ));
         }

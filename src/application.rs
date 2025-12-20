@@ -6,11 +6,11 @@ use gtk::{gio, glib};
 
 use crate::async_utils::spawn_tokio;
 use crate::audio::model::AudioModel;
-use crate::cache::ImageCache;
+use crate::cache::{ImageCache, LibraryCache};
 use crate::config::{self, retrieve_jellyfin_api_token, settings};
 use crate::jellyfin::api::{MusicDto, MusicDtoList, PlaylistDto, PlaylistDtoList};
 use crate::jellyfin::{Jellyfin, JellyfinError};
-use log::error;
+use log::{debug, error, warn};
 use std::cell::RefCell;
 use std::rc::Rc;
 use std::sync::atomic::Ordering;
@@ -29,6 +29,7 @@ impl Application {
             .build();
         app.load_settings();
         app.initialize_jellyfin();
+        app.initialize_library_cache();
         app.initialize_image_cache();
         app.initialize_audio_model();
         app
@@ -52,6 +53,19 @@ impl Application {
 
         let jellyfin = Jellyfin::new(host.as_str(), &token, user_id.as_str());
         self.imp().jellyfin.replace(jellyfin);
+    }
+
+    pub fn initialize_library_cache(&self) {
+        match LibraryCache::new() {
+            Ok(cache) => {
+                self.imp().library_cache.replace(Some(cache));
+            }
+            Err(err) => {
+                // App can technically still function
+                self.imp().library_cache.replace(None);
+                error!("Failed to initialize library cache: {}", err);
+            }
+        }
     }
 
     pub fn initialize_image_cache(&self) {
@@ -113,6 +127,10 @@ impl Application {
         self.imp().playlists.clone()
     }
 
+    pub fn library_cache(&self) -> Option<LibraryCache> {
+        self.imp().library_cache.borrow().clone()
+    }
+
     pub fn image_cache(&self) -> Option<ImageCache> {
         self.imp().image_cache.borrow().clone()
     }
@@ -134,12 +152,29 @@ impl Application {
         }
     }
 
-    pub fn refresh_library(&self, refresh: bool) {
-        self.emit_by_name::<()>("library-refresh-start", &[]);
+    pub fn refresh_library(&self, refresh_cache: bool) {
+        if !refresh_cache
+            && let Some(cache) = self.library_cache()
+            && let Ok(cached_data) = cache.load_from_disk("library.json")
+        {
+            match serde_json::from_slice::<MusicDtoList>(&cached_data) {
+                Ok(library) => {
+                    let library_cnt = library.items.len() as u64;
+                    self.cache_library(&library);
+                    self.imp().library.replace(library.items);
+                    self.emit_by_name::<()>("library-refreshed", &[&library_cnt]);
+                    debug!("Loaded library from cache");
+                    return;
+                }
+                Err(error) => {
+                    log::error!("Failed to load library cache: {}. Refreshing.", error);
+                }
+            }
+        }
         let library_id = self.imp().library_id.borrow().clone();
         let jellyfin = self.jellyfin();
         self.http_with_loading(
-            async move { jellyfin.get_library(&library_id, refresh).await },
+            async move { jellyfin.get_library(&library_id).await },
             glib::clone!(
                 #[weak(rename_to=app)]
                 self,
@@ -147,6 +182,7 @@ impl Application {
                     match result {
                         Ok(library) => {
                             let library_cnt = library.items.len() as u64;
+                            app.cache_library(&library);
                             app.imp().library.replace(library.items);
                             app.emit_by_name::<()>("library-refreshed", &[&library_cnt]);
                         }
@@ -157,10 +193,37 @@ impl Application {
         );
     }
 
+    fn cache_library(&self, library: &MusicDtoList) {
+        if let Some(cache) = self.library_cache()
+            && let Ok(json_data) = serde_json::to_string(library)
+            && let Err(e) = cache.save_to_disk("library.json", json_data.as_bytes())
+        {
+            warn!("Failed to save library to cache: {}", e);
+        }
+    }
+
     pub fn refresh_playlists(&self, refresh_cache: bool) {
+        if !refresh_cache
+            && let Some(cache) = self.library_cache()
+            && let Ok(cached_data) = cache.load_from_disk("playlists.json")
+        {
+            match serde_json::from_slice::<PlaylistDtoList>(&cached_data) {
+                Ok(playlists) => {
+                    let playlist_cnt = playlists.items.len() as u64;
+                    self.cache_playlists(&playlists);
+                    self.imp().playlists.replace(playlists.items);
+                    self.emit_by_name::<()>("playlists-refreshed", &[&playlist_cnt]);
+                    debug!("Loaded playlists from cache");
+                    return;
+                }
+                Err(error) => {
+                    log::error!("Failed to load playlist cache: {}. Refreshing.", error);
+                }
+            }
+        }
         let jellyfin = self.jellyfin();
         self.http_with_loading(
-            async move { jellyfin.get_playlists(refresh_cache).await },
+            async move { jellyfin.get_playlists().await },
             glib::clone!(
                 #[weak(rename_to=app)]
                 self,
@@ -168,6 +231,7 @@ impl Application {
                     match result {
                         Ok(playlists) => {
                             let playlist_cnt = playlists.items.len() as u64;
+                            app.cache_playlists(&playlists);
                             app.imp().playlists.replace(playlists.items);
                             app.emit_by_name::<()>("playlists-refreshed", &[&playlist_cnt]);
                         }
@@ -176,6 +240,23 @@ impl Application {
                 }
             ),
         )
+    }
+
+    fn cache_playlists(&self, playlists: &PlaylistDtoList) {
+        if let Some(cache) = self.library_cache()
+            && let Ok(json_data) = serde_json::to_string(playlists)
+            && let Err(e) = cache.save_to_disk("playlists.json", json_data.as_bytes())
+        {
+            warn!("Failed to save playlists to cache: {}", e);
+        }
+    }
+
+    pub fn clear_cache(&self) {
+        if let Some(cache) = self.library_cache()
+            && let Err(e) = cache.clear()
+        {
+            warn!("Failed to clear cache: {}", e);
+        }
     }
 
     pub fn refresh_all(&self, refresh_cache: bool) {
@@ -203,7 +284,7 @@ impl Application {
 
     pub fn logout(&self) {
         let jellyfin = Jellyfin::default();
-        jellyfin.clear_cache();
+        self.clear_cache();
         self.imp().jellyfin.replace(jellyfin);
         self.imp().library.replace(Vec::new());
         self.imp().library_id.replace(String::new());
@@ -265,7 +346,7 @@ mod imp {
     use std::sync::atomic::AtomicU32;
 
     use crate::audio::model::AudioModel;
-    use crate::cache::ImageCache;
+    use crate::cache::{ImageCache, LibraryCache};
     use crate::jellyfin::Jellyfin;
     use crate::jellyfin::api::{MusicDto, PlaylistDto};
 
@@ -275,6 +356,7 @@ mod imp {
         pub library: Rc<RefCell<Vec<MusicDto>>>,
         pub playlists: Rc<RefCell<Vec<PlaylistDto>>>,
         pub library_id: RefCell<String>,
+        pub library_cache: RefCell<Option<LibraryCache>>,
         pub image_cache: RefCell<Option<ImageCache>>,
         pub audio_model: RefCell<Option<AudioModel>>,
         pub http_request_count: AtomicU32,
@@ -292,7 +374,6 @@ mod imp {
             static SIGNALS: OnceLock<Vec<Signal>> = OnceLock::new();
             SIGNALS.get_or_init(|| {
                 vec![
-                    Signal::builder("library-refresh-start").build(),
                     Signal::builder("library-refreshed")
                         .param_types([u64::static_type()])
                         .build(),

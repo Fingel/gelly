@@ -8,7 +8,6 @@ use serde_json::json;
 use thiserror::Error;
 use tokio::time::Instant;
 
-use crate::cache::LibraryCache;
 use crate::config;
 use crate::jellyfin::api::{
     LibraryDtoList, MusicDtoList, NewPlaylist, NewPlaylistResponse, PlaybackInfo, PlaylistDtoList,
@@ -41,7 +40,6 @@ pub struct Jellyfin {
     pub host: String,
     pub token: String,
     pub user_id: String,
-    pub cache: LibraryCache,
 }
 
 impl Jellyfin {
@@ -51,14 +49,11 @@ impl Jellyfin {
             .build()
             .expect("Failed to create HTTP client");
 
-        let cache = LibraryCache::new().expect("Could not create cache");
-
         Self {
             client,
             host: host.to_string(),
             token: token.to_string(),
             user_id: user_id.to_string(),
-            cache,
         }
     }
 
@@ -99,19 +94,7 @@ impl Jellyfin {
         Ok(serde_json::from_str(&body)?)
     }
 
-    pub async fn get_library(
-        &self,
-        library_id: &str,
-        refresh: bool,
-    ) -> Result<MusicDtoList, JellyfinError> {
-        if !refresh
-            && let Ok(cached_data) = self.cache.load_from_disk("library.json")
-            && let Ok(music_list) = serde_json::from_slice::<MusicDtoList>(&cached_data)
-        {
-            debug!("Loaded library from cache");
-            return Ok(music_list);
-        }
-
+    pub async fn get_library(&self, library_id: &str) -> Result<MusicDtoList, JellyfinError> {
         // Time library download so we can keep an eye on it.
         let now = Instant::now();
         const LIMIT: u64 = 1000;
@@ -172,14 +155,6 @@ impl Jellyfin {
             total_record_count: total_count,
         };
 
-        if let Ok(json_data) = serde_json::to_string(&final_result)
-            && let Err(e) = self
-                .cache
-                .save_to_disk("library.json", json_data.as_bytes())
-        {
-            warn!("Failed to save library to cache: {}", e);
-        }
-
         Ok(final_result)
     }
 
@@ -209,16 +184,7 @@ impl Jellyfin {
         Ok(serde_json::from_str(&body)?)
     }
 
-    pub async fn get_playlists(&self, refresh: bool) -> Result<PlaylistDtoList, JellyfinError> {
-        // TODO caching should probably be done in the application layer
-        if !refresh
-            && let Ok(cached_data) = self.cache.load_from_disk("playlists.json")
-            && let Ok(playlist_list) = serde_json::from_slice::<PlaylistDtoList>(&cached_data)
-        {
-            debug!("Loaded playlists from cache");
-            return Ok(playlist_list);
-        }
-
+    pub async fn get_playlists(&self) -> Result<PlaylistDtoList, JellyfinError> {
         let params = vec![
             ("IncludeItemTypes", "Playlist"),
             ("sortBy", "DateCreated"),
@@ -232,14 +198,6 @@ impl Jellyfin {
         let response = self.get("Items", Some(&params)).await?;
         let body = self.handle_response(response).await?;
         let final_result = serde_json::from_str(&body)?;
-
-        if let Ok(json_data) = serde_json::to_string(&final_result)
-            && let Err(e) = self
-                .cache
-                .save_to_disk("playlists.json", json_data.as_bytes())
-        {
-            warn!("Failed to save playlists to cache: {}", e);
-        }
 
         Ok(final_result)
     }
@@ -317,12 +275,6 @@ impl Jellyfin {
         let path = format!("Items/{}", item_id);
         self.delete(&path, None).await?;
         Ok(())
-    }
-
-    pub fn clear_cache(&self) {
-        if let Err(e) = self.cache.clear() {
-            warn!("Failed to clear cache: {}", e);
-        }
     }
 
     pub async fn request_library_rescan(&self, library_id: &str) -> Result<(), JellyfinError> {
