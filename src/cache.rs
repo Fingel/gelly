@@ -1,13 +1,29 @@
 use std::{collections::HashSet, fs, os::unix, path::PathBuf, sync::Arc, time::Duration};
 
 use log::{debug, warn};
+use serde::{Serialize, de::DeserializeOwned};
 use thiserror::Error;
 use tokio::sync::Mutex;
 
 use crate::{
     config::APP_ID,
-    jellyfin::{Jellyfin, JellyfinError},
+    jellyfin::{
+        Jellyfin, JellyfinError,
+        api::{MusicDtoList, PlaylistDtoList},
+    },
 };
+
+pub trait Cacheable: DeserializeOwned + Serialize {
+    const CACHE_FILE_NAME: &'static str;
+}
+
+impl Cacheable for MusicDtoList {
+    const CACHE_FILE_NAME: &'static str = "library.json";
+}
+
+impl Cacheable for PlaylistDtoList {
+    const CACHE_FILE_NAME: &'static str = "playlists.json";
+}
 
 #[derive(Error, Debug)]
 pub enum CacheError {
@@ -16,6 +32,9 @@ pub enum CacheError {
 
     #[error("Jellyfin error: {0}")]
     Jellyfin(#[from] JellyfinError),
+
+    #[error("Deserialization error: {0}")]
+    Deserialize(#[from] serde_json::Error),
 }
 
 fn get_cache_directory(name: &str) -> Result<PathBuf, CacheError> {
@@ -41,14 +60,13 @@ impl LibraryCache {
         Ok(Self { cache_dir })
     }
 
-    // TODO: use enums instead of strings for fname here
-    pub fn save_to_disk(&self, fname: &str, data: &[u8]) -> Result<(), CacheError> {
+    fn save_to_disk(&self, fname: &str, data: &[u8]) -> Result<(), CacheError> {
         let path = self.cache_dir.join(fname);
         fs::write(path, data)?;
         Ok(())
     }
 
-    pub fn load_from_disk(&self, fname: &str) -> Result<Vec<u8>, CacheError> {
+    fn load_from_disk(&self, fname: &str) -> Result<Vec<u8>, CacheError> {
         let path = self.cache_dir.join(fname);
         Ok(fs::read(path)?)
     }
@@ -56,6 +74,18 @@ impl LibraryCache {
     pub fn clear(&self) -> Result<(), CacheError> {
         fs::remove_dir_all(&self.cache_dir)?;
         fs::create_dir_all(&self.cache_dir)?;
+        Ok(())
+    }
+
+    pub fn load<T: Cacheable>(&self) -> Result<T, CacheError> {
+        let fname = T::CACHE_FILE_NAME;
+        let data = self.load_from_disk(fname)?;
+        Ok(serde_json::from_slice(&data)?)
+    }
+
+    pub fn save<T: Cacheable>(&self, data: &T) -> Result<(), CacheError> {
+        let data = serde_json::to_string(data)?;
+        self.save_to_disk(T::CACHE_FILE_NAME, data.as_bytes())?;
         Ok(())
     }
 }

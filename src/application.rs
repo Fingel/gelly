@@ -153,11 +153,8 @@ impl Application {
     }
 
     pub fn refresh_library(&self, refresh_cache: bool) {
-        if !refresh_cache
-            && let Some(cache) = self.library_cache()
-            && let Ok(cached_data) = cache.load_from_disk("library.json")
-        {
-            match serde_json::from_slice::<MusicDtoList>(&cached_data) {
+        if !refresh_cache && let Some(cache) = self.library_cache() {
+            match cache.load::<MusicDtoList>() {
                 Ok(library) => {
                     let library_cnt = library.items.len() as u64;
                     self.cache_library(&library);
@@ -195,19 +192,15 @@ impl Application {
 
     fn cache_library(&self, library: &MusicDtoList) {
         if let Some(cache) = self.library_cache()
-            && let Ok(json_data) = serde_json::to_string(library)
-            && let Err(e) = cache.save_to_disk("library.json", json_data.as_bytes())
+            && let Err(e) = cache.save(library)
         {
             warn!("Failed to save library to cache: {}", e);
         }
     }
 
     pub fn refresh_playlists(&self, refresh_cache: bool) {
-        if !refresh_cache
-            && let Some(cache) = self.library_cache()
-            && let Ok(cached_data) = cache.load_from_disk("playlists.json")
-        {
-            match serde_json::from_slice::<PlaylistDtoList>(&cached_data) {
+        if !refresh_cache && let Some(cache) = self.library_cache() {
+            match cache.load::<PlaylistDtoList>() {
                 Ok(playlists) => {
                     let playlist_cnt = playlists.items.len() as u64;
                     self.cache_playlists(&playlists);
@@ -244,8 +237,7 @@ impl Application {
 
     fn cache_playlists(&self, playlists: &PlaylistDtoList) {
         if let Some(cache) = self.library_cache()
-            && let Ok(json_data) = serde_json::to_string(playlists)
-            && let Err(e) = cache.save_to_disk("playlists.json", json_data.as_bytes())
+            && let Err(e) = cache.save(playlists)
         {
             warn!("Failed to save playlists to cache: {}", e);
         }
