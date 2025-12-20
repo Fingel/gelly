@@ -97,6 +97,7 @@ pub struct ImageCache {
 }
 
 impl ImageCache {
+    // TODO: move the jellyfin logic into an image service or something
     pub fn new() -> Result<Self, CacheError> {
         let cache_dir = get_cache_directory("album-art")?;
         fs::create_dir_all(&cache_dir)?;
