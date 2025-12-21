@@ -46,6 +46,7 @@
         </child>
         <child>
           <object class="GtkBox" id="title_box">
+            <property name="orientation">vertical</property>
             <property name="focusable">False</property>
             <property name="hexpand">True</property>
             <child>
@@ -60,32 +61,44 @@
                 <property name="margin-start">9</property>
               </object>
             </child>
-          </object>
-        </child>
-        <child>
-          <object class="GtkBox" id="artist_box">
-            <property name="orientation">vertical</property>
-            <property name="focusable">False</property>
-            <property name="hexpand">True</property>
             <child>
-              <object class="GtkLabel" id="artist_label">
+              <object class="GtkBox" id="artist_box">
+                <property name="orientation">horizontal</property>
                 <property name="focusable">False</property>
-                <property name="halign">start</property>
                 <property name="hexpand">True</property>
-                <property name="ellipsize">end</property>
-                <property name="max_width_chars">90</property>
-              </object>
-            </child>
-            <child>
-              <object class="GtkLabel" id="album_label">
-                <property name="focusable">False</property>
-                <property name="halign">start</property>
-                <property name="hexpand">True</property>
-                <property name="ellipsize">end</property>
-                <property name="max_width_chars">90</property>
-                <style>
-                  <class name="dimmed"/>
-                </style>
+                <property name="margin-start">9</property>
+                <child>
+                  <object class="GtkLabel" id="artist_label">
+                    <property name="focusable">False</property>
+                    <property name="halign">start</property>
+                    <property name="ellipsize">end</property>
+                    <property name="max_width_chars">90</property>
+                    <style>
+                      <class name="dimmed"/>
+                    </style>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="separator_label">
+                    <property name="focusable">False</property>
+                    <property name="label"> - </property>
+                    <property name="halign">start</property>
+                    <style>
+                      <class name="dimmed"/>
+                    </style>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="album_label">
+                    <property name="focusable">False</property>
+                    <property name="halign">start</property>
+                    <property name="ellipsize">end</property>
+                    <property name="max_width_chars">90</property>
+                    <style>
+                      <class name="dimmed"/>
+                    </style>
+                  </object>
+                </child>
               </object>
             </child>
           </object>
@@ -126,11 +139,4 @@
       <class name="song"/>
     </style>
   </template>
-  <object class="GtkSizeGroup" id="_size_group">
-    <property name="mode">horizontal</property>
-    <widgets>
-      <widget name="title_box"/>
-      <widget name="artist_box"/>
-    </widgets>
-  </object>
 </interface>
