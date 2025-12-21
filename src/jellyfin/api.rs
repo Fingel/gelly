@@ -53,6 +53,7 @@ pub struct LibraryDtoList {
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "PascalCase")]
 pub struct MusicDtoList {
+    // Update the Cache version of this struct in cache.rs if changes are needed
     #[serde(deserialize_with = "deserialize_items_skip_errors")]
     pub items: Vec<MusicDto>,
     pub total_record_count: u64,
@@ -77,6 +78,7 @@ pub struct MusicDto {
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "PascalCase")]
 pub struct PlaylistDtoList {
+    // Update the Cache version of this struct in cache.rs if changes are needed
     #[serde(deserialize_with = "deserialize_items_skip_errors")]
     pub items: Vec<PlaylistDto>,
     pub total_record_count: u64,

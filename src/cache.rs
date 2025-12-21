@@ -1,7 +1,7 @@
 use std::{collections::HashSet, fs, os::unix, path::PathBuf, sync::Arc, time::Duration};
 
 use log::{debug, warn};
-use serde::{Serialize, de::DeserializeOwned};
+use serde::{Deserialize, Serialize, de::DeserializeOwned};
 use thiserror::Error;
 use tokio::sync::Mutex;
 
@@ -9,19 +9,58 @@ use crate::{
     config::APP_ID,
     jellyfin::{
         Jellyfin, JellyfinError,
-        api::{MusicDtoList, PlaylistDtoList},
+        api::{MusicDto, MusicDtoList, PlaylistDto, PlaylistDtoList},
     },
 };
 
+// Cache versions of the library structs that fail on deserialization errors instead of skipping.
+// We need this so that we fail reading from the cache if any item fails to deserialize.
+// This is opposed to the behavior of reading from the server where we want to skip items.
+// The application will refresh from the server (its probably because structs are out of date).
+#[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(rename_all = "PascalCase")]
+pub struct MusicDtoListCache {
+    pub items: Vec<MusicDto>,
+    pub total_record_count: u64,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(rename_all = "PascalCase")]
+pub struct PlaylistDtoListCache {
+    pub items: Vec<PlaylistDto>,
+    pub total_record_count: u64,
+}
+
+impl From<MusicDtoListCache> for MusicDtoList {
+    fn from(cache: MusicDtoListCache) -> Self {
+        Self {
+            items: cache.items,
+            total_record_count: cache.total_record_count,
+        }
+    }
+}
+
+impl From<PlaylistDtoListCache> for PlaylistDtoList {
+    fn from(cache: PlaylistDtoListCache) -> Self {
+        Self {
+            items: cache.items,
+            total_record_count: cache.total_record_count,
+        }
+    }
+}
+
 pub trait Cacheable: DeserializeOwned + Serialize {
+    type Loader: DeserializeOwned + Into<Self>;
     const CACHE_FILE_NAME: &'static str;
 }
 
 impl Cacheable for MusicDtoList {
+    type Loader = MusicDtoListCache;
     const CACHE_FILE_NAME: &'static str = "library.json";
 }
 
 impl Cacheable for PlaylistDtoList {
+    type Loader = PlaylistDtoListCache;
     const CACHE_FILE_NAME: &'static str = "playlists.json";
 }
 
@@ -80,7 +119,8 @@ impl LibraryCache {
     pub fn load<T: Cacheable>(&self) -> Result<T, CacheError> {
         let fname = T::CACHE_FILE_NAME;
         let data = self.load_from_disk(fname)?;
-        Ok(serde_json::from_slice(&data)?)
+        let parsed: T::Loader = serde_json::from_slice(&data)?;
+        Ok(parsed.into())
     }
 
     pub fn save<T: Cacheable>(&self, data: &T) -> Result<(), CacheError> {

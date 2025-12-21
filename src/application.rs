@@ -157,14 +157,13 @@ impl Application {
             match cache.load::<MusicDtoList>() {
                 Ok(library) => {
                     let library_cnt = library.items.len() as u64;
-                    self.cache_library(&library);
                     self.imp().library.replace(library.items);
                     self.emit_by_name::<()>("library-refreshed", &[&library_cnt]);
                     debug!("Loaded library from cache");
                     return;
                 }
                 Err(error) => {
-                    log::error!("Failed to load library cache: {}. Refreshing.", error);
+                    warn!("Failed to load library cache: {}. Refreshing.", error);
                 }
             }
         }
@@ -203,14 +202,13 @@ impl Application {
             match cache.load::<PlaylistDtoList>() {
                 Ok(playlists) => {
                     let playlist_cnt = playlists.items.len() as u64;
-                    self.cache_playlists(&playlists);
                     self.imp().playlists.replace(playlists.items);
                     self.emit_by_name::<()>("playlists-refreshed", &[&playlist_cnt]);
                     debug!("Loaded playlists from cache");
                     return;
                 }
                 Err(error) => {
-                    log::error!("Failed to load playlist cache: {}. Refreshing.", error);
+                    warn!("Failed to load playlist cache: {}. Refreshing", error);
                 }
             }
         }
