@@ -65,14 +65,15 @@ impl AudioModel {
                             PlayerState::Stopped => obj.emit_by_name::<()>("stop", &[]),
                         }
                     }
-                    PlayerEvent::PositionChanged(pos) => {
-                        obj.set_property("position", pos as u32);
-                    }
-                    PlayerEvent::DurationChanged(dur) => {
-                        obj.set_property("duration", dur as u32);
+                    PlayerEvent::PositionChanged(position) => {
+                        obj.set_property("position", position as u32);
+                        obj.report_event(PlaybackEvent::PositionChanged { position });
                         obj.report_event(PlaybackEvent::MetadataChanged {
                             song: obj.current_song().clone(),
                         });
+                    }
+                    PlayerEvent::DurationChanged(dur) => {
+                        obj.set_property("duration", dur as u32);
                     }
                     PlayerEvent::EndOfStream => {
                         obj.next();
@@ -374,12 +375,8 @@ impl AudioModel {
         let current_pos = self.imp().shuffle_index.get();
 
         if self.get_position() > 3 {
-            dbg!("current position");
             // Restart current song if less then 3 seconds have elapsed
             if let Some(&song_index) = shuffle_order.get(current_pos) {
-                dbg!(&shuffle_order);
-                dbg!(&current_pos);
-                dbg!(&song_index);
                 self.load_song(song_index as i32);
             }
         } else if current_pos > 0 {

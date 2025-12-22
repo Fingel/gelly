@@ -10,8 +10,8 @@ use tokio::time::Instant;
 
 use crate::config;
 use crate::jellyfin::api::{
-    LibraryDtoList, MusicDtoList, NewPlaylist, NewPlaylistResponse, PlaybackInfo, PlaylistDtoList,
-    PlaylistItems,
+    LibraryDtoList, MusicDtoList, NewPlaylist, NewPlaylistResponse, PlaybackInfo, PlaybackReport,
+    PlaybackReportStatus, PlaylistDtoList, PlaylistItems,
 };
 
 pub mod api;
@@ -340,6 +340,23 @@ impl Jellyfin {
             .await?;
         let body = self.handle_response(response).await?;
         Ok(serde_json::from_str(&body)?)
+    }
+
+    pub async fn playback_report(
+        &self,
+        report: &PlaybackReport,
+        state: &PlaybackReportStatus,
+    ) -> Result<(), JellyfinError> {
+        let path = match state {
+            PlaybackReportStatus::Started => "",
+            PlaybackReportStatus::InProgress => "Progress",
+            PlaybackReportStatus::Stopped => "Stopped",
+        };
+        let response = self
+            .post_json(&format!("Sessions/Playing/{}", path), report)
+            .await?;
+        self.handle_response(response).await?;
+        Ok(())
     }
 
     fn get_hostname(&self) -> &'static str {

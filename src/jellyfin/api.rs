@@ -160,3 +160,21 @@ pub struct NewPlaylist {
 pub struct NewPlaylistResponse {
     pub id: String,
 }
+
+pub enum PlaybackReportStatus {
+    Started,
+    InProgress,
+    Stopped,
+}
+
+#[derive(Clone, Debug, Serialize)]
+#[serde(rename_all = "PascalCase")]
+pub struct PlaybackReport {
+    pub item_id: String,
+    pub session_id: String,
+    pub play_session_id: String,
+    pub can_seek: bool,
+    pub is_paused: bool,
+    pub is_muted: bool,
+    pub position_ticks: u64,
+}

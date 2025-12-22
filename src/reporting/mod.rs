@@ -49,14 +49,21 @@ pub enum PlaybackEvent {
 #[derive(Debug)]
 pub struct ReportingManager {
     mpris_reporter: Rc<Mutex<MprisReporter>>,
-    jellyfin_reporter: Rc<Mutex<JellyfinReporter>>,
+    jellyfin_reporter: Option<Rc<Mutex<JellyfinReporter>>>,
 }
 
 impl ReportingManager {
     pub fn new(audio_model: &AudioModel) -> Self {
+        let mpris_reporter = Rc::new(Mutex::new(MprisReporter::new(audio_model)));
+        let jellyfin_reporter = if let Some(app) = audio_model.application() {
+            Some(Rc::new(Mutex::new(JellyfinReporter::new(&app))))
+        } else {
+            warn!("Could not instantiate Jellyfin reporter");
+            None
+        };
         Self {
-            mpris_reporter: Rc::new(Mutex::new(MprisReporter::new(audio_model))),
-            jellyfin_reporter: Rc::new(Mutex::new(JellyfinReporter::new())),
+            mpris_reporter,
+            jellyfin_reporter,
         }
     }
 
@@ -74,13 +81,14 @@ impl ReportingManager {
                 warn!("MPRIS reporter failed to handle event: {}", e);
             }
 
-            if let Err(e) = jellyfin_reporter
-                .lock()
-                .await
-                .handle_event(event.clone())
-                .await
+            if let Some(jellyfin_reporter) = jellyfin_reporter
+                && let Err(_) = jellyfin_reporter
+                    .lock()
+                    .await
+                    .handle_event(event.clone())
+                    .await
             {
-                warn!("Jellyfin reporter failed to handle event: {}", e);
+                warn!("Jellyfin reporter failed to handle event");
             }
         });
     }
