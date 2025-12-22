@@ -1,4 +1,5 @@
 use gtk::{
+    gio,
     glib::{self, Object, Properties},
     prelude::*,
     subclass::prelude::*,
@@ -11,6 +12,7 @@ use std::sync::OnceLock;
 use crate::{
     audio::player::{AudioPlayer, PlayerEvent, PlayerState},
     models::SongModel,
+    reporting::{PlaybackEvent, ReportingManager},
 };
 
 glib::wrapper! {
@@ -49,8 +51,13 @@ impl AudioModel {
                         obj.set_property("paused", paused);
                         obj.set_property("loading", false);
 
-                        // Mpris notification
-                        obj.notify_mpris_playback_status();
+                        obj.report_event(PlaybackEvent::StateChanged {
+                            playing,
+                            paused,
+                            position: obj.position() as u64,
+                            can_play: !obj.queue().is_empty(),
+                            can_pause: obj.playing(),
+                        });
 
                         match state {
                             PlayerState::Playing => obj.emit_by_name::<()>("play", &[]),
@@ -63,8 +70,9 @@ impl AudioModel {
                     }
                     PlayerEvent::DurationChanged(dur) => {
                         obj.set_property("duration", dur as u32);
-                        // Update MPRIS metadata
-                        obj.notify_mpris_metadata();
+                        obj.report_event(PlaybackEvent::MetadataChanged {
+                            song: obj.current_song().clone(),
+                        });
                     }
                     PlayerEvent::EndOfStream => {
                         obj.next();
@@ -77,6 +85,28 @@ impl AudioModel {
                 }
             }
         });
+    }
+
+    pub fn initialize_reporting(&self) {
+        let reporting_manager = ReportingManager::new(self);
+        self.imp()
+            .reporting_manager
+            .set(reporting_manager)
+            .expect("Reporting manager should only be set once");
+    }
+
+    fn report_event(&self, event: PlaybackEvent) {
+        let reporting_manager = self
+            .imp()
+            .reporting_manager
+            .get()
+            .expect("Reporting manager should be initialized");
+        reporting_manager.report_event(event);
+    }
+
+    pub fn application(&self) -> Option<crate::application::Application> {
+        gio::Application::default()
+            .and_then(|app| app.downcast::<crate::application::Application>().ok())
     }
 
     fn player(&self) -> &AudioPlayer {
@@ -99,10 +129,18 @@ impl AudioModel {
         self.imp().queue.borrow().clone()
     }
 
+    pub fn queue_len(&self) -> i32 {
+        self.imp().queue.borrow().len() as i32
+    }
+
     pub fn set_queue(&self, songs: Vec<SongModel>, start_index: usize) {
         let song_len = songs.len();
         self.imp().queue.replace(songs);
-        self.notify_mpris_can_navigate(true, start_index > 0);
+        self.report_event(PlaybackEvent::NavigationChanged {
+            can_go_next: song_len > 0,
+            can_go_previous: start_index > 0,
+            can_play: song_len > 0,
+        });
         if self.imp().shuffle_enabled.get() {
             self.new_shuffle_cycle();
         }
@@ -119,9 +157,14 @@ impl AudioModel {
     }
 
     pub fn append_to_queue(&self, songs: Vec<SongModel>) {
+        let songs_len = songs.len();
         self.imp().queue.borrow_mut().extend(songs);
         let current_index = self.queue_index();
-        self.notify_mpris_can_navigate(true, current_index > 0);
+        self.report_event(PlaybackEvent::NavigationChanged {
+            can_go_next: songs_len > 0,
+            can_go_previous: current_index > 0,
+            can_play: true,
+        });
         if self.imp().shuffle_enabled.get() {
             self.new_shuffle_cycle();
         }
@@ -135,7 +178,11 @@ impl AudioModel {
             current_index + 1
         } as usize;
         self.imp().queue.borrow_mut().splice(index..index, songs);
-        self.notify_mpris_can_navigate(true, current_index > 0);
+        self.report_event(PlaybackEvent::NavigationChanged {
+            can_go_next: index < self.queue_len() as usize,
+            can_go_previous: current_index > 0,
+            can_play: true,
+        });
         if self.imp().shuffle_enabled.get() {
             self.new_shuffle_cycle();
         }
@@ -143,7 +190,11 @@ impl AudioModel {
 
     pub fn clear_queue(&self) {
         self.imp().queue.replace(Vec::new());
-        self.notify_mpris_can_navigate(false, false);
+        self.report_event(PlaybackEvent::NavigationChanged {
+            can_go_next: false,
+            can_go_previous: false,
+            can_play: false,
+        });
     }
 
     pub fn play_song(&self, index: usize) {
@@ -163,8 +214,13 @@ impl AudioModel {
             player.set_uri(&stream_uri);
             self.imp().uri.replace(Some(stream_uri));
             self.emit_by_name::<()>("song-changed", &[&song.id()]);
-            // Notify MPRIS with metadata
-            self.notify_mpris_track_changed();
+            let queue_len = self.queue().len() as i32;
+            self.report_event(PlaybackEvent::TrackChanged {
+                song: Some(song),
+                position: 0,
+                can_go_next: index >= 0 && (index + 1) < queue_len,
+                can_go_previous: index > 0,
+            })
         } else {
             self.stop();
             warn!("Failed to load song at index {}", index);
@@ -226,8 +282,9 @@ impl AudioModel {
     pub fn seek(&self, position: u32) {
         self.player().seek(position as u64);
         self.set_property("position", position);
-        // Some MRPIS clients care about this I guess
-        self.notify_mpris_seeked(position);
+        self.report_event(PlaybackEvent::Seeked {
+            position: position.into(),
+        });
     }
 
     pub fn get_uri(&self) -> Option<String> {
@@ -387,6 +444,7 @@ mod imp {
         pub player: OnceCell<AudioPlayer>,
         pub queue: RefCell<Vec<SongModel>>,
         pub mpris_server: OnceCell<LocalServer<super::AudioModel>>,
+        pub reporting_manager: OnceCell<ReportingManager>,
         pub shuffle_enabled: Cell<bool>,
         pub shuffle_index: Cell<usize>,
         pub shuffle_seed: Cell<u64>,
@@ -426,19 +484,12 @@ mod imp {
 
         fn constructed(&self) {
             self.parent_constructed();
-            glib::spawn_future_local(glib::clone!(
-                #[weak(rename_to = imp)]
-                self,
-                async move {
-                    if let Err(e) = imp.obj().initialize_mpris().await {
-                        warn!("Failed to initialize MPRIS: {}", e);
-                    }
-                }
-            ));
+            self.obj().initialize_reporting();
         }
     }
 
     impl AudioModel {
+        // TODO change these to gobject setters
         pub fn set_volume(&self, volume: f64) {
             let clamped_volume = volume.clamp(0.0, 1.0);
             self.volume.set(clamped_volume);
@@ -447,7 +498,8 @@ mod imp {
                 player.set_volume(clamped_volume);
             }
 
-            self.obj().notify_mpris_volume();
+            self.obj()
+                .report_event(PlaybackEvent::VolumeChanged { volume });
         }
 
         pub fn set_muted(&self, muted: bool) {
