@@ -61,6 +61,16 @@ pub fn shuffle_songs(library: &[MusicDto], num: u64) -> Vec<MusicDto> {
     chosen.into_iter().cloned().collect()
 }
 
+pub fn most_played_songs(library: &[MusicDto], num: u64) -> Vec<MusicDto> {
+    let mut songs: Vec<MusicDto> = library
+        .iter()
+        .filter(|dto| dto.user_data.play_count > 0)
+        .cloned()
+        .collect();
+    songs.sort_by_key(|dto| std::cmp::Reverse(dto.user_data.play_count));
+    songs.into_iter().take(num as usize).collect()
+}
+
 pub fn songs_for_playlist(
     playlist_model: &PlaylistModel,
     app: &Application,
@@ -102,7 +112,7 @@ pub fn play_artist(id: &str, app: &Application) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::jellyfin::api::{ArtistItemsDto, MusicDto};
+    use crate::jellyfin::api::{ArtistItemsDto, MusicDto, UserDataDto};
 
     #[allow(clippy::too_many_arguments)]
     fn create_test_music_dto(
@@ -130,6 +140,11 @@ mod tests {
             production_year: Some(2023),
             index_number,
             parent_index_number,
+            user_data: UserDataDto {
+                play_count: 1,
+                is_favorite: false,
+                played: true,
+            },
         }
     }
 
@@ -154,6 +169,35 @@ mod tests {
             album: album.to_string(),
             album_id: album_id.to_string(),
             album_artists,
+            date_created: Some("2025-01-01".to_string()),
+            run_time_ticks: 2000000000,
+            normalization_gain: None,
+            production_year: Some(2023),
+            index_number: Some(1),
+            parent_index_number: Some(1),
+            user_data: UserDataDto {
+                play_count: 1,
+                is_favorite: false,
+                played: true,
+            },
+        }
+    }
+
+    fn create_music_dto_user_data(play_count: u64, is_favorite: bool, played: bool) -> MusicDto {
+        MusicDto {
+            user_data: UserDataDto {
+                play_count,
+                is_favorite,
+                played,
+            },
+            id: format!("user-data-{}", play_count),
+            name: format!("user-data-{}", play_count),
+            album: format!("user-data-{}", play_count),
+            album_id: format!("user-data-{}", play_count),
+            album_artists: vec![ArtistItemsDto {
+                name: format!("user-data-{}", play_count),
+                id: format!("user-data-{}", play_count),
+            }],
             date_created: Some("2025-01-01".to_string()),
             run_time_ticks: 2000000000,
             normalization_gain: None,
@@ -630,5 +674,22 @@ mod tests {
         assert_eq!(album.artists().len(), 2);
         assert_eq!(album.artists()[0], "Primary Artist");
         assert_eq!(album.artists()[1], "Secondary Artist");
+    }
+
+    #[test]
+    fn test_most_played_songs() {
+        let library = vec![
+            create_music_dto_user_data(1, false, false),
+            create_music_dto_user_data(2, true, false),
+            create_music_dto_user_data(3, true, false),
+            create_music_dto_user_data(0, false, false),
+        ];
+
+        let most_played = most_played_songs(&library, 100);
+        assert_eq!(most_played.len(), 3);
+        assert_eq!(most_played[0].id, "user-data-3");
+        assert_eq!(most_played[1].id, "user-data-2");
+        assert_eq!(most_played[2].id, "user-data-1");
+        // 0 not included
     }
 }

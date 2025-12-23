@@ -152,6 +152,11 @@ impl PlaylistList {
         };
         let shuffle_playlist = PlaylistModel::new(shuffle_type);
         store.append(&shuffle_playlist);
+        let most_played_type = PlaylistType::MostPlayed {
+            count: DEFAULT_SMART_COUNT,
+        };
+        let most_played_playlist = PlaylistModel::new(most_played_type);
+        store.append(&most_played_playlist);
         for playlist in playlists {
             let playlist_type = PlaylistType::new_regular(
                 playlist.id.clone(),

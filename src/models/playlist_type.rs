@@ -1,6 +1,6 @@
 use crate::{
     jellyfin::{Jellyfin, JellyfinError, api::MusicDto},
-    library_utils::shuffle_songs,
+    library_utils::{most_played_songs, shuffle_songs},
 };
 
 pub const DEFAULT_SMART_COUNT: u64 = 100;
@@ -13,6 +13,9 @@ pub enum PlaylistType {
         child_count: u64,
     },
     ShuffleLibrary {
+        count: u64,
+    },
+    MostPlayed {
         count: u64,
     },
 }
@@ -32,6 +35,7 @@ impl PlaylistType {
         match self {
             PlaylistType::Regular { id, .. } => id.clone(),
             PlaylistType::ShuffleLibrary { count } => format!("smart:shuffle:{count}"),
+            PlaylistType::MostPlayed { count } => format!("smart:most-played:{count}"),
         }
     }
 
@@ -48,6 +52,13 @@ impl PlaylistType {
                     .unwrap_or(DEFAULT_SMART_COUNT);
                 Some(Self::ShuffleLibrary { count })
             }
+            Some(&"most-played") => {
+                let count = parts
+                    .get(2)
+                    .and_then(|s| s.parse().ok())
+                    .unwrap_or(DEFAULT_SMART_COUNT);
+                Some(Self::MostPlayed { count })
+            }
             _ => None,
         }
     }
@@ -56,6 +67,7 @@ impl PlaylistType {
         match self {
             PlaylistType::Regular { name, .. } => name.clone(),
             PlaylistType::ShuffleLibrary { count } => format!("{} Shuffled Songs", count),
+            PlaylistType::MostPlayed { count } => format!("Top {} Played Songs", count),
         }
     }
 
@@ -73,6 +85,10 @@ impl PlaylistType {
                 let songs = shuffle_songs(library, *count);
                 Ok(songs)
             }
+            PlaylistType::MostPlayed { count } => {
+                let songs = most_played_songs(library, *count);
+                Ok(songs)
+            }
         }
     }
 
@@ -80,12 +96,14 @@ impl PlaylistType {
         match self {
             PlaylistType::Regular { child_count, .. } => *child_count,
             PlaylistType::ShuffleLibrary { count } => *count,
+            PlaylistType::MostPlayed { count } => *count,
         }
     }
 
     pub fn icon_name(&self) -> &str {
         match self {
             PlaylistType::ShuffleLibrary { count: _ } => "media-playlist-shuffle-symbolic",
+            PlaylistType::MostPlayed { count: _ } => "starred-symbolic",
             _ => "audio-x-generic-symbolic",
         }
     }
@@ -138,6 +156,12 @@ mod tests {
     fn test_to_id_shuffle_library() {
         let playlist = PlaylistType::ShuffleLibrary { count: 50 };
         assert_eq!(playlist.to_id(), "smart:shuffle:50");
+    }
+
+    #[test]
+    fn test_to_id_most_played() {
+        let playlist = PlaylistType::MostPlayed { count: 50 };
+        assert_eq!(playlist.to_id(), "smart:most-played:50");
     }
 
     #[test]
@@ -213,6 +237,12 @@ mod tests {
                 count: DEFAULT_SMART_COUNT
             })
         );
+    }
+
+    #[test]
+    fn test_smart_from_id_most_played_songs() {
+        let playlist = PlaylistType::smart_from_id("smart:most-played:5");
+        assert_eq!(playlist, Some(PlaylistType::MostPlayed { count: 5 }));
     }
 
     #[test]
@@ -379,6 +409,14 @@ mod tests {
     #[test]
     fn test_roundtrip_shuffle_library() {
         let original = PlaylistType::ShuffleLibrary { count: 75 };
+        let id = original.to_id();
+        let parsed = PlaylistType::smart_from_id(&id).unwrap();
+        assert_eq!(original, parsed);
+    }
+
+    #[test]
+    fn test_roundtrip_most_played_library() {
+        let original = PlaylistType::MostPlayed { count: 75 };
         let id = original.to_id();
         let parsed = PlaylistType::smart_from_id(&id).unwrap();
         assert_eq!(original, parsed);
