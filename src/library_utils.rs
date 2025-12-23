@@ -163,11 +163,7 @@ mod tests {
             production_year: Some(2023),
             index_number,
             parent_index_number,
-            user_data: UserDataDto {
-                play_count: 1,
-                is_favorite: false,
-                played: true,
-            },
+            user_data: UserDataDto { play_count: 1 },
         }
     }
 
@@ -198,21 +194,13 @@ mod tests {
             production_year: Some(2023),
             index_number: Some(1),
             parent_index_number: Some(1),
-            user_data: UserDataDto {
-                play_count: 1,
-                is_favorite: false,
-                played: true,
-            },
+            user_data: UserDataDto { play_count: 1 },
         }
     }
 
-    fn create_music_dto_user_data(play_count: u64, is_favorite: bool, played: bool) -> MusicDto {
+    fn create_music_dto_user_data(play_count: u64) -> MusicDto {
         MusicDto {
-            user_data: UserDataDto {
-                play_count,
-                is_favorite,
-                played,
-            },
+            user_data: UserDataDto { play_count },
             id: format!("user-data-{}", play_count),
             name: format!("user-data-{}", play_count),
             album: format!("user-data-{}", play_count),
@@ -702,10 +690,10 @@ mod tests {
     #[test]
     fn test_most_played_songs() {
         let library = vec![
-            create_music_dto_user_data(1, false, false),
-            create_music_dto_user_data(2, true, false),
-            create_music_dto_user_data(3, true, false),
-            create_music_dto_user_data(0, false, false),
+            create_music_dto_user_data(1),
+            create_music_dto_user_data(2),
+            create_music_dto_user_data(3),
+            create_music_dto_user_data(0),
         ];
 
         let most_played = most_played_songs(&library, 100);
