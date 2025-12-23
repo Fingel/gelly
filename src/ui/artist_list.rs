@@ -21,6 +21,7 @@ glib::wrapper! {
 #[derive(Debug)]
 pub enum ArtistSort {
     Name,
+    PlayCount,
 }
 
 impl TopPage for ArtistList {
@@ -130,6 +131,7 @@ impl ArtistList {
         let imp = self.imp();
         let sort_option = match imp.sort_dropdown.selected() {
             0 => ArtistSort::Name,
+            1 => ArtistSort::PlayCount,
             _ => ArtistSort::Name,
         };
         let sort_direction = match imp.sort_direction.active() {
@@ -157,6 +159,7 @@ impl ArtistList {
                     .to_lowercase()
                     .cmp(&artist2.name().to_lowercase())
                     .into(),
+                ArtistSort::PlayCount => artist1.play_count().cmp(&artist2.play_count()).into(),
             }
         });
         imp.current_sorter.replace(Some(sorter.clone()));

@@ -36,6 +36,7 @@ impl AlbumModel {
             .property("image-loaded", false)
             .property("year", year.unwrap_or(0))
             .property("artists-string", artists_string)
+            .property("play-count", 0u64)
             .build()
     }
 
@@ -75,7 +76,7 @@ impl From<&MusicDto> for AlbumModel {
 mod imp {
     use glib::Properties;
     use gtk::{glib, prelude::*, subclass::prelude::*};
-    use std::cell::RefCell;
+    use std::cell::{Cell, RefCell};
 
     #[derive(Properties, Default)]
     #[properties(wrapper_type = super::AlbumModel)]
@@ -93,16 +94,19 @@ mod imp {
         pub date_created: RefCell<String>,
 
         #[property(get, set)]
-        pub year: RefCell<u32>,
+        pub year: Cell<u32>,
 
         #[property(get, set, name = "image-loading")]
-        pub image_loading: RefCell<bool>,
+        pub image_loading: Cell<bool>,
 
         #[property(get, set, name = "image-loaded")]
-        pub image_loaded: RefCell<bool>,
+        pub image_loaded: Cell<bool>,
 
         #[property(get, set, name = "artists-string")]
         pub artists_string: RefCell<String>,
+
+        #[property(get, set)]
+        pub play_count: Cell<u64>,
 
         pub image_data: RefCell<Vec<u8>>,
     }

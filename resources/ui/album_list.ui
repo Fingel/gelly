@@ -42,6 +42,7 @@
                           <item translatable="yes">Name</item>
                           <item translatable="yes">Album Artist</item>
                           <item translatable="yes">Year</item>
+                          <item translatable="yes">Play Count</item>
                         </items>
                       </object>
                     </property>

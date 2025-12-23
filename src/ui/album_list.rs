@@ -24,6 +24,7 @@ pub enum AlbumSort {
     Artist,
     DateAdded,
     Year,
+    PlayCount,
 }
 
 impl TopPage for AlbumList {
@@ -143,6 +144,7 @@ impl AlbumList {
             1 => AlbumSort::Name,
             2 => AlbumSort::Artist,
             3 => AlbumSort::Year,
+            4 => AlbumSort::PlayCount,
             _ => AlbumSort::DateAdded,
         };
         let sort_direction = match imp.sort_direction.active() {
@@ -179,6 +181,7 @@ impl AlbumList {
                     album2.date_created().cmp(&album1.date_created()).into()
                 }
                 AlbumSort::Year => album1.year().cmp(&album2.year()).into(),
+                AlbumSort::PlayCount => album1.play_count().cmp(&album2.play_count()).into(),
             }
         });
         imp.current_sorter.replace(Some(sorter.clone()));

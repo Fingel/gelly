@@ -39,6 +39,7 @@
                       <object class="GtkStringList">
                         <items>
                           <item translatable="yes">Name</item>
+                          <item translatable="yes">Play Count</item>
                         </items>
                       </object>
                     </property>

@@ -22,6 +22,7 @@ impl ArtistModel {
         Object::builder()
             .property("name", name)
             .property("id", id)
+            .property("play-count", 0u64)
             .build()
     }
 
@@ -43,7 +44,7 @@ impl From<&ArtistItemsDto> for ArtistModel {
 mod imp {
     use glib::Properties;
     use gtk::{glib, prelude::*, subclass::prelude::*};
-    use std::cell::RefCell;
+    use std::cell::{Cell, RefCell};
 
     #[derive(Properties, Default)]
     #[properties(wrapper_type = super::ArtistModel)]
@@ -53,9 +54,11 @@ mod imp {
         #[property(get, set)]
         pub id: RefCell<String>,
         #[property(get, set, name = "image-loading")]
-        pub image_loading: RefCell<bool>,
+        pub image_loading: Cell<bool>,
         #[property(get, set, name = "image-loaded")]
-        pub image_loaded: RefCell<bool>,
+        pub image_loaded: Cell<bool>,
+        #[property(get, set)]
+        pub play_count: Cell<u64>,
         pub image_data: RefCell<Vec<u8>>,
     }
 

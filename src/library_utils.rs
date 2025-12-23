@@ -3,29 +3,61 @@ use crate::jellyfin::JellyfinError;
 use crate::jellyfin::api::MusicDto;
 use crate::models::{AlbumModel, ArtistModel, PlaylistModel, SongModel};
 use rand::prelude::*;
-use std::collections::HashSet;
+use std::collections::{HashMap, HashSet};
+use std::time::Instant;
 
 pub fn albums_from_library(library: &[MusicDto]) -> Vec<AlbumModel> {
+    let now = Instant::now();
+    // Collect playcounts in a separate loop to avoid too many getter/setters
+    // on the model gobject
+    let mut play_count_map = HashMap::<String, u64>::new();
+    for dto in library {
+        *play_count_map.entry(dto.album_id.clone()).or_insert(0) += dto.user_data.play_count;
+    }
+
     let mut seen_album_ids = HashSet::new();
     let albums: Vec<AlbumModel> = library
         .iter()
         .filter(|dto| seen_album_ids.insert(&dto.album_id))
-        .map(AlbumModel::from)
+        .map(|dto| {
+            let album = AlbumModel::from(dto);
+            if let Some(&total_play_count) = play_count_map.get(&dto.album_id) {
+                album.set_play_count(total_play_count);
+            }
+            album
+        })
         .collect();
 
+    let elapsed = now.elapsed().as_micros();
+    dbg!(&albums.len());
+    println!("Albums from library took {} us", elapsed);
     albums
 }
 
 pub fn artists_from_library(library: &[MusicDto]) -> Vec<ArtistModel> {
+    let now = Instant::now();
+    let mut play_count_map = HashMap::<String, u64>::new();
+    for dto in library {
+        for artist in &dto.album_artists {
+            *play_count_map.entry(artist.id.clone()).or_insert(0) += dto.user_data.play_count;
+        }
+    }
     let mut seen_artist_ids = HashSet::new();
-    let mut artists: Vec<ArtistModel> = library
+    let artists: Vec<ArtistModel> = library
         .iter()
         .flat_map(|dto| &dto.album_artists)
         .filter(|artist| seen_artist_ids.insert(&artist.id))
-        .map(ArtistModel::from)
+        .map(|dto| {
+            let artist = ArtistModel::from(dto);
+            if let Some(&total_play_count) = play_count_map.get(&dto.id) {
+                artist.set_play_count(total_play_count);
+            }
+            artist
+        })
         .collect();
-
-    artists.sort_by_key(|artist| artist.name().to_lowercase());
+    let elapsed = now.elapsed().as_micros();
+    dbg!(&artists.len());
+    println!("Artists from library took {} us", elapsed);
     artists
 }
 
