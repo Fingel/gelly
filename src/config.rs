@@ -164,3 +164,11 @@ pub fn get_max_bitrate() -> Option<i32> {
 pub fn get_refresh_on_startup() -> bool {
     settings().boolean("refresh-on-startup")
 }
+
+pub fn get_playlist_shuffle_enabled() -> bool {
+    settings().boolean("playlist-shuffle-enabled")
+}
+
+pub fn get_playlist_most_played_enabled() -> bool {
+    settings().boolean("playlist-most-played-enabled")
+}

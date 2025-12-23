@@ -1,6 +1,7 @@
 use crate::{
     application::Application,
     async_utils::spawn_tokio,
+    config,
     jellyfin::{JellyfinError, api::MusicDto},
     library_utils::songs_for_playlist,
     models::{
@@ -147,16 +148,22 @@ impl PlaylistList {
             .get()
             .expect("PlaylistList store should be initialized");
         store.remove_all();
-        let shuffle_type = PlaylistType::ShuffleLibrary {
-            count: DEFAULT_SMART_COUNT,
-        };
-        let shuffle_playlist = PlaylistModel::new(shuffle_type);
-        store.append(&shuffle_playlist);
-        let most_played_type = PlaylistType::MostPlayed {
-            count: DEFAULT_SMART_COUNT,
-        };
-        let most_played_playlist = PlaylistModel::new(most_played_type);
-        store.append(&most_played_playlist);
+
+        if config::get_playlist_shuffle_enabled() {
+            let shuffle_type = PlaylistType::ShuffleLibrary {
+                count: DEFAULT_SMART_COUNT,
+            };
+            let shuffle_playlist = PlaylistModel::new(shuffle_type);
+            store.append(&shuffle_playlist);
+        }
+        if config::get_playlist_most_played_enabled() {
+            let most_played_type = PlaylistType::MostPlayed {
+                count: DEFAULT_SMART_COUNT,
+            };
+            let most_played_playlist = PlaylistModel::new(most_played_type);
+            store.append(&most_played_playlist);
+        }
+
         for playlist in playlists {
             let playlist_type = PlaylistType::new_regular(
                 playlist.id.clone(),
@@ -319,6 +326,7 @@ impl Default for PlaylistList {
 mod imp {
     use std::cell::{OnceCell, RefCell};
 
+    use crate::config::settings;
     use adw::subclass::prelude::*;
     use glib::subclass::InitializingObject;
     use gtk::{CompositeTemplate, gio, glib, prelude::*};
@@ -397,6 +405,28 @@ mod imp {
                     playlist_list.handle_sort_changed();
                 }
             ));
+
+            settings().connect_changed(
+                Some("playlist-shuffle-enabled"),
+                glib::clone!(
+                    #[weak(rename_to = playlist_list)]
+                    self.obj(),
+                    move |_settings, _key| {
+                        playlist_list.pull_playlists();
+                    }
+                ),
+            );
+
+            settings().connect_changed(
+                Some("playlist-most-played-enabled"),
+                glib::clone!(
+                    #[weak(rename_to = playlist_list)]
+                    self.obj(),
+                    move |_settings, _key| {
+                        playlist_list.pull_playlists();
+                    }
+                ),
+            );
         }
     }
     impl WidgetImpl for PlaylistList {}

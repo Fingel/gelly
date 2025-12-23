@@ -62,5 +62,40 @@
         </child>
       </object>
     </child>
+    <child>
+      <object class="AdwPreferencesPage">
+        <property name="icon_name">text-editor-symbolic</property>
+        <property name="title" translatable="yes">Playlists</property>
+        <child>
+          <object class="AdwPreferencesGroup">
+            <property name="title" translatable="yes">Smart Playlists</property>
+            <child>
+              <object class="AdwActionRow">
+                <property name="title" translatable="yes">Shuffled Playlist</property>
+                <property name="use_underline">True</property>
+                <property name="activatable_widget">playlist_shuffle_enabled_switch</property>
+                <child>
+                  <object class="GtkSwitch" id="playlist_shuffle_enabled_switch">
+                    <property name="valign">center</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="AdwActionRow">
+                <property name="title" translatable="yes">Most Played Playlist</property>
+                <property name="use_underline">True</property>
+                <property name="activatable_widget">playlist_most_played_enabled_switch</property>
+                <child>
+                  <object class="GtkSwitch" id="playlist_most_played_enabled_switch">
+                    <property name="valign">center</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
   </template>
 </interface>

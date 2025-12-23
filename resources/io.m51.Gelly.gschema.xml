@@ -41,5 +41,13 @@
       <default>false</default>
       <summary>Refresh the library on startup</summary>
     </key>
+    <key name="playlist-shuffle-enabled" type="b">
+      <default>true</default>
+      <summary>Shuffled songs smart playlist enabled</summary>
+    </key>
+    <key name="playlist-most-played-enabled" type="b">
+      <default>true</default>
+      <summary>Most played smart playlist enabled</summary>
+    </key>
   </schema>
 </schemalist>

@@ -38,6 +38,22 @@ impl Preferences {
             )
             .build();
 
+        // Smart Playlists
+        settings
+            .bind(
+                "playlist-shuffle-enabled",
+                &*imp.playlist_shuffle_enabled_switch,
+                "active",
+            )
+            .build();
+        settings
+            .bind(
+                "playlist-most-played-enabled",
+                &*imp.playlist_most_played_enabled_switch,
+                "active",
+            )
+            .build();
+
         // Transcoding Profile
         imp.transcoding_profile_row
             .set_model(Some(&TranscodingProfile::as_string_list()));
@@ -79,6 +95,10 @@ mod imp {
         pub maximum_bitrate_row: TemplateChild<adw::SpinRow>,
         #[template_child]
         pub refresh_on_startup_switch: TemplateChild<gtk::Switch>,
+        #[template_child]
+        pub playlist_shuffle_enabled_switch: TemplateChild<gtk::Switch>,
+        #[template_child]
+        pub playlist_most_played_enabled_switch: TemplateChild<gtk::Switch>,
     }
 
     #[glib::object_subclass]
