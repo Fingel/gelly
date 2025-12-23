@@ -4,10 +4,8 @@ use crate::jellyfin::api::MusicDto;
 use crate::models::{AlbumModel, ArtistModel, PlaylistModel, SongModel};
 use rand::prelude::*;
 use std::collections::{HashMap, HashSet};
-use std::time::Instant;
 
 pub fn albums_from_library(library: &[MusicDto]) -> Vec<AlbumModel> {
-    let now = Instant::now();
     // Collect playcounts in a separate loop to avoid too many getter/setters
     // on the model gobject
     let mut play_count_map = HashMap::<String, u64>::new();
@@ -16,7 +14,7 @@ pub fn albums_from_library(library: &[MusicDto]) -> Vec<AlbumModel> {
     }
 
     let mut seen_album_ids = HashSet::new();
-    let albums: Vec<AlbumModel> = library
+    library
         .iter()
         .filter(|dto| seen_album_ids.insert(&dto.album_id))
         .map(|dto| {
@@ -26,16 +24,10 @@ pub fn albums_from_library(library: &[MusicDto]) -> Vec<AlbumModel> {
             }
             album
         })
-        .collect();
-
-    let elapsed = now.elapsed().as_micros();
-    dbg!(&albums.len());
-    println!("Albums from library took {} us", elapsed);
-    albums
+        .collect()
 }
 
 pub fn artists_from_library(library: &[MusicDto]) -> Vec<ArtistModel> {
-    let now = Instant::now();
     let mut play_count_map = HashMap::<String, u64>::new();
     for dto in library {
         for artist in &dto.album_artists {
@@ -43,7 +35,7 @@ pub fn artists_from_library(library: &[MusicDto]) -> Vec<ArtistModel> {
         }
     }
     let mut seen_artist_ids = HashSet::new();
-    let artists: Vec<ArtistModel> = library
+    let mut artists: Vec<ArtistModel> = library
         .iter()
         .flat_map(|dto| &dto.album_artists)
         .filter(|artist| seen_artist_ids.insert(&artist.id))
@@ -55,9 +47,8 @@ pub fn artists_from_library(library: &[MusicDto]) -> Vec<ArtistModel> {
             artist
         })
         .collect();
-    let elapsed = now.elapsed().as_micros();
-    dbg!(&artists.len());
-    println!("Artists from library took {} us", elapsed);
+    artists.sort_by_key(|artist| artist.name().to_lowercase());
+
     artists
 }
 
