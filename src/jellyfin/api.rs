@@ -185,3 +185,44 @@ pub struct PlaybackReport {
     pub is_muted: bool,
     pub position_ticks: u64,
 }
+
+#[derive(Clone, Debug, Deserialize)]
+#[serde(rename_all = "PascalCase")]
+pub struct LyricsResponse {
+    pub metadata: LyricsMetadata,
+    #[serde(deserialize_with = "deserialize_items_skip_errors")]
+    pub lyrics: Vec<Lyric>,
+}
+
+#[derive(Clone, Debug, Deserialize)]
+#[serde(rename_all = "PascalCase")]
+pub struct Lyric {
+    pub text: String,
+    pub start: u32,
+    #[serde(deserialize_with = "deserialize_items_skip_errors")]
+    pub cues: Vec<Cue>,
+}
+
+#[derive(Clone, Debug, Deserialize)]
+#[serde(rename_all = "PascalCase")]
+pub struct Cue {
+    pub position: u32,
+    pub end_position: u32,
+    pub start: u32,
+    pub end: u32,
+}
+
+#[derive(Clone, Debug, Deserialize)]
+#[serde(rename_all = "PascalCase")]
+pub struct LyricsMetadata {
+    pub artist: String,
+    pub album: String,
+    pub title: String,
+    pub author: String,
+    pub length: u32,
+    pub by: String,
+    pub offset: i32,
+    pub creator: String,
+    pub version: String,
+    pub is_synced: bool,
+}
