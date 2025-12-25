@@ -1,6 +1,7 @@
 use crate::audio::model::AudioModel;
+use adw::prelude::*;
 use glib::Object;
-use gtk::{gio, glib, prelude::*, subclass::prelude::*};
+use gtk::{gio, glib, subclass::prelude::*};
 use log::debug;
 
 glib::wrapper! {
@@ -136,10 +137,15 @@ impl PlayerBar {
         imp.title_label.set_text(&title);
         imp.artist_label.set_text(&artist_str);
 
-        // Load album art if available
+        // Load album art and lyrics if available
         if let Some(song) = audio_model.current_song() {
+            self.toggle_lyrics(song.has_lyrics());
             self.load_album_art(&song.album_id(), &song.id());
         }
+    }
+
+    fn toggle_lyrics(&self, has_lyrics: bool) {
+        self.imp().lyrics.set_visible(has_lyrics);
     }
 
     fn load_album_art(&self, album_id: &str, song_id: &str) {
@@ -172,14 +178,16 @@ mod imp {
 
     use crate::{
         audio::{model::AudioModel, stream_info::discover_stream_info},
-        ui::{album_art::AlbumArt, stream_info_dialog, widget_ext::WidgetApplicationExt},
+        ui::{
+            album_art::AlbumArt, lyrics::Lyrics, stream_info_dialog,
+            widget_ext::WidgetApplicationExt,
+        },
     };
-    use adw::subclass::prelude::*;
+    use adw::{prelude::*, subclass::prelude::*};
     use glib::{Properties, subclass::InitializingObject};
     use gtk::{
         CompositeTemplate,
         glib::{self},
-        prelude::*,
     };
     use log::warn;
 
@@ -217,8 +225,11 @@ mod imp {
         pub play_mode: TemplateChild<gtk::Button>,
         #[template_child]
         pub info_button: TemplateChild<gtk::Button>,
+        #[template_child]
+        pub lyrics: TemplateChild<gtk::Button>,
 
         pub audio_model: OnceCell<AudioModel>,
+        pub lyrics_window: RefCell<Option<glib::WeakRef<adw::Window>>>,
 
         #[property(get, set)]
         pub position: RefCell<u32>,
@@ -309,6 +320,53 @@ mod imp {
             }
         }
 
+        fn show_lyrics(&self) {
+            if let Some(window) = self
+                .lyrics_window
+                .borrow()
+                .as_ref()
+                .and_then(|w| w.upgrade())
+            {
+                window.present();
+            } else {
+                let lyrics_widget = Lyrics::new();
+
+                // Set the Jellyfin client
+                let jellyfin = self.obj().get_application().jellyfin();
+                lyrics_widget.set_jellyfin(&jellyfin);
+
+                // Bind to the audio model so it can listen for song changes
+                lyrics_widget.bind_to_audio_model(self.audio_model());
+
+                let window = adw::Window::new();
+                window.set_content(Some(&lyrics_widget));
+                window.set_default_size(500, 600);
+
+                if let Some(parent) = self.obj().get_gtk_window() {
+                    window.set_transient_for(Some(&parent));
+                }
+
+                // Clean up window reference when closed
+                window.connect_close_request(glib::clone!(
+                    #[weak(rename_to = imp)]
+                    self,
+                    #[upgrade_or]
+                    glib::Propagation::Proceed,
+                    move |_| {
+                        imp.lyrics_window.replace(None);
+                        glib::Propagation::Proceed
+                    }
+                ));
+
+                self.lyrics_window.replace(Some(window.downgrade()));
+                window.present();
+
+                // Fetch initial lyrics
+                let item_id = self.audio_model().current_song_id();
+                lyrics_widget.fetch_lyrics(&item_id);
+            }
+        }
+
         fn setup_signals(&self) {
             self.play_pause_button.connect_clicked(glib::clone!(
                 #[weak(rename_to = imp)]
@@ -377,6 +435,14 @@ mod imp {
                     let volume = scale.value();
                     imp.audio_model().imp().set_volume(volume);
                     imp.update_volume_icon(volume);
+                }
+            ));
+
+            self.lyrics.connect_clicked(glib::clone!(
+                #[weak(rename_to = imp)]
+                self,
+                move |_| {
+                    imp.show_lyrics();
                 }
             ));
 

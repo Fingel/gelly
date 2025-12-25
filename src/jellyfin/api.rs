@@ -74,6 +74,7 @@ pub struct MusicDto {
     pub index_number: Option<u32>,
     pub parent_index_number: Option<u32>,
     pub user_data: UserDataDto,
+    pub has_lyrics: bool,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -184,4 +185,18 @@ pub struct PlaybackReport {
     pub is_paused: bool,
     pub is_muted: bool,
     pub position_ticks: u64,
+}
+
+#[derive(Clone, Debug, Deserialize)]
+#[serde(rename_all = "PascalCase")]
+pub struct LyricsResponse {
+    #[serde(deserialize_with = "deserialize_items_skip_errors")]
+    pub lyrics: Vec<Lyric>,
+}
+
+#[derive(Clone, Debug, Deserialize)]
+#[serde(rename_all = "PascalCase")]
+pub struct Lyric {
+    pub text: String,
+    pub start: Option<u64>,
 }
