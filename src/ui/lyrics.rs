@@ -5,7 +5,7 @@ use log::debug;
 use crate::{
     async_utils::spawn_tokio,
     audio::model::AudioModel,
-    jellyfin::{Jellyfin, JellyfinError},
+    jellyfin::{Jellyfin, JellyfinError, api::Lyric},
 };
 
 glib::wrapper! {
@@ -47,6 +47,17 @@ impl Lyrics {
                 }
             ),
         );
+
+        audio_model.connect_notify_local(
+            Some("position"),
+            glib::clone!(
+                #[weak(rename_to = lyrics)]
+                self,
+                move |audio_model, _| {
+                    lyrics.update_lyrics_position(audio_model.position());
+                }
+            ),
+        );
     }
 
     fn set_song_info(&self) {
@@ -78,13 +89,8 @@ impl Lyrics {
                 move |result| {
                     match result {
                         Ok(lyrics_resp) => {
-                            let lyrics_str = lyrics_resp
-                                .lyrics
-                                .iter()
-                                .map(|line| line.text.clone())
-                                .collect::<Vec<_>>()
-                                .join("\n");
-                            obj.imp().lyrics_label.set_text(&lyrics_str);
+                            obj.create_lyrics_widgets(lyrics_resp.lyrics);
+                            obj.update_lyrics_position(0u32);
                         }
                         Err(err) => {
                             let message = if matches!(err, JellyfinError::Http { status, .. } if status == 404)
@@ -93,12 +99,66 @@ impl Lyrics {
                             } else {
                                 "Error fetching lyrics."
                             };
-                            obj.imp().lyrics_label.set_text(message);
+                            obj.create_lyrics_widgets(vec![Lyric {
+                                text: message.to_string(),
+                                start: None,
+                            }]);
                         }
                     }
                 }
             ),
         );
+    }
+
+    fn create_lyrics_widgets(&self, lyrics: Vec<Lyric>) {
+        let imp = self.imp();
+
+        // Clear existing widgets
+        while let Some(child) = imp.lyrics_box.first_child() {
+            imp.lyrics_box.remove(&child);
+        }
+
+        let mut labels = Vec::new();
+
+        for lyric in lyrics.iter() {
+            let label = gtk::Label::new(Some(&lyric.text));
+            label.set_wrap(true);
+
+            imp.lyrics_box.append(&label);
+            labels.push(label);
+        }
+
+        imp.lyrics.replace(lyrics);
+        imp.lyrics_labels.replace(labels);
+    }
+
+    fn update_lyrics_position(&self, position: u32) {
+        let ticks = u64::from(position) * 10_000_000; // Jellyfin ticks
+        let lyrics = self.imp().lyrics.borrow();
+        let labels = self.imp().lyrics_labels.borrow();
+
+        // Find the index of the currently playing lyric (last lyric that has started)
+        let current_lyric_index = lyrics
+            .iter()
+            .rposition(|lyric| lyric.start.unwrap_or(u64::MAX) < ticks);
+
+        for (i, label) in labels.iter().enumerate() {
+            let is_current = Some(i) == current_lyric_index;
+            let is_past = current_lyric_index.is_some_and(|idx| i < idx);
+
+            if is_current {
+                label.add_css_class("current-lyric");
+                label.remove_css_class("dimmed");
+            } else {
+                label.remove_css_class("current-lyric");
+
+                if is_past {
+                    label.add_css_class("dimmed");
+                } else {
+                    label.remove_css_class("dimmed");
+                }
+            }
+        }
     }
 }
 
@@ -116,8 +176,11 @@ mod imp {
         glib::{self},
     };
 
-    use crate::{audio::model::AudioModel, jellyfin::Jellyfin};
-    use std::cell::OnceCell;
+    use crate::{
+        audio::model::AudioModel,
+        jellyfin::{Jellyfin, api::Lyric},
+    };
+    use std::cell::{OnceCell, RefCell};
 
     #[derive(CompositeTemplate, Default)]
     #[template(resource = "/io/m51/Gelly/ui/lyrics.ui")]
@@ -129,10 +192,11 @@ mod imp {
         #[template_child]
         pub artist_label: TemplateChild<gtk::Label>,
         #[template_child]
-        pub lyrics_label: TemplateChild<gtk::Label>,
-
+        pub lyrics_box: TemplateChild<gtk::Box>,
         pub audio_model: OnceCell<AudioModel>,
         pub jellyfin: OnceCell<Jellyfin>,
+        pub lyrics: RefCell<Vec<Lyric>>,
+        pub lyrics_labels: RefCell<Vec<gtk::Label>>,
     }
 
     #[glib::object_subclass]

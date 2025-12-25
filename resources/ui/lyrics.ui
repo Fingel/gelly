@@ -19,42 +19,47 @@
             <property name="child">
               <object class="GtkBox">
                 <property name="orientation">vertical</property>
-                <property name="margin-start">12</property>
-                <property name="margin-end">12</property>
-                <property name="margin-top">12</property>
-                <property name="margin-bottom">12</property>
-                <property name="spacing">12</property>
-                <property name="valign">center</property>
-                <property name="vexpand">true</property>
                 <child>
-                  <object class="GtkLabel" id="song_label">
-                    <property name="wrap">true</property>
-                    <property name="justify">center</property>
-                    <property name="halign">center</property>
+                  <object class="GtkBox">
+                    <property name="orientation">vertical</property>
+                    <property name="margin-start">12</property>
+                    <property name="margin-end">12</property>
+                    <property name="margin-top">12</property>
+                    <property name="margin-bottom">12</property>
+                    <property name="spacing">12</property>
                     <property name="valign">center</property>
-                    <style>
-                      <class name="title-3"/>
-                    </style>
+                    <property name="vexpand">true</property>
+                    <child>
+                      <object class="GtkLabel" id="song_label">
+                        <property name="wrap">true</property>
+                        <property name="justify">center</property>
+                        <property name="halign">center</property>
+                        <property name="valign">center</property>
+                        <style>
+                          <class name="title-3"/>
+                        </style>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkLabel" id="artist_label">
+                        <property name="wrap">true</property>
+                        <property name="justify">center</property>
+                        <property name="halign">center</property>
+                        <property name="valign">center</property>
+                        <style>
+                          <class name="dim-label"/>
+                        </style>
+                      </object>
+                    </child>
                   </object>
                 </child>
                 <child>
-                  <object class="GtkLabel" id="artist_label">
-                    <property name="wrap">true</property>
-                    <property name="justify">center</property>
-                    <property name="halign">center</property>
+                  <object class="GtkBox" id="lyrics_box">
+                    <property name="orientation">vertical</property>
+                    <property name="spacing">6</property>
                     <property name="valign">center</property>
-                    <style>
-                      <class name="dim-label"/>
-                    </style>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkLabel" id="lyrics_label">
-                    <property name="label" translatable="yes">No lyrics available</property>
-                    <property name="wrap">true</property>
-                    <property name="justify">center</property>
                     <property name="halign">center</property>
-                    <property name="valign">center</property>
+                    <property name="vexpand">true</property>
                   </object>
                 </child>
               </object>

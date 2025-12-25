@@ -9,3 +9,7 @@
 progressbar.osd {
     margin-top: 3em;
 }
+
+.current-lyric {
+    font-weight: bold;
+}
