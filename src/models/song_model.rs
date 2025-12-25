@@ -17,6 +17,7 @@ impl SongModel {
         track_number: u32,
         parent_track_number: u32,
         duration: u64,
+        has_lyrics: bool,
     ) -> Self {
         Object::builder()
             .property("id", id)
@@ -27,6 +28,7 @@ impl SongModel {
             .property("track-number", track_number)
             .property("parent-track-number", parent_track_number)
             .property("duration", duration)
+            .property("has-lyrics", has_lyrics)
             .build()
     }
 
@@ -52,6 +54,7 @@ impl From<&MusicDto> for SongModel {
             dto.index_number.unwrap_or(0),
             dto.parent_index_number.unwrap_or(0),
             dto.run_time_ticks,
+            dto.has_lyrics,
         )
     }
 }
@@ -59,7 +62,7 @@ impl From<&MusicDto> for SongModel {
 mod imp {
     use glib::Properties;
     use gtk::{glib, prelude::*, subclass::prelude::*};
-    use std::cell::RefCell;
+    use std::cell::{Cell, RefCell};
 
     #[derive(Properties, Default)]
     #[properties(wrapper_type = super::SongModel)]
@@ -87,6 +90,9 @@ mod imp {
 
         #[property(get, set)]
         duration: RefCell<u64>,
+
+        #[property(get, set, name = "has-lyrics")]
+        has_lyrics: Cell<bool>,
     }
 
     #[glib::object_subclass]

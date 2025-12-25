@@ -163,6 +163,7 @@ mod tests {
             production_year: Some(2023),
             index_number,
             parent_index_number,
+            has_lyrics: false,
             user_data: UserDataDto { play_count: 1 },
         }
     }
@@ -194,6 +195,7 @@ mod tests {
             production_year: Some(2023),
             index_number: Some(1),
             parent_index_number: Some(1),
+            has_lyrics: false,
             user_data: UserDataDto { play_count: 1 },
         }
     }
@@ -214,6 +216,7 @@ mod tests {
             normalization_gain: None,
             production_year: Some(2023),
             index_number: Some(1),
+            has_lyrics: false,
             parent_index_number: Some(1),
         }
     }

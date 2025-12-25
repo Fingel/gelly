@@ -9,11 +9,7 @@
         <child type="top">
           <object class="AdwHeaderBar">
             <property name="show-end-title-buttons">true</property>
-            <property name="title-widget">
-              <object class="AdwWindowTitle">
-                <property name="title" translatable="yes">Lyrics</property>
-              </object>
-            </property>
+            <property name="show-title">false</property>
           </object>
         </child>
         <property name="content">
@@ -31,8 +27,18 @@
                 <property name="valign">center</property>
                 <property name="vexpand">true</property>
                 <child>
-                  <object class="GtkLabel" id="lyrics_label">
-                    <property name="label" translatable="yes">No lyrics available</property>
+                  <object class="GtkLabel" id="song_label">
+                    <property name="wrap">true</property>
+                    <property name="justify">center</property>
+                    <property name="halign">center</property>
+                    <property name="valign">center</property>
+                    <style>
+                      <class name="title-3"/>
+                    </style>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="artist_label">
                     <property name="wrap">true</property>
                     <property name="justify">center</property>
                     <property name="halign">center</property>
@@ -40,6 +46,15 @@
                     <style>
                       <class name="dim-label"/>
                     </style>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="lyrics_label">
+                    <property name="label" translatable="yes">No lyrics available</property>
+                    <property name="wrap">true</property>
+                    <property name="justify">center</property>
+                    <property name="halign">center</property>
+                    <property name="valign">center</property>
                   </object>
                 </child>
               </object>

@@ -162,7 +162,8 @@
             <property name="hexpand">false</property>
             <child>
               <object class="GtkButton" id="lyrics">
-                <property name="icon-name">audio-input-microphone-symbolic</property>
+                <property name="icon-name">font-x-generic-symbolic</property>
+                <property name="visible">false</property>
                 <property name="tooltip-text">Lyrics</property>
                 <style>
                   <class name="flat" />

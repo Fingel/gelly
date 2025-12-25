@@ -360,7 +360,7 @@ impl Jellyfin {
     }
 
     pub async fn fetch_lyrics(&self, item_id: &str) -> Result<LyricsResponse, JellyfinError> {
-        let response = self.get(&format!("Items/{}/Lyrics", item_id), None).await?;
+        let response = self.get(&format!("Audio/{}/Lyrics", item_id), None).await?;
         let body = self.handle_response(response).await?;
         Ok(serde_json::from_str(&body)?)
     }

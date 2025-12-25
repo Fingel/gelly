@@ -137,10 +137,15 @@ impl PlayerBar {
         imp.title_label.set_text(&title);
         imp.artist_label.set_text(&artist_str);
 
-        // Load album art if available
+        // Load album art and lyrics if available
         if let Some(song) = audio_model.current_song() {
+            self.toggle_lyrics(song.has_lyrics());
             self.load_album_art(&song.album_id(), &song.id());
         }
+    }
+
+    fn toggle_lyrics(&self, has_lyrics: bool) {
+        self.imp().lyrics.set_visible(has_lyrics);
     }
 
     fn load_album_art(&self, album_id: &str, song_id: &str) {
@@ -326,6 +331,13 @@ mod imp {
             } else {
                 let lyrics_widget = Lyrics::new();
 
+                // Set the Jellyfin client
+                let jellyfin = self.obj().get_application().jellyfin();
+                lyrics_widget.set_jellyfin(&jellyfin);
+
+                // Bind to the audio model so it can listen for song changes
+                lyrics_widget.bind_to_audio_model(self.audio_model());
+
                 let window = adw::Window::new();
                 window.set_content(Some(&lyrics_widget));
                 window.set_default_size(500, 600);
@@ -334,8 +346,24 @@ mod imp {
                     window.set_transient_for(Some(&parent));
                 }
 
+                // Clean up window reference when closed
+                window.connect_close_request(glib::clone!(
+                    #[weak(rename_to = imp)]
+                    self,
+                    #[upgrade_or]
+                    glib::Propagation::Proceed,
+                    move |_| {
+                        imp.lyrics_window.replace(None);
+                        glib::Propagation::Proceed
+                    }
+                ));
+
                 self.lyrics_window.replace(Some(window.downgrade()));
                 window.present();
+
+                // Fetch initial lyrics
+                let item_id = self.audio_model().current_song_id();
+                lyrics_widget.fetch_lyrics(&item_id);
             }
         }
 
