@@ -47,6 +47,17 @@ impl Lyrics {
                 }
             ),
         );
+
+        audio_model.connect_notify_local(
+            Some("position"),
+            glib::clone!(
+                #[weak(rename_to = lyrics)]
+                self,
+                move |audio_model, _| {
+                    lyrics.update_lyrics_position(audio_model.position());
+                }
+            ),
+        );
     }
 
     fn set_song_info(&self) {
@@ -78,13 +89,8 @@ impl Lyrics {
                 move |result| {
                     match result {
                         Ok(lyrics_resp) => {
-                            let lyrics_str = lyrics_resp
-                                .lyrics
-                                .iter()
-                                .map(|line| line.text.clone())
-                                .collect::<Vec<_>>()
-                                .join("\n");
-                            obj.imp().lyrics_label.set_text(&lyrics_str);
+                            obj.imp().lyrics.replace(lyrics_resp.lyrics);
+                            obj.update_lyrics_position(0u32);
                         }
                         Err(err) => {
                             let message = if matches!(err, JellyfinError::Http { status, .. } if status == 404)
@@ -93,12 +99,44 @@ impl Lyrics {
                             } else {
                                 "Error fetching lyrics."
                             };
-                            obj.imp().lyrics_label.set_text(message);
+                            obj.imp().lyrics_label_future.set_text(message);
+                            obj.imp().lyrics.replace(Vec::new());
                         }
                     }
                 }
             ),
         );
+    }
+
+    fn update_lyrics_position(&self, position: u32) {
+        let ticks = u64::from(position) * 10_000_000; // Jellyfin ticks
+        dbg!("update_lyrics_position at {}", position);
+        let lyrics = self.imp().lyrics.borrow();
+        let past_lyrics = lyrics
+            .iter()
+            .take_while(|lyric| lyric.start.unwrap_or(u64::MAX) < ticks)
+            .collect::<Vec<_>>();
+        let future_lyrics = lyrics
+            .iter()
+            .skip_while(|lyric| lyric.start.unwrap_or(u64::MAX) < ticks)
+            .collect::<Vec<_>>();
+
+        let past_lyrics_str = past_lyrics
+            .iter()
+            .map(|line| line.text.clone())
+            .collect::<Vec<_>>()
+            .join("\n");
+        let future_lyrics_str = future_lyrics
+            .iter()
+            .map(|line| line.text.clone())
+            .collect::<Vec<_>>()
+            .join("\n");
+
+        self.imp().lyrics_label_past.set_text(&past_lyrics_str);
+        self.imp()
+            .lyrics_label_past
+            .set_visible(!past_lyrics_str.is_empty());
+        self.imp().lyrics_label_future.set_text(&future_lyrics_str);
     }
 }
 
@@ -116,8 +154,11 @@ mod imp {
         glib::{self},
     };
 
-    use crate::{audio::model::AudioModel, jellyfin::Jellyfin};
-    use std::cell::OnceCell;
+    use crate::{
+        audio::model::AudioModel,
+        jellyfin::{Jellyfin, api::Lyric},
+    };
+    use std::cell::{OnceCell, RefCell};
 
     #[derive(CompositeTemplate, Default)]
     #[template(resource = "/io/m51/Gelly/ui/lyrics.ui")]
@@ -129,10 +170,13 @@ mod imp {
         #[template_child]
         pub artist_label: TemplateChild<gtk::Label>,
         #[template_child]
-        pub lyrics_label: TemplateChild<gtk::Label>,
+        pub lyrics_label_past: TemplateChild<gtk::Label>,
+        #[template_child]
+        pub lyrics_label_future: TemplateChild<gtk::Label>,
 
         pub audio_model: OnceCell<AudioModel>,
         pub jellyfin: OnceCell<Jellyfin>,
+        pub lyrics: RefCell<Vec<Lyric>>,
     }
 
     #[glib::object_subclass]
