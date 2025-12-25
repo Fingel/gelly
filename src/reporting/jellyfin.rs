@@ -44,12 +44,12 @@ impl JellyfinReporter {
                     let position_ticks = position * 10_000_000;
                     if paused {
                         let pause_report =
-                            self.new_report(item_id.clone(), false, true, position_ticks);
-                        self.report(pause_report, PlaybackReportStatus::Stopped);
+                            self.new_report(item_id.clone(), true, true, position_ticks);
+                        self.report(pause_report, PlaybackReportStatus::InProgress);
                     } else if playing {
                         let play_report =
                             self.new_report(item_id.clone(), true, false, position_ticks);
-                        self.report(play_report, PlaybackReportStatus::Started);
+                        self.report(play_report, PlaybackReportStatus::InProgress);
                     }
                 }
             }
