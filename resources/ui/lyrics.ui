@@ -54,23 +54,12 @@
                   </object>
                 </child>
                 <child>
-                  <object class="GtkLabel" id="lyrics_label_past">
-                    <property name="wrap">true</property>
-                    <property name="justify">center</property>
-                    <property name="halign">center</property>
+                  <object class="GtkBox" id="lyrics_box">
+                    <property name="orientation">vertical</property>
+                    <property name="spacing">6</property>
                     <property name="valign">center</property>
-                    <property name="visible">false</property>
-                    <style>
-                      <class name="dim-label"/>
-                    </style>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkLabel" id="lyrics_label_future">
-                    <property name="wrap">true</property>
-                    <property name="justify">center</property>
                     <property name="halign">center</property>
-                    <property name="valign">center</property>
+                    <property name="vexpand">true</property>
                   </object>
                 </child>
               </object>
