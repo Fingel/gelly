@@ -230,6 +230,7 @@ mod imp {
 
         pub audio_model: OnceCell<AudioModel>,
         pub lyrics_window: RefCell<Option<glib::WeakRef<adw::Window>>>,
+        pub seek_debounce_id: RefCell<Option<glib::SourceId>>,
 
         #[property(get, set)]
         pub position: RefCell<u32>,
@@ -423,7 +424,31 @@ mod imp {
                 #[upgrade_or]
                 glib::Propagation::Proceed,
                 move |_, _, value| {
-                    imp.audio_model().seek(value as u32);
+                    // Cancel existing debounce
+                    if let Some(source_id) = imp.seek_debounce_id.take() {
+                        source_id.remove();
+                    }
+                    let position = value as u32;
+                    imp.position_label
+                        .set_text(&super::PlayerBar::format_time(position));
+
+                    // Schedule the actual seek after a delay
+                    let source_id = glib::timeout_add_local(
+                        std::time::Duration::from_millis(150),
+                        glib::clone!(
+                            #[weak]
+                            imp,
+                            #[upgrade_or]
+                            glib::ControlFlow::Break,
+                            move || {
+                                imp.audio_model().seek(position);
+                                imp.seek_debounce_id.replace(None);
+                                glib::ControlFlow::Break
+                            }
+                        ),
+                    );
+
+                    imp.seek_debounce_id.replace(Some(source_id));
                     glib::Propagation::Proceed
                 }
             ));
