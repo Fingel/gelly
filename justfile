@@ -28,3 +28,16 @@ uninstall:
     rm {{prefix}}/share/icons/hicolor/scalable/apps/io.m51.Gelly.svg
     rm {{prefix}}/share/icons/hicolor/symbolic/apps/io.m51.Gelly-symbolic.svg
     glib-compile-schemas {{prefix}}/share/glib-2.0/schemas/
+
+dev-remote host: schemas
+    #!/usr/bin/env bash
+    set -euo pipefail
+    echo "Building locally..."
+    cargo build
+
+    echo "Launching on remote display..."
+    DEV_HOST=$(hostname -f)
+    BINARY_PATH="{{justfile_directory()}}/target/debug/gelly"
+    WAYLAND_DISPLAY_VAR="${WAYLAND_DISPLAY:-wayland-0}"
+
+    ssh {{host}} "WAYLAND_DISPLAY=$WAYLAND_DISPLAY_VAR RUST_LOG='debug,glycin=off,glycin_utils=off' waypipe -n ssh $DEV_HOST $BINARY_PATH"
