@@ -13,6 +13,7 @@
     <ul>
       <li>Browse your music collection by artist, album and playlist</li>
       <li>Modern GTK/Adwaita interface with MPRIS support</li>
+      <li>Support for lyrics with timestamp tracking</li>
       <li>Written in Rust</li>
     </ul>
   </description>
@@ -27,11 +28,28 @@
   <url type="bugtracker">https://github.com/Fingel/gelly/issues</url>
   <screenshots>
     <screenshot type="default">
-      <image>https://github.com/user-attachments/assets/26e1221d-580f-4da1-aaea-6d0efa6030b7</image>
+      <image>https://m51.io/misc/gellyimg/gellyxmas1.png</image>
       <caption>Main window showing music library</caption>
+    </screenshot>
+    <screenshot>
+      <image>https://m51.io/misc/gellyimg/gellyxmaslyrics.png</image>
+      <caption>Window showing lyrics with tracking</caption>
     </screenshot>
   </screenshots>
   <releases>
+    <release version="0.14.0" date="2025-12-29">
+      <description>
+        <ul>
+          <li>The much requested lyrics feature has now landed! An additional icon
+          will appear in the player bar when lyrics are available. If the lyrics contain timestamps,
+          Gelly will follow along</li>
+          <li>Gelly will now report playback to Jellyfin, meaning play counts will track properly</li>
+          <li>New "Most Played" smart playlist and sorting options</li>
+          <li>New preferences to enable/disable smart playlists</li>
+          <li>More UI polishing</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.13.1" date="2025-12-19">
       <description>
         <ul>
