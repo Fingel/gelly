@@ -123,6 +123,9 @@ impl Lyrics {
         for lyric in lyrics.iter() {
             let label = gtk::Label::new(Some(&lyric.text));
             label.set_wrap(true);
+            label.set_justify(gtk::Justification::Center);
+            label.set_valign(gtk::Align::Start);
+            label.set_halign(gtk::Align::Center);
 
             imp.lyrics_box.append(&label);
             labels.push(label);

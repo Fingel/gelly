@@ -16,6 +16,7 @@
           <object class="GtkScrolledWindow">
             <property name="hscrollbar-policy">never</property>
             <property name="vscrollbar-policy">automatic</property>
+            <property name="vexpand">true</property>
             <property name="child">
               <object class="GtkBox">
                 <property name="orientation">vertical</property>
@@ -27,14 +28,12 @@
                     <property name="margin-top">12</property>
                     <property name="margin-bottom">12</property>
                     <property name="spacing">12</property>
-                    <property name="valign">center</property>
-                    <property name="vexpand">true</property>
+                    <property name="valign">start</property>
                     <child>
                       <object class="GtkLabel" id="song_label">
                         <property name="wrap">true</property>
                         <property name="justify">center</property>
                         <property name="halign">center</property>
-                        <property name="valign">center</property>
                         <style>
                           <class name="title-3"/>
                         </style>
@@ -45,7 +44,6 @@
                         <property name="wrap">true</property>
                         <property name="justify">center</property>
                         <property name="halign">center</property>
-                        <property name="valign">center</property>
                         <style>
                           <class name="dim-label"/>
                         </style>
@@ -57,9 +55,7 @@
                   <object class="GtkBox" id="lyrics_box">
                     <property name="orientation">vertical</property>
                     <property name="spacing">6</property>
-                    <property name="valign">center</property>
                     <property name="halign">center</property>
-                    <property name="vexpand">true</property>
                   </object>
                 </child>
               </object>
