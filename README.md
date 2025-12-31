@@ -12,9 +12,9 @@
 - [x] Search
 - [x] Edit Playlists
 - [ ] Eye candy
-- [ ] Smart Playlists 
+- [x] Smart Playlists 
     - [x] Shuffle songs 
-    - [ ] Most played
+    - [x] Most played
 - [ ] Offline support
 
 <img width="933" height="675" alt="gelly-use-1" src="https://github.com/user-attachments/assets/26e1221d-580f-4da1-aaea-6d0efa6030b7" />
