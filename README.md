@@ -1,5 +1,6 @@
 <p align="center">
-    <img width="150" height="150" src="https://github.com/user-attachments/assets/156e5858-a48e-4ea5-a4e4-6fbcd6644dd7" align="center" /><br />
+    <img width="1864" height="1350" alt="gellyxmas1" src="https://github.com/user-attachments/assets/f02bc3b8-bc44-4fb7-ba9d-a5c13ff19183" align="center" />
+    <br />
     <strong style="font-size: 26px;">Gelly</strong><br>
     <em>A native, lightweight Jellyfin client for music. Written in Rust and GTK.</em>
     🦀🐧
