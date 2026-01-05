@@ -1,5 +1,5 @@
 <p align="center">
-    <img width="1864" height="1350" alt="gellyxmas1" src="https://github.com/user-attachments/assets/f02bc3b8-bc44-4fb7-ba9d-a5c13ff19183" align="center" />
+    <img width="150" height="150" src="https://github.com/user-attachments/assets/156e5858-a48e-4ea5-a4e4-6fbcd6644dd7" align="center" /><br />
     <br />
     <strong style="font-size: 26px;">Gelly</strong><br>
     <em>A native, lightweight Jellyfin client for music. Written in Rust and GTK.</em>
@@ -18,7 +18,7 @@
     - [x] Most played
 - [ ] Offline support
 
-<img width="933" height="675" alt="gelly-use-1" src="https://github.com/user-attachments/assets/26e1221d-580f-4da1-aaea-6d0efa6030b7" />
+<img width="1864" height="1350" alt="gellyxmas1" src="https://github.com/user-attachments/assets/f02bc3b8-bc44-4fb7-ba9d-a5c13ff19183" align="center" />
 
 ## Installation
 
