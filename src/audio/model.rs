@@ -329,13 +329,6 @@ impl AudioModel {
         self.current_song().map(|s| s.id()).unwrap_or_default()
     }
 
-    pub fn set_shuffle_enabled(&self, enabled: bool) {
-        self.imp().shuffle_enabled.set(enabled);
-        if enabled {
-            self.new_shuffle_cycle();
-        }
-    }
-
     fn new_shuffle_cycle(&self) {
         let new_seed = rand::rng().random::<u64>();
         self.imp().shuffle_seed.set(new_seed);
@@ -438,11 +431,13 @@ mod imp {
         #[property(get, set)]
         pub muted: Cell<bool>,
 
+        #[property(get, set = Self::set_shuffle_enabled)]
+        pub shuffle_enabled: Cell<bool>,
+
         pub player: OnceCell<AudioPlayer>,
         pub queue: RefCell<Vec<SongModel>>,
         pub mpris_server: OnceCell<LocalServer<super::AudioModel>>,
         pub reporting_manager: OnceCell<ReportingManager>,
-        pub shuffle_enabled: Cell<bool>,
         pub shuffle_index: Cell<usize>,
         pub shuffle_seed: Cell<u64>,
         pub uri: RefCell<Option<String>>,
@@ -486,6 +481,13 @@ mod imp {
     }
 
     impl AudioModel {
+        pub fn set_shuffle_enabled(&self, enabled: bool) {
+            self.shuffle_enabled.set(enabled);
+            if enabled {
+                self.obj().new_shuffle_cycle();
+            }
+        }
+
         // TODO change these to gobject setters
         pub fn set_volume(&self, volume: f64) {
             let clamped_volume = volume.clamp(0.0, 1.0);

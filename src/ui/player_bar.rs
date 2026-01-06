@@ -99,6 +99,23 @@ impl PlayerBar {
             ),
         );
 
+        audio_model.connect_notify_local(
+            Some("shuffle-enabled"),
+            glib::clone!(
+                #[weak(rename_to = player)]
+                self,
+                move |audio_model, _| {
+                    let shuffled = audio_model.shuffle_enabled();
+                    let icon_name = if shuffled {
+                        "media-playlist-shuffle-symbolic"
+                    } else {
+                        "media-playlist-consecutive-symbolic"
+                    };
+                    player.imp().play_mode.set_icon_name(icon_name);
+                }
+            ),
+        );
+
         // Initial update
         self.update_song_info(audio_model);
         self.update_play_pause_button(audio_model.playing());
