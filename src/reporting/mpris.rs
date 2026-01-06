@@ -79,7 +79,7 @@ impl MprisReporter {
                 .artist(song.artists())
                 .album(song.album())
                 .title(song.title())
-                .length(Time::from_secs(song.duration() as i64))
+                .length(Time::from_secs(song.duration_seconds() as i64))
                 .build();
             if let Ok(cache_dir) = ImageCache::new() {
                 let art_path = cache_dir.get_cache_file_path(&song.id());

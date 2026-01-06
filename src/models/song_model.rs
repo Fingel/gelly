@@ -35,6 +35,10 @@ impl SongModel {
     pub fn artists_string(&self) -> String {
         self.artists().join(", ")
     }
+
+    pub fn duration_seconds(&self) -> u64 {
+        self.duration() / 10_000_000 // Jellyfin ticks
+    }
 }
 
 impl From<&MusicDto> for SongModel {
