@@ -2,6 +2,7 @@ use std::fs;
 use std::{fmt::Debug, sync::OnceLock};
 
 use api::AuthenticateResponse;
+use futures::stream::{self, StreamExt};
 use log::{debug, warn};
 use reqwest::{Client, Response, StatusCode};
 use serde_json::json;
@@ -97,7 +98,8 @@ impl Jellyfin {
     pub async fn get_library(&self, library_id: &str) -> Result<MusicDtoList, JellyfinError> {
         // Time library download so we can keep an eye on it.
         let now = Instant::now();
-        const LIMIT: u64 = 1000;
+        const LIMIT: u64 = 100;
+        const MAX_CONCURRENT_REQUESTS: usize = 4;
 
         // Make the first request to get total count
         let mut all_items = Vec::new();
@@ -116,18 +118,20 @@ impl Jellyfin {
             let remaining_items = total_count - LIMIT;
             let additional_pages = remaining_items.div_ceil(LIMIT);
 
-            debug!("Fetching {} additional pages", additional_pages);
+            debug!(
+                "Fetching {} additional pages with max {} concurrent requests",
+                additional_pages, MAX_CONCURRENT_REQUESTS
+            );
 
             // Create futures for all remaining pages using the futures crate
-            let page_futures: Vec<_> = (1..=additional_pages)
+            let mut page_stream = stream::iter(1..=additional_pages)
                 .map(|page| {
                     let start_index = page * LIMIT;
                     self.get_library_page(library_id, start_index, LIMIT)
                 })
-                .collect();
-            let page_results = futures::future::join_all(page_futures).await;
+                .buffer_unordered(MAX_CONCURRENT_REQUESTS);
 
-            for result in page_results {
+            while let Some(result) = page_stream.next().await {
                 match result {
                     Ok(page) => {
                         debug!("Fetched page with {} items", page.items.len());
