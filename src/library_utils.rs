@@ -14,7 +14,7 @@ pub fn albums_from_library(library: &[MusicDto]) -> Vec<AlbumModel> {
     }
 
     let mut seen_album_ids = HashSet::new();
-    library
+    let mut albums: Vec<AlbumModel> = library
         .iter()
         .filter(|dto| seen_album_ids.insert(&dto.album_id))
         .map(|dto| {
@@ -24,7 +24,10 @@ pub fn albums_from_library(library: &[MusicDto]) -> Vec<AlbumModel> {
             }
             album
         })
-        .collect()
+        .collect();
+    albums.sort_by_key(|album| std::cmp::Reverse(album.date_created()));
+
+    albums
 }
 
 pub fn artists_from_library(library: &[MusicDto]) -> Vec<ArtistModel> {
@@ -54,7 +57,7 @@ pub fn artists_from_library(library: &[MusicDto]) -> Vec<ArtistModel> {
 
 pub fn albums_for_artist(artist_id: &str, library: &[MusicDto]) -> Vec<AlbumModel> {
     let mut seen_album_ids = HashSet::new();
-    let albums: Vec<AlbumModel> = library
+    let mut albums: Vec<AlbumModel> = library
         .iter()
         .filter(|dto| {
             dto.album_artists
@@ -64,6 +67,7 @@ pub fn albums_for_artist(artist_id: &str, library: &[MusicDto]) -> Vec<AlbumMode
         .filter(|dto| seen_album_ids.insert(&dto.album_id))
         .map(AlbumModel::from)
         .collect();
+    albums.sort_by_key(|album| std::cmp::Reverse(album.year()));
 
     albums
 }
