@@ -38,6 +38,12 @@ Gelly is available on the [aur](https://aur.archlinux.org/packages/gelly):
 
     paru -S gelly
 
+
+### NixOS
+Gelly is currently packaged for unstable. 
+
+    nix-shell -p gelly
+
 ## Using Self Signed Certificates with Jellyfin
 
 There is currently [an issue with Flatpak](https://gitlab.com/freedesktop-sdk/freedesktop-sdk/-/issues/1905) 
