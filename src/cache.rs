@@ -3,7 +3,7 @@ use std::{collections::HashSet, fs, os::unix, path::PathBuf, sync::Arc, time::Du
 use log::{debug, warn};
 use serde::{Deserialize, Serialize, de::DeserializeOwned};
 use thiserror::Error;
-use tokio::sync::Mutex;
+use tokio::sync::{Mutex, Semaphore};
 
 use crate::{
     config::APP_ID,
@@ -133,16 +133,19 @@ impl LibraryCache {
 #[derive(Debug, Clone)]
 pub struct ImageCache {
     pending_requests: Arc<Mutex<HashSet<String>>>,
+    download_semaphore: Arc<Semaphore>,
     cache_dir: PathBuf,
 }
 
 impl ImageCache {
     // TODO: move the jellyfin logic into an image service or something
     pub fn new() -> Result<Self, CacheError> {
+        const MAX_CONCURRENT_DOWNLOADS: usize = 4;
         let cache_dir = get_cache_directory("album-art")?;
         fs::create_dir_all(&cache_dir)?;
         Ok(Self {
             pending_requests: Arc::new(Mutex::new(HashSet::new())),
+            download_semaphore: Arc::new(Semaphore::new(MAX_CONCURRENT_DOWNLOADS)),
             cache_dir,
         })
     }
@@ -189,6 +192,8 @@ impl ImageCache {
                 pending.insert(item_id.to_string());
             }
 
+            // Acquire semaphore permit to limit concurrent downloads
+            let _permit = self.download_semaphore.acquire().await.unwrap();
             let result = self.download_and_cache(item_id, jellyfin).await;
 
             // Remove from pending requests
