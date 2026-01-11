@@ -49,5 +49,9 @@
       <default>true</default>
       <summary>Most played smart playlist enabled</summary>
     </key>
+    <key name="normalize-audio" type="b">
+      <default>true</default>
+      <summary>Normalize audio volume between tracks</summary>
+    </key>
   </schema>
 </schemalist>

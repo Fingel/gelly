@@ -172,3 +172,7 @@ pub fn get_playlist_shuffle_enabled() -> bool {
 pub fn get_playlist_most_played_enabled() -> bool {
     settings().boolean("playlist-most-played-enabled")
 }
+
+pub fn get_normalize_audio_enabled() -> bool {
+    settings().boolean("normalize-audio")
+}

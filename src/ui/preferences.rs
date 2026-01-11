@@ -38,6 +38,11 @@ impl Preferences {
             )
             .build();
 
+        // Normalize Audio
+        settings
+            .bind("normalize-audio", &*imp.normalize_audio_switch, "active")
+            .build();
+
         // Smart Playlists
         settings
             .bind(
@@ -95,6 +100,8 @@ mod imp {
         pub maximum_bitrate_row: TemplateChild<adw::SpinRow>,
         #[template_child]
         pub refresh_on_startup_switch: TemplateChild<gtk::Switch>,
+        #[template_child]
+        pub normalize_audio_switch: TemplateChild<gtk::Switch>,
         #[template_child]
         pub playlist_shuffle_enabled_switch: TemplateChild<gtk::Switch>,
         #[template_child]

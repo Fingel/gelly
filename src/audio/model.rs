@@ -11,6 +11,7 @@ use std::sync::OnceLock;
 
 use crate::{
     audio::player::{AudioPlayer, PlayerEvent, PlayerState},
+    config,
     models::SongModel,
     reporting::{PlaybackEvent, ReportingManager},
 };
@@ -127,10 +128,10 @@ impl AudioModel {
     }
 
     fn apply_volume(&self) {
-        let replaygain_enabled = true;
+        let normalize_enabled = config::get_normalize_audio_enabled();
         let user_volume = self.volume();
         let user_linear = user_volume.powi(3).clamp(0.0, 1.0);
-        let multiplier = if replaygain_enabled && let Some(song) = self.current_song() {
+        let multiplier = if normalize_enabled && let Some(song) = self.current_song() {
             10f64.powf(song.normalization_gain() / 20.0)
         } else {
             1.0
