@@ -111,9 +111,7 @@ impl AudioPlayer {
     }
 
     pub fn set_volume(&self, volume: f64) {
-        // cubic to linear
-        let linear_volume = volume.powi(3).clamp(0.0, 1.0);
-        self.playbin.set_property("volume", linear_volume);
+        self.playbin.set_property("volume", volume);
     }
 
     pub fn get_volume(&self) -> f64 {

@@ -18,6 +18,7 @@ impl SongModel {
         parent_track_number: u32,
         duration: u64,
         has_lyrics: bool,
+        normalization_gain: f64,
     ) -> Self {
         Object::builder()
             .property("id", id)
@@ -29,6 +30,7 @@ impl SongModel {
             .property("parent-track-number", parent_track_number)
             .property("duration", duration)
             .property("has-lyrics", has_lyrics)
+            .property("normalization-gain", normalization_gain)
             .build()
     }
 
@@ -59,6 +61,7 @@ impl From<&MusicDto> for SongModel {
             dto.parent_index_number.unwrap_or(0),
             dto.run_time_ticks,
             dto.has_lyrics,
+            dto.normalization_gain.unwrap_or(0.0),
         )
     }
 }
@@ -97,6 +100,9 @@ mod imp {
 
         #[property(get, set, name = "has-lyrics")]
         has_lyrics: Cell<bool>,
+
+        #[property(get, set)]
+        normalization_gain: Cell<f64>,
     }
 
     #[glib::object_subclass]

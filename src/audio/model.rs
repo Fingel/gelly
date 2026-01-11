@@ -126,6 +126,20 @@ impl AudioModel {
         uri
     }
 
+    fn apply_volume(&self) {
+        let replaygain_enabled = true;
+        let user_volume = self.volume();
+        let user_linear = user_volume.powi(3).clamp(0.0, 1.0);
+        let multiplier = if replaygain_enabled && let Some(song) = self.current_song() {
+            10f64.powf(song.normalization_gain() / 20.0)
+        } else {
+            1.0
+        };
+        let volume = (user_linear * multiplier).clamp(0.0, 10.0); // upper bound above one in case replaygain boosts volume
+
+        self.player().set_volume(volume);
+    }
+
     pub fn queue(&self) -> Vec<SongModel> {
         self.imp().queue.borrow().clone()
     }
@@ -215,6 +229,7 @@ impl AudioModel {
             player.set_uri(&stream_uri);
             self.imp().uri.replace(Some(stream_uri));
             self.emit_by_name::<()>("song-changed", &[&song.id()]);
+            self.apply_volume();
             let queue_len = self.queue().len() as i32;
             self.report_event(PlaybackEvent::TrackChanged {
                 song: Some(song),
@@ -493,9 +508,8 @@ mod imp {
             let clamped_volume = volume.clamp(0.0, 1.0);
             self.volume.set(clamped_volume);
 
-            if let Some(player) = self.player.get() {
-                player.set_volume(clamped_volume);
-            }
+            // Replaygain and normalization
+            self.obj().apply_volume();
 
             self.obj()
                 .report_event(PlaybackEvent::VolumeChanged { volume });
