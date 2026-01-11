@@ -98,7 +98,7 @@ impl Jellyfin {
     pub async fn get_library(&self, library_id: &str) -> Result<MusicDtoList, JellyfinError> {
         // Time library download so we can keep an eye on it.
         let now = Instant::now();
-        const LIMIT: u64 = 100;
+        const LIMIT: u64 = 250;
         const MAX_CONCURRENT_REQUESTS: usize = 4;
 
         // Make the first request to get total count
