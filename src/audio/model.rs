@@ -69,9 +69,6 @@ impl AudioModel {
                     PlayerEvent::PositionChanged(position) => {
                         obj.set_property("position", position as u32);
                         obj.report_event(PlaybackEvent::PositionChanged { position });
-                        obj.report_event(PlaybackEvent::MetadataChanged {
-                            song: obj.current_song().clone(),
-                        });
                     }
                     PlayerEvent::DurationChanged(dur) => {
                         obj.set_property("duration", dur as u32);
