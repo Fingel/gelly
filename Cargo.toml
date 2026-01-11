@@ -9,7 +9,7 @@ adw = { version = "0.8.0", package = "libadwaita", features = ["v1_8"] }
 log = { version = "0.4.28", features = ["std"] }
 env_logger = { version = "0.11.8", features = ["color"] }
 tokio = { version = "1.47.1", features = ["rt-multi-thread", "sync"] }
-reqwest = { version = "0.12.23", features = ["json"] }
+reqwest = { version = "0.13.1", features = ["json", "query"] }
 serde_json = { version = "1.0.143", features = ["std"] }
 serde = { version = "1.0.219", features = ["derive"] }
 thiserror = "2.0.16"
