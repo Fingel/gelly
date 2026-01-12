@@ -37,6 +37,15 @@
     </screenshot>
   </screenshots>
   <releases>
+    <release version="0.15.0" date="2026-01-11">
+      <description>
+        <ul>
+          <li>Gelly now performs volume normalization between tracks. Toggle it off
+         in preferences if you prefer to blast out your eardrums listening to music that abuses loudness.</li>
+          <li>Even more MPRIS fixes.</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.14.1" date="2026-01-07">
       <description>
         <ul>
