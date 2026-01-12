@@ -1,5 +1,7 @@
+use std::time::{Duration, Instant};
+
 use adw::subclass::prelude::ObjectSubclassIsExt;
-use gtk::prelude::*;
+use gtk::{glib, prelude::*};
 use mpris_server::zbus::fdo;
 use mpris_server::{
     LocalPlayerInterface, LocalRootInterface, LoopStatus, Metadata, PlaybackStatus, Time, TrackId,
@@ -7,7 +9,37 @@ use mpris_server::{
 };
 
 use crate::audio::model::AudioModel;
+use crate::cache::ImageCache;
 use crate::config;
+use crate::models::SongModel;
+
+pub async fn build_metadata(song: &SongModel) -> Metadata {
+    let mut metadata = Metadata::builder()
+        .artist(song.artists())
+        .album(song.album())
+        .title(song.title())
+        .length(Time::from_secs(song.duration_seconds() as i64))
+        .build();
+    if let Ok(cache_dir) = ImageCache::new() {
+        let art_path = cache_dir.get_cache_file_path(&song.id());
+
+        // Poll for the file for 2 seconds because elsewhere the album art should be being fetched.
+        let start_time = Instant::now();
+        let timeout = Duration::from_secs(2);
+        loop {
+            if art_path.exists() {
+                let art_url = format!("file://{}", art_path.to_string_lossy());
+                metadata.set_art_url(Some(art_url));
+                break;
+            }
+            if start_time.elapsed() >= timeout {
+                break;
+            }
+            glib::timeout_future(Duration::from_millis(100)).await;
+        }
+    }
+    metadata
+}
 
 impl LocalRootInterface for AudioModel {
     async fn can_quit(&self) -> fdo::Result<bool> {
@@ -158,13 +190,7 @@ impl LocalPlayerInterface for AudioModel {
 
     async fn metadata(&self) -> fdo::Result<Metadata> {
         Ok(if let Some(song) = self.current_song() {
-            Metadata::builder()
-                .title(song.title())
-                .artist(song.artists())
-                .album(song.album())
-                .length(Time::from_secs(self.duration() as i64))
-                // Could add more fields like track_id, album_artist, etc.
-                .build()
+            build_metadata(&song).await
         } else {
             Metadata::new()
         })

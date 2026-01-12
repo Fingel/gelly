@@ -1,5 +1,3 @@
-use std::time::{Duration, Instant};
-
 use gtk::glib;
 use log::warn;
 use mpris_server::zbus::{self, fdo};
@@ -7,7 +5,7 @@ use mpris_server::{LocalServer, Metadata, PlaybackStatus, Property, Signal, Time
 use thiserror::Error;
 
 use crate::audio::model::AudioModel;
-use crate::cache::ImageCache;
+use crate::audio::mpris::build_metadata;
 use crate::config::APP_ID;
 use crate::models::SongModel;
 
@@ -77,31 +75,7 @@ impl MprisReporter {
 
     async fn metadata(&self, song: Option<SongModel>) -> Metadata {
         if let Some(song) = song {
-            let mut metadata = Metadata::builder()
-                .artist(song.artists())
-                .album(song.album())
-                .title(song.title())
-                .length(Time::from_secs(song.duration_seconds() as i64))
-                .build();
-            if let Ok(cache_dir) = ImageCache::new() {
-                let art_path = cache_dir.get_cache_file_path(&song.id());
-
-                // Poll for the file for 2 seconds because elsewhere the album art should be being fetched.
-                let start_time = Instant::now();
-                let timeout = Duration::from_secs(2);
-                loop {
-                    if art_path.exists() {
-                        let art_url = format!("file://{}", art_path.to_string_lossy());
-                        metadata.set_art_url(Some(art_url));
-                        break;
-                    }
-                    if start_time.elapsed() >= timeout {
-                        break;
-                    }
-                    glib::timeout_future(Duration::from_millis(100)).await;
-                }
-            }
-            metadata
+            build_metadata(&song).await
         } else {
             Metadata::new()
         }
