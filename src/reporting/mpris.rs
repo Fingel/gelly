@@ -1,3 +1,5 @@
+use std::time::{Duration, Instant};
+
 use gtk::glib;
 use log::warn;
 use mpris_server::zbus::{self, fdo};
@@ -73,7 +75,7 @@ impl MprisReporter {
         }
     }
 
-    fn metadata(&self, song: Option<SongModel>) -> Metadata {
+    async fn metadata(&self, song: Option<SongModel>) -> Metadata {
         if let Some(song) = song {
             let mut metadata = Metadata::builder()
                 .artist(song.artists())
@@ -83,9 +85,20 @@ impl MprisReporter {
                 .build();
             if let Ok(cache_dir) = ImageCache::new() {
                 let art_path = cache_dir.get_cache_file_path(&song.id());
-                if art_path.exists() {
-                    let art_url = format!("file://{}", art_path.to_string_lossy());
-                    metadata.set_art_url(Some(art_url));
+
+                // Poll for the file for 2 seconds because elsewhere the album art should be being fetched.
+                let start_time = Instant::now();
+                let timeout = Duration::from_secs(2);
+                loop {
+                    if art_path.exists() {
+                        let art_url = format!("file://{}", art_path.to_string_lossy());
+                        metadata.set_art_url(Some(art_url));
+                        break;
+                    }
+                    if start_time.elapsed() >= timeout {
+                        break;
+                    }
+                    glib::timeout_future(Duration::from_millis(100)).await;
                 }
             }
             metadata
@@ -125,7 +138,7 @@ impl MprisReporter {
                 can_go_previous,
                 ..
             } => {
-                let metadata = self.metadata(song);
+                let metadata = self.metadata(song).await;
 
                 self.emit_properties_changed([
                     Property::Metadata(metadata),
@@ -136,7 +149,7 @@ impl MprisReporter {
             }
 
             PlaybackEvent::MetadataChanged { song } => {
-                let metadata = self.metadata(song);
+                let metadata = self.metadata(song).await;
 
                 self.emit_properties_changed([Property::Metadata(metadata)])
                     .await?;
