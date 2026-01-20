@@ -253,14 +253,21 @@ impl PlaylistList {
             let playlist2 = obj2.downcast_ref::<PlaylistModel>().unwrap();
 
             match sort {
-                PlaylistSort::Name => playlist1
-                    .name()
-                    .to_lowercase()
-                    .cmp(&playlist2.name().to_lowercase())
+                PlaylistSort::Name => playlist2
+                    .is_smart()
+                    .cmp(&playlist1.is_smart())
+                    .then(
+                        playlist1
+                            .name()
+                            .to_lowercase()
+                            .cmp(&playlist2.name().to_lowercase()),
+                    )
                     .into(),
-                PlaylistSort::NumSongs => {
-                    playlist1.child_count().cmp(&playlist2.child_count()).into()
-                }
+                PlaylistSort::NumSongs => playlist2
+                    .is_smart()
+                    .cmp(&playlist1.is_smart())
+                    .then(playlist1.child_count().cmp(&playlist2.child_count()))
+                    .into(),
             }
         });
         imp.current_sorter.replace(Some(sorter.clone()));
