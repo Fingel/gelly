@@ -1,11 +1,13 @@
 use gtk::{
     FilterListModel, PropertyExpression, SortListModel, Sorter, StringFilter, gio, glib, prelude::*,
 };
+use num_enum::{IntoPrimitive, TryFromPrimitive};
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, TryFromPrimitive, IntoPrimitive)]
+#[repr(u32)]
 pub enum SortDirection {
-    Ascending,
-    Descending,
+    Ascending = 0,
+    Descending = 1,
 }
 
 /// Create a string filter for a given property

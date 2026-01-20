@@ -53,5 +53,13 @@
       <default>true</default>
       <summary>Normalize audio volume between tracks</summary>
     </key>
+    <key name="sort-albums-by" type="u">
+      <default>0</default>
+      <summary>Sort albums by</summary>
+    </key>
+    <key name="sort-albums-direction" type="u">
+      <default>0</default>
+      <summary>Sort albums direction</summary>
+    </key>
   </schema>
 </schemalist>
