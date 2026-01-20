@@ -212,3 +212,21 @@ pub fn set_artists_sort_direction(direction: u32) {
         .set_uint("sort-artists-direction", direction)
         .unwrap();
 }
+
+pub fn get_playlists_sort_by() -> u32 {
+    settings().uint("sort-playlists-by")
+}
+
+pub fn set_playlists_sort_by(sort_by: u32) {
+    settings().set_uint("sort-playlists-by", sort_by).unwrap();
+}
+
+pub fn get_playlists_sort_direction() -> u32 {
+    settings().uint("sort-playlists-direction")
+}
+
+pub fn set_playlists_sort_direction(direction: u32) {
+    settings()
+        .set_uint("sort-playlists-direction", direction)
+        .unwrap();
+}
