@@ -194,3 +194,21 @@ pub fn set_albums_sort_direction(direction: u32) {
         .set_uint("sort-albums-direction", direction)
         .unwrap();
 }
+
+pub fn get_artists_sort_by() -> u32 {
+    settings().uint("sort-artists-by")
+}
+
+pub fn set_artists_sort_by(sort_by: u32) {
+    settings().set_uint("sort-artists-by", sort_by).unwrap();
+}
+
+pub fn get_artists_sort_direction() -> u32 {
+    settings().uint("sort-artists-direction")
+}
+
+pub fn set_artists_sort_direction(direction: u32) {
+    settings()
+        .set_uint("sort-artists-direction", direction)
+        .unwrap();
+}

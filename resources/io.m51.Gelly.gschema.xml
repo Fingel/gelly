@@ -61,5 +61,13 @@
       <default>0</default>
       <summary>Sort albums direction</summary>
     </key>
+    <key name="sort-artists-by" type="u">
+      <default>0</default>
+      <summary>Sort artists by</summary>
+    </key>
+    <key name="sort-artists-direction" type="u">
+      <default>0</default>
+      <summary>Sort artists direction</summary>
+    </key>
   </schema>
 </schemalist>
