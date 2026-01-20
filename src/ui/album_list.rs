@@ -1,16 +1,18 @@
 use crate::{
     application::Application,
+    config,
     library_utils::{albums_from_library, play_album},
     models::AlbumModel,
     ui::{album::Album, list_helpers::*, page_traits::TopPage, widget_ext::WidgetApplicationExt},
 };
 use glib::Object;
 use gtk::{
-    SortListModel, gio,
+    CustomSorter, SortListModel, gio,
     glib::{self},
     prelude::*,
     subclass::prelude::*,
 };
+use num_enum::TryFromPrimitive;
 
 glib::wrapper! {
     pub struct AlbumList(ObjectSubclass<imp::AlbumList>)
@@ -18,13 +20,14 @@ glib::wrapper! {
         @implements gio::ActionMap, gio::ActionGroup, gtk::Accessible, gtk::Buildable, gtk::ConstraintTarget;
 }
 
-#[derive(Debug)]
+#[derive(Debug, TryFromPrimitive)]
+#[repr(u32)]
 pub enum AlbumSort {
-    Name,
-    Artist,
-    DateAdded,
-    Year,
-    PlayCount,
+    DateAdded = 0,
+    Name = 1,
+    Artist = 2,
+    Year = 3,
+    PlayCount = 4,
 }
 
 impl TopPage for AlbumList {
@@ -80,6 +83,7 @@ impl AlbumList {
             for album in albums {
                 store.append(&album);
             }
+            self.apply_sorting();
         }
     }
 
@@ -105,22 +109,13 @@ impl AlbumList {
         );
     }
 
-    pub fn get_default_sorter(&self) -> gtk::CustomSorter {
-        // TODO get saved sort order from settings
-        gtk::CustomSorter::new(|obj1, obj2| {
-            let album1 = obj1.downcast_ref::<AlbumModel>().unwrap();
-            let album2 = obj2.downcast_ref::<AlbumModel>().unwrap();
-            album2.date_created().cmp(&album1.date_created()).into()
-        })
-    }
-
     pub fn search_changed(&self, query: &str) {
         let imp = self.imp();
         let store = imp.store.get().expect("Store should be initialized");
         let sorter = if let Some(current_sorter) = imp.current_sorter.borrow().as_ref() {
             current_sorter.clone()
         } else {
-            let default_sorter = self.get_default_sorter();
+            let default_sorter = self.build_sorter(AlbumSort::DateAdded, SortDirection::Ascending);
             imp.current_sorter.replace(Some(default_sorter.clone()));
             default_sorter
         };
@@ -137,27 +132,28 @@ impl AlbumList {
         apply_multi_filter_search(query, sorter.upcast(), store, &filters, &imp.grid_view);
     }
 
-    fn handle_sort_changed(&self) {
-        let imp = self.imp();
-        let sort_option = match imp.sort_dropdown.selected() {
-            0 => AlbumSort::DateAdded,
-            1 => AlbumSort::Name,
-            2 => AlbumSort::Artist,
-            3 => AlbumSort::Year,
-            4 => AlbumSort::PlayCount,
-            _ => AlbumSort::DateAdded,
-        };
-        let sort_direction = match imp.sort_direction.active() {
-            0 => SortDirection::Ascending,
-            1 => SortDirection::Descending,
-            _ => SortDirection::Ascending,
-        };
-        self.sort_changed(sort_option, sort_direction);
+    fn sort_changed(&self) {
+        config::set_albums_sort_by(self.imp().sort_dropdown.selected());
+        config::set_albums_sort_direction(self.imp().sort_direction.active());
+        self.apply_sorting();
     }
 
-    fn sort_changed(&self, sort: AlbumSort, direction: SortDirection) {
+    fn apply_sorting(&self) {
         let imp = self.imp();
-        let sorter = gtk::CustomSorter::new(move |obj1, obj2| {
+        let sort_option = AlbumSort::try_from_primitive(imp.sort_dropdown.selected())
+            .unwrap_or(AlbumSort::DateAdded);
+        let sort_direction = SortDirection::try_from_primitive(imp.sort_direction.active())
+            .unwrap_or(SortDirection::Ascending);
+        let sorter = self.build_sorter(sort_option, sort_direction);
+        imp.current_sorter.replace(Some(sorter.clone()));
+        let store = imp.store.get().expect("Store should be initialized");
+        let sort_model = SortListModel::new(Some(store.clone()), Some(sorter));
+        let selection_model = gtk::SingleSelection::new(Some(sort_model));
+        imp.grid_view.set_model(Some(&selection_model));
+    }
+
+    fn build_sorter(&self, sort: AlbumSort, direction: SortDirection) -> CustomSorter {
+        gtk::CustomSorter::new(move |obj1, obj2| {
             let (obj1, obj2) = match direction {
                 SortDirection::Ascending => (obj1, obj2),
                 SortDirection::Descending => (obj2, obj1),
@@ -183,12 +179,7 @@ impl AlbumList {
                 AlbumSort::Year => album1.year().cmp(&album2.year()).into(),
                 AlbumSort::PlayCount => album1.play_count().cmp(&album2.play_count()).into(),
             }
-        });
-        imp.current_sorter.replace(Some(sorter.clone()));
-        let store = imp.store.get().expect("Store should be initialized");
-        let sort_model = SortListModel::new(Some(store.clone()), Some(sorter));
-        let selection_model = gtk::SingleSelection::new(Some(sort_model));
-        imp.grid_view.set_model(Some(&selection_model));
+        })
     }
 
     fn setup_model(&self) {
@@ -257,6 +248,8 @@ mod imp {
     use glib::subclass::InitializingObject;
     use gtk::{CompositeTemplate, gio, glib, prelude::*};
 
+    use crate::config;
+
     #[derive(CompositeTemplate, Default)]
     #[template(resource = "/io/m51/Gelly/ui/album_list.ui")]
     pub struct AlbumList {
@@ -301,6 +294,11 @@ mod imp {
             self.parent_constructed();
             self.obj().setup_model();
 
+            self.sort_dropdown
+                .set_selected(config::get_albums_sort_by());
+            self.sort_direction
+                .set_active(config::get_albums_sort_direction());
+
             self.grid_view.connect_activate(glib::clone!(
                 #[weak(rename_to = album_list)]
                 self.obj(),
@@ -321,7 +319,7 @@ mod imp {
                 #[weak(rename_to = album_list)]
                 self.obj(),
                 move |_| {
-                    album_list.handle_sort_changed();
+                    album_list.sort_changed();
                 }
             ));
 
@@ -329,7 +327,7 @@ mod imp {
                 #[weak(rename_to = album_list)]
                 self.obj(),
                 move |_| {
-                    album_list.handle_sort_changed();
+                    album_list.sort_changed();
                 }
             ));
         }

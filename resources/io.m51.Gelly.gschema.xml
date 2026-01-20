@@ -53,5 +53,29 @@
       <default>true</default>
       <summary>Normalize audio volume between tracks</summary>
     </key>
+    <key name="sort-albums-by" type="u">
+      <default>0</default>
+      <summary>Sort albums by</summary>
+    </key>
+    <key name="sort-albums-direction" type="u">
+      <default>0</default>
+      <summary>Sort albums direction</summary>
+    </key>
+    <key name="sort-artists-by" type="u">
+      <default>0</default>
+      <summary>Sort artists by</summary>
+    </key>
+    <key name="sort-artists-direction" type="u">
+      <default>0</default>
+      <summary>Sort artists direction</summary>
+    </key>
+    <key name="sort-playlists-by" type="u">
+      <default>0</default>
+      <summary>Sort playlists by</summary>
+    </key>
+    <key name="sort-playlists-direction" type="u">
+      <default>0</default>
+      <summary>Sort playlists direction</summary>
+    </key>
   </schema>
 </schemalist>

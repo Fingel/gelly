@@ -1,16 +1,18 @@
 use crate::{
     application::Application,
+    config,
     library_utils::{artists_from_library, play_artist},
     models::ArtistModel,
     ui::{artist::Artist, list_helpers::*, page_traits::TopPage, widget_ext::WidgetApplicationExt},
 };
 use glib::Object;
 use gtk::{
-    SingleSelection, SortListModel, gio,
+    CustomSorter, SingleSelection, SortListModel, gio,
     glib::{self},
     prelude::*,
     subclass::prelude::*,
 };
+use num_enum::TryFromPrimitive;
 
 glib::wrapper! {
     pub struct ArtistList(ObjectSubclass<imp::ArtistList>)
@@ -18,10 +20,11 @@ glib::wrapper! {
         @implements gio::ActionMap, gio::ActionGroup, gtk::Accessible, gtk::Buildable, gtk::ConstraintTarget;
 }
 
-#[derive(Debug)]
+#[derive(Debug, TryFromPrimitive)]
+#[repr(u32)]
 pub enum ArtistSort {
-    Name,
-    PlayCount,
+    Name = 0,
+    PlayCount = 1,
 }
 
 impl TopPage for ArtistList {
@@ -77,6 +80,7 @@ impl ArtistList {
             for artist in artists {
                 store.append(&artist);
             }
+            self.apply_sorting();
         }
     }
 
@@ -102,14 +106,6 @@ impl ArtistList {
         );
     }
 
-    pub fn get_default_sorter(&self) -> gtk::CustomSorter {
-        gtk::CustomSorter::new(|obj1, obj2| {
-            let artist1 = obj1.downcast_ref::<ArtistModel>().unwrap();
-            let artist2 = obj2.downcast_ref::<ArtistModel>().unwrap();
-            artist1.name().cmp(&artist2.name()).into()
-        })
-    }
-
     pub fn search_changed(&self, query: &str) {
         let imp = self.imp();
         let store = imp.store.get().expect("Store should be initialized");
@@ -120,32 +116,35 @@ impl ArtistList {
         let sorter = if let Some(current_sorter) = imp.current_sorter.borrow().as_ref() {
             current_sorter.clone()
         } else {
-            let default_sorter = self.get_default_sorter();
+            let default_sorter = self.build_sorter(ArtistSort::Name, SortDirection::Ascending);
             imp.current_sorter.replace(Some(default_sorter.clone()));
             default_sorter
         };
         apply_single_filter_search(query, sorter.upcast(), store, name_filter, &imp.grid_view);
     }
 
-    fn handle_sort_changed(&self) {
-        let imp = self.imp();
-        let sort_option = match imp.sort_dropdown.selected() {
-            0 => ArtistSort::Name,
-            1 => ArtistSort::PlayCount,
-            _ => ArtistSort::Name,
-        };
-        let sort_direction = match imp.sort_direction.active() {
-            0 => SortDirection::Ascending,
-            1 => SortDirection::Descending,
-            _ => SortDirection::Ascending,
-        };
-
-        self.sort_changed(sort_option, sort_direction);
+    fn sort_changed(&self) {
+        config::set_artists_sort_by(self.imp().sort_dropdown.selected());
+        config::set_artists_sort_direction(self.imp().sort_direction.active());
+        self.apply_sorting();
     }
 
-    fn sort_changed(&self, sort: ArtistSort, direction: SortDirection) {
+    fn apply_sorting(&self) {
         let imp = self.imp();
-        let sorter = gtk::CustomSorter::new(move |obj1, obj2| {
+        let sort_option = ArtistSort::try_from_primitive(imp.sort_dropdown.selected())
+            .unwrap_or(ArtistSort::Name);
+        let sort_direction = SortDirection::try_from_primitive(imp.sort_direction.active())
+            .unwrap_or(SortDirection::Ascending);
+        let sorter = self.build_sorter(sort_option, sort_direction);
+        imp.current_sorter.replace(Some(sorter.clone()));
+        let store = imp.store.get().expect("Store should be initialized");
+        let sort_model = SortListModel::new(Some(store.clone()), Some(sorter));
+        let selection_model = SingleSelection::new(Some(sort_model));
+        imp.grid_view.set_model(Some(&selection_model));
+    }
+
+    fn build_sorter(&self, sort: ArtistSort, direction: SortDirection) -> CustomSorter {
+        CustomSorter::new(move |obj1, obj2| {
             let (obj1, obj2) = match direction {
                 SortDirection::Ascending => (obj1, obj2),
                 SortDirection::Descending => (obj2, obj1),
@@ -161,12 +160,7 @@ impl ArtistList {
                     .into(),
                 ArtistSort::PlayCount => artist1.play_count().cmp(&artist2.play_count()).into(),
             }
-        });
-        imp.current_sorter.replace(Some(sorter.clone()));
-        let store = imp.store.get().expect("Store should be initialized");
-        let sort_model = SortListModel::new(Some(store.clone()), Some(sorter));
-        let selection_model = SingleSelection::new(Some(sort_model));
-        imp.grid_view.set_model(Some(&selection_model));
+        })
     }
 
     fn setup_model(&self) {
@@ -230,6 +224,8 @@ mod imp {
     use glib::subclass::InitializingObject;
     use gtk::{CompositeTemplate, gio, glib, prelude::*};
 
+    use crate::config;
+
     #[derive(CompositeTemplate, Default)]
     #[template(resource = "/io/m51/Gelly/ui/artist_list.ui")]
     pub struct ArtistList {
@@ -272,6 +268,10 @@ mod imp {
         fn constructed(&self) {
             self.parent_constructed();
             self.obj().setup_model();
+            self.sort_dropdown
+                .set_selected(config::get_artists_sort_by());
+            self.sort_direction
+                .set_active(config::get_artists_sort_direction());
 
             self.grid_view.connect_activate(glib::clone!(
                 #[weak(rename_to = artist_list)]
@@ -293,7 +293,7 @@ mod imp {
                 #[weak(rename_to = artist_list)]
                 self.obj(),
                 move |_| {
-                    artist_list.handle_sort_changed();
+                    artist_list.sort_changed();
                 }
             ));
 
@@ -301,7 +301,7 @@ mod imp {
                 #[weak(rename_to = artist_list)]
                 self.obj(),
                 move |_| {
-                    artist_list.handle_sort_changed();
+                    artist_list.sort_changed();
                 }
             ));
         }

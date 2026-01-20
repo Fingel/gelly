@@ -15,12 +15,13 @@ use crate::{
 };
 use glib::Object;
 use gtk::{
-    SingleSelection, SortListModel, gio,
+    CustomSorter, SingleSelection, SortListModel, gio,
     glib::{self},
     prelude::*,
     subclass::prelude::*,
 };
 use log::{error, warn};
+use num_enum::TryFromPrimitive;
 
 glib::wrapper! {
     pub struct PlaylistList(ObjectSubclass<imp::PlaylistList>)
@@ -28,10 +29,11 @@ glib::wrapper! {
         @implements gio::ActionMap, gio::ActionGroup, gtk::Accessible, gtk::Buildable, gtk::ConstraintTarget;
 }
 
-#[derive(Debug)]
+#[derive(Debug, TryFromPrimitive)]
+#[repr(u32)]
 pub enum PlaylistSort {
-    Name,
-    NumSongs,
+    Name = 0,
+    NumSongs = 1,
 }
 
 impl TopPage for PlaylistList {
@@ -173,6 +175,7 @@ impl PlaylistList {
             let playlist_obj = PlaylistModel::new(playlist_type);
             store.append(&playlist_obj);
         }
+        self.apply_sorting();
     }
 
     pub fn activate_playlist(&self, index: u32) {
@@ -201,14 +204,6 @@ impl PlaylistList {
         );
     }
 
-    pub fn get_default_sorter(&self) -> gtk::CustomSorter {
-        gtk::CustomSorter::new(|obj1, obj2| {
-            let playlist1 = obj1.downcast_ref::<PlaylistModel>().unwrap();
-            let playlist2 = obj2.downcast_ref::<PlaylistModel>().unwrap();
-            playlist1.name().cmp(&playlist2.name()).into()
-        })
-    }
-
     pub fn search_changed(&self, query: &str) {
         let imp = self.imp();
         let store = imp.store.get().expect("Store should be initialized");
@@ -219,32 +214,21 @@ impl PlaylistList {
         let sorter = if let Some(current_sorter) = imp.current_sorter.borrow().as_ref() {
             current_sorter.clone()
         } else {
-            let default_sorter = self.get_default_sorter();
+            let default_sorter = self.build_sorter(PlaylistSort::Name, SortDirection::Ascending);
             imp.current_sorter.replace(Some(default_sorter.clone()));
             default_sorter
         };
         apply_single_filter_search(query, sorter.upcast(), store, name_filter, &imp.grid_view);
     }
 
-    fn handle_sort_changed(&self) {
-        let imp = self.imp();
-        let sort_option = match imp.sort_dropdown.selected() {
-            0 => PlaylistSort::Name,
-            1 => PlaylistSort::NumSongs,
-            _ => PlaylistSort::Name,
-        };
-        let sort_direction = match imp.sort_direction.active() {
-            0 => SortDirection::Ascending,
-            1 => SortDirection::Descending,
-            _ => SortDirection::Ascending,
-        };
-
-        self.sort_changed(sort_option, sort_direction);
+    fn sort_changed(&self) {
+        config::set_playlists_sort_by(self.imp().sort_dropdown.selected());
+        config::set_playlists_sort_direction(self.imp().sort_direction.active());
+        self.apply_sorting();
     }
 
-    fn sort_changed(&self, sort: PlaylistSort, direction: SortDirection) {
-        let imp = self.imp();
-        let sorter = gtk::CustomSorter::new(move |obj1, obj2| {
+    fn build_sorter(&self, sort: PlaylistSort, direction: SortDirection) -> CustomSorter {
+        CustomSorter::new(move |obj1, obj2| {
             let (obj1, obj2) = match direction {
                 SortDirection::Ascending => (obj1, obj2),
                 SortDirection::Descending => (obj2, obj1),
@@ -253,16 +237,32 @@ impl PlaylistList {
             let playlist2 = obj2.downcast_ref::<PlaylistModel>().unwrap();
 
             match sort {
-                PlaylistSort::Name => playlist1
-                    .name()
-                    .to_lowercase()
-                    .cmp(&playlist2.name().to_lowercase())
+                PlaylistSort::Name => playlist2
+                    .is_smart()
+                    .cmp(&playlist1.is_smart())
+                    .then(
+                        playlist1
+                            .name()
+                            .to_lowercase()
+                            .cmp(&playlist2.name().to_lowercase()),
+                    )
                     .into(),
-                PlaylistSort::NumSongs => {
-                    playlist1.child_count().cmp(&playlist2.child_count()).into()
-                }
+                PlaylistSort::NumSongs => playlist2
+                    .is_smart()
+                    .cmp(&playlist1.is_smart())
+                    .then(playlist1.child_count().cmp(&playlist2.child_count()))
+                    .into(),
             }
-        });
+        })
+    }
+
+    fn apply_sorting(&self) {
+        let imp = self.imp();
+        let sort_option = PlaylistSort::try_from_primitive(imp.sort_dropdown.selected())
+            .unwrap_or(PlaylistSort::Name);
+        let sort_direction = SortDirection::try_from_primitive(imp.sort_direction.active())
+            .unwrap_or(SortDirection::Ascending);
+        let sorter = self.build_sorter(sort_option, sort_direction);
         imp.current_sorter.replace(Some(sorter.clone()));
         let store = imp.store.get().expect("Store should be initialized");
         let sort_model = SortListModel::new(Some(store.clone()), Some(sorter));
@@ -326,7 +326,7 @@ impl Default for PlaylistList {
 mod imp {
     use std::cell::{OnceCell, RefCell};
 
-    use crate::config::settings;
+    use crate::config::{self, settings};
     use adw::subclass::prelude::*;
     use glib::subclass::InitializingObject;
     use gtk::{CompositeTemplate, gio, glib, prelude::*};
@@ -374,6 +374,11 @@ mod imp {
             self.parent_constructed();
             self.obj().setup_model();
 
+            self.sort_dropdown
+                .set_selected(config::get_playlists_sort_by());
+            self.sort_direction
+                .set_active(config::get_playlists_sort_direction());
+
             self.grid_view.connect_activate(glib::clone!(
                 #[weak(rename_to = playlist_list)]
                 self.obj(),
@@ -394,7 +399,7 @@ mod imp {
                 #[weak(rename_to = playlist_list)]
                 self.obj(),
                 move |_| {
-                    playlist_list.handle_sort_changed();
+                    playlist_list.sort_changed();
                 }
             ));
 
@@ -402,7 +407,7 @@ mod imp {
                 #[weak(rename_to = playlist_list)]
                 self.obj(),
                 move |_| {
-                    playlist_list.handle_sort_changed();
+                    playlist_list.sort_changed();
                 }
             ));
 

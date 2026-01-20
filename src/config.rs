@@ -176,3 +176,57 @@ pub fn get_playlist_most_played_enabled() -> bool {
 pub fn get_normalize_audio_enabled() -> bool {
     settings().boolean("normalize-audio")
 }
+
+pub fn get_albums_sort_by() -> u32 {
+    settings().uint("sort-albums-by")
+}
+
+pub fn set_albums_sort_by(sort_by: u32) {
+    settings().set_uint("sort-albums-by", sort_by).unwrap();
+}
+
+pub fn get_albums_sort_direction() -> u32 {
+    settings().uint("sort-albums-direction")
+}
+
+pub fn set_albums_sort_direction(direction: u32) {
+    settings()
+        .set_uint("sort-albums-direction", direction)
+        .unwrap();
+}
+
+pub fn get_artists_sort_by() -> u32 {
+    settings().uint("sort-artists-by")
+}
+
+pub fn set_artists_sort_by(sort_by: u32) {
+    settings().set_uint("sort-artists-by", sort_by).unwrap();
+}
+
+pub fn get_artists_sort_direction() -> u32 {
+    settings().uint("sort-artists-direction")
+}
+
+pub fn set_artists_sort_direction(direction: u32) {
+    settings()
+        .set_uint("sort-artists-direction", direction)
+        .unwrap();
+}
+
+pub fn get_playlists_sort_by() -> u32 {
+    settings().uint("sort-playlists-by")
+}
+
+pub fn set_playlists_sort_by(sort_by: u32) {
+    settings().set_uint("sort-playlists-by", sort_by).unwrap();
+}
+
+pub fn get_playlists_sort_direction() -> u32 {
+    settings().uint("sort-playlists-direction")
+}
+
+pub fn set_playlists_sort_direction(direction: u32) {
+    settings()
+        .set_uint("sort-playlists-direction", direction)
+        .unwrap();
+}
