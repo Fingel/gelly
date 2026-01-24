@@ -98,9 +98,23 @@ impl Window {
         widget: &T,
         model: &T::Model,
     ) {
-        self.imp().main_navigation.push(page);
+        let nav = &self.imp().main_navigation;
+        let stack = nav.navigation_stack();
+        let page_ref = page.upcast_ref::<adw::NavigationPage>();
+
+        // Check if page is already in nav stack so we can just go to it instead
+        let page_in_stack = stack
+            .iter::<adw::NavigationPage>()
+            .any(|p| p.ok().as_ref() == Some(page_ref));
+
         widget.set_model(model);
         page.set_title(&widget.title());
+
+        if page_in_stack {
+            nav.pop_to_page(page);
+        } else {
+            nav.push(page);
+        }
     }
 
     pub fn show_album_detail(&self, album_model: &AlbumModel) {
