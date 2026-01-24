@@ -245,6 +245,31 @@ impl Song {
         )
     }
 
+    fn setup_clickable_labels(&self) {
+        let imp = self.imp();
+        imp.artist_button.connect_clicked(glib::clone!(
+            #[weak(rename_to = song)]
+            self,
+            move |_| {
+                if let Some(item_id) = song.imp().item_id.borrow().clone() {
+                    song.emit_by_name::<()>("artist-clicked", &[&item_id]);
+                    dbg!("Artist clicked {}", item_id);
+                }
+            }
+        ));
+
+        imp.album_button.connect_clicked(glib::clone!(
+            #[weak(rename_to = song)]
+            self,
+            move |_| {
+                if let Some(item_id) = song.imp().item_id.borrow().clone() {
+                    song.emit_by_name::<()>("album-clicked", &[&item_id]);
+                    dbg!("Album clicked {}", item_id);
+                }
+            }
+        ));
+    }
+
     fn on_add_to_playlist(&self, playlist_id: String) {
         let Some(song_id) = self.imp().item_id.borrow().clone() else {
             return;
@@ -342,7 +367,11 @@ mod imp {
         #[template_child]
         pub number_label: TemplateChild<gtk::Label>,
         #[template_child]
+        pub artist_button: TemplateChild<gtk::Button>,
+        #[template_child]
         pub artist_label: TemplateChild<gtk::Label>,
+        #[template_child]
+        pub album_button: TemplateChild<gtk::Button>,
         #[template_child]
         pub album_label: TemplateChild<gtk::Label>,
         #[template_child]
@@ -394,6 +423,12 @@ mod imp {
                     Signal::builder("remove-from-playlist")
                         .param_types([String::static_type()])
                         .build(),
+                    Signal::builder("artist-clicked")
+                        .param_types([String::static_type()])
+                        .build(),
+                    Signal::builder("album-clicked")
+                        .param_types([String::static_type()])
+                        .build(),
                 ]
             })
         }
@@ -401,6 +436,7 @@ mod imp {
         fn constructed(&self) {
             self.parent_constructed();
             self.obj().setup_menu();
+            self.obj().setup_clickable_labels();
             self.obj().connect_map(glib::clone!(
                 #[weak(rename_to = song)]
                 self.obj(),

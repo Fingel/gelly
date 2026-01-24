@@ -68,14 +68,20 @@
                 <property name="hexpand">True</property>
                 <property name="margin-start">9</property>
                 <child>
-                  <object class="GtkLabel" id="artist_label">
-                    <property name="focusable">False</property>
+                  <object class="GtkButton" id="artist_button">
+                    <property name="focusable">True</property>
                     <property name="halign">start</property>
-                    <property name="ellipsize">end</property>
-                    <property name="max_width_chars">90</property>
+                    <property name="has-frame">False</property>
                     <style>
+                      <class name="flat"/>
                       <class name="dimmed"/>
                     </style>
+                    <child>
+                      <object class="GtkLabel" id="artist_label">
+                        <property name="ellipsize">end</property>
+                        <property name="max_width_chars">90</property>
+                      </object>
+                    </child>
                   </object>
                 </child>
                 <child>
@@ -89,14 +95,20 @@
                   </object>
                 </child>
                 <child>
-                  <object class="GtkLabel" id="album_label">
-                    <property name="focusable">False</property>
+                  <object class="GtkButton" id="album_button">
+                    <property name="focusable">True</property>
                     <property name="halign">start</property>
-                    <property name="ellipsize">end</property>
-                    <property name="max_width_chars">90</property>
+                    <property name="has-frame">False</property>
                     <style>
+                      <class name="flat"/>
                       <class name="dimmed"/>
                     </style>
+                    <child>
+                      <object class="GtkLabel" id="album_label">
+                        <property name="ellipsize">end</property>
+                        <property name="max_width_chars">90</property>
+                      </object>
+                    </child>
                   </object>
                 </child>
               </object>
