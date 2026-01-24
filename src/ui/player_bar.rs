@@ -145,6 +145,7 @@ impl PlayerBar {
         // Update title and artist
         let title = audio_model.current_song_title();
         let artists = audio_model.current_song_artists();
+        let album = audio_model.current_song_album();
         let artist_str = if artists.is_empty() {
             "Unknown Artist".to_string()
         } else {
@@ -153,6 +154,7 @@ impl PlayerBar {
 
         imp.title_label.set_text(&title);
         imp.artist_label.set_text(&artist_str);
+        imp.album_label.set_text(&album);
 
         // Load album art and lyrics if available
         if let Some(song) = audio_model.current_song() {
@@ -195,6 +197,7 @@ mod imp {
 
     use crate::{
         audio::{model::AudioModel, stream_info::discover_stream_info},
+        library_utils::{album_for_item, artist_for_item},
         ui::{
             album_art::AlbumArt, lyrics::Lyrics, stream_info_dialog,
             widget_ext::WidgetApplicationExt,
@@ -219,7 +222,13 @@ mod imp {
         #[template_child]
         pub title_label: TemplateChild<gtk::Label>,
         #[template_child]
+        pub artist_button: TemplateChild<gtk::Button>,
+        #[template_child]
         pub artist_label: TemplateChild<gtk::Label>,
+        #[template_child]
+        pub album_button: TemplateChild<gtk::Button>,
+        #[template_child]
+        pub album_label: TemplateChild<gtk::Label>,
         #[template_child]
         pub play_pause_button: TemplateChild<gtk::Button>,
         #[template_child]
@@ -385,6 +394,24 @@ mod imp {
             }
         }
 
+        fn show_artist(&self) {
+            let song_id = self.audio_model().current_song_id();
+            let window = self.obj().get_root_window();
+            let library = self.obj().get_application().library().clone();
+            if let Some(artist_model) = artist_for_item(&song_id, &library.borrow()) {
+                window.show_artist_detail(&artist_model);
+            }
+        }
+
+        fn show_album(&self) {
+            let song_id = self.audio_model().current_song_id();
+            let window = self.obj().get_root_window();
+            let library = self.obj().get_application().library().clone();
+            if let Some(album_model) = album_for_item(&song_id, &library.borrow()) {
+                window.show_album_detail(&album_model);
+            }
+        }
+
         fn setup_signals(&self) {
             self.play_pause_button.connect_clicked(glib::clone!(
                 #[weak(rename_to = imp)]
@@ -485,6 +512,22 @@ mod imp {
                 self,
                 move |_| {
                     imp.show_lyrics();
+                }
+            ));
+
+            self.artist_button.connect_clicked(glib::clone!(
+                #[weak(rename_to = imp)]
+                self,
+                move |_| {
+                    imp.show_artist();
+                }
+            ));
+
+            self.album_button.connect_clicked(glib::clone!(
+                #[weak(rename_to = imp)]
+                self,
+                move |_| {
+                    imp.show_album();
                 }
             ));
 

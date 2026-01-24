@@ -48,13 +48,55 @@
                   </object>
                 </child>
                 <child>
-                  <object class="GtkLabel" id="artist_label">
+                  <object class="GtkBox">
+                    <property name="orientation">horizontal</property>
                     <property name="halign">center</property>
-                    <property name="ellipsize">end</property>
-                    <property name="max-width-chars">30</property>
-                    <style>
-                      <class name="dim-label"/>
-                    </style>
+                    <property name="valign">center</property>
+                    <property name="hexpand">true</property>
+                    <child>
+                      <object class="GtkButton" id="artist_button">
+                        <property name="focusable">True</property>
+                        <property name="halign">start</property>
+                        <property name="has-frame">False</property>
+                        <style>
+                          <class name="flat"/>
+                          <class name="dimmed"/>
+                        </style>
+                        <child>
+                          <object class="GtkLabel" id="artist_label">
+                            <property name="ellipsize">end</property>
+                            <property name="max_width_chars">90</property>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkLabel" id="separator_label">
+                        <property name="focusable">False</property>
+                        <property name="label"> - </property>
+                        <property name="halign">start</property>
+                        <style>
+                          <class name="dimmed"/>
+                        </style>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkButton" id="album_button">
+                        <property name="focusable">True</property>
+                        <property name="halign">start</property>
+                        <property name="has-frame">False</property>
+                        <style>
+                          <class name="flat"/>
+                          <class name="dimmed"/>
+                        </style>
+                        <child>
+                          <object class="GtkLabel" id="album_label">
+                            <property name="ellipsize">end</property>
+                            <property name="max_width_chars">90</property>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
                   </object>
                 </child>
               </object>
