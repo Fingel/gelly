@@ -840,7 +840,7 @@ dependencies = [
 
 [[package]]
 name = "gelly"
-version = "0.15.0"
+version = "0.15.1"
 dependencies = [
  "async-channel",
  "dbus-secret-service",

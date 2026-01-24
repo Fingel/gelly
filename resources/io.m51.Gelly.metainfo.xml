@@ -37,6 +37,14 @@
     </screenshot>
   </screenshots>
   <releases>
+    <release version="0.15.1" date="2026-01-23">
+      <description>
+        <ul>
+          <li>Gelly will now remember sorting preferences between app restarts.</li>
+          <li>Yet more MPRIS fixes.</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.15.0" date="2026-01-11">
       <description>
         <ul>
