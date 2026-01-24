@@ -55,7 +55,7 @@ impl Song {
 
     pub fn set_song_data(&self, song: &SongModel) {
         let imp = self.imp();
-        imp.item_id.replace(Some(song.id()));
+        imp.item_id.replace(song.id());
         imp.title_label.set_label(&song.title());
         imp.album_label.set_label(&song.album());
         imp.artist_label.set_label(&song.artists_string());
@@ -176,7 +176,7 @@ impl Song {
                     #[weak(rename_to = song)]
                     self,
                     move |_audio_model: AudioModel, song_id: &str| {
-                        let my_id = song.imp().item_id.borrow().clone().unwrap_or_default();
+                        let my_id = song.imp().item_id.borrow().clone();
                         song.set_playing(song_id == my_id);
                     }
                 ),
@@ -251,10 +251,7 @@ impl Song {
             #[weak(rename_to = song)]
             self,
             move |_| {
-                if let Some(item_id) = song.imp().item_id.borrow().clone() {
-                    song.emit_by_name::<()>("artist-clicked", &[&item_id]);
-                    dbg!("Artist clicked {}", item_id);
-                }
+                song.emit_by_name::<()>("artist-clicked", &[&song.imp().item_id.borrow().clone()]);
             }
         ));
 
@@ -262,19 +259,13 @@ impl Song {
             #[weak(rename_to = song)]
             self,
             move |_| {
-                if let Some(item_id) = song.imp().item_id.borrow().clone() {
-                    song.emit_by_name::<()>("album-clicked", &[&item_id]);
-                    dbg!("Album clicked {}", item_id);
-                }
+                song.emit_by_name::<()>("album-clicked", &[&song.imp().item_id.borrow().clone()]);
             }
         ));
     }
 
     fn on_add_to_playlist(&self, playlist_id: String) {
-        let Some(song_id) = self.imp().item_id.borrow().clone() else {
-            return;
-        };
-
+        let song_id = self.imp().item_id.borrow().clone();
         let app = self.get_application();
         let jellyfin = app.jellyfin();
         let playlist_id = playlist_id.to_string();
@@ -300,40 +291,37 @@ impl Song {
     }
 
     fn on_remove_from_playlist(&self) {
-        if let Some(song_id) = self.imp().item_id.borrow().clone() {
-            self.emit_by_name::<()>("remove-from-playlist", &[&song_id]);
-        }
+        let song_id = self.imp().item_id.borrow().clone();
+        self.emit_by_name::<()>("remove-from-playlist", &[&song_id]);
     }
 
     fn on_queue_next(&self) {
-        if let Some(song_id) = self.imp().item_id.borrow().clone() {
-            let app = self.get_application();
-            if let Some(audio_model) = app.audio_model()
-                && let Some(song) = app
-                    .library()
-                    .borrow()
-                    .iter()
-                    .find(|song| song.id == song_id)
-                    .map(SongModel::from)
-            {
-                audio_model.prepend_to_queue(vec![song]);
-            }
+        let song_id = self.imp().item_id.borrow().clone();
+        let app = self.get_application();
+        if let Some(audio_model) = app.audio_model()
+            && let Some(song) = app
+                .library()
+                .borrow()
+                .iter()
+                .find(|song| song.id == song_id)
+                .map(SongModel::from)
+        {
+            audio_model.prepend_to_queue(vec![song]);
         }
     }
 
     fn on_queue_last(&self) {
-        if let Some(song_id) = self.imp().item_id.borrow().clone() {
-            let app = self.get_application();
-            if let Some(audio_model) = app.audio_model()
-                && let Some(song) = app
-                    .library()
-                    .borrow()
-                    .iter()
-                    .find(|song| song.id == song_id)
-                    .map(SongModel::from)
-            {
-                audio_model.append_to_queue(vec![song]);
-            }
+        let song_id = self.imp().item_id.borrow().clone();
+        let app = self.get_application();
+        if let Some(audio_model) = app.audio_model()
+            && let Some(song) = app
+                .library()
+                .borrow()
+                .iter()
+                .find(|song| song.id == song_id)
+                .map(SongModel::from)
+        {
+            audio_model.append_to_queue(vec![song]);
         }
     }
 }
@@ -385,8 +373,7 @@ mod imp {
         #[template_child]
         pub song_menu: TemplateChild<gtk::MenuButton>,
 
-        pub item_id: RefCell<Option<String>>, // TODO: Why is this an option?
-
+        pub item_id: RefCell<String>,
         #[property(get, construct_only, name = "in-playlist", default = false)]
         pub in_playlist: Cell<bool>,
         #[property(get, construct_only, name = "in-queue", default = false)]
