@@ -285,6 +285,7 @@ mod imp {
         fn constructed(&self) {
             self.parent_constructed();
             self.setup_signals();
+            self.setup_clickable_labels();
         }
     }
 
@@ -515,22 +516,6 @@ mod imp {
                 }
             ));
 
-            self.artist_button.connect_clicked(glib::clone!(
-                #[weak(rename_to = imp)]
-                self,
-                move |_| {
-                    imp.show_artist();
-                }
-            ));
-
-            self.album_button.connect_clicked(glib::clone!(
-                #[weak(rename_to = imp)]
-                self,
-                move |_| {
-                    imp.show_album();
-                }
-            ));
-
             self.obj().connect_notify_local(
                 Some("position"),
                 glib::clone!(
@@ -566,6 +551,27 @@ mod imp {
                     }
                 ),
             );
+        }
+
+        fn setup_clickable_labels(&self) {
+            self.artist_button.set_cursor_from_name(Some("pointer"));
+            self.album_button.set_cursor_from_name(Some("pointer"));
+
+            self.artist_button.connect_clicked(glib::clone!(
+                #[weak(rename_to = imp)]
+                self,
+                move |_| {
+                    imp.show_artist();
+                }
+            ));
+
+            self.album_button.connect_clicked(glib::clone!(
+                #[weak(rename_to = imp)]
+                self,
+                move |_| {
+                    imp.show_album();
+                }
+            ));
         }
     }
 }

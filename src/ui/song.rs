@@ -247,6 +247,10 @@ impl Song {
 
     fn setup_clickable_labels(&self) {
         let imp = self.imp();
+        // Set pointer cursor for better discoverability
+        imp.artist_button.set_cursor_from_name(Some("pointer"));
+        imp.album_button.set_cursor_from_name(Some("pointer"));
+
         imp.artist_button.connect_clicked(glib::clone!(
             #[weak(rename_to = song)]
             self,
