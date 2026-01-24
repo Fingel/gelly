@@ -61,6 +61,7 @@
                         <style>
                           <class name="flat"/>
                           <class name="dimmed"/>
+                          <class name="song-link"/>
                         </style>
                         <child>
                           <object class="GtkLabel" id="artist_label">
@@ -88,6 +89,7 @@
                         <style>
                           <class name="flat"/>
                           <class name="dimmed"/>
+                          <class name="song-link"/>
                         </style>
                         <child>
                           <object class="GtkLabel" id="album_label">
