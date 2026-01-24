@@ -9,6 +9,7 @@ use crate::{
         page_traits::DetailPage,
         playlist_dialogs,
         song::{Song, SongOptions},
+        song_utils::connect_song_navigation,
         widget_ext::WidgetApplicationExt,
     },
 };
@@ -137,6 +138,8 @@ impl PlaylistDetail {
                 );
                 song_widget
             };
+            // Connect navigation signals
+            connect_song_navigation(&song_widget, &self.get_root_window());
             // we don't want the track number here, we want the playlist index
             song.set_track_number(i as u32 + 1);
             song_widget.set_song_data(song);

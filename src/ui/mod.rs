@@ -23,6 +23,7 @@ pub mod queue;
 pub mod setup;
 pub mod shortcuts_dialog;
 pub mod song;
+pub mod song_utils;
 pub mod stream_info_dialog;
 pub mod widget_ext;
 pub mod window;

@@ -5,6 +5,7 @@ use crate::{
         page_traits::TopPage,
         playlist_dialogs,
         song::{Song, SongOptions},
+        song_utils::connect_song_navigation,
         widget_ext::WidgetApplicationExt,
     },
 };
@@ -57,6 +58,8 @@ impl Queue {
                         in_playlist: false,
                     });
                     song_widget.set_song_data(track);
+                    // connect navigation signals
+                    connect_song_navigation(&song_widget, &self.get_root_window());
                     self.imp().track_list.append(&song_widget);
                     if track.id() == current_track {
                         song_widget.set_playing(true);

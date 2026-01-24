@@ -136,6 +136,20 @@ pub fn play_artist(id: &str, app: &Application) {
     }
 }
 
+pub fn artist_for_item(item_id: &str, library: &[MusicDto]) -> Option<ArtistModel> {
+    library
+        .iter()
+        .find(|dto| dto.id == item_id)
+        .and_then(|dto| dto.album_artists.first().map(|artist| artist.into()))
+}
+
+pub fn album_for_item(item_id: &str, library: &[MusicDto]) -> Option<AlbumModel> {
+    library
+        .iter()
+        .find(|dto| dto.id == item_id)
+        .map(|dto| dto.into())
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

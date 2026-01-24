@@ -7,6 +7,7 @@ use crate::{
         music_context_menu::{ContextActions, construct_menu, create_actiongroup},
         page_traits::DetailPage,
         song::Song,
+        song_utils::connect_song_navigation,
         widget_ext::WidgetApplicationExt,
     },
 };
@@ -61,6 +62,8 @@ impl AlbumDetail {
         for song in &songs {
             let song_widget = Song::new();
             song_widget.set_song_data(song);
+            // Set up navigation signals
+            connect_song_navigation(&song_widget, &self.get_root_window());
             // Check if currently playing song is in the album
             if let Some(audio_model) = self.get_application().audio_model()
                 && audio_model
