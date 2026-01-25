@@ -21,6 +21,7 @@
     <file compressed="true" preprocess="xml-stripblanks">ui/shortcuts_dialog.ui</file>
     <file compressed="true" preprocess="xml-stripblanks">ui/preferences.ui</file>
     <file compressed="true" preprocess="xml-stripblanks">ui/lyrics.ui</file>
+    <file compressed="true" preprocess="xml-stripblanks">icons/subtitles-symbolic.svg</file>
     <file alias="metainfo.xml" compressed="true">io.m51.Gelly.metainfo.xml</file>
   </gresource>
 </gresources>
