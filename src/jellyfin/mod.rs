@@ -308,7 +308,11 @@ impl Jellyfin {
         image_type: ImageType,
     ) -> Result<Vec<u8>, JellyfinError> {
         let params = match image_type {
-            ImageType::Backdrop => vec![("fillHeight", "200"), ("quality", "96")],
+            ImageType::Backdrop => vec![
+                ("maxWidth", "1920"),
+                ("maxHeight", "300"),
+                ("quality", "96"),
+            ],
             _ => vec![
                 ("fillWidth", "200"),
                 ("fillHeight", "200"),
