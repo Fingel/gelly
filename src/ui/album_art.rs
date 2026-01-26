@@ -90,7 +90,7 @@ impl AlbumArt {
         spawn_tokio(
             async move {
                 image_cache
-                    .get_images(&item_id, fallback_id.as_deref(), &jellyfin)
+                    .get_primary_images(&item_id, fallback_id.as_deref(), &jellyfin)
                     .await
             },
             glib::clone!(

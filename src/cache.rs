@@ -9,7 +9,7 @@ use crate::{
     config::APP_ID,
     jellyfin::{
         Jellyfin, JellyfinError,
-        api::{MusicDto, MusicDtoList, PlaylistDto, PlaylistDtoList},
+        api::{ImageType, MusicDto, MusicDtoList, PlaylistDto, PlaylistDtoList},
     },
 };
 
@@ -150,19 +150,24 @@ impl ImageCache {
         })
     }
 
-    pub async fn get_images(
+    /// Retrieve the main album art for an item.
+    /// Fallback is an id (usually a parent item) that is more likely to have an image.
+    pub async fn get_primary_images(
         &self,
         primary: &str,
         fallback: Option<&str>,
         jellyfin: &Jellyfin,
     ) -> Result<Vec<u8>, CacheError> {
         match fallback {
-            None => self.get_image(primary, jellyfin).await,
+            None => self.get_image(primary, ImageType::Primary, jellyfin).await,
             Some(fallback) => {
-                if let Ok(primary_image) = self.get_image(primary, jellyfin).await {
+                if let Ok(primary_image) =
+                    self.get_image(primary, ImageType::Primary, jellyfin).await
+                {
                     Ok(primary_image)
                 } else {
-                    let fallback_image = self.get_image(fallback, jellyfin).await;
+                    let fallback_image =
+                        self.get_image(fallback, ImageType::Primary, jellyfin).await;
                     if fallback_image.is_ok() {
                         let primary_path = self.get_cache_file_path(primary);
                         let fallback_path = self.get_cache_file_path(fallback);
@@ -174,8 +179,12 @@ impl ImageCache {
         }
     }
 
-    async fn get_image(&self, item_id: &str, jellyfin: &Jellyfin) -> Result<Vec<u8>, CacheError> {
-        // We should probably be using hashes here, many IDs have the same image.
+    async fn get_image(
+        &self,
+        item_id: &str,
+        image_type: ImageType,
+        jellyfin: &Jellyfin,
+    ) -> Result<Vec<u8>, CacheError> {
         loop {
             if let Ok(bytes) = self.load_from_disk(item_id) {
                 return Ok(bytes);
@@ -194,7 +203,7 @@ impl ImageCache {
 
             // Acquire semaphore permit to limit concurrent downloads
             let _permit = self.download_semaphore.acquire().await.unwrap();
-            let result = self.download_and_cache(item_id, jellyfin).await;
+            let result = self.download_and_cache(item_id, image_type, jellyfin).await;
 
             // Remove from pending requests
             {
@@ -209,10 +218,11 @@ impl ImageCache {
     async fn download_and_cache(
         &self,
         item_id: &str,
+        image_type: ImageType,
         jellyfin: &Jellyfin,
     ) -> Result<Vec<u8>, CacheError> {
         debug!("Downloading album art for {}", item_id);
-        let image_data = jellyfin.get_image(item_id).await?;
+        let image_data = jellyfin.get_image(item_id, image_type).await?;
 
         if let Err(e) = self.save_to_disk(item_id, &image_data) {
             warn!("Failed to save image to disk cache: {}", e);

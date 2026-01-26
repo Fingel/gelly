@@ -200,3 +200,21 @@ pub struct Lyric {
     pub text: String,
     pub start: Option<u64>,
 }
+
+pub enum ImageType {
+    Primary,
+    Art,
+    Backdrop,
+    Banner,
+}
+
+impl ImageType {
+    pub fn as_str(&self) -> &str {
+        match self {
+            ImageType::Primary => "Primary",
+            ImageType::Art => "Art",
+            ImageType::Backdrop => "Backdrop",
+            ImageType::Banner => "Banner",
+        }
+    }
+}

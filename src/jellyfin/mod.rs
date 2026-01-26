@@ -11,8 +11,8 @@ use tokio::time::Instant;
 
 use crate::config;
 use crate::jellyfin::api::{
-    LibraryDtoList, LyricsResponse, MusicDtoList, NewPlaylist, NewPlaylistResponse, PlaybackInfo,
-    PlaybackReport, PlaybackReportStatus, PlaylistDtoList, PlaylistItems,
+    ImageType, LibraryDtoList, LyricsResponse, MusicDtoList, NewPlaylist, NewPlaylistResponse,
+    PlaybackInfo, PlaybackReport, PlaybackReportStatus, PlaylistDtoList, PlaylistItems,
 };
 
 pub mod api;
@@ -302,14 +302,21 @@ impl Jellyfin {
         Ok(())
     }
 
-    pub async fn get_image(&self, item_id: &str) -> Result<Vec<u8>, JellyfinError> {
+    pub async fn get_image(
+        &self,
+        item_id: &str,
+        image_type: ImageType,
+    ) -> Result<Vec<u8>, JellyfinError> {
         let params = vec![
             ("fillHeight", "200"),
             ("fillWidth", "200"),
             ("quality", "96"),
         ];
         let response = self
-            .get(&format!("Items/{}/Images/Primary", item_id), Some(&params))
+            .get(
+                &format!("Items/{}/Images/{}", item_id, image_type.as_str()),
+                Some(&params),
+            )
             .await?;
         self.handle_binary_response(response).await
     }
