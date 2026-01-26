@@ -11,6 +11,7 @@ use mpris_server::{
 use crate::audio::model::AudioModel;
 use crate::cache::ImageCache;
 use crate::config;
+use crate::jellyfin::api::ImageType;
 use crate::models::SongModel;
 
 pub async fn build_metadata(song: &SongModel) -> Metadata {
@@ -21,7 +22,7 @@ pub async fn build_metadata(song: &SongModel) -> Metadata {
         .length(Time::from_secs(song.duration_seconds() as i64))
         .build();
     if let Ok(cache_dir) = ImageCache::new() {
-        let art_path = cache_dir.get_cache_file_path(&song.id());
+        let art_path = cache_dir.get_cache_file_path(&song.id(), ImageType::Primary);
 
         // Poll for the file for 2 seconds because elsewhere the album art should be being fetched.
         let start_time = Instant::now();

@@ -346,7 +346,7 @@ mod imp {
         pub library: Rc<RefCell<Vec<MusicDto>>>,
         pub playlists: Rc<RefCell<Vec<PlaylistDto>>>,
         pub library_id: RefCell<String>,
-        pub library_cache: RefCell<Option<LibraryCache>>,
+        pub library_cache: RefCell<Option<LibraryCache>>, // TODO: remove these Option<> types
         pub image_cache: RefCell<Option<ImageCache>>,
         pub audio_model: RefCell<Option<AudioModel>>,
         pub http_request_count: AtomicU32,

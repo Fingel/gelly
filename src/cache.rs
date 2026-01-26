@@ -169,8 +169,8 @@ impl ImageCache {
                     let fallback_image =
                         self.get_image(fallback, ImageType::Primary, jellyfin).await;
                     if fallback_image.is_ok() {
-                        let primary_path = self.get_cache_file_path(primary);
-                        let fallback_path = self.get_cache_file_path(fallback);
+                        let primary_path = self.get_cache_file_path(primary, ImageType::Primary);
+                        let fallback_path = self.get_cache_file_path(fallback, ImageType::Primary);
                         unix::fs::symlink(&fallback_path, &primary_path)?;
                     }
                     fallback_image
@@ -179,14 +179,14 @@ impl ImageCache {
         }
     }
 
-    async fn get_image(
+    pub async fn get_image(
         &self,
         item_id: &str,
         image_type: ImageType,
         jellyfin: &Jellyfin,
     ) -> Result<Vec<u8>, CacheError> {
         loop {
-            if let Ok(bytes) = self.load_from_disk(item_id) {
+            if let Ok(bytes) = self.load_from_disk(item_id, image_type) {
                 return Ok(bytes);
             }
 
@@ -224,15 +224,15 @@ impl ImageCache {
         debug!("Downloading album art for {}", item_id);
         let image_data = jellyfin.get_image(item_id, image_type).await?;
 
-        if let Err(e) = self.save_to_disk(item_id, &image_data) {
+        if let Err(e) = self.save_to_disk(item_id, image_type, &image_data) {
             warn!("Failed to save image to disk cache: {}", e);
         }
 
         Ok(image_data)
     }
 
-    fn load_from_disk(&self, item_id: &str) -> Result<Vec<u8>, CacheError> {
-        let file_path = self.cache_dir.join(item_id);
+    fn load_from_disk(&self, item_id: &str, image_type: ImageType) -> Result<Vec<u8>, CacheError> {
+        let file_path = self.get_cache_file_path(item_id, image_type);
         if !file_path.exists() {
             return Err(CacheError::Io(std::io::Error::new(
                 std::io::ErrorKind::NotFound,
@@ -243,8 +243,13 @@ impl ImageCache {
         Ok(fs::read(&file_path)?)
     }
 
-    fn save_to_disk(&self, item_id: &str, image_data: &[u8]) -> Result<(), CacheError> {
-        let file_path = self.get_cache_file_path(item_id);
+    fn save_to_disk(
+        &self,
+        item_id: &str,
+        image_type: ImageType,
+        image_data: &[u8],
+    ) -> Result<(), CacheError> {
+        let file_path = self.get_cache_file_path(item_id, image_type);
         if let Some(parent) = file_path.parent() {
             fs::create_dir_all(parent)?;
         }
@@ -252,8 +257,13 @@ impl ImageCache {
         Ok(())
     }
 
-    pub fn get_cache_file_path(&self, item_id: &str) -> PathBuf {
-        self.cache_dir.join(item_id)
+    pub fn get_cache_file_path(&self, item_id: &str, image_type: ImageType) -> PathBuf {
+        match image_type {
+            ImageType::Primary => self.cache_dir.join(item_id),
+            _ => self
+                .cache_dir
+                .join(format!("{}/{}", image_type.as_str(), item_id)),
+        }
     }
 
     pub fn clear_cache(&self) {

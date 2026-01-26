@@ -4,9 +4,55 @@
   <template class="GellyArtistDetail" parent="GtkBox">
     <property name="orientation">vertical</property>
     <child>
+      <!-- Banner section with overlay -->
+      <object class="GtkOverlay" id="banner_overlay">
+        <property name="height-request">200</property>
+        <property name="margin-start">24</property>
+        <property name="margin-end">24</property>
+        <child>
+          <!-- Background banner image -->
+          <object class="GtkPicture" id="banner_image">
+            <property name="can-shrink">true</property>
+            <property name="content-fit">cover</property>
+            <property name="hexpand">true</property>
+            <property name="vexpand">true</property>
+
+          </object>
+        </child>
+        <child type="overlay">
+          <!-- Overlay content: Artist name with gradient background -->
+          <object class="GtkBox" id="banner_content">
+            <property name="orientation">vertical</property>
+            <property name="valign">end</property>
+            <property name="vexpand">true</property>
+            <!-- <property name="margin-start">24</property>
+            <property name="margin-end">24</property> -->
+            <style>
+              <class name="banner-gradient"/>
+            </style>
+            <child>
+              <object class="GtkLabel" id="artist_name">
+                <property name="label">Artist Name</property>
+                <property name="halign">start</property>
+                <property name="margin-start">24</property>
+                <property name="margin-bottom">24</property>
+                <property name="margin-top">48</property>
+                <style>
+                  <class name="title-1"/>
+                </style>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+    <child>
       <object class="GtkBox" id="albums_box">
         <property name="orientation">vertical</property>
         <property name="spacing">24</property>
+        <property name="margin-start">24</property>
+        <property name="margin-end">24</property>
+        <property name="margin-top">24</property>
       </object>
     </child>
   </template>

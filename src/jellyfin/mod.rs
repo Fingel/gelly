@@ -307,11 +307,14 @@ impl Jellyfin {
         item_id: &str,
         image_type: ImageType,
     ) -> Result<Vec<u8>, JellyfinError> {
-        let params = vec![
-            ("fillHeight", "200"),
-            ("fillWidth", "200"),
-            ("quality", "96"),
-        ];
+        let params = match image_type {
+            ImageType::Backdrop => vec![("fillHeight", "200"), ("quality", "96")],
+            _ => vec![
+                ("fillWidth", "200"),
+                ("fillHeight", "200"),
+                ("quality", "96"),
+            ],
+        };
         let response = self
             .get(
                 &format!("Items/{}/Images/{}", item_id, image_type.as_str()),

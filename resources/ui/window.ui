@@ -88,7 +88,6 @@
                                     <child>
                                       <object class="AdwClamp">
                                         <property name="margin-bottom">48</property>
-                                        <property name="margin-top">48</property>
                                         <property name="maximum-size">1000</property>
                                         <child>
                                           <object class="GellyArtistDetail" id="artist_detail">

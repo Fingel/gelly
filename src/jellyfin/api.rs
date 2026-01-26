@@ -201,6 +201,7 @@ pub struct Lyric {
     pub start: Option<u64>,
 }
 
+#[derive(Clone, Copy)]
 pub enum ImageType {
     Primary,
     Art,
