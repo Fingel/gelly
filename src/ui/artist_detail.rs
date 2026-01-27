@@ -1,15 +1,23 @@
 use crate::{
     async_utils::spawn_tokio,
     jellyfin::api::ImageType,
-    library_utils::albums_for_artist,
+    library_utils::{albums_for_artist, play_artist, songs_for_artist},
     models::{AlbumModel, ArtistModel},
     ui::{
-        album_detail::AlbumDetail, image_utils::bytes_to_texture, page_traits::DetailPage,
+        album_detail::AlbumDetail,
+        image_utils::bytes_to_texture,
+        music_context_menu::{ContextActions, construct_menu, create_actiongroup},
+        page_traits::DetailPage,
         widget_ext::WidgetApplicationExt,
     },
 };
 use glib::Object;
-use gtk::{gio, glib, prelude::*, subclass::prelude::*};
+use gtk::{
+    gio::{self, SimpleActionGroup},
+    glib,
+    prelude::*,
+    subclass::prelude::*,
+};
 use log::warn;
 
 glib::wrapper! {
@@ -108,6 +116,119 @@ impl ArtistDetail {
             }
         ));
     }
+
+    pub fn play_artist(&self) {
+        if let Some(model) = self.imp().model.borrow().as_ref() {
+            play_artist(&model.id(), &self.get_application());
+        }
+    }
+
+    fn setup_menu(&self) {
+        let options = ContextActions {
+            can_remove_from_playlist: false,
+            in_queue: false,
+            action_prefix: "artist".to_string(),
+        };
+        let popover_menu = construct_menu(
+            &options,
+            glib::clone!(
+                #[weak(rename_to = artist)]
+                self,
+                #[upgrade_or_default]
+                move || artist.get_application().playlists().borrow().clone()
+            ),
+        );
+        self.imp().action_menu.set_popover(Some(&popover_menu));
+        let action_group = self.create_action_group();
+        self.insert_action_group(&options.action_prefix, Some(&action_group));
+    }
+
+    fn create_action_group(&self) -> SimpleActionGroup {
+        let on_add_to_playlist = glib::clone!(
+            #[weak(rename_to = artist)]
+            self,
+            move |playlist_id| {
+                artist.on_add_to_playlist(playlist_id);
+            }
+        );
+
+        let on_queue_next = glib::clone!(
+            #[weak(rename_to = artist)]
+            self,
+            move || {
+                artist.enqueue_artist(false);
+            }
+        );
+
+        let on_queue_last = glib::clone!(
+            #[weak(rename_to = artist)]
+            self,
+            move || {
+                artist.enqueue_artist(true);
+            }
+        );
+
+        create_actiongroup(
+            Some(on_add_to_playlist),
+            None::<fn()>,
+            Some(on_queue_next),
+            Some(on_queue_last),
+        )
+    }
+
+    fn on_add_to_playlist(&self, playlist_id: String) {
+        if let Some(model) = self.imp().model.borrow().as_ref() {
+            let id = model.id();
+            let app = self.get_application();
+            let jellyfin = app.jellyfin();
+            let library = app.library().clone();
+            let playlist_id = playlist_id.to_string();
+            let song_ids: Vec<String> = songs_for_artist(&id, &library.borrow())
+                .iter()
+                .map(|song| song.id().to_string())
+                .collect();
+            spawn_tokio(
+                async move { jellyfin.add_playlist_items(&playlist_id, &song_ids).await },
+                glib::clone!(
+                    #[weak(rename_to = artist)]
+                    self,
+                    move |result| {
+                        match result {
+                            Ok(()) => {
+                                artist.toast("Added artist to playlist", None);
+                                app.refresh_playlists(true);
+                            }
+                            Err(e) => {
+                                artist.toast("Failed to add artist to playlist", None);
+                                warn!("Failed to add artist to playlist: {}", e);
+                            }
+                        }
+                    }
+                ),
+            );
+        }
+    }
+
+    fn enqueue_artist(&self, to_end: bool) {
+        if let Some(model) = self.imp().model.borrow().as_ref() {
+            let app = self.get_application();
+            let library = app.library().clone();
+            let id = model.id();
+            let songs = songs_for_artist(&id, &library.borrow());
+            if let Some(audio_model) = self.get_application().audio_model() {
+                let song_cnt = songs.len();
+                if to_end {
+                    audio_model.append_to_queue(songs);
+                } else {
+                    audio_model.prepend_to_queue(songs);
+                }
+                self.toast(&format!("{} songs added to queue", song_cnt), None);
+            } else {
+                self.toast("Audio model not initialized, please restart", None);
+                warn!("No audio model found");
+            }
+        }
+    }
 }
 
 impl Default for ArtistDetail {
@@ -124,6 +245,7 @@ mod imp {
     use gtk::{
         CompositeTemplate,
         glib::{self},
+        prelude::*,
     };
 
     use crate::models::{AlbumModel, ArtistModel};
@@ -137,6 +259,10 @@ mod imp {
         pub banner_image: TemplateChild<gtk::Picture>,
         #[template_child]
         pub albums_box: TemplateChild<gtk::Box>,
+        #[template_child]
+        pub play_all: TemplateChild<gtk::Button>,
+        #[template_child]
+        pub action_menu: TemplateChild<gtk::MenuButton>,
 
         pub model: RefCell<Option<ArtistModel>>,
         pub albums: RefCell<Vec<AlbumModel>>,
@@ -158,6 +284,23 @@ mod imp {
     }
 
     impl BoxImpl for ArtistDetail {}
-    impl ObjectImpl for ArtistDetail {}
+    impl ObjectImpl for ArtistDetail {
+        fn constructed(&self) {
+            self.parent_constructed();
+            self.setup_signals();
+            self.obj().setup_menu();
+        }
+    }
     impl WidgetImpl for ArtistDetail {}
+    impl ArtistDetail {
+        fn setup_signals(&self) {
+            self.play_all.connect_clicked(glib::clone!(
+                #[weak(rename_to=imp)]
+                self,
+                move |_| {
+                    imp.obj().play_artist();
+                }
+            ));
+        }
+    }
 }

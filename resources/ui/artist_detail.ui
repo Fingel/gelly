@@ -30,15 +30,44 @@
               <class name="banner-gradient"/>
             </style>
             <child>
-              <object class="GtkLabel" id="artist_name">
-                <property name="label">Artist Name</property>
-                <property name="halign">start</property>
+              <object class="GtkBox" id="artist_actions">
+                <property name="orientation">horizontal</property>
+                <property name="vexpand">false</property>
+                <property name="valign">end</property>
+                <property name="spacing">6</property>
+                <property name="margin-top">48</property>
                 <property name="margin-start">24</property>
                 <property name="margin-bottom">24</property>
-                <property name="margin-top">48</property>
-                <style>
-                  <class name="title-1"/>
-                </style>
+                <child>
+                  <object class="GtkLabel" id="artist_name">
+                    <property name="label">Artist Name</property>
+                    <property name="halign">start</property>
+                    <style>
+                      <class name="title-1"/>
+                    </style>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkButton" id="play_all">
+                    <property name="icon-name">media-playback-start-symbolic</property>
+                    <property name="tooltip-text">Play</property>
+                    <property name="margin-start">24</property>
+                    <style>
+                      <class name="circular" />
+                      <class name="suggested-action" />
+                    </style>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkMenuButton" id="action_menu">
+                    <property name="icon-name">view-more-symbolic</property>
+                    <property name="tooltip-text">More Actions</property>
+                    <style>
+                      <class name="circular" />
+                      <class name="opaque" />
+                    </style>
+                  </object>
+                </child>
               </object>
             </child>
           </object>

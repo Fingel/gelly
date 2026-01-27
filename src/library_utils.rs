@@ -122,13 +122,17 @@ pub fn play_album(id: &str, app: &Application) {
     }
 }
 
+pub fn songs_for_artist(id: &str, library: &[MusicDto]) -> Vec<SongModel> {
+    let albums = albums_for_artist(id, library);
+    albums
+        .iter()
+        .flat_map(|album| songs_for_album(&album.id(), library))
+        .collect()
+}
+
 pub fn play_artist(id: &str, app: &Application) {
     let library = app.library().clone();
-    let albums = albums_for_artist(id, &library.borrow());
-    let songs: Vec<SongModel> = albums
-        .iter()
-        .flat_map(|album| songs_for_album(&album.id(), &library.borrow()))
-        .collect();
+    let songs = songs_for_artist(id, &library.borrow());
     if let Some(audio_model) = app.audio_model() {
         audio_model.set_queue(songs, 0);
     } else {
