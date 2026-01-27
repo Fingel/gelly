@@ -26,7 +26,7 @@
               <object class="GtkLabel" id="name_label">
                 <property name="focusable">False</property>
                 <property name="halign">start</property>
-                <property name="ellipsize">middle</property>
+                <property name="ellipsize">end</property>
                 <property name="margin-bottom">18</property>
                 <style>
                   <class name="title-1" />
@@ -37,7 +37,7 @@
               <object class="GtkLabel" id="artist_label">
                 <property name="focusable">False</property>
                 <property name="halign">start</property>
-                <property name="ellipsize">middle</property>
+                <property name="ellipsize">end</property>
                 <property name="margin-bottom">12</property>
                 <style>
                   <class name="title-2" />

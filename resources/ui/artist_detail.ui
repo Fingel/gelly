@@ -24,8 +24,6 @@
             <property name="orientation">vertical</property>
             <property name="valign">end</property>
             <property name="vexpand">true</property>
-            <!-- <property name="margin-start">24</property>
-            <property name="margin-end">24</property> -->
             <style>
               <class name="banner-gradient"/>
             </style>
@@ -42,6 +40,7 @@
                   <object class="GtkLabel" id="artist_name">
                     <property name="label">Artist Name</property>
                     <property name="halign">start</property>
+                    <property name="ellipsize">end</property>
                     <style>
                       <class name="title-1"/>
                     </style>

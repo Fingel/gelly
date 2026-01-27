@@ -13,6 +13,7 @@ use crate::{
 };
 use glib::Object;
 use gtk::{
+    gdk::Texture,
     gio::{self, SimpleActionGroup},
     glib,
     prelude::*,
@@ -63,12 +64,12 @@ impl ArtistDetail {
     }
 
     pub fn load_banner_image(&self) {
+        // clear existing image
+        self.imp().banner_image.set_paintable(None::<&Texture>);
         let Some(image_cache) = self.get_application().image_cache() else {
-            // TODO: hide banner here
             return;
         };
-        let Some(model) = self.imp().model.borrow().clone() else {
-            // TODO: hide banner here
+        let Some(model) = self.get_model() else {
             return;
         };
         let jellyfin = self.get_application().jellyfin();
@@ -85,9 +86,11 @@ impl ArtistDetail {
                 move |result| {
                     match result {
                         Ok(image_data) => {
+                            artist_detail.imp().banner_overlay.set_height_request(300);
                             artist_detail.set_image(&image_data);
                         }
                         Err(err) => {
+                            artist_detail.imp().banner_overlay.set_height_request(75);
                             warn!("Failed to load artist banner image: {}", err);
                         }
                     }
@@ -177,7 +180,7 @@ impl ArtistDetail {
     }
 
     fn on_add_to_playlist(&self, playlist_id: String) {
-        if let Some(model) = self.imp().model.borrow().as_ref() {
+        if let Some(model) = self.get_model() {
             let id = model.id();
             let app = self.get_application();
             let jellyfin = app.jellyfin();
@@ -210,7 +213,7 @@ impl ArtistDetail {
     }
 
     fn enqueue_artist(&self, to_end: bool) {
-        if let Some(model) = self.imp().model.borrow().as_ref() {
+        if let Some(model) = self.get_model() {
             let app = self.get_application();
             let library = app.library().clone();
             let id = model.id();
@@ -253,6 +256,8 @@ mod imp {
     #[derive(CompositeTemplate, Default)]
     #[template(resource = "/io/m51/Gelly/ui/artist_detail.ui")]
     pub struct ArtistDetail {
+        #[template_child]
+        pub banner_overlay: TemplateChild<gtk::Overlay>,
         #[template_child]
         pub artist_name: TemplateChild<gtk::Label>,
         #[template_child]
