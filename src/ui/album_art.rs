@@ -4,7 +4,7 @@ use crate::{
 };
 use glib::Object;
 use gtk::{gio, glib, prelude::WidgetExt, subclass::prelude::*};
-use log::warn;
+use log::{debug, warn};
 
 glib::wrapper! {
     pub struct AlbumArt(ObjectSubclass<imp::AlbumArt>)
@@ -23,6 +23,7 @@ impl AlbumArt {
         let current_item_id = self.imp().item_id.borrow().clone();
         if current_item_id != item_id {
             self.imp().is_loaded.set(false);
+            self.imp().is_loading.set(false);
             self.imp().item_id.replace(item_id.to_string());
             if self.get_gtk_window().is_some() {
                 self.load_image();
@@ -87,6 +88,9 @@ impl AlbumArt {
         let jellyfin = self.get_application().jellyfin();
 
         self.set_loading(true);
+
+        // Track item id in case widget is recycled before loading completes
+        let expected_item_id = item_id.clone();
         spawn_tokio(
             async move {
                 image_cache
@@ -97,6 +101,12 @@ impl AlbumArt {
                 #[weak(rename_to = album_art)]
                 self,
                 move |result| {
+                    if *album_art.imp().item_id.borrow() != expected_item_id {
+                        debug!("album id doesn't match id in task, aborting album art loading");
+                        album_art.set_loading(false);
+                        return;
+                    }
+
                     album_art.set_loading(false);
                     match result {
                         Ok(image_data) => {
