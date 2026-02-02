@@ -308,6 +308,7 @@ mod imp {
         type ParentType = adw::ApplicationWindow;
 
         fn class_init(klass: &mut Self::Class) {
+            crate::ui::auto_scroll_window::AutoScrollWindow::static_type();
             klass.bind_template();
         }
 
