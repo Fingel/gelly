@@ -53,8 +53,8 @@
                                     <property name="vexpand">true</property>
                                     <child>
                                       <object class="AdwClamp">
-                                        <property name="margin-bottom">48</property>
-                                        <property name="margin-top">48</property>
+                                        <property name="margin-bottom">24</property>
+                                        <property name="margin-top">24</property>
                                         <property name="maximum-size">1000</property>
                                         <child>
                                           <object class="GellyAlbumDetail" id="album_detail">
@@ -87,7 +87,7 @@
                                     <property name="vexpand">true</property>
                                     <child>
                                       <object class="AdwClamp">
-                                        <property name="margin-bottom">48</property>
+                                        <property name="margin-bottom">24</property>
                                         <property name="maximum-size">1000</property>
                                         <child>
                                           <object class="GellyArtistDetail" id="artist_detail">
@@ -114,7 +114,7 @@
                                 <child>
                                   <object class="AdwClamp">
                                     <property name="margin-bottom">24</property>
-                                    <property name="margin-top">48</property>
+                                    <property name="margin-top">24</property>
                                     <property name="maximum-size">1000</property>
                                     <child>
                                       <object class="GellyPlaylistDetail" id="playlist_detail">
