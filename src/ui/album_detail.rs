@@ -2,7 +2,7 @@ use crate::{
     async_utils::spawn_tokio,
     jellyfin::utils::format_duration,
     library_utils::songs_for_album,
-    models::AlbumModel,
+    models::{AlbumModel, SongModel},
     ui::{
         music_context_menu::{ContextActions, construct_menu, create_actiongroup},
         page_traits::DetailPage,
@@ -54,27 +54,70 @@ impl AlbumDetail {
         Object::builder().build()
     }
 
+    fn get_store(&self) -> &gio::ListStore {
+        self.imp()
+            .store
+            .get()
+            .expect("AlbumDetail store should be initialized")
+    }
+
+    fn setup_model(&self) {
+        let imp = self.imp();
+        let store = gio::ListStore::new::<SongModel>();
+        imp.store
+            .set(store.clone())
+            .expect("Store should only be set once");
+        let selection_model = gtk::NoSelection::new(Some(store));
+        let factory = gtk::SignalListItemFactory::new();
+
+        factory.connect_setup(move |_, list_item| {
+            let song_widget = Song::new();
+            let item = list_item
+                .downcast_ref::<gtk::ListItem>()
+                .expect("Item should be a ListItem");
+            item.set_child(Some(&song_widget));
+        });
+
+        factory.connect_bind(glib::clone!(
+            #[weak(rename_to = album_detail)]
+            self,
+            move |_, list_item| {
+                let list_item = list_item
+                    .downcast_ref::<gtk::ListItem>()
+                    .expect("Needs to be a ListItem");
+                let song_model = list_item
+                    .item()
+                    .and_downcast::<SongModel>()
+                    .expect("Item should be an SongModel");
+                let song_widget = list_item
+                    .child()
+                    .and_downcast::<Song>()
+                    .expect("Child has to be Song");
+
+                let position = list_item.position() as i32;
+                song_widget.set_position(position);
+                song_widget.set_song_data(&song_model);
+
+                if let Some(audio_model) = album_detail.get_application().audio_model() {
+                    let current_track = audio_model.current_song_id();
+                    song_widget.set_playing(song_model.id() == current_track);
+                }
+
+                connect_song_navigation(&song_widget, &album_detail.get_root_window());
+            }
+        ));
+        imp.track_list.set_model(Some(&selection_model));
+        imp.track_list.set_factory(Some(&factory));
+        imp.track_list.set_single_click_activate(true);
+    }
+
     pub fn pull_tracks(&self) {
         let library = self.get_application().library().clone();
         let songs = songs_for_album(&self.id(), &library.borrow());
-        let track_list = &self.imp().track_list;
-        track_list.remove_all();
+        let store = self.get_store();
+        store.remove_all();
         for song in &songs {
-            let song_widget = Song::new();
-            song_widget.set_song_data(song);
-
-            // Set up navigation signals
-            connect_song_navigation(&song_widget, &self.get_root_window());
-            // Check if currently playing song is in the album
-            if let Some(audio_model) = self.get_application().audio_model()
-                && audio_model
-                    .current_song()
-                    .is_some_and(|current_song| current_song.id() == song.id())
-            {
-                song_widget.set_playing(true);
-            }
-
-            track_list.append(&song_widget);
+            store.append(song);
         }
         self.imp().songs.replace(songs);
         self.update_track_metadata();
@@ -219,12 +262,12 @@ impl Default for AlbumDetail {
 }
 
 mod imp {
-    use std::cell::{Cell, RefCell};
+    use std::cell::{Cell, OnceCell, RefCell};
 
     use adw::subclass::prelude::*;
     use glib::subclass::InitializingObject;
     use gtk::{
-        CompositeTemplate,
+        CompositeTemplate, gio,
         glib::{self},
         prelude::*,
     };
@@ -246,7 +289,7 @@ mod imp {
         #[template_child]
         pub year_label: TemplateChild<gtk::Label>,
         #[template_child]
-        pub track_list: TemplateChild<gtk::ListBox>,
+        pub track_list: TemplateChild<gtk::ListView>,
         #[template_child]
         pub track_count: TemplateChild<gtk::Label>,
         #[template_child]
@@ -259,6 +302,7 @@ mod imp {
         pub model: RefCell<Option<AlbumModel>>,
         pub songs: RefCell<Vec<SongModel>>,
         pub song_change_signal_connected: Cell<bool>,
+        pub store: OnceCell<gio::ListStore>,
     }
 
     #[glib::object_subclass]
@@ -279,6 +323,7 @@ mod imp {
     impl ObjectImpl for AlbumDetail {
         fn constructed(&self) {
             self.parent_constructed();
+            self.obj().setup_model();
             self.obj().setup_menu();
             self.setup_signals();
         }
@@ -287,12 +332,11 @@ mod imp {
 
     impl AlbumDetail {
         fn setup_signals(&self) {
-            self.track_list.connect_row_activated(glib::clone!(
+            self.track_list.connect_activate(glib::clone!(
                 #[weak(rename_to=imp)]
                 self,
-                move |_track_list, row| {
-                    let index = row.index();
-                    imp.obj().song_selected(index as usize);
+                move |_track_list, position| {
+                    imp.obj().song_selected(position as usize);
                 }
             ));
 
