@@ -122,8 +122,7 @@
       </object>
     </child>
     <child>
-      <object class="GtkListBox" id="track_list">
-        <property name="selection-mode">none</property>
+      <object class="GtkListView" id="track_list">
         <property name="margin-top">24</property>
         <property name="width-request">300</property>
         <style>

@@ -53,6 +53,136 @@ impl PlaylistDetail {
         Object::builder().build()
     }
 
+    fn get_store(&self) -> &gio::ListStore {
+        self.imp()
+            .store
+            .get()
+            .expect("PlaylistDetail store should be initialized")
+    }
+
+    fn repopulate_store(&self) {
+        let store = self.get_store();
+        store.remove_all();
+        let songs = self.imp().songs.borrow();
+        for song in songs.iter() {
+            store.append(song);
+        }
+    }
+
+    fn setup_model(&self) {
+        let imp = self.imp();
+        let store = gio::ListStore::new::<SongModel>();
+        imp.store
+            .set(store.clone())
+            .expect("Store should only be set once");
+        let selection_model = gtk::NoSelection::new(Some(store));
+        let factory = gtk::SignalListItemFactory::new();
+
+        factory.connect_setup(glib::clone!(
+            #[weak(rename_to = playlist_detail)]
+            self,
+            move |_, list_item| {
+                let is_smart_playlist = playlist_detail
+                    .get_model()
+                    .map(|p| p.is_smart())
+                    .unwrap_or(true);
+                let song_widget = if is_smart_playlist {
+                    Song::new()
+                } else {
+                    Song::new_with(SongOptions {
+                        dnd: true,
+                        in_playlist: true,
+                        in_queue: false,
+                    })
+                };
+
+                let item = list_item
+                    .downcast_ref::<gtk::ListItem>()
+                    .expect("Needs to be a ListItem");
+                item.set_child(Some(&song_widget))
+            }
+        ));
+
+        factory.connect_bind(glib::clone!(
+            #[weak (rename_to = playlist_detail)]
+            self,
+            move |_, list_item| {
+                let list_item = list_item
+                    .downcast_ref::<gtk::ListItem>()
+                    .expect("Needs to be a ListItem");
+                let song_model = list_item
+                    .item()
+                    .and_downcast::<SongModel>()
+                    .expect("Item should be an SongModel");
+                let song_widget = list_item
+                    .child()
+                    .and_downcast::<Song>()
+                    .expect("Child has to be Song");
+
+                let position = list_item.position();
+                song_widget.set_position(position as i32);
+                song_widget.set_song_data(&song_model);
+                song_widget.set_track_number(position + 1);
+
+                if let Some(audio_model) = playlist_detail.get_application().audio_model()
+                    && let Some(current_song) = audio_model.current_song()
+                {
+                    song_widget.set_playing(current_song.id() == song_model.id());
+                }
+
+                connect_song_navigation(&song_widget, &playlist_detail.get_root_window());
+
+                let is_smart_playlist = playlist_detail
+                    .get_model()
+                    .map(|p| p.is_smart())
+                    .unwrap_or(true);
+
+                if !is_smart_playlist {
+                    song_widget.connect_closure(
+                        "widget-moved",
+                        false,
+                        glib::closure_local!(
+                            #[weak(rename_to= playlist_detail_for_move)]
+                            playlist_detail,
+                            move |song_widget: Song, source_index: i32| {
+                                let target_index = song_widget.get_position() as usize;
+                                let source_index = source_index as usize;
+                                playlist_detail_for_move
+                                    .handle_song_moved(source_index, target_index)
+                            }
+                        ),
+                    );
+                    song_widget.connect_closure(
+                        "remove-from-playlist",
+                        false,
+                        glib::closure_local!(
+                            #[weak(rename_to= playlist_detail_for_remove)]
+                            playlist_detail,
+                            move |_: Song, song_id: String| {
+                                playlist_detail_for_remove.handle_remove_from_playlist(song_id)
+                            }
+                        ),
+                    );
+                }
+                // Connect single-click activation TODO Remove when no longer ListBox
+                song_widget.connect_closure(
+                    "song-activated",
+                    false,
+                    glib::closure_local!(
+                        #[weak(rename_to = playlist_detail_for_activate)]
+                        playlist_detail,
+                        move |_: Song| {
+                            playlist_detail_for_activate.song_selected(position as usize);
+                        }
+                    ),
+                );
+            }
+        ));
+
+        imp.track_list.set_model(Some(&selection_model));
+        imp.track_list.set_factory(Some(&factory));
+    }
+
     fn use_static_icon(&self, name: &str) {
         let imp = self.imp();
         imp.album_image.set_visible(false);
@@ -72,7 +202,6 @@ impl PlaylistDetail {
             warn!("No playlist model set");
             return;
         };
-        self.imp().track_list.remove_all();
         let app = self.get_application();
         songs_for_playlist(
             &playlist_model,
@@ -99,60 +228,12 @@ impl PlaylistDetail {
     }
 
     fn populate_tracks_with_songs(&self, songs: Vec<SongModel>) {
-        // Smart playlists cannot be reordered
-        let is_smart_playlist = self.get_model().map(|p| p.is_smart()).unwrap_or(true);
-
-        for (i, song) in songs.iter().enumerate() {
-            let song_widget = if is_smart_playlist {
-                Song::new()
-            } else {
-                let song_widget = Song::new_with(SongOptions {
-                    dnd: true,
-                    in_playlist: true,
-                    in_queue: false,
-                });
-                song_widget.connect_closure(
-                    "widget-moved",
-                    false,
-                    glib::closure_local!(
-                        #[weak(rename_to= playlist_detail)]
-                        self,
-                        move |song_widget: Song, source_index: i32| {
-                            let target_index = song_widget.index() as usize;
-                            let source_index = source_index as usize;
-                            playlist_detail.handle_song_moved(source_index, target_index)
-                        }
-                    ),
-                );
-                song_widget.connect_closure(
-                    "remove-from-playlist",
-                    false,
-                    glib::closure_local!(
-                        #[weak(rename_to= playlist_detail)]
-                        self,
-                        move |_: Song, song_id: String| {
-                            playlist_detail.handle_remove_from_playlist(song_id)
-                        }
-                    ),
-                );
-                song_widget
-            };
-            // Connect navigation signals
-            connect_song_navigation(&song_widget, &self.get_root_window());
-            // we don't want the track number here, we want the playlist index
-            song.set_track_number(i as u32 + 1);
-            song_widget.set_song_data(song);
-            // Check if currently playing song is in the playlist
-            if let Some(audio_model) = self.get_application().audio_model()
-                && audio_model
-                    .current_song()
-                    .is_some_and(|current_song| current_song.id() == song.id())
-            {
-                song_widget.set_playing(true);
-            }
-
-            self.imp().track_list.append(&song_widget);
+        let store = self.get_store();
+        store.remove_all();
+        for song in &songs {
+            store.append(song);
         }
+
         self.imp().songs.replace(songs);
         self.update_track_metadata();
     }
@@ -276,14 +357,13 @@ impl PlaylistDetail {
         songs.insert(target_index, song_being_moved);
         self.imp().songs.replace(songs);
 
-        // We do this instead of re-drawing all widgets to avoid the jump in scroll.
-        let track_list = &self.imp().track_list;
-        if let Some(source_row) = track_list.row_at_index(source_index as i32) {
-            // Remove and reinsert the widget
-            track_list.remove(&source_row);
-            track_list.insert(&source_row, target_index as i32);
-            self.update_all_track_numbers();
+        let store = self.get_store();
+        if let Some(item) = store.item(source_index as u32) {
+            store.remove(source_index as u32);
+            store.insert(target_index as u32, &item);
         }
+
+        self.repopulate_store();
 
         // Persist the change
         let playlist_id = playlist_model.id();
@@ -323,19 +403,19 @@ impl PlaylistDetail {
             return;
         };
         if playlist_model.is_smart() {
-            warn!("Attempted to re-order a smart playlist");
+            warn!("Attempted to remove from a smart playlist");
             return;
         }
         let mut songs = self.imp().songs.borrow_mut().clone();
         if let Some(index) = songs.iter().position(|s| s.id() == song_id) {
             songs.remove(index);
             self.imp().songs.replace(songs);
-            let track_list = &self.imp().track_list;
-            if let Some(source_row) = track_list.row_at_index(index as i32) {
-                track_list.remove(&source_row);
-            }
-            self.update_all_track_numbers();
+
+            let store = self.get_store();
+            store.remove(index as u32);
+            self.repopulate_store();
             self.update_track_metadata();
+
             // Persist the change
             let playlist_id = playlist_model.id();
             let app = self.get_application();
@@ -362,17 +442,6 @@ impl PlaylistDetail {
                     }
                 ),
             );
-        }
-    }
-
-    fn update_all_track_numbers(&self) {
-        let track_list = &self.imp().track_list;
-        for i in 0..track_list.observe_children().n_items() {
-            if let Some(row) = track_list.row_at_index(i as i32)
-                && let Some(song_widget) = row.downcast_ref::<Song>()
-            {
-                song_widget.set_track_number(i + 1);
-            }
         }
     }
 
@@ -479,12 +548,12 @@ impl Default for PlaylistDetail {
 }
 
 mod imp {
-    use std::cell::{Cell, RefCell};
+    use std::cell::{Cell, OnceCell, RefCell};
 
     use adw::subclass::prelude::*;
     use glib::subclass::InitializingObject;
     use gtk::{
-        CompositeTemplate,
+        CompositeTemplate, gio,
         glib::{self},
         prelude::*,
     };
@@ -504,7 +573,7 @@ mod imp {
         #[template_child]
         pub name_label: TemplateChild<gtk::Label>,
         #[template_child]
-        pub track_list: TemplateChild<gtk::ListBox>,
+        pub track_list: TemplateChild<gtk::ListView>,
         #[template_child]
         pub track_count: TemplateChild<gtk::Label>,
         #[template_child]
@@ -519,6 +588,7 @@ mod imp {
         pub model: RefCell<Option<PlaylistModel>>,
         pub songs: RefCell<Vec<SongModel>>,
         pub song_change_signal_connected: Cell<bool>,
+        pub store: OnceCell<gio::ListStore>,
     }
 
     #[glib::object_subclass]
@@ -539,6 +609,7 @@ mod imp {
     impl ObjectImpl for PlaylistDetail {
         fn constructed(&self) {
             self.parent_constructed();
+            self.obj().setup_model();
             self.obj().setup_menu();
             self.setup_signals();
         }
@@ -547,12 +618,11 @@ mod imp {
 
     impl PlaylistDetail {
         fn setup_signals(&self) {
-            self.track_list.connect_row_activated(glib::clone!(
+            self.track_list.connect_activate(glib::clone!(
                 #[weak(rename_to=imp)]
                 self,
-                move |_track_list, row| {
-                    let index = row.index();
-                    imp.obj().song_selected(index as usize);
+                move |_, position| {
+                    imp.obj().song_selected(position as usize);
                 }
             ));
 
