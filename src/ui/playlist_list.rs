@@ -143,6 +143,7 @@ impl PlaylistList {
 
     pub fn pull_playlists(&self) {
         let playlists = self.get_application().playlists().borrow().clone();
+        let library_cnt = self.get_application().library().borrow().len();
         self.set_empty(false);
         let store = self
             .imp()
@@ -153,7 +154,7 @@ impl PlaylistList {
 
         if config::get_playlist_shuffle_enabled() {
             let shuffle_type = PlaylistType::ShuffleLibrary {
-                count: DEFAULT_SMART_COUNT,
+                count: library_cnt as u64,
             };
             let shuffle_playlist = PlaylistModel::new(shuffle_type);
             store.append(&shuffle_playlist);

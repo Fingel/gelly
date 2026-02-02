@@ -66,7 +66,7 @@ impl PlaylistType {
     pub fn display_name(&self) -> String {
         match self {
             PlaylistType::Regular { name, .. } => name.clone(),
-            PlaylistType::ShuffleLibrary { count } => format!("{} Shuffled Songs", count),
+            PlaylistType::ShuffleLibrary { .. } => "Shuffled Songs".to_string(),
             PlaylistType::MostPlayed { count } => format!("Top {} Played Songs", count),
         }
     }
