@@ -112,18 +112,14 @@
                                   </object>
                                 </child>
                                 <child>
-                                  <object class="GellyAutoScrollWindow">
-                                    <property name="content">
-                                      <object class="AdwClamp">
-                                        <property name="margin-bottom">48</property>
-                                        <property name="margin-top">48</property>
-                                        <property name="maximum-size">1000</property>
-                                        <child>
-                                          <object class="GellyPlaylistDetail" id="playlist_detail">
-                                          </object>
-                                        </child>
+                                  <object class="AdwClamp">
+                                    <property name="margin-bottom">24</property>
+                                    <property name="margin-top">48</property>
+                                    <property name="maximum-size">1000</property>
+                                    <child>
+                                      <object class="GellyPlaylistDetail" id="playlist_detail">
                                       </object>
-                                    </property>
+                                    </child>
                                   </object>
                                 </child>
                               </object>

@@ -122,12 +122,17 @@
       </object>
     </child>
     <child>
-      <object class="GtkListView" id="track_list">
+      <object class="GellyAutoScrollWindow">
+        <property name="vexpand">true</property>
         <property name="margin-top">24</property>
-        <property name="width-request">300</property>
-        <style>
-          <class name="boxed-list" />
-        </style>
+        <property name="content">
+          <object class="GtkListView" id="track_list">
+            <property name="width-request">300</property>
+            <style>
+              <class name="boxed-list" />
+            </style>
+          </object>
+        </property>
       </object>
     </child>
   </template>
