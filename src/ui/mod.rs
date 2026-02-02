@@ -7,7 +7,6 @@ pub mod artist;
 pub mod artist_detail;
 pub mod artist_list;
 pub mod auto_scroll_window;
-pub mod drag_scrollable;
 pub mod image_utils;
 pub mod list_helpers;
 pub mod lyrics;

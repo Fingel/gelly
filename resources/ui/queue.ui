@@ -14,11 +14,8 @@
           </object>
         </child>
         <child>
-          <object class="GtkScrolledWindow">
-            <property name="propagate-natural-height">true</property>
-            <property name="has-frame">false</property>
-            <property name="vexpand">false</property>
-            <child>
+          <object class="GellyAutoScrollWindow">
+            <property name="content">
               <object class="AdwClamp">
                 <property name="margin-bottom">48</property>
                 <property name="margin-top">24</property>
@@ -58,7 +55,7 @@
                   </object>
                 </child>
               </object>
-            </child>
+            </property>
           </object>
         </child>
       </object>

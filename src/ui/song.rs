@@ -15,7 +15,6 @@ use crate::{
     jellyfin::utils::format_duration,
     models::SongModel,
     ui::{
-        drag_scrollable,
         music_context_menu::{ContextActions, construct_menu, create_actiongroup},
         widget_ext::WidgetApplicationExt,
     },
@@ -101,26 +100,6 @@ impl Song {
         //Drag Target
         let drop_target = DropTarget::new(Song::static_type(), DragAction::MOVE);
         drop_target.set_preload(true); // deserialize data immediately over drop zone, fine for song lists
-        // For auto scrolling
-        // drop_target.connect_enter(glib::clone!(
-        //     #[weak(rename_to = target_song)]
-        //     self,
-        //     #[upgrade_or]
-        //     DragAction::empty(),
-        //     move |_, _, _| {
-        //         target_song.grab_focus();
-
-        //         // glib::idle_add_local_once(glib::clone!(
-        //         //     #[weak]
-        //         //     target_song,
-        //         //     move || {
-        //         //         // Here be dragons, venture into this module at your own peril
-        //         //         drag_scrollable::handle_drag_scroll(&target_song);
-        //         //     }
-        //         // ));
-        //         DragAction::MOVE
-        //     }
-        // ));
 
         drop_target.connect_drop(glib::clone!(
             #[weak(rename_to = target_song)]
@@ -128,8 +107,6 @@ impl Song {
             #[upgrade_or]
             false,
             move |_, value, _, _| {
-                drag_scrollable::clear_drag_state(&target_song);
-
                 if let Ok(source_song) = value.get::<Song>() {
                     let source_index = source_song.index() as usize;
                     let target_index = target_song.index() as usize;

@@ -1,7 +1,6 @@
 use crate::{
     async_utils::spawn_tokio,
     ui::{
-        drag_scrollable::DragScrollable,
         page_traits::TopPage,
         playlist_dialogs,
         song::{Song, SongOptions},
@@ -188,8 +187,6 @@ impl Default for Queue {
 }
 
 mod imp {
-    use std::cell::Cell;
-
     use adw::subclass::prelude::*;
     use glib::subclass::InitializingObject;
     use gtk::{
@@ -211,8 +208,6 @@ mod imp {
         pub clear_queue: TemplateChild<gtk::Button>,
         #[template_child]
         pub save_as_playlist: TemplateChild<gtk::Button>,
-
-        pub last_drag_focused: Cell<Option<i32>>,
     }
 
     #[glib::object_subclass]
@@ -222,6 +217,7 @@ mod imp {
         type ParentType = gtk::Box;
 
         fn class_init(klass: &mut Self::Class) {
+            crate::ui::auto_scroll_window::AutoScrollWindow::static_type();
             klass.bind_template();
         }
 
@@ -273,15 +269,5 @@ mod imp {
                 }
             ));
         }
-    }
-}
-
-impl DragScrollable for Queue {
-    fn get_last_drag_focused(&self) -> Option<i32> {
-        self.imp().last_drag_focused.get()
-    }
-
-    fn set_last_drag_focused(&self, index: Option<i32>) {
-        self.imp().last_drag_focused.set(index);
     }
 }
