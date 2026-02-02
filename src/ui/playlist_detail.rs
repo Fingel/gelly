@@ -164,21 +164,10 @@ impl PlaylistDetail {
                         ),
                     );
                 }
-                // Connect single-click activation TODO Remove when no longer ListBox
-                song_widget.connect_closure(
-                    "song-activated",
-                    false,
-                    glib::closure_local!(
-                        #[weak(rename_to = playlist_detail_for_activate)]
-                        playlist_detail,
-                        move |_: Song| {
-                            playlist_detail_for_activate.song_selected(position as usize);
-                        }
-                    ),
-                );
             }
         ));
 
+        imp.track_list.set_single_click_activate(true);
         imp.track_list.set_model(Some(&selection_model));
         imp.track_list.set_factory(Some(&factory));
     }

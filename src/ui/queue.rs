@@ -208,37 +208,21 @@ impl Queue {
 
                 connect_song_navigation(&song_widget, &queue.get_root_window());
 
-                // Connect single-click activation
-                song_widget.connect_closure(
-                    "song-activated",
-                    false,
-                    glib::closure_local!(
-                        #[weak(rename_to = queue_for_activate)]
-                        queue,
-                        move |_: Song| {
-                            queue_for_activate.song_selected(position as usize);
-                        }
-                    ),
-                );
-
                 song_widget.connect_closure(
                     "widget-moved",
                     false,
-                    glib::closure_local!(
-                        #[weak(rename_to = queue_for_move)]
-                        queue,
-                        move |song_widget: Song, source_index: i32| {
-                            let target_index = song_widget.get_position() as usize;
-                            let source_index = source_index as usize;
-                            queue_for_move.handle_song_moved(source_index, target_index)
-                        }
-                    ),
+                    glib::closure_local!(move |song_widget: Song, source_index: i32| {
+                        let target_index = song_widget.get_position() as usize;
+                        let source_index = source_index as usize;
+                        queue.handle_song_moved(source_index, target_index)
+                    }),
                 );
             }
         ));
 
         imp.track_list.set_model(Some(&selection_model));
         imp.track_list.set_factory(Some(&factory));
+        imp.track_list.set_single_click_activate(true);
     }
 }
 
@@ -310,6 +294,14 @@ mod imp {
 
     impl Queue {
         fn setup_signals(&self) {
+            self.track_list.connect_activate(glib::clone!(
+                #[weak(rename_to=imp)]
+                self,
+                move |_, position| {
+                    imp.obj().song_selected(position as usize);
+                }
+            ));
+
             self.clear_queue.connect_clicked(glib::clone!(
                 #[weak(rename_to=imp)]
                 self,

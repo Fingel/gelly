@@ -314,24 +314,6 @@ impl Song {
             audio_model.append_to_queue(vec![song]);
         }
     }
-
-    fn setup_single_click_activation(&self) {
-        let gesture = gtk::GestureClick::new();
-        gesture.set_button(1);
-        gesture.connect_released(glib::clone!(
-            #[weak(rename_to = song)]
-            self,
-            move |gesture, n_press, _x, _y| {
-                if n_press == 1 {
-                    song.emit_by_name::<()>("song-activated", &[]);
-                    gesture.set_state(gtk::EventSequenceState::Claimed);
-                }
-            }
-        ));
-
-        self.add_controller(gesture);
-        self.set_activatable(false);
-    }
 }
 
 impl Default for Song {
@@ -416,7 +398,6 @@ mod imp {
             static SIGNALS: OnceLock<Vec<Signal>> = OnceLock::new();
             SIGNALS.get_or_init(|| {
                 vec![
-                    Signal::builder("song-activated").build(),
                     Signal::builder("widget-moved")
                         .param_types([i32::static_type()])
                         .build(),
@@ -437,7 +418,6 @@ mod imp {
             self.parent_constructed();
             self.obj().setup_menu();
             self.obj().setup_clickable_labels();
-            self.obj().setup_single_click_activation();
             self.obj().connect_map(glib::clone!(
                 #[weak(rename_to = song)]
                 self.obj(),

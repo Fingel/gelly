@@ -62,17 +62,6 @@ impl AlbumDetail {
         for song in &songs {
             let song_widget = Song::new();
             song_widget.set_song_data(song);
-            song_widget.connect_closure(
-                "song-activated",
-                false,
-                glib::closure_local!(
-                    #[weak(rename_to = album_detail)]
-                    self,
-                    move |song_widget: Song| {
-                        album_detail.song_selected(song_widget.index() as usize);
-                    }
-                ),
-            );
 
             // Set up navigation signals
             connect_song_navigation(&song_widget, &self.get_root_window());
@@ -298,6 +287,15 @@ mod imp {
 
     impl AlbumDetail {
         fn setup_signals(&self) {
+            self.track_list.connect_row_activated(glib::clone!(
+                #[weak(rename_to=imp)]
+                self,
+                move |_track_list, row| {
+                    let index = row.index();
+                    imp.obj().song_selected(index as usize);
+                }
+            ));
+
             self.play_all.connect_clicked(glib::clone!(
                 #[weak(rename_to=imp)]
                 self,
