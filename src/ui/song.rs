@@ -63,6 +63,14 @@ impl Song {
             .set_label(&format_duration(song.duration()));
     }
 
+    pub fn get_position(&self) -> i32 {
+        self.imp().position.get().unwrap_or(self.index())
+    }
+
+    pub fn set_position(&self, position: i32) {
+        self.imp().position.set(Some(position));
+    }
+
     pub fn set_playing(&self, playing: bool) {
         self.imp().playing_icon.set_visible(playing);
     }
@@ -108,10 +116,11 @@ impl Song {
             false,
             move |_, value, _, _| {
                 if let Ok(source_song) = value.get::<Song>() {
-                    let source_index = source_song.index() as usize;
-                    let target_index = target_song.index() as usize;
+                    let source_index = source_song.get_position() as usize;
+                    let target_index = target_song.get_position() as usize;
                     if source_index != target_index {
-                        target_song.emit_by_name::<()>("widget-moved", &[&source_song.index()]);
+                        target_song
+                            .emit_by_name::<()>("widget-moved", &[&source_song.get_position()]);
                         return true;
                     }
                 }
@@ -362,6 +371,10 @@ mod imp {
 
         #[property(get, construct_only, name = "is-ghost", default = false)]
         pub is_ghost: Cell<bool>,
+
+        /// Stores position for use in ListView where index isn't a thing
+        /// TODO: refactor all ListBoxes into ListViews
+        pub position: Cell<Option<i32>>,
     }
 
     #[glib::object_subclass]

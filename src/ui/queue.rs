@@ -1,5 +1,6 @@
 use crate::{
     async_utils::spawn_tokio,
+    models::SongModel,
     ui::{
         page_traits::TopPage,
         playlist_dialogs,
@@ -44,38 +45,15 @@ impl Queue {
     pub fn display_queue(&self) {
         if let Some(audio_model) = self.get_application().audio_model() {
             let tracks = audio_model.queue();
-            self.imp().track_list.remove_all();
+            let store = self.imp().store.get().expect("Queue store should exist"); // todo make a method
+            store.remove_all();
+
             if tracks.is_empty() {
                 self.set_empty(true);
             } else {
                 self.set_empty(false);
-                let current_track = audio_model.current_song_id();
                 for track in &tracks {
-                    let song_widget = Song::new_with(SongOptions {
-                        dnd: true,
-                        in_queue: true,
-                        in_playlist: false,
-                    });
-                    song_widget.set_song_data(track);
-                    // connect navigation signals
-                    connect_song_navigation(&song_widget, &self.get_root_window());
-                    self.imp().track_list.append(&song_widget);
-                    if track.id() == current_track {
-                        song_widget.set_playing(true);
-                    }
-                    song_widget.connect_closure(
-                        "widget-moved",
-                        false,
-                        glib::closure_local!(
-                            #[weak(rename_to= queue)]
-                            self,
-                            move |song_widget: Song, source_index: i32| {
-                                let target_index = song_widget.index() as usize;
-                                let source_index = source_index as usize;
-                                queue.handle_song_moved(source_index, target_index)
-                            }
-                        ),
-                    );
+                    store.append(track);
                 }
             }
         } else {
@@ -110,11 +88,10 @@ impl Queue {
             audio_model.set_queue_index(target_index as i32);
         }
 
-        let track_list = &self.imp().track_list;
-        if let Some(source_row) = track_list.row_at_index(source_index as i32) {
-            // Remove and reinsert the widget
-            track_list.remove(&source_row);
-            track_list.insert(&source_row, target_index as i32);
+        let store = self.imp().store.get().expect("Queue store should exist");
+        store.remove_all();
+        for track in audio_model.queue() {
+            store.append(&track);
         }
     }
 
@@ -178,6 +155,74 @@ impl Queue {
             ),
         );
     }
+
+    fn setup_model(&self) {
+        let imp = self.imp();
+        let store = gio::ListStore::new::<SongModel>();
+        imp.store
+            .set(store.clone())
+            .expect("Store should only be set once");
+        let selection_model = gtk::NoSelection::new(Some(store));
+        let factory = gtk::SignalListItemFactory::new();
+
+        factory.connect_setup(move |_, list_item| {
+            let placeholder = Song::new_with(SongOptions {
+                dnd: true,
+                in_playlist: false,
+                in_queue: true,
+            });
+            let item = list_item
+                .downcast_ref::<gtk::ListItem>()
+                .expect("Needs to be a ListItem");
+            item.set_child(Some(&placeholder))
+        });
+
+        factory.connect_bind(glib::clone!(
+            #[weak(rename_to = queue)]
+            self,
+            move |_, list_item| {
+                let list_item = list_item
+                    .downcast_ref::<gtk::ListItem>()
+                    .expect("Needs to be a ListItem");
+                let song_model = list_item
+                    .item()
+                    .and_downcast::<SongModel>()
+                    .expect("Item should be an SongModel");
+                let song_widget = list_item
+                    .child()
+                    .and_downcast::<Song>()
+                    .expect("Child has to be Song");
+
+                // Set the position on the song widget
+                // TODO ListView refactor for all ListBoxes may change this
+                let position = list_item.position() as i32;
+                song_widget.set_position(position);
+                song_widget.set_song_data(&song_model);
+                song_widget.set_track_number(position as u32 + 1);
+
+                // Mark of this song is playing
+                if let Some(audio_model) = queue.get_application().audio_model() {
+                    let current_track = audio_model.current_song_id();
+                    song_widget.set_playing(song_model.id() == current_track);
+                }
+
+                connect_song_navigation(&song_widget, &queue.get_root_window());
+
+                song_widget.connect_closure(
+                    "widget-moved",
+                    false,
+                    glib::closure_local!(move |song_widget: Song, source_index: i32| {
+                        let target_index = song_widget.get_position() as usize;
+                        let source_index = source_index as usize;
+                        queue.handle_song_moved(source_index, target_index)
+                    }),
+                );
+            }
+        ));
+
+        imp.track_list.set_model(Some(&selection_model));
+        imp.track_list.set_factory(Some(&factory));
+    }
 }
 
 impl Default for Queue {
@@ -187,10 +232,12 @@ impl Default for Queue {
 }
 
 mod imp {
+    use std::cell::OnceCell;
+
     use adw::subclass::prelude::*;
     use glib::subclass::InitializingObject;
     use gtk::{
-        CompositeTemplate,
+        CompositeTemplate, gio,
         glib::{self},
         prelude::*,
     };
@@ -201,13 +248,14 @@ mod imp {
         #[template_child]
         pub empty: TemplateChild<adw::StatusPage>,
         #[template_child]
-        pub track_list: TemplateChild<gtk::ListBox>,
+        pub track_list: TemplateChild<gtk::ListView>,
         #[template_child]
         pub queue_box: TemplateChild<gtk::Box>,
         #[template_child]
         pub clear_queue: TemplateChild<gtk::Button>,
         #[template_child]
         pub save_as_playlist: TemplateChild<gtk::Button>,
+        pub store: OnceCell<gio::ListStore>,
     }
 
     #[glib::object_subclass]
@@ -232,6 +280,7 @@ mod imp {
         fn constructed(&self) {
             self.parent_constructed();
             self.setup_signals();
+            self.obj().setup_model();
             self.obj().connect_map(glib::clone!(
                 #[weak(rename_to = queue)]
                 self.obj(),
@@ -244,12 +293,11 @@ mod imp {
 
     impl Queue {
         fn setup_signals(&self) {
-            self.track_list.connect_row_activated(glib::clone!(
+            self.track_list.connect_activate(glib::clone!(
                 #[weak(rename_to=imp)]
                 self,
-                move |_track_list, row| {
-                    let index = row.index();
-                    imp.obj().song_selected(index as usize);
+                move |_track_list, position| {
+                    imp.obj().song_selected(position as usize);
                 }
             ));
 

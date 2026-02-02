@@ -44,8 +44,7 @@
                       </object>
                     </child>
                     <child>
-                      <object class="GtkListBox" id="track_list">
-                        <property name="selection-mode">none</property>
+                      <object class="GtkListView" id="track_list">
                         <property name="width-request">300</property>
                         <style>
                           <class name="boxed-list" />
