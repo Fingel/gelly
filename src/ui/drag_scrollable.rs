@@ -65,16 +65,6 @@ pub fn clear_drag_state(song: &crate::ui::song::Song) {
 pub fn find_drag_scrollable_ancestor(
     widget: &impl gtk::prelude::WidgetExt,
 ) -> Option<Box<dyn DragScrollable>> {
-    if let Some(playlist_detail) = widget
-        .ancestor(crate::ui::playlist_detail::PlaylistDetail::static_type())
-        .and_then(|w| {
-            w.downcast::<crate::ui::playlist_detail::PlaylistDetail>()
-                .ok()
-        })
-    {
-        return Some(Box::new(playlist_detail));
-    }
-
     if let Some(queue) = widget
         .ancestor(crate::ui::queue::Queue::static_type())
         .and_then(|w| w.downcast::<crate::ui::queue::Queue>().ok())

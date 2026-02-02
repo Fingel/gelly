@@ -4,7 +4,6 @@ use crate::{
     library_utils::songs_for_playlist,
     models::{PlaylistModel, SongModel},
     ui::{
-        drag_scrollable::DragScrollable,
         music_context_menu::{ContextActions, construct_menu, create_actiongroup},
         page_traits::DetailPage,
         playlist_dialogs,
@@ -520,7 +519,6 @@ mod imp {
         pub model: RefCell<Option<PlaylistModel>>,
         pub songs: RefCell<Vec<SongModel>>,
         pub song_change_signal_connected: Cell<bool>,
-        pub last_drag_focused: Cell<Option<i32>>,
     }
 
     #[glib::object_subclass]
@@ -574,15 +572,5 @@ mod imp {
                 }
             ));
         }
-    }
-}
-
-impl DragScrollable for PlaylistDetail {
-    fn get_last_drag_focused(&self) -> Option<i32> {
-        self.imp().last_drag_focused.get()
-    }
-
-    fn set_last_drag_focused(&self, index: Option<i32>) {
-        self.imp().last_drag_focused.set(index);
     }
 }

@@ -2,6 +2,9 @@
 use adw::{prelude::*, subclass::prelude::*};
 use gtk::glib;
 
+const MARGIN: f64 = 64.0;
+const SPEED: f64 = 25.0;
+
 glib::wrapper! {
     pub struct AutoScrollWindow(ObjectSubclass<imp::AutoScrollWindow>)
         @extends adw::Bin, gtk::Widget,
@@ -37,10 +40,9 @@ impl Default for AutoScrollWindow {
 
 mod imp {
     use super::*;
-    use glib::Properties;
-    use std::cell::{OnceCell, RefCell};
-
-    const MARGIN: f64 = 64.0;
+    use glib::{Properties, source::SourceId};
+    use std::cell::{Cell, OnceCell, RefCell};
+    use std::time::Duration;
 
     #[derive(Default, Properties)]
     #[properties(wrapper_type = super::AutoScrollWindow)]
@@ -49,6 +51,9 @@ mod imp {
 
         #[property(get, set = Self::set_content)]
         content: RefCell<Option<gtk::Widget>>,
+
+        scroll_timeout_id: RefCell<Option<SourceId>>,
+        scroll_speed: Cell<f64>,
     }
 
     impl AutoScrollWindow {
@@ -57,6 +62,58 @@ mod imp {
                 scrolled_window.set_child(content.as_ref());
             }
             self.content.replace(content);
+        }
+
+        fn start_auto_scroll(&self, drop_motion_ctrl: &gtk::DropControllerMotion) {
+            if self.scroll_timeout_id.borrow().is_some() {
+                return;
+            }
+
+            let timeout_id = glib::timeout_add_local(
+                Duration::from_millis(16), // ~60 FPS
+                glib::clone!(
+                    #[weak(rename_to = auto_scroll)]
+                    self,
+                    #[weak]
+                    drop_motion_ctrl,
+                    #[upgrade_or]
+                    glib::ControlFlow::Break,
+                    move || {
+                        // Stop if the pointer is no longer over the widget
+                        if !drop_motion_ctrl.contains_pointer() {
+                            auto_scroll.stop_auto_scroll();
+                            return glib::ControlFlow::Break;
+                        }
+
+                        let Some(scrolled_window) = auto_scroll.scrolled_window.get() else {
+                            return glib::ControlFlow::Break;
+                        };
+
+                        let scroll_speed = auto_scroll.scroll_speed.get();
+                        let adj = scrolled_window.vadjustment();
+                        let new_value = adj.value() + (scroll_speed * SPEED);
+
+                        // Clamp to valid range
+                        let lower = adj.lower();
+                        let upper = adj.upper();
+                        let page_size = adj.page_size();
+                        let clamped_value = new_value.max(lower).min(upper - page_size);
+
+                        adj.set_value(clamped_value);
+
+                        glib::ControlFlow::Continue
+                    }
+                ),
+            );
+
+            self.scroll_timeout_id.replace(Some(timeout_id));
+        }
+
+        fn stop_auto_scroll(&self) {
+            if let Some(timeout_id) = self.scroll_timeout_id.take() {
+                timeout_id.remove();
+            }
+            self.scroll_speed.set(0.0);
         }
     }
 
@@ -84,10 +141,11 @@ mod imp {
             let drop_motion_ctrl = gtk::DropControllerMotion::new();
             drop_motion_ctrl.connect_motion(glib::clone!(
                 #[weak(rename_to = auto_scroll)]
-                self.obj(),
+                self,
+                #[weak]
+                drop_motion_ctrl,
                 move |_ctrl, _x, y| {
-                    let imp = auto_scroll.imp();
-                    let Some(scrolled_window) = imp.scrolled_window.get() else {
+                    let Some(scrolled_window) = auto_scroll.scrolled_window.get() else {
                         return;
                     };
 
@@ -108,20 +166,23 @@ mod imp {
                     }
 
                     if should_scroll {
-                        let scroll_speed = distance_from_edge / MARGIN;
-                        println!(
-                            "Scroll {} distance: {:.1}, speed: {:.2}",
-                            if scroll_up { "up" } else { "down" },
-                            distance_from_edge,
-                            scroll_speed
-                        );
+                        let scroll_speed =
+                            (distance_from_edge / MARGIN) * if scroll_up { -1.0 } else { 1.0 };
+                        auto_scroll.scroll_speed.set(scroll_speed);
+                        auto_scroll.start_auto_scroll(&drop_motion_ctrl);
+                    } else {
+                        auto_scroll.stop_auto_scroll();
                     }
                 }
             ));
 
-            drop_motion_ctrl.connect_leave(|_ctrl| {
-                println!("Drag left scrolled window");
-            });
+            drop_motion_ctrl.connect_leave(glib::clone!(
+                #[weak (rename_to = auto_scroll)]
+                self,
+                move |_ctrl| {
+                    auto_scroll.stop_auto_scroll();
+                }
+            ));
 
             scrolled_window.add_controller(drop_motion_ctrl);
 
