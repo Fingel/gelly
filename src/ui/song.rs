@@ -102,25 +102,25 @@ impl Song {
         let drop_target = DropTarget::new(Song::static_type(), DragAction::MOVE);
         drop_target.set_preload(true); // deserialize data immediately over drop zone, fine for song lists
         // For auto scrolling
-        drop_target.connect_enter(glib::clone!(
-            #[weak(rename_to = target_song)]
-            self,
-            #[upgrade_or]
-            DragAction::empty(),
-            move |_, _, _| {
-                target_song.grab_focus();
+        // drop_target.connect_enter(glib::clone!(
+        //     #[weak(rename_to = target_song)]
+        //     self,
+        //     #[upgrade_or]
+        //     DragAction::empty(),
+        //     move |_, _, _| {
+        //         target_song.grab_focus();
 
-                glib::idle_add_local_once(glib::clone!(
-                    #[weak]
-                    target_song,
-                    move || {
-                        // Here be dragons, venture into this module at your own peril
-                        drag_scrollable::handle_drag_scroll(&target_song);
-                    }
-                ));
-                DragAction::MOVE
-            }
-        ));
+        //         // glib::idle_add_local_once(glib::clone!(
+        //         //     #[weak]
+        //         //     target_song,
+        //         //     move || {
+        //         //         // Here be dragons, venture into this module at your own peril
+        //         //         drag_scrollable::handle_drag_scroll(&target_song);
+        //         //     }
+        //         // ));
+        //         DragAction::MOVE
+        //     }
+        // ));
 
         drop_target.connect_drop(glib::clone!(
             #[weak(rename_to = target_song)]

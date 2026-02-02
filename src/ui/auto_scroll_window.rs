@@ -40,6 +40,8 @@ mod imp {
     use glib::Properties;
     use std::cell::{OnceCell, RefCell};
 
+    const MARGIN: f64 = 64.0;
+
     #[derive(Default, Properties)]
     #[properties(wrapper_type = super::AutoScrollWindow)]
     pub struct AutoScrollWindow {
@@ -70,14 +72,58 @@ mod imp {
         fn constructed(&self) {
             self.parent_constructed();
 
-            // Create a GtkScrolledWindow with standard configuration
             let scrolled_window = gtk::ScrolledWindow::builder()
                 .hexpand(true)
                 .vexpand(true)
                 .hscrollbar_policy(gtk::PolicyType::Never)
                 .vscrollbar_policy(gtk::PolicyType::Automatic)
                 .propagate_natural_height(true)
+                .propagate_natural_width(true)
                 .build();
+
+            let drop_motion_ctrl = gtk::DropControllerMotion::new();
+            drop_motion_ctrl.connect_motion(glib::clone!(
+                #[weak(rename_to = auto_scroll)]
+                self.obj(),
+                move |_ctrl, _x, y| {
+                    let imp = auto_scroll.imp();
+                    let Some(scrolled_window) = imp.scrolled_window.get() else {
+                        return;
+                    };
+
+                    let height = scrolled_window.height() as f64;
+
+                    let mut should_scroll = false;
+                    let mut scroll_up = false;
+                    let mut distance_from_edge = 0.0;
+
+                    if y < MARGIN {
+                        distance_from_edge = MARGIN - y;
+                        should_scroll = true;
+                        scroll_up = true;
+                    } else if y > (height - MARGIN) {
+                        distance_from_edge = y - (height - MARGIN);
+                        should_scroll = true;
+                        scroll_up = false;
+                    }
+
+                    if should_scroll {
+                        let scroll_speed = distance_from_edge / MARGIN;
+                        println!(
+                            "Scroll {} distance: {:.1}, speed: {:.2}",
+                            if scroll_up { "up" } else { "down" },
+                            distance_from_edge,
+                            scroll_speed
+                        );
+                    }
+                }
+            ));
+
+            drop_motion_ctrl.connect_leave(|_ctrl| {
+                println!("Drag left scrolled window");
+            });
+
+            scrolled_window.add_controller(drop_motion_ctrl);
 
             // Set the scrolled window as the Bin's child
             self.obj()
