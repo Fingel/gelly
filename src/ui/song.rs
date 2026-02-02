@@ -22,7 +22,7 @@ use crate::{
 
 glib::wrapper! {
     pub struct Song(ObjectSubclass<imp::Song>)
-    @extends gtk::Widget, gtk::ListBoxRow,
+    @extends gtk::Widget, gtk::Box,
         @implements gtk::Accessible, gtk::Buildable, gtk::ConstraintTarget, gtk::Actionable;
 }
 
@@ -61,14 +61,6 @@ impl Song {
         imp.number_label.set_label(&song.track_number().to_string());
         imp.duration_label
             .set_label(&format_duration(song.duration()));
-    }
-
-    pub fn get_position(&self) -> i32 {
-        self.imp().position.get().unwrap_or(self.index())
-    }
-
-    pub fn set_position(&self, position: i32) {
-        self.imp().position.set(Some(position));
     }
 
     pub fn set_playing(&self, playing: bool) {
@@ -116,11 +108,10 @@ impl Song {
             false,
             move |_, value, _, _| {
                 if let Ok(source_song) = value.get::<Song>() {
-                    let source_index = source_song.get_position() as usize;
-                    let target_index = target_song.get_position() as usize;
+                    let source_index = source_song.position() as usize;
+                    let target_index = target_song.position() as usize;
                     if source_index != target_index {
-                        target_song
-                            .emit_by_name::<()>("widget-moved", &[&source_song.get_position()]);
+                        target_song.emit_by_name::<()>("widget-moved", &[&source_song.position()]);
                         return true;
                     }
                 }
@@ -363,6 +354,8 @@ mod imp {
         #[template_child]
         pub song_menu: TemplateChild<gtk::MenuButton>,
 
+        #[property(get, set)]
+        pub position: Cell<i32>,
         pub item_id: RefCell<String>,
         #[property(get, construct_only, name = "in-playlist", default = false)]
         pub in_playlist: Cell<bool>,
@@ -371,17 +364,13 @@ mod imp {
 
         #[property(get, construct_only, name = "is-ghost", default = false)]
         pub is_ghost: Cell<bool>,
-
-        /// Stores position for use in ListView where index isn't a thing
-        /// TODO: refactor all ListBoxes into ListViews
-        pub position: Cell<Option<i32>>,
     }
 
     #[glib::object_subclass]
     impl ObjectSubclass for Song {
         const NAME: &'static str = "GellySong";
         type Type = super::Song;
-        type ParentType = gtk::ListBoxRow;
+        type ParentType = gtk::Box;
 
         fn class_init(klass: &mut Self::Class) {
             klass.bind_template();
@@ -427,17 +416,6 @@ mod imp {
             ));
         }
     }
-    impl ListBoxRowImpl for Song {}
-    impl WidgetImpl for Song {
-        fn grab_focus(&self) -> bool {
-            // TODO: remove this when all list views are converted to ListView
-            // Only call parent grab_focus if we're actually in a ListBox
-            if self.obj().ancestor(gtk::ListBox::static_type()).is_some() {
-                self.parent_grab_focus()
-            } else {
-                // Not in a ListBox, just return false
-                false
-            }
-        }
-    }
+    impl BoxImpl for Song {}
+    impl WidgetImpl for Song {}
 }

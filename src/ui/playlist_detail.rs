@@ -145,7 +145,7 @@ impl PlaylistDetail {
                             #[weak(rename_to= playlist_detail_for_move)]
                             playlist_detail,
                             move |song_widget: Song, source_index: i32| {
-                                let target_index = song_widget.get_position() as usize;
+                                let target_index = song_widget.position() as usize;
                                 let source_index = source_index as usize;
                                 playlist_detail_for_move
                                     .handle_song_moved(source_index, target_index)

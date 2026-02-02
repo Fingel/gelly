@@ -212,7 +212,7 @@ impl Queue {
                     "widget-moved",
                     false,
                     glib::closure_local!(move |song_widget: Song, source_index: i32| {
-                        let target_index = song_widget.get_position() as usize;
+                        let target_index = song_widget.position() as usize;
                         let source_index = source_index as usize;
                         queue.handle_song_moved(source_index, target_index)
                     }),

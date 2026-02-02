@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
   <requires lib="gtk" version="4.0"/>
-  <template class="GellySong" parent="GtkListBoxRow">
-    <property name="selectable">False</property>
-    <property name="activatable">True</property>
+  <template class="GellySong" parent="GtkBox">
     <child>
       <object class="GtkBox" id="box1">
         <property name="focusable">False</property>
