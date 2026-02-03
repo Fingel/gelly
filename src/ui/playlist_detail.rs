@@ -62,10 +62,18 @@ impl PlaylistDetail {
 
     fn setup_model(&self) {
         let imp = self.imp();
-        let store = gio::ListStore::new::<SongModel>();
-        imp.store
-            .set(store.clone())
-            .expect("Store should only be set once");
+        if imp.store.get().is_some() {
+            // Store is already set up with a model.
+            return;
+        }
+        let store = imp
+            .store
+            .get_or_init(gio::ListStore::new::<SongModel>)
+            .clone();
+        let Some(audio_model) = self.get_application().audio_model() else {
+            warn!("No audio model set, aborting");
+            return;
+        };
         let selection_model = gtk::NoSelection::new(Some(store));
         let factory = gtk::SignalListItemFactory::new();
 
@@ -118,11 +126,8 @@ impl PlaylistDetail {
 
                 song_widget.set_song_data(&song_model);
 
-                if let Some(audio_model) = playlist_detail.get_application().audio_model()
-                    && let Some(current_song) = audio_model.current_song()
-                {
-                    song_widget.set_playing(current_song.id() == song_model.id());
-                }
+                let current_track = audio_model.current_song_id();
+                song_widget.set_playing(song_model.id() == current_track);
 
                 connect_song_navigation(&song_widget, &playlist_detail.get_root_window());
 
@@ -213,10 +218,7 @@ impl PlaylistDetail {
     fn populate_tracks_with_songs(&self, songs: Vec<SongModel>) {
         let store = self.get_store();
         store.remove_all();
-        for song in &songs {
-            store.append(song);
-        }
-
+        store.extend_from_slice(&songs);
         self.imp().songs.replace(songs);
         self.update_track_metadata();
     }
@@ -601,9 +603,15 @@ mod imp {
     impl ObjectImpl for PlaylistDetail {
         fn constructed(&self) {
             self.parent_constructed();
-            self.obj().setup_model();
             self.obj().setup_menu();
             self.setup_signals();
+            self.obj().connect_map(glib::clone!(
+                #[weak(rename_to = playlist_detail)]
+                self.obj(),
+                move |_| {
+                    playlist_detail.setup_model();
+                }
+            ));
         }
     }
     impl WidgetImpl for PlaylistDetail {}

@@ -52,9 +52,7 @@ impl Queue {
                 self.set_empty(true);
             } else {
                 self.set_empty(false);
-                for track in &tracks {
-                    store.append(track);
-                }
+                store.extend_from_slice(&tracks);
             }
         } else {
             self.toast("Audio model not initialized, please restart", None);
@@ -169,10 +167,18 @@ impl Queue {
 
     fn setup_model(&self) {
         let imp = self.imp();
-        let store = gio::ListStore::new::<SongModel>();
-        imp.store
-            .set(store.clone())
-            .expect("Store should only be set once");
+        if imp.store.get().is_some() {
+            // Store is already set up with a model.
+            return;
+        }
+        let store = imp
+            .store
+            .get_or_init(gio::ListStore::new::<SongModel>)
+            .clone();
+        let Some(audio_model) = self.get_application().audio_model() else {
+            warn!("No audio model set, aborting");
+            return;
+        };
         let selection_model = gtk::NoSelection::new(Some(store));
         let factory = gtk::SignalListItemFactory::new();
 
@@ -213,10 +219,8 @@ impl Queue {
                 song_widget.set_song_data(&song_model);
 
                 // Mark of this song is playing
-                if let Some(audio_model) = queue.get_application().audio_model() {
-                    let current_track = audio_model.current_song_id();
-                    song_widget.set_playing(song_model.id() == current_track);
-                }
+                let current_track = audio_model.current_song_id();
+                song_widget.set_playing(song_model.id() == current_track);
 
                 connect_song_navigation(&song_widget, &queue.get_root_window());
 
@@ -293,11 +297,11 @@ mod imp {
         fn constructed(&self) {
             self.parent_constructed();
             self.setup_signals();
-            self.obj().setup_model();
             self.obj().connect_map(glib::clone!(
                 #[weak(rename_to = queue)]
                 self.obj(),
                 move |_| {
+                    queue.setup_model();
                     queue.display_queue();
                 }
             ));
