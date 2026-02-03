@@ -8,11 +8,11 @@
         <property name="halign">fill</property>
         <property name="hexpand">True</property>
         <property name="spacing">16</property>
-        <property name="width-request">200</property>
-        <property name="height-request">200</property>
+        <property name="width-request">150</property>
+        <property name="height-request">150</property>
         <child>
           <object class="GellyAlbumArt" id="album_image">
-            <property name="size">200</property>
+            <property name="size">150</property>
           </object>
         </child>
         <child>
@@ -27,7 +27,7 @@
                 <property name="focusable">False</property>
                 <property name="halign">start</property>
                 <property name="ellipsize">end</property>
-                <property name="margin-bottom">18</property>
+                <property name="margin-bottom">6</property>
                 <style>
                   <class name="title-1" />
                 </style>
@@ -38,19 +38,9 @@
                 <property name="focusable">False</property>
                 <property name="halign">start</property>
                 <property name="ellipsize">end</property>
-                <property name="margin-bottom">12</property>
+                <property name="margin-bottom">6</property>
                 <style>
                   <class name="title-2" />
-                </style>
-              </object>
-            </child>
-            <child>
-              <object class="GtkLabel" id="year_label">
-                <property name="focusable">False</property>
-                <property name="halign">start</property>
-                <property name="ellipsize">middle</property>
-                <style>
-                  <class name="dimmed" />
                 </style>
               </object>
             </child>
@@ -59,6 +49,27 @@
                 <property name="orientation">horizontal</property>
                 <property name="spacing">6</property>
                 <property name="margin-bottom">12</property>
+                <child>
+                  <object class="GtkLabel" id="year_label">
+                    <property name="focusable">False</property>
+                    <property name="halign">start</property>
+                    <property name="ellipsize">middle</property>
+                    <style>
+                      <class name="dimmed" />
+                    </style>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkLabel">
+                    <property name="focusable">False</property>
+                    <property name="halign">start</property>
+                    <property name="ellipsize">middle</property>
+                    <property name="label"> • </property>
+                    <style>
+                      <class name="dimmed" />
+                    </style>
+                  </object>
+                </child>
                 <child>
                   <object class="GtkLabel" id="track_count">
                     <property name="focusable">False</property>
@@ -74,6 +85,17 @@
                     <property name="halign">start</property>
                     <property name="ellipsize">middle</property>
                     <property name="label">tracks</property>
+                    <style>
+                      <class name="dimmed" />
+                    </style>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkLabel">
+                    <property name="focusable">False</property>
+                    <property name="halign">start</property>
+                    <property name="ellipsize">middle</property>
+                    <property name="label"> • </property>
                     <style>
                       <class name="dimmed" />
                     </style>

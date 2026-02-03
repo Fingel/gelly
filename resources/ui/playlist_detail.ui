@@ -8,17 +8,17 @@
         <property name="halign">fill</property>
         <property name="hexpand">True</property>
         <property name="spacing">16</property>
-        <property name="width-request">200</property>
-        <property name="height-request">200</property>
+        <property name="width-request">150</property>
+        <property name="height-request">150</property>
         <child>
           <object class="GellyAlbumArt" id="album_image">
-            <property name="size">200</property>
+            <property name="size">150</property>
           </object>
         </child>
         <child>
           <object class="GtkImage" id="static_icon">
-            <property name="height-request">200</property>
-            <property name="width-request">200</property>
+            <property name="height-request">150</property>
+            <property name="width-request">150</property>
             <property name="icon-name">audio-x-generic-symbolic</property>
             <property name="pixel-size">100</property>
             <property name="halign">center</property>
@@ -38,7 +38,7 @@
                 <property name="focusable">False</property>
                 <property name="halign">start</property>
                 <property name="ellipsize">middle</property>
-                <property name="margin-bottom">18</property>
+                <property name="margin-bottom">6</property>
                 <style>
                   <class name="title-1" />
                 </style>
@@ -64,6 +64,17 @@
                     <property name="halign">start</property>
                     <property name="ellipsize">middle</property>
                     <property name="label">tracks</property>
+                    <style>
+                      <class name="dimmed" />
+                    </style>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkLabel">
+                    <property name="focusable">False</property>
+                    <property name="halign">start</property>
+                    <property name="ellipsize">middle</property>
+                    <property name="label"> • </property>
                     <style>
                       <class name="dimmed" />
                     </style>

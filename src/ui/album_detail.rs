@@ -36,9 +36,8 @@ impl DetailPage for AlbumDetail {
         imp.artist_label.set_text(&model.artists_string());
         if model.year() > 0 {
             imp.year_label.set_text(&model.year().to_string());
-            imp.year_label.set_visible(true);
         } else {
-            imp.year_label.set_visible(false);
+            imp.year_label.set_text("N/A");
         }
         imp.album_image.set_item_id(&model.id(), None);
         self.pull_tracks();
