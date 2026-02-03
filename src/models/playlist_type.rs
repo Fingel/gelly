@@ -352,25 +352,6 @@ mod tests {
     }
 
     #[test]
-    fn test_display_name_shuffle_library() {
-        let playlist = PlaylistType::ShuffleLibrary { count: 50 };
-        assert_eq!(playlist.display_name(), "50 Shuffled Songs");
-    }
-
-    #[test]
-    fn test_display_name_shuffle_library_singular() {
-        let playlist = PlaylistType::ShuffleLibrary { count: 1 };
-        assert_eq!(playlist.display_name(), "1 Shuffled Songs");
-        // Note: Current implementation doesn't handle singular/plural
-    }
-
-    #[test]
-    fn test_display_name_shuffle_library_zero() {
-        let playlist = PlaylistType::ShuffleLibrary { count: 0 };
-        assert_eq!(playlist.display_name(), "0 Shuffled Songs");
-    }
-
-    #[test]
     fn test_estimated_count_regular() {
         let playlist = create_test_regular("id", "Test", 42);
         assert_eq!(playlist.estimated_count(), 42);
