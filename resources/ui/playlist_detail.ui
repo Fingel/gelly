@@ -17,8 +17,8 @@
         </child>
         <child>
           <object class="GtkImage" id="static_icon">
-            <property name="height-request">150</property>
-            <property name="width-request">150</property>
+            <property name="height-request">100</property>
+            <property name="width-request">100</property>
             <property name="icon-name">audio-x-generic-symbolic</property>
             <property name="pixel-size">100</property>
             <property name="halign">center</property>
