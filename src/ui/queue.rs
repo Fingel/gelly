@@ -88,11 +88,22 @@ impl Queue {
             audio_model.set_queue_index(target_index as i32);
         }
 
+        // Save scroll position before modifying the model :(
+        let track_list = &self.imp().track_list;
+        let vadjustment = track_list.vadjustment().unwrap_or_default();
+        let saved_value = vadjustment.value();
+
         let store = self.imp().store.get().expect("Queue store should exist");
         if let Some(item) = store.item(source_index as u32) {
             store.remove(source_index as u32);
             store.insert(target_index as u32, &item);
         }
+
+        // Restore scroll position after the model change
+        // This is total garbo but the only way I can find to keep the scroll position in place
+        glib::timeout_add_local_once(std::time::Duration::from_millis(100), move || {
+            vadjustment.set_value(saved_value);
+        });
     }
 
     fn set_empty(&self, empty: bool) {
