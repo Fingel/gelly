@@ -134,6 +134,7 @@ mod imp {
                 .vexpand(true)
                 .hscrollbar_policy(gtk::PolicyType::Never)
                 .vscrollbar_policy(gtk::PolicyType::Automatic)
+                .propagate_natural_height(true)
                 .build();
 
             let drop_motion_ctrl = gtk::DropControllerMotion::new();

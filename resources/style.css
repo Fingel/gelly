@@ -35,3 +35,26 @@ progressbar.osd {
 .banner-gradient label {
     color: white;
 }
+
+listview.boxed-list {
+    background-color: @card_bg_color;
+    border: 1px solid alpha(@borders, 0.5);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+listview.boxed-list > row {
+    border-top: 1px solid alpha(@borders, 0.5);
+    background-color: transparent;
+}
+
+listview.boxed-list > row:first-child {
+    border-top: none;
+}
+
+listview.boxed-list > row:last-child {
+    border-bottom: none;
+}
+
+listview.boxed-list > row:hover {
+    background-color: alpha(currentColor, 0.05);
+}

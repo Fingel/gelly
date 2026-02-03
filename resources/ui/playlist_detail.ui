@@ -8,11 +8,11 @@
         <property name="halign">fill</property>
         <property name="hexpand">True</property>
         <property name="spacing">16</property>
-        <property name="width-request">150</property>
-        <property name="height-request">150</property>
+        <property name="width-request">100</property>
+        <property name="height-request">100</property>
         <child>
           <object class="GellyAlbumArt" id="album_image">
-            <property name="size">150</property>
+            <property name="size">100</property>
           </object>
         </child>
         <child>
@@ -29,18 +29,18 @@
         <child>
           <object class="GtkBox" id="playlist_info">
             <property name="halign">center</property>
-            <property name="valign">start</property>
+            <property name="valign">center</property>
             <property name="orientation">vertical</property>
-            <property name="margin-top">18</property>
-            <property name="margin-start">18</property>
+            <property name="margin-top">0</property>
+            <property name="margin-start">0</property>
             <child>
               <object class="GtkLabel" id="name_label">
                 <property name="focusable">False</property>
                 <property name="halign">start</property>
                 <property name="ellipsize">middle</property>
-                <property name="margin-bottom">6</property>
+                <property name="margin-bottom">0</property>
                 <style>
-                  <class name="title-1" />
+                  <class name="title-2" />
                 </style>
               </object>
             </child>
@@ -48,7 +48,7 @@
               <object class="GtkBox">
                 <property name="orientation">horizontal</property>
                 <property name="spacing">6</property>
-                <property name="margin-bottom">12</property>
+                <property name="margin-bottom">6</property>
                 <child>
                   <object class="GtkLabel" id="track_count">
                     <property name="focusable">False</property>
@@ -134,7 +134,7 @@
     </child>
     <child>
       <object class="GellyAutoScrollWindow">
-        <property name="vexpand">true</property>
+        <property name="vexpand">false</property>
         <property name="margin-top">24</property>
         <property name="content">
           <object class="GtkListView" id="track_list">
