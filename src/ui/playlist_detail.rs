@@ -60,15 +60,6 @@ impl PlaylistDetail {
             .expect("PlaylistDetail store should be initialized")
     }
 
-    fn repopulate_store(&self) {
-        let store = self.get_store();
-        store.remove_all();
-        let songs = self.imp().songs.borrow();
-        for song in songs.iter() {
-            store.append(song);
-        }
-    }
-
     fn setup_model(&self) {
         let imp = self.imp();
         let store = gio::ListStore::new::<SongModel>();
@@ -99,6 +90,12 @@ impl PlaylistDetail {
                 let item = list_item
                     .downcast_ref::<gtk::ListItem>()
                     .expect("Needs to be a ListItem");
+
+                // make sure track number stays in sync
+                item.bind_property("position", &song_widget, "position")
+                    .flags(glib::BindingFlags::SYNC_CREATE)
+                    .build();
+
                 item.set_child(Some(&song_widget))
             }
         ));
@@ -119,10 +116,7 @@ impl PlaylistDetail {
                     .and_downcast::<Song>()
                     .expect("Child has to be Song");
 
-                let position = list_item.position();
-                song_widget.set_position(position as i32);
                 song_widget.set_song_data(&song_model);
-                song_widget.set_track_number(position + 1);
 
                 if let Some(audio_model) = playlist_detail.get_application().audio_model()
                     && let Some(current_song) = audio_model.current_song()
@@ -352,8 +346,6 @@ impl PlaylistDetail {
             store.insert(target_index as u32, &item);
         }
 
-        self.repopulate_store();
-
         // Persist the change
         let playlist_id = playlist_model.id();
         let app = self.get_application();
@@ -402,7 +394,7 @@ impl PlaylistDetail {
 
             let store = self.get_store();
             store.remove(index as u32);
-            self.repopulate_store();
+
             self.update_track_metadata();
 
             // Persist the change

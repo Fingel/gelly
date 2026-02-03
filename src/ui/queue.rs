@@ -174,6 +174,12 @@ impl Queue {
             let item = list_item
                 .downcast_ref::<gtk::ListItem>()
                 .expect("Needs to be a ListItem");
+
+            // Keep track number in sync
+            item.bind_property("position", &placeholder, "position")
+                .flags(glib::BindingFlags::SYNC_CREATE)
+                .build();
+
             item.set_child(Some(&placeholder))
         });
 
@@ -193,12 +199,7 @@ impl Queue {
                     .and_downcast::<Song>()
                     .expect("Child has to be Song");
 
-                // Set the position on the song widget
-                // TODO ListView refactor for all ListBoxes may change this
-                let position = list_item.position() as i32;
-                song_widget.set_position(position);
                 song_widget.set_song_data(&song_model);
-                song_widget.set_track_number(position as u32 + 1);
 
                 // Mark of this song is playing
                 if let Some(audio_model) = queue.get_application().audio_model() {

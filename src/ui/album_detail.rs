@@ -75,6 +75,11 @@ impl AlbumDetail {
             let item = list_item
                 .downcast_ref::<gtk::ListItem>()
                 .expect("Item should be a ListItem");
+
+            item.bind_property("position", &song_widget, "position")
+                .flags(glib::BindingFlags::SYNC_CREATE)
+                .build();
+
             item.set_child(Some(&song_widget));
         });
 
@@ -94,8 +99,6 @@ impl AlbumDetail {
                     .and_downcast::<Song>()
                     .expect("Child has to be Song");
 
-                let position = list_item.position() as i32;
-                song_widget.set_position(position);
                 song_widget.set_song_data(&song_model);
 
                 if let Some(audio_model) = album_detail.get_application().audio_model() {

@@ -58,17 +58,12 @@ impl Song {
         imp.title_label.set_label(&song.title());
         imp.album_label.set_label(&song.album());
         imp.artist_label.set_label(&song.artists_string());
-        imp.number_label.set_label(&song.track_number().to_string());
         imp.duration_label
             .set_label(&format_duration(song.duration()));
     }
 
     pub fn set_playing(&self, playing: bool) {
         self.imp().playing_icon.set_visible(playing);
-    }
-
-    pub fn set_track_number(&self, track_number: u32) {
-        self.imp().number_label.set_label(&track_number.to_string());
     }
 
     pub fn setup_drag_and_drop(&self) {
@@ -407,6 +402,22 @@ mod imp {
             self.parent_constructed();
             self.obj().setup_menu();
             self.obj().setup_clickable_labels();
+
+            self.obj().connect_notify_local(
+                Some("position"),
+                glib::clone!(
+                    #[weak(rename_to = song)]
+                    self.obj(),
+                    move |_, _| {
+                        let position = song.position();
+                        // Track number is position + 1 (position is 0-based)
+                        song.imp()
+                            .number_label
+                            .set_label(&(position + 1).to_string());
+                    }
+                ),
+            );
+
             self.obj().connect_map(glib::clone!(
                 #[weak(rename_to = song)]
                 self.obj(),
