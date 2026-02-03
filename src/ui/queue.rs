@@ -84,6 +84,8 @@ impl Queue {
         audio_model.replace_queue(songs);
         if source_index == audio_model.queue_index() as usize {
             audio_model.set_queue_index(target_index as i32);
+        } else if target_index == audio_model.queue_index() as usize {
+            audio_model.set_queue_index(target_index as i32 + 1);
         }
 
         // Save scroll position before modifying the model :(
