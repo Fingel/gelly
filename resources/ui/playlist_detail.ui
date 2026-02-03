@@ -20,7 +20,7 @@
             <property name="height-request">100</property>
             <property name="width-request">100</property>
             <property name="icon-name">audio-x-generic-symbolic</property>
-            <property name="pixel-size">100</property>
+            <property name="pixel-size">80</property>
             <property name="halign">center</property>
             <property name="valign">center</property>
             <property name="visible">false</property>
