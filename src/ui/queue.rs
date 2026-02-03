@@ -89,9 +89,9 @@ impl Queue {
         }
 
         let store = self.imp().store.get().expect("Queue store should exist");
-        store.remove_all();
-        for track in audio_model.queue() {
-            store.append(&track);
+        if let Some(item) = store.item(source_index as u32) {
+            store.remove(source_index as u32);
+            store.insert(target_index as u32, &item);
         }
     }
 
