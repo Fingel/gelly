@@ -43,20 +43,8 @@ impl Queue {
     }
 
     pub fn display_queue(&self) {
-        if let Some(audio_model) = self.get_application().audio_model() {
-            let tracks = audio_model.queue();
-            let store = self.imp().store.get().expect("Queue store should exist"); // todo make a method
-            store.remove_all();
-
-            if tracks.is_empty() {
-                self.set_empty(true);
-            } else {
-                self.set_empty(false);
-                store.extend_from_slice(&tracks);
-            }
-        } else {
-            self.toast("Audio model not initialized, please restart", None);
-            warn!("No audio model found");
+        if let Some(store) = self.imp().store.get() {
+            self.set_empty(store.n_items() == 0);
         }
     }
 
@@ -68,20 +56,17 @@ impl Queue {
             warn!("No audio model found");
             return;
         };
-        let mut songs = audio_model.queue();
-        if source_index >= songs.len() || target_index >= songs.len() {
+        let queue = audio_model.queue_store();
+        if source_index >= queue.n_items() as usize || target_index >= queue.n_items() as usize {
             warn!(
                 "Invalid reorder indices: {} -> {} (length: {})",
                 source_index,
                 target_index,
-                songs.len()
+                queue.n_items()
             );
             return;
         }
-        let song_being_moved = songs[source_index].clone();
-        songs.remove(source_index);
-        songs.insert(target_index, song_being_moved);
-        audio_model.replace_queue(songs);
+
         if source_index == audio_model.queue_index() as usize {
             audio_model.set_queue_index(target_index as i32);
         } else if target_index == audio_model.queue_index() as usize {
@@ -93,10 +78,9 @@ impl Queue {
         let vadjustment = track_list.vadjustment().unwrap_or_default();
         let saved_value = vadjustment.value();
 
-        let store = self.imp().store.get().expect("Queue store should exist");
-        if let Some(item) = store.item(source_index as u32) {
-            store.remove(source_index as u32);
-            store.insert(target_index as u32, &item);
+        if let Some(item) = queue.item(source_index as u32) {
+            queue.remove(source_index as u32);
+            queue.insert(target_index as u32, &item);
         }
 
         // Restore scroll position after the model change
@@ -173,15 +157,13 @@ impl Queue {
             // Store is already set up with a model.
             return;
         }
-        let store = imp
-            .store
-            .get_or_init(gio::ListStore::new::<SongModel>)
-            .clone();
         let Some(audio_model) = self.get_application().audio_model() else {
             warn!("No audio model set, aborting");
             return;
         };
-        let selection_model = gtk::NoSelection::new(Some(store));
+        let store = audio_model.queue_store();
+        imp.store.set(store.clone()).expect("Store already set");
+        let selection_model = gtk::NoSelection::new(Some(store.clone()));
         let factory = gtk::SignalListItemFactory::new();
 
         factory.connect_setup(move |_, list_item| {
@@ -241,6 +223,18 @@ impl Queue {
         imp.track_list.set_model(Some(&selection_model));
         imp.track_list.set_factory(Some(&factory));
         imp.track_list.set_single_click_activate(true);
+
+        store.connect_items_changed(glib::clone!(
+            #[weak(rename_to = queue)]
+            self,
+            move |store, _, _, _| {
+                // set state to empty if we end up with an empty queue
+                queue.set_empty(store.n_items() == 0);
+            }
+        ));
+
+        // Set initial empty state
+        self.set_empty(store.n_items() == 0);
     }
 }
 

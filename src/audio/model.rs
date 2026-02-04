@@ -145,6 +145,10 @@ impl AudioModel {
             .collect()
     }
 
+    pub fn queue_store(&self) -> gio::ListStore {
+        self.imp().queue.clone()
+    }
+
     pub fn queue_len(&self) -> i32 {
         self.imp().queue.n_items() as i32
     }
