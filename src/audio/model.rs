@@ -139,16 +139,21 @@ impl AudioModel {
     }
 
     pub fn queue(&self) -> Vec<SongModel> {
-        self.imp().queue.borrow().clone()
+        let queue = &self.imp().queue;
+        (0..queue.n_items())
+            .filter_map(|i| queue.item(i).and_downcast::<SongModel>())
+            .collect()
     }
 
     pub fn queue_len(&self) -> i32 {
-        self.imp().queue.borrow().len() as i32
+        self.imp().queue.n_items() as i32
     }
 
     pub fn set_queue(&self, songs: Vec<SongModel>, start_index: usize) {
         let song_len = songs.len();
-        self.imp().queue.replace(songs);
+        let queue = &self.imp().queue;
+        queue.remove_all();
+        queue.extend_from_slice(&songs);
         self.report_event(PlaybackEvent::NavigationChanged {
             can_go_next: song_len > 0,
             can_go_previous: start_index > 0,
@@ -166,12 +171,14 @@ impl AudioModel {
     }
 
     pub fn replace_queue(&self, songs: Vec<SongModel>) {
-        self.imp().queue.replace(songs);
+        let queue = &self.imp().queue;
+        queue.remove_all();
+        queue.extend_from_slice(&songs);
     }
 
     pub fn append_to_queue(&self, songs: Vec<SongModel>) {
         let songs_len = songs.len();
-        self.imp().queue.borrow_mut().extend(songs);
+        self.imp().queue.extend_from_slice(&songs);
         let current_index = self.queue_index();
         self.report_event(PlaybackEvent::NavigationChanged {
             can_go_next: songs_len > 0,
@@ -190,7 +197,10 @@ impl AudioModel {
         } else {
             current_index + 1
         } as usize;
-        self.imp().queue.borrow_mut().splice(index..index, songs);
+        let queue = &self.imp().queue;
+        for (i, song) in songs.into_iter().enumerate() {
+            queue.insert((index + i) as u32, &song);
+        }
         self.report_event(PlaybackEvent::NavigationChanged {
             can_go_next: index < self.queue_len() as usize,
             can_go_previous: current_index > 0,
@@ -202,7 +212,7 @@ impl AudioModel {
     }
 
     pub fn clear_queue(&self) {
-        self.imp().queue.replace(Vec::new());
+        self.imp().queue.remove_all();
         self.report_event(PlaybackEvent::NavigationChanged {
             can_go_next: false,
             can_go_previous: false,
@@ -216,7 +226,12 @@ impl AudioModel {
     }
 
     fn load_song(&self, index: i32) {
-        if let Some(song) = self.imp().queue.borrow().get(index as usize).cloned() {
+        if let Some(song) = self
+            .imp()
+            .queue
+            .item(index as u32)
+            .and_downcast::<SongModel>()
+        {
             let stream_uri = self.stream_uri(&song.id());
             let player = self.player();
             player.stop();
@@ -259,7 +274,7 @@ impl AudioModel {
 
     fn next_linear(&self) {
         let next_index = self.queue_index() + 1;
-        if next_index < self.imp().queue.borrow().len() as i32 {
+        if next_index < self.imp().queue.n_items() as i32 {
             self.load_song(next_index);
             self.play();
         } else {
@@ -320,7 +335,10 @@ impl AudioModel {
     pub fn current_song(&self) -> Option<SongModel> {
         let index = self.imp().queue_index.get();
         if index >= 0 {
-            self.imp().queue.borrow().get(index as usize).cloned()
+            self.imp()
+                .queue
+                .item(index as u32)
+                .and_downcast::<SongModel>()
         } else {
             None
         }
@@ -417,7 +435,7 @@ mod imp {
 
     use super::*;
 
-    #[derive(Properties, Default)]
+    #[derive(Properties)]
     #[properties(wrapper_type = super::AudioModel)]
     pub struct AudioModel {
         #[property(get, set)]
@@ -448,13 +466,37 @@ mod imp {
         pub shuffle_enabled: Cell<bool>,
 
         pub player: OnceCell<AudioPlayer>,
-        pub queue: RefCell<Vec<SongModel>>,
+        pub queue: gio::ListStore,
         pub mpris_server: OnceCell<LocalServer<super::AudioModel>>,
         pub reporting_manager: OnceCell<ReportingManager>,
         pub shuffle_index: Cell<usize>,
         pub shuffle_seed: Cell<u64>,
         pub uri: RefCell<Option<String>>,
     }
+
+    impl Default for AudioModel {
+        fn default() -> Self {
+            Self {
+                queue_index: Cell::new(0),
+                playing: Cell::new(false),
+                paused: Cell::new(false),
+                loading: Cell::new(false),
+                position: Cell::new(0),
+                duration: Cell::new(0),
+                volume: Cell::new(1.0),
+                muted: Cell::new(false),
+                shuffle_enabled: Cell::new(false),
+                player: OnceCell::new(),
+                queue: gio::ListStore::new::<SongModel>(),
+                mpris_server: OnceCell::new(),
+                reporting_manager: OnceCell::new(),
+                shuffle_index: Cell::new(0),
+                shuffle_seed: Cell::new(0),
+                uri: RefCell::new(None),
+            }
+        }
+    }
+
     #[glib::object_subclass]
     impl ObjectSubclass for AudioModel {
         const NAME: &'static str = "GellyAudioModel";
