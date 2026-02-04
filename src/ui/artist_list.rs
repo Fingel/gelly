@@ -77,9 +77,7 @@ impl ArtistList {
                 .get()
                 .expect("AlbumList store should be initialized.");
             store.remove_all();
-            for artist in artists {
-                store.append(&artist);
-            }
+            store.extend_from_slice(&artists);
             self.apply_sorting();
         }
     }

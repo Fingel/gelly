@@ -80,9 +80,7 @@ impl AlbumList {
                 .get()
                 .expect("AlbumList store should be initialized.");
             store.remove_all();
-            for album in albums {
-                store.append(&album);
-            }
+            store.extend_from_slice(&albums);
             self.apply_sorting();
         }
     }
