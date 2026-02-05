@@ -204,7 +204,9 @@ impl Setup {
         settings()
             .set_string("library-id", &library_id)
             .expect("Failed to save library id");
-        self.get_application().imp().library_id.replace(library_id);
+        let app = self.get_application();
+        app.imp().library_id.replace(library_id);
+        app.refresh_all(true);
         // We did it!
         self.get_root_window().show_main_page();
     }
