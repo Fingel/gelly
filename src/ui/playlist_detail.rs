@@ -8,7 +8,7 @@ use crate::{
         page_traits::DetailPage,
         playlist_dialogs,
         song::{Song, SongOptions},
-        song_utils::connect_song_navigation,
+        song_utils::{self, connect_song_navigation},
         widget_ext::WidgetApplicationExt,
     },
 };
@@ -111,6 +111,8 @@ impl PlaylistDetail {
         factory.connect_bind(glib::clone!(
             #[weak (rename_to = playlist_detail)]
             self,
+            #[weak]
+            audio_model,
             move |_, list_item| {
                 let list_item = list_item
                     .downcast_ref::<gtk::ListItem>()
@@ -126,10 +128,12 @@ impl PlaylistDetail {
 
                 song_widget.set_song_data(&song_model);
 
-                let current_track = audio_model.current_song_id();
-                song_widget.set_playing(song_model.id() == current_track);
+                song_utils::connect_playing_indicator(&song_widget, &song_model, &audio_model);
 
-                connect_song_navigation(&song_widget, &playlist_detail.get_root_window());
+                let mut handlers = Vec::new();
+                let nav_handlers =
+                    connect_song_navigation(&song_widget, &playlist_detail.get_root_window());
+                handlers.extend(nav_handlers);
 
                 let is_smart_playlist = playlist_detail
                     .get_model()
@@ -137,7 +141,7 @@ impl PlaylistDetail {
                     .unwrap_or(true);
 
                 if !is_smart_playlist {
-                    song_widget.connect_closure(
+                    let moved_handler = song_widget.connect_closure(
                         "widget-moved",
                         false,
                         glib::closure_local!(
@@ -151,7 +155,8 @@ impl PlaylistDetail {
                             }
                         ),
                     );
-                    song_widget.connect_closure(
+                    handlers.push(moved_handler);
+                    let removed_handler = song_widget.connect_closure(
                         "remove-from-playlist",
                         false,
                         glib::closure_local!(
@@ -162,7 +167,30 @@ impl PlaylistDetail {
                             }
                         ),
                     );
+                    handlers.push(removed_handler);
                 }
+                // store all handlers to disconnect on unbind
+                song_widget.imp().signal_handlers.replace(handlers);
+            }
+        ));
+
+        factory.connect_unbind(glib::clone!(
+            #[weak]
+            audio_model,
+            move |_, list_item| {
+                let list_item = list_item
+                    .downcast_ref::<gtk::ListItem>()
+                    .expect("Needs to be a ListItem");
+                let song_widget = list_item
+                    .child()
+                    .and_downcast::<Song>()
+                    .expect("Child has to be Song");
+
+                // disconnect song-changed handler, it's connected to audio_model
+                song_utils::disconnect_playing_indicator(&song_widget, &audio_model);
+
+                // disconnect other handlers connected to song
+                song_utils::disconnect_signal_handlers(&song_widget);
             }
         ));
 
@@ -186,6 +214,7 @@ impl PlaylistDetail {
     }
 
     fn pull_tracks(&self) {
+        self.setup_model();
         let Some(playlist_model) = self.get_model() else {
             warn!("No playlist model set");
             return;
@@ -605,13 +634,6 @@ mod imp {
             self.parent_constructed();
             self.obj().setup_menu();
             self.setup_signals();
-            self.obj().connect_map(glib::clone!(
-                #[weak(rename_to = playlist_detail)]
-                self.obj(),
-                move |_| {
-                    playlist_detail.setup_model();
-                }
-            ));
         }
     }
     impl WidgetImpl for PlaylistDetail {}

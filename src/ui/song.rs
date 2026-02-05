@@ -11,7 +11,6 @@ use log::warn;
 
 use crate::{
     async_utils::spawn_tokio,
-    audio::model::AudioModel,
     jellyfin::utils::format_duration,
     models::SongModel,
     ui::{
@@ -133,27 +132,6 @@ impl Song {
         drag_widget.append(&drag_song);
         let drag_icon = gtk::DragIcon::for_drag(drag);
         drag_icon.set_child(Some(&drag_widget));
-    }
-
-    fn listen_for_song_changes(&self) {
-        if self.is_ghost() {
-            return; // Don't connect for ghost (drag and drop) widgets
-        }
-
-        if let Some(audio_model) = self.get_application().audio_model() {
-            audio_model.connect_closure(
-                "song-changed",
-                false,
-                glib::closure_local!(
-                    #[weak(rename_to = song)]
-                    self,
-                    move |_audio_model: AudioModel, song_id: &str| {
-                        let my_id = song.imp().item_id.borrow().clone();
-                        song.set_playing(song_id == my_id);
-                    }
-                ),
-            );
-        }
     }
 
     fn setup_menu(&self) {
@@ -359,6 +337,9 @@ mod imp {
 
         #[property(get, construct_only, name = "is-ghost", default = false)]
         pub is_ghost: Cell<bool>,
+
+        pub playing_indicator_handler: RefCell<Option<glib::SignalHandlerId>>,
+        pub signal_handlers: RefCell<Vec<glib::SignalHandlerId>>,
     }
 
     #[glib::object_subclass]
@@ -417,14 +398,6 @@ mod imp {
                     }
                 ),
             );
-
-            self.obj().connect_map(glib::clone!(
-                #[weak(rename_to = song)]
-                self.obj(),
-                move |_| {
-                    song.listen_for_song_changes();
-                }
-            ));
         }
     }
     impl BoxImpl for Song {}

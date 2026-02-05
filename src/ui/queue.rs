@@ -5,7 +5,7 @@ use crate::{
         page_traits::TopPage,
         playlist_dialogs,
         song::{Song, SongOptions},
-        song_utils::connect_song_navigation,
+        song_utils,
         widget_ext::WidgetApplicationExt,
     },
 };
@@ -187,6 +187,8 @@ impl Queue {
         factory.connect_bind(glib::clone!(
             #[weak(rename_to = queue)]
             self,
+            #[weak]
+            audio_model,
             move |_, list_item| {
                 let list_item = list_item
                     .downcast_ref::<gtk::ListItem>()
@@ -202,13 +204,13 @@ impl Queue {
 
                 song_widget.set_song_data(&song_model);
 
-                // Mark of this song is playing
-                let current_track = audio_model.current_song_id();
-                song_widget.set_playing(song_model.id() == current_track);
+                song_utils::connect_playing_indicator(&song_widget, &song_model, &audio_model);
 
-                connect_song_navigation(&song_widget, &queue.get_root_window());
-
-                song_widget.connect_closure(
+                let mut handlers = Vec::new();
+                let nav_handlers =
+                    song_utils::connect_song_navigation(&song_widget, &queue.get_root_window());
+                handlers.extend(nav_handlers);
+                let moved_handler = song_widget.connect_closure(
                     "widget-moved",
                     false,
                     glib::closure_local!(move |song_widget: Song, source_index: i32| {
@@ -217,6 +219,30 @@ impl Queue {
                         queue.handle_song_moved(source_index, target_index)
                     }),
                 );
+                handlers.push(moved_handler);
+
+                // Store all handlers to disconnect on unbind
+                song_widget.imp().signal_handlers.replace(handlers);
+            }
+        ));
+
+        factory.connect_unbind(glib::clone!(
+            #[weak]
+            audio_model,
+            move |_, list_item| {
+                let list_item = list_item
+                    .downcast_ref::<gtk::ListItem>()
+                    .expect("Needs to be a ListItem");
+                let song_widget = list_item
+                    .child()
+                    .and_downcast::<Song>()
+                    .expect("Child has to be Song");
+
+                // disconnect song-changed handler, it's connected to audio_model
+                song_utils::disconnect_playing_indicator(&song_widget, &audio_model);
+
+                // disconnect other handlers connected to song
+                song_utils::disconnect_signal_handlers(&song_widget);
             }
         ));
 

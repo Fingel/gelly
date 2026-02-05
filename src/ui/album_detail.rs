@@ -7,7 +7,7 @@ use crate::{
         music_context_menu::{ContextActions, construct_menu, create_actiongroup},
         page_traits::DetailPage,
         song::Song,
-        song_utils::connect_song_navigation,
+        song_utils::{self, connect_song_navigation},
         widget_ext::WidgetApplicationExt,
     },
 };
@@ -62,10 +62,18 @@ impl AlbumDetail {
 
     fn setup_model(&self) {
         let imp = self.imp();
-        let store = gio::ListStore::new::<SongModel>();
-        imp.store
-            .set(store.clone())
-            .expect("Store should only be set once");
+        if imp.store.get().is_some() {
+            // Store is already set up with a model.
+            return;
+        }
+        let store = imp
+            .store
+            .get_or_init(gio::ListStore::new::<SongModel>)
+            .clone();
+        let Some(audio_model) = self.get_application().audio_model() else {
+            warn!("No audio model set, aborting");
+            return;
+        };
         let selection_model = gtk::NoSelection::new(Some(store));
         let factory = gtk::SignalListItemFactory::new();
 
@@ -85,6 +93,8 @@ impl AlbumDetail {
         factory.connect_bind(glib::clone!(
             #[weak(rename_to = album_detail)]
             self,
+            #[weak]
+            audio_model,
             move |_, list_item| {
                 let list_item = list_item
                     .downcast_ref::<gtk::ListItem>()
@@ -100,27 +110,43 @@ impl AlbumDetail {
 
                 song_widget.set_song_data(&song_model);
 
-                if let Some(audio_model) = album_detail.get_application().audio_model() {
-                    let current_track = audio_model.current_song_id();
-                    song_widget.set_playing(song_model.id() == current_track);
-                }
+                song_utils::connect_playing_indicator(&song_widget, &song_model, &audio_model);
 
-                connect_song_navigation(&song_widget, &album_detail.get_root_window());
+                let nav_handlers =
+                    connect_song_navigation(&song_widget, &album_detail.get_root_window());
+                song_widget.imp().signal_handlers.replace(nav_handlers);
             }
         ));
+
+        factory.connect_unbind(glib::clone!(
+            #[weak]
+            audio_model,
+            move |_, list_item| {
+                let list_item = list_item
+                    .downcast_ref::<gtk::ListItem>()
+                    .expect("Needs to be a ListItem");
+                let song_widget = list_item
+                    .child()
+                    .and_downcast::<Song>()
+                    .expect("Child has to be Song");
+
+                song_utils::disconnect_playing_indicator(&song_widget, &audio_model);
+                song_utils::disconnect_signal_handlers(&song_widget);
+            }
+        ));
+
         imp.track_list.set_model(Some(&selection_model));
         imp.track_list.set_factory(Some(&factory));
         imp.track_list.set_single_click_activate(true);
     }
 
     pub fn pull_tracks(&self) {
+        self.setup_model(); // make sure store is initialized
         let library = self.get_application().library().clone();
         let songs = songs_for_album(&self.id(), &library.borrow());
         let store = self.get_store();
         store.remove_all();
-        for song in &songs {
-            store.append(song);
-        }
+        store.extend_from_slice(&songs);
         self.imp().songs.replace(songs);
         self.update_track_metadata();
     }
@@ -325,7 +351,6 @@ mod imp {
     impl ObjectImpl for AlbumDetail {
         fn constructed(&self) {
             self.parent_constructed();
-            self.obj().setup_model();
             self.obj().setup_menu();
             self.setup_signals();
         }
