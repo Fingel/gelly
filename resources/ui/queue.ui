@@ -14,46 +14,39 @@
           </object>
         </child>
         <child>
-          <object class="AdwClamp">
-            <property name="margin-bottom">12</property>
-            <property name="margin-top">24</property>
-            <property name="maximum-size">1000</property>
+          <object class="GtkBox" id="queue_box">
+            <property name="orientation">vertical</property>
             <child>
-              <object class="GtkBox" id="queue_box">
-                <property name="orientation">vertical</property>
+              <object class="GtkBox" id="queue_toolbar">
+                <property name="orientation">horizontal</property>
+                <property name="spacing">6</property>
+                <property name="halign">end</property>
+                <style>
+                  <class name="toolbar"/>
+                </style>
                 <child>
-                  <object class="GtkBox" id="queue_toolbar">
-                    <property name="orientation">horizontal</property>
-                    <property name="spacing">6</property>
-                    <property name="halign">end</property>
+                  <object class="GtkButton" id="clear_queue">
+                    <property name="label" translatable="yes">Clear All</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkButton" id="save_as_playlist">
+                    <property name="label" translatable="yes">Save as Playlist</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="GellyAutoScrollWindow">
+                <property name="vexpand">true</property>
+                <property name="content">
+                  <object class="GtkListView" id="track_list">
+                    <property name="width-request">300</property>
                     <style>
-                      <class name="toolbar"/>
+                      <class name="boxed-list" />
                     </style>
-                    <child>
-                      <object class="GtkButton" id="clear_queue">
-                        <property name="label" translatable="yes">Clear All</property>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkButton" id="save_as_playlist">
-                        <property name="label" translatable="yes">Save as Playlist</property>
-                      </object>
-                    </child>
                   </object>
-                </child>
-                <child>
-                  <object class="GellyAutoScrollWindow">
-                    <property name="vexpand">true</property>
-                    <property name="content">
-                      <object class="GtkListView" id="track_list">
-                        <property name="width-request">300</property>
-                        <style>
-                          <class name="boxed-list" />
-                        </style>
-                      </object>
-                    </property>
-                  </object>
-                </child>
+                </property>
               </object>
             </child>
           </object>
