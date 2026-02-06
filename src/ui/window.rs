@@ -299,6 +299,8 @@ mod imp {
         pub search_button: TemplateChild<gtk::Button>,
         #[template_child]
         pub new_button: TemplateChild<gtk::Button>,
+        #[template_child]
+        pub split_view: TemplateChild<adw::OverlaySplitView>,
     }
 
     #[glib::object_subclass]
@@ -365,6 +367,18 @@ mod imp {
                     move |_, _, _| {
                         let app = window.obj().get_application();
                         app.request_library_rescan();
+                    }
+                ))
+                .build();
+
+            let action_sidebar = ActionEntry::builder("toggle-queue")
+                .activate(glib::clone!(
+                    #[weak(rename_to=window)]
+                    self,
+                    move |_, _, _| {
+                        window
+                            .split_view
+                            .set_show_sidebar(!window.split_view.shows_sidebar());
                     }
                 ))
                 .build();
@@ -505,6 +519,7 @@ mod imp {
                 action_artist_list,
                 action_playlist_list,
                 action_queue,
+                action_sidebar,
             ]);
 
             self.stack.connect_notify_local(
