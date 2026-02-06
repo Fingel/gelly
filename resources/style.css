@@ -47,14 +47,6 @@ listview.boxed-list > row {
     background-color: transparent;
 }
 
-listview.boxed-list > row:first-child {
-    border-top: none;
-}
-
-listview.boxed-list > row:last-child {
-    border-bottom: none;
-}
-
 listview.boxed-list > row:hover {
     background-color: alpha(currentColor, 0.05);
 }

@@ -264,9 +264,9 @@
                 <property name="sidebar">
                   <object class="GtkBox" id="sidebar_box">
                     <property name="orientation">vertical</property>
-                    <property name="spacing">12</property>
                     <child>
                       <object class="AdwHeaderBar">
+                        <property name="show-title">False</property>
                         <child type="start">
                           <object class="GtkToggleButton" id="toggle_queue_button_open">
                             <property name="action-name">win.toggle-queue</property>
@@ -276,11 +276,20 @@
                             <property name="visible" bind-source="split_view" bind-property="show-sidebar" />
                           </object>
                         </child>
-                        <property name="title-widget">
-                          <object class="AdwWindowTitle">
-                            <property name="title" translatable="yes">Queue</property>
+                        <child type="end">
+                          <object class="GtkButton" id="clear_queue_button">
+                            <property name="action-name">queue.clear</property>
+                            <property name="icon-name">edit-clear-all-symbolic</property>
+                            <property name="tooltip-text" translatable="yes">Clear Queue</property>
                           </object>
-                        </property>
+                        </child>
+                        <child type="end">
+                          <object class="GtkButton" id="save_queue_button">
+                            <property name="action-name">queue.save</property>
+                            <property name="icon-name">document-save-symbolic</property>
+                            <property name="tooltip-text" translatable="yes">Save As Playlist</property>
+                          </object>
+                        </child>
                       </object>
                     </child>
                     <child>

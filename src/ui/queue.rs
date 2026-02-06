@@ -92,7 +92,7 @@ impl Queue {
 
     fn set_empty(&self, empty: bool) {
         self.imp().empty.set_visible(empty);
-        self.imp().queue_box.set_visible(!empty);
+        self.imp().track_list.set_visible(!empty);
     }
 
     pub fn song_selected(&self, index: usize) {
@@ -262,6 +262,34 @@ impl Queue {
         // Set initial empty state
         self.set_empty(store.n_items() == 0);
     }
+
+    // Creates an action group for the clear and save buttons that are outside of this widget
+    pub fn setup_actions(&self) {
+        let actions = gio::SimpleActionGroup::new();
+
+        let clear_action = gio::SimpleAction::new("clear", None);
+        clear_action.connect_activate(glib::clone!(
+            #[weak(rename_to = queue)]
+            self,
+            move |_, _| {
+                queue.clear_queue();
+            }
+        ));
+        actions.add_action(&clear_action);
+
+        let save_action = gio::SimpleAction::new("save", None);
+        save_action.connect_activate(glib::clone!(
+            #[weak(rename_to = queue)]
+            self,
+            move |_, _| {
+                queue.save_as_playlist();
+            }
+        ));
+        actions.add_action(&save_action);
+
+        self.get_root_window()
+            .insert_action_group("queue", Some(&actions));
+    }
 }
 
 impl Default for Queue {
@@ -288,12 +316,6 @@ mod imp {
         pub empty: TemplateChild<adw::StatusPage>,
         #[template_child]
         pub track_list: TemplateChild<gtk::ListView>,
-        #[template_child]
-        pub queue_box: TemplateChild<gtk::Box>,
-        #[template_child]
-        pub clear_queue: TemplateChild<gtk::Button>,
-        #[template_child]
-        pub save_as_playlist: TemplateChild<gtk::Button>,
         pub store: OnceCell<gio::ListStore>,
     }
 
@@ -325,6 +347,7 @@ mod imp {
                 move |_| {
                     queue.setup_model();
                     queue.display_queue();
+                    queue.setup_actions();
                 }
             ));
         }
@@ -337,22 +360,6 @@ mod imp {
                 self,
                 move |_, position| {
                     imp.obj().song_selected(position as usize);
-                }
-            ));
-
-            self.clear_queue.connect_clicked(glib::clone!(
-                #[weak(rename_to=imp)]
-                self,
-                move |_| {
-                    imp.obj().clear_queue();
-                }
-            ));
-
-            self.save_as_playlist.connect_clicked(glib::clone!(
-                #[weak(rename_to=imp)]
-                self,
-                move |_| {
-                    imp.obj().save_as_playlist();
                 }
             ));
         }

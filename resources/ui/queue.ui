@@ -4,53 +4,23 @@
   <template class="GellyQueue" parent="GtkBox">
     <property name="orientation">vertical</property>
     <child>
-      <object class="GtkBox">
-        <property name="orientation">vertical</property>
-        <child>
-          <object class="AdwStatusPage" id="empty">
-            <property name="title">Nothing Playing</property>
-            <property name="icon-name">audio-x-generic-symbolic</property>
-            <property name="visible">true</property>
+      <object class="AdwStatusPage" id="empty">
+        <property name="title">Nothing Playing</property>
+        <property name="icon-name">audio-x-generic-symbolic</property>
+        <property name="visible">true</property>
+      </object>
+    </child>
+    <child>
+      <object class="GellyAutoScrollWindow" id="scroll_window">
+        <property name="vexpand">true</property>
+        <property name="content">
+          <object class="GtkListView" id="track_list">
+            <property name="width-request">300</property>
+            <style>
+              <class name="boxed-list" />
+            </style>
           </object>
-        </child>
-        <child>
-          <object class="GtkBox" id="queue_box">
-            <property name="orientation">vertical</property>
-            <child>
-              <object class="GtkBox" id="queue_toolbar">
-                <property name="orientation">horizontal</property>
-                <property name="spacing">6</property>
-                <property name="halign">end</property>
-                <style>
-                  <class name="toolbar"/>
-                </style>
-                <child>
-                  <object class="GtkButton" id="clear_queue">
-                    <property name="label" translatable="yes">Clear All</property>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkButton" id="save_as_playlist">
-                    <property name="label" translatable="yes">Save as Playlist</property>
-                  </object>
-                </child>
-              </object>
-            </child>
-            <child>
-              <object class="GellyAutoScrollWindow">
-                <property name="vexpand">true</property>
-                <property name="content">
-                  <object class="GtkListView" id="track_list">
-                    <property name="width-request">300</property>
-                    <style>
-                      <class name="boxed-list" />
-                    </style>
-                  </object>
-                </property>
-              </object>
-            </child>
-          </object>
-        </child>
+        </property>
       </object>
     </child>
   </template>
