@@ -217,6 +217,7 @@ impl AudioModel {
 
     pub fn clear_queue(&self) {
         self.imp().queue.remove_all();
+        self.set_queue_index(-1);
         self.report_event(PlaybackEvent::NavigationChanged {
             can_go_next: false,
             can_go_previous: false,
