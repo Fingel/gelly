@@ -35,6 +35,7 @@
                 <property name="focusable">False</property>
                 <property name="halign">end</property>
                 <property name="justify">right</property>
+                <property name="visible" bind-source="GellySong" bind-property="in-queue" bind-flags="invert-boolean"/>
                 <style>
                   <class name="dim-label"/>
                 </style>
@@ -88,6 +89,7 @@
                     <property name="focusable">False</property>
                     <property name="label"> - </property>
                     <property name="halign">start</property>
+                    <property name="visible" bind-source="GellySong" bind-property="in-queue" bind-flags="invert-boolean"/>
                     <style>
                       <class name="dimmed"/>
                     </style>
@@ -120,6 +122,7 @@
             <property name="focusable">False</property>
             <property name="width_request">60</property>
             <property name="spacing">6</property>
+            <property name="visible" bind-source="GellySong" bind-property="in-queue" bind-flags="invert-boolean"/>
             <child>
               <object class="GtkLabel" id="duration_label">
                 <property name="focusable">False</property>

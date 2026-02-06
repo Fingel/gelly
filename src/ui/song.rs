@@ -309,6 +309,8 @@ mod imp {
         #[template_child]
         pub number_label: TemplateChild<gtk::Label>,
         #[template_child]
+        pub artist_box: TemplateChild<gtk::Box>,
+        #[template_child]
         pub artist_button: TemplateChild<gtk::Button>,
         #[template_child]
         pub artist_label: TemplateChild<gtk::Label>,
@@ -383,6 +385,14 @@ mod imp {
             self.parent_constructed();
             self.obj().setup_menu();
             self.obj().setup_clickable_labels();
+
+            // Sadly this can't be done in the template itself
+            let orientation = if self.in_queue.get() {
+                gtk::Orientation::Vertical
+            } else {
+                gtk::Orientation::Horizontal
+            };
+            self.artist_box.set_orientation(orientation);
 
             self.obj().connect_notify_local(
                 Some("position"),

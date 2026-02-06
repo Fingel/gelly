@@ -234,7 +234,8 @@
                                             <property name="icon-name">audio-x-generic-symbolic</property>
                                             <property name="use-underline">true</property>
                                             <property name="child">
-                                              <object class="GellyQueue" id="queue">
+                                              <object class="GtkLabel">
+                                                <property name="label" translatable="yes">Queue is empty</property>
                                               </object>
                                             </property>
                                           </object>
@@ -283,8 +284,7 @@
                       </object>
                     </child>
                     <child>
-                      <object class="GtkLabel" id="sidebar_label">
-                        <property name="label" translatable="yes">Sidebar</property>
+                      <object class="GellyQueue" id="queue">
                       </object>
                     </child>
                   </object>
