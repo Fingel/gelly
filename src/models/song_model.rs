@@ -19,6 +19,7 @@ impl SongModel {
         duration: u64,
         has_lyrics: bool,
         normalization_gain: f64,
+        date_created: &str,
     ) -> Self {
         Object::builder()
             .property("id", id)
@@ -31,6 +32,7 @@ impl SongModel {
             .property("duration", duration)
             .property("has-lyrics", has_lyrics)
             .property("normalization-gain", normalization_gain)
+            .property("date-created", date_created)
             .build()
     }
 
@@ -50,7 +52,7 @@ impl From<&MusicDto> for SongModel {
             .iter()
             .map(|artist| artist.name.clone())
             .collect();
-
+        let date_created = dto.date_created.clone().unwrap_or("".to_string());
         SongModel::new(
             &dto.id,
             &dto.name,
@@ -62,6 +64,7 @@ impl From<&MusicDto> for SongModel {
             dto.run_time_ticks,
             dto.has_lyrics,
             dto.normalization_gain.unwrap_or(0.0),
+            &date_created,
         )
     }
 }
@@ -103,6 +106,9 @@ mod imp {
 
         #[property(get, set)]
         normalization_gain: Cell<f64>,
+
+        #[property(get, set, name = "date-created")]
+        pub date_created: RefCell<String>,
     }
 
     #[glib::object_subclass]

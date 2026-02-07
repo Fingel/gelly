@@ -17,6 +17,7 @@
     <file compressed="true" preprocess="xml-stripblanks">ui/playlist.ui</file>
     <file compressed="true" preprocess="xml-stripblanks">ui/playlist_list.ui</file>
     <file compressed="true" preprocess="xml-stripblanks">ui/playlist_detail.ui</file>
+    <file compressed="true" preprocess="xml-stripblanks">ui/song_list.ui</file>
     <file compressed="true" preprocess="xml-stripblanks">ui/media_card.ui</file>
     <file compressed="true" preprocess="xml-stripblanks">ui/shortcuts_dialog.ui</file>
     <file compressed="true" preprocess="xml-stripblanks">ui/preferences.ui</file>

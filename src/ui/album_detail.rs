@@ -329,7 +329,6 @@ mod imp {
 
         pub model: RefCell<Option<AlbumModel>>,
         pub songs: RefCell<Vec<SongModel>>,
-        pub song_change_signal_connected: Cell<bool>,
         pub store: OnceCell<gio::ListStore>,
     }
 

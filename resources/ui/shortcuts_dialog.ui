@@ -67,8 +67,8 @@
         </child>
         <child>
           <object class="AdwShortcutsItem">
-            <property name="title">Focus Queue</property>
-            <property name="action-name">win.show-queue</property>
+            <property name="title">Focus Song List</property>
+            <property name="action-name">win.show-song-list</property>
           </object>
         </child>
       </object>

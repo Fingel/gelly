@@ -55,6 +55,12 @@ pub fn artists_from_library(library: &[MusicDto]) -> Vec<ArtistModel> {
     artists
 }
 
+pub fn all_songs(library: &[MusicDto]) -> Vec<SongModel> {
+    let mut songs: Vec<SongModel> = library.iter().map(SongModel::from).collect();
+    songs.sort_by_key(|s| std::cmp::Reverse(s.date_created()));
+    songs
+}
+
 pub fn albums_for_artist(artist_id: &str, library: &[MusicDto]) -> Vec<AlbumModel> {
     let mut seen_album_ids = HashSet::new();
     let mut albums: Vec<AlbumModel> = library

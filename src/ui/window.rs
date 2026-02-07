@@ -55,6 +55,7 @@ impl Window {
         imp.album_list.setup_library_connection();
         imp.artist_list.setup_library_connection();
         imp.playlist_list.setup_library_connection();
+        imp.song_list.setup_library_connection();
         // Library is refreshed down at the end of the connect_map signal
 
         // Initialize player bar with audio model
@@ -72,8 +73,8 @@ impl Window {
                 self.show_page(&imp.artist_list.get());
             } else if visible_child == imp.playlist_list.get().upcast::<gtk::Widget>() {
                 self.show_page(&imp.playlist_list.get());
-            } else if visible_child == imp.queue.get().upcast::<gtk::Widget>() {
-                self.show_page(&imp.queue.get());
+            } else if visible_child == imp.song_list.get().upcast::<gtk::Widget>() {
+                self.show_page(&imp.song_list.get());
             } else {
                 error!("Unknown page widget");
             }
@@ -223,8 +224,8 @@ impl Window {
                 action(&imp.artist_list.get());
             } else if visible_child == imp.playlist_list.get().upcast::<gtk::Widget>() {
                 action(&imp.playlist_list.get());
-            } else if visible_child == imp.queue.get().upcast::<gtk::Widget>() {
-                action(&imp.queue.get());
+            } else if visible_child == imp.song_list.get().upcast::<gtk::Widget>() {
+                action(&imp.song_list.get());
             } else {
                 error!("Unknown page widget");
             }
@@ -245,7 +246,7 @@ mod imp {
     };
     use log::{debug, warn};
 
-    use crate::ui::{artist_detail::ArtistDetail, player_bar::PlayerBar};
+    use crate::ui::{artist_detail::ArtistDetail, player_bar::PlayerBar, song_list::SongList};
     use crate::ui::{playlist_list::PlaylistList, widget_ext::WidgetApplicationExt};
     use crate::ui::{queue::Queue, setup::Setup};
     use crate::{application::Application, ui::album_detail::AlbumDetail};
@@ -287,6 +288,8 @@ mod imp {
         pub playlist_detail: TemplateChild<PlaylistDetail>,
         #[template_child]
         pub playlist_detail_page: TemplateChild<adw::NavigationPage>,
+        #[template_child]
+        pub song_list: TemplateChild<SongList>,
         #[template_child]
         pub player_bar: TemplateChild<PlayerBar>,
         #[template_child]
@@ -493,12 +496,12 @@ mod imp {
                 ))
                 .build();
 
-            let action_queue = ActionEntry::builder("show-queue")
+            let action_song_list = ActionEntry::builder("show-song-list")
                 .activate(glib::clone!(
                     #[weak(rename_to=window)]
                     self,
                     move |_, _, _| {
-                        window.stack.set_visible_child(&window.queue.get());
+                        window.stack.set_visible_child(&window.song_list.get());
                     }
                 ))
                 .build();
@@ -518,7 +521,7 @@ mod imp {
                 action_album_list,
                 action_artist_list,
                 action_playlist_list,
-                action_queue,
+                action_song_list,
                 action_sidebar,
             ]);
 
