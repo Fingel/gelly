@@ -571,7 +571,7 @@ impl Default for PlaylistDetail {
 }
 
 mod imp {
-    use std::cell::{Cell, OnceCell, RefCell};
+    use std::cell::{OnceCell, RefCell};
 
     use adw::subclass::prelude::*;
     use glib::subclass::InitializingObject;
