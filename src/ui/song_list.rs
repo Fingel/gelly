@@ -136,6 +136,7 @@ impl SongList {
         ];
         if query.is_empty() {
             let sort_model = SortListModel::new(Some(store.clone()), Some(sorter));
+            self.bind_song_count(&sort_model);
             let selection_model = gtk::SingleSelection::new(Some(sort_model));
             imp.track_list.set_model(Some(&selection_model));
         } else {
@@ -147,6 +148,7 @@ impl SongList {
 
             let filter_model = FilterListModel::new(Some(store.clone()), Some(any_filter));
             let sort_model = SortListModel::new(Some(filter_model), Some(sorter));
+            self.bind_song_count(&sort_model);
             let selection_model = gtk::SingleSelection::new(Some(sort_model));
             imp.track_list.set_model(Some(&selection_model));
         }
@@ -168,6 +170,7 @@ impl SongList {
         imp.current_sorter.replace(Some(sorter.clone()));
         let store = imp.store.get().expect("Store should be initialized");
         let sort_model = SortListModel::new(Some(store.clone()), Some(sorter));
+        self.bind_song_count(&sort_model);
         let selection_model = gtk::SingleSelection::new(Some(sort_model));
         imp.track_list.set_model(Some(&selection_model));
     }
@@ -203,6 +206,15 @@ impl SongList {
                     .into(),
             }
         })
+    }
+
+    fn bind_song_count(&self, model: &impl IsA<gio::ListModel>) {
+        let imp = self.imp();
+        model
+            .bind_property("n-items", &imp.num_songs.get(), "label")
+            .transform_to(|_, n_items: u32| Some(n_items.to_string()))
+            .flags(glib::BindingFlags::SYNC_CREATE)
+            .build();
     }
 
     fn setup_model(&self) {
@@ -341,6 +353,8 @@ mod imp {
         pub sort_dropdown: TemplateChild<gtk::DropDown>,
         #[template_child]
         pub sort_direction: TemplateChild<adw::ToggleGroup>,
+        #[template_child]
+        pub num_songs: TemplateChild<gtk::Label>,
 
         pub store: OnceCell<gio::ListStore>,
         pub name_filter: OnceCell<gtk::StringFilter>,

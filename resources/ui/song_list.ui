@@ -70,18 +70,55 @@
           </object>
         </child>
         <child>
-          <object class="GtkScrolledWindow">
-            <property name="hscrollbar-policy">never</property>
-            <property name="vscrollbar-policy">automatic</property>
-            <property name="propagate-natural-height">true</property>
-            <property name="has-frame">false</property>
-            <property name="vexpand">true</property>
+          <object class="AdwClamp">
+            <property name="margin-bottom">24</property>
+            <property name="margin-top">24</property>
+            <property name="maximum-size">1000</property>
             <child>
-            <object class="GtkListView" id="track_list">
-                <property name="width-request">300</property>
-                <style>
-                  <class name="boxed-list" />
-                </style>
+              <object class="GtkBox">
+                <property name="orientation">vertical</property>
+                <property name="spacing">12</property>
+                <child>
+                  <object class="GtkBox">
+                    <property name="orientation">horizontal</property>
+                    <property name="spacing">6</property>
+                    <child>
+                      <object class="GtkLabel" id="num_songs">
+                        <property name="halign">start</property>
+                        <style>
+                          <class name="title-2" />
+                        </style>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="label">songs</property>
+                        <property name="halign">start</property>
+                        <style>
+                          <class name="title-2" />
+                          <class name="dimmed" />
+                        </style>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkScrolledWindow">
+                    <property name="hscrollbar-policy">never</property>
+                    <property name="vscrollbar-policy">automatic</property>
+                    <property name="propagate-natural-height">true</property>
+                    <property name="has-frame">false</property>
+                    <property name="vexpand">true</property>
+                    <child>
+                    <object class="GtkListView" id="track_list">
+                        <property name="width-request">300</property>
+                        <style>
+                          <class name="boxed-list" />
+                        </style>
+                      </object>
+                    </child>
+                  </object>
+                </child>
               </object>
             </child>
           </object>
