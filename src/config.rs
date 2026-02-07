@@ -230,3 +230,21 @@ pub fn set_playlists_sort_direction(direction: u32) {
         .set_uint("sort-playlists-direction", direction)
         .unwrap();
 }
+
+pub fn get_songs_sort_by() -> u32 {
+    settings().uint("sort-songs-by")
+}
+
+pub fn set_songs_sort_by(sort_by: u32) {
+    settings().set_uint("sort-songs-by", sort_by).unwrap();
+}
+
+pub fn get_songs_sort_direction() -> u32 {
+    settings().uint("sort-songs-direction")
+}
+
+pub fn set_songs_sort_direction(direction: u32) {
+    settings()
+        .set_uint("sort-songs-direction", direction)
+        .unwrap();
+}

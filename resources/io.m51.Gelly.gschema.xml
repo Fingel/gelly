@@ -77,5 +77,13 @@
       <default>0</default>
       <summary>Sort playlists direction</summary>
     </key>
+    <key name="sort-songs-by" type="u">
+      <default>0</default>
+      <summary>Sort songs by</summary>
+    </key>
+    <key name="sort-songs-direction" type="u">
+      <default>0</default>
+      <summary>Sort songs direction</summary>
+    </key>
   </schema>
 </schemalist>

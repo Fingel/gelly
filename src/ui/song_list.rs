@@ -8,6 +8,7 @@ use log::warn;
 
 use crate::{
     application::Application,
+    config,
     library_utils::all_songs,
     models::SongModel,
     ui::{
@@ -71,7 +72,9 @@ impl SongList {
     }
 
     pub fn pull_songs(&self) {
-        self.setup_model();
+        // Ensure factory is set up (will only happen once, after widget is attached)
+        self.setup_factory();
+
         let library = self.get_application().library().clone();
         let songs = all_songs(&library.borrow());
         if songs.is_empty() {
@@ -150,9 +153,8 @@ impl SongList {
     }
 
     fn sort_changed(&self) {
-        println!("Save sorting here");
-        // config::set_albums_sort_by(self.imp().sort_dropdown.selected());
-        // config::set_albums_sort_direction(self.imp().sort_direction.active());
+        config::set_songs_sort_by(self.imp().sort_dropdown.selected());
+        config::set_songs_sort_direction(self.imp().sort_direction.active());
         self.apply_sorting();
     }
 
@@ -209,37 +211,41 @@ impl SongList {
             // Store is already set up with a model.
             return;
         }
-        let store = imp
-            .store
-            .get_or_init(gio::ListStore::new::<SongModel>)
-            .clone();
+        imp.store.get_or_init(gio::ListStore::new::<SongModel>);
         let name_filter = create_string_filter::<SongModel>("title");
         imp.name_filter
             .set(name_filter)
             .expect("Name filter should only be set once");
+    }
+
+    fn setup_factory(&self) {
+        let imp = self.imp();
+
+        if imp.track_list.factory().is_some() {
+            return;
+        }
+
         let Some(audio_model) = self.get_application().audio_model() else {
             warn!("No audio model set, aborting");
             return;
         };
-        let selection_model = gtk::NoSelection::new(Some(store));
+
+        let store = imp.store.get().expect("Store should be initialized");
+        let selection_model = gtk::NoSelection::new(Some(store.clone()));
         let factory = gtk::SignalListItemFactory::new();
 
-        factory.connect_setup(glib::clone!(
-            #[weak(rename_to = song_list)]
-            self,
-            move |_, list_item| {
-                let song_widget = Song::new();
-                let item = list_item
-                    .downcast_ref::<gtk::ListItem>()
-                    .expect("Should be a ListItem");
+        factory.connect_setup(move |_, list_item| {
+            let song_widget = Song::new();
+            let item = list_item
+                .downcast_ref::<gtk::ListItem>()
+                .expect("Should be a ListItem");
 
-                item.bind_property("position", &song_widget, "position")
-                    .flags(glib::BindingFlags::SYNC_CREATE)
-                    .build();
+            item.bind_property("position", &song_widget, "position")
+                .flags(glib::BindingFlags::SYNC_CREATE)
+                .build();
 
-                item.set_child(Some(&song_widget))
-            }
-        ));
+            item.set_child(Some(&song_widget))
+        });
 
         factory.connect_bind(glib::clone!(
             #[weak (rename_to = song_list)]
@@ -307,7 +313,7 @@ impl Default for SongList {
 }
 
 mod imp {
-    use std::cell::{Cell, OnceCell, RefCell};
+    use std::cell::{OnceCell, RefCell};
 
     use adw::subclass::prelude::*;
     use gtk::{
@@ -315,6 +321,8 @@ mod imp {
         glib::{self, subclass::InitializingObject},
         prelude::*,
     };
+
+    use crate::config;
 
     #[derive(CompositeTemplate, Default)]
     #[template(resource = "/io/m51/Gelly/ui/song_list.ui")]
@@ -357,12 +365,12 @@ mod imp {
     impl ObjectImpl for SongList {
         fn constructed(&self) {
             self.parent_constructed();
+            self.obj().setup_model();
             self.setup_signals();
 
-            // self.sort_dropdown
-            //     .set_selected(config::get_albums_sort_by());
-            // self.sort_direction
-            //     .set_active(config::get_albums_sort_direction());
+            self.sort_dropdown.set_selected(config::get_songs_sort_by());
+            self.sort_direction
+                .set_active(config::get_songs_sort_direction());
         }
     }
     impl WidgetImpl for SongList {}
