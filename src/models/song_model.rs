@@ -21,10 +21,12 @@ impl SongModel {
         normalization_gain: f64,
         date_created: &str,
     ) -> Self {
+        let artists_string = artists.join(", ");
         Object::builder()
             .property("id", id)
             .property("title", title)
             .property("artists", artists)
+            .property("artists-string", artists_string)
             .property("album", album)
             .property("album-id", album_id)
             .property("track-number", track_number)
@@ -34,10 +36,6 @@ impl SongModel {
             .property("normalization-gain", normalization_gain)
             .property("date-created", date_created)
             .build()
-    }
-
-    pub fn artists_string(&self) -> String {
-        self.artists().join(", ")
     }
 
     pub fn duration_seconds(&self) -> u64 {
@@ -85,6 +83,9 @@ mod imp {
 
         #[property(get, set)]
         artists: RefCell<Vec<String>>,
+
+        #[property(get, set, name = "artists-string")]
+        artists_string: RefCell<String>,
 
         #[property(get, set)]
         album: RefCell<String>,

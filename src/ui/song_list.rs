@@ -133,6 +133,10 @@ impl SongList {
                 .get()
                 .expect("Name filter should be initialized")
                 .clone(),
+            imp.artist_filter
+                .get()
+                .expect("Artist filter should be initialized")
+                .clone(),
         ];
         if query.is_empty() {
             let sort_model = SortListModel::new(Some(store.clone()), Some(sorter));
@@ -228,6 +232,10 @@ impl SongList {
         imp.name_filter
             .set(name_filter)
             .expect("Name filter should only be set once");
+        let artist_filter = create_string_filter::<SongModel>("artists-string");
+        imp.artist_filter
+            .set(artist_filter)
+            .expect("Artist filter should only be set once");
     }
 
     fn setup_factory(&self) {
@@ -358,6 +366,7 @@ mod imp {
 
         pub store: OnceCell<gio::ListStore>,
         pub name_filter: OnceCell<gtk::StringFilter>,
+        pub artist_filter: OnceCell<gtk::StringFilter>,
         pub current_sorter: RefCell<Option<gtk::CustomSorter>>,
     }
 

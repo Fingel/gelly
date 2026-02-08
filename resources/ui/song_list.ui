@@ -20,7 +20,7 @@
             <property name="search-mode-enabled">false</property>
             <child>
               <object class="GtkSearchEntry" id="search_entry">
-                <property name="placeholder-text">Search Albums</property>
+                <property name="placeholder-text">Search Songs</property>
               </object>
             </child>
           </object>
