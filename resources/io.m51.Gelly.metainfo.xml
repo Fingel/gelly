@@ -11,7 +11,7 @@
       your music library.
     </p>
     <ul>
-      <li>Browse your music collection by artist, album and playlist</li>
+      <li>Browse your music collection by artist, album, song and playlist</li>
       <li>Modern GTK/Adwaita interface with MPRIS support</li>
       <li>Support for lyrics with timestamp tracking</li>
       <li>Written in Rust</li>
@@ -37,6 +37,22 @@
     </screenshot>
   </screenshots>
   <releases>
+    <release version="0.17.0" date="2026-02-07">
+      <description>
+        <ul>
+          <li>Gelly now has a songs tab! List, sort and search all songs in your library from a
+          single screen.</li>
+          <li>As part of the introduction of the songs tab, the queue has been moved to a sidebar
+          where it is more convenient to access.</li>
+          <li>Many performance improvements for handling large libraries.</li>
+          <li>UI updates that free up visual clutter.</li>
+          <li>There is no longer an arbitrary limit on smart playlist size.</li>
+          <li>Smoother and easier drag and drop scrolling behavior.</li>
+          <li>Fixed a bug when scrolling the album list rapidly in large libraries that could cause incorrect
+          album art to be displayed.</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.16.0" date="2026-01-26">
       <description>
         <ul>
