@@ -470,6 +470,9 @@ mod imp {
         #[property(get, set = Self::set_shuffle_enabled)]
         pub shuffle_enabled: Cell<bool>,
 
+        #[property(get, set)]
+        pub playback_mode: Cell<u32>,
+
         pub player: OnceCell<AudioPlayer>,
         pub queue: gio::ListStore,
         pub mpris_server: OnceCell<LocalServer<super::AudioModel>>,
@@ -491,6 +494,7 @@ mod imp {
                 volume: Cell::new(1.0),
                 muted: Cell::new(false),
                 shuffle_enabled: Cell::new(false),
+                playback_mode: Cell::new(0),
                 player: OnceCell::new(),
                 queue: gio::ListStore::new::<SongModel>(),
                 mpris_server: OnceCell::new(),

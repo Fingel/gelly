@@ -23,6 +23,9 @@ impl PlayerBar {
             Err(e) => debug!("Audio model already set: {:?}", e),
         };
 
+        // Bind playback mode menu
+        imp.playback_mode_menu.bind_to_audio_model(audio_model);
+
         audio_model.connect_closure(
             "play",
             false,

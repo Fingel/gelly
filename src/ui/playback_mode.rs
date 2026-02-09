@@ -1,7 +1,10 @@
 use glib::Object;
-use gtk::{self, gio, glib};
+use gtk::{self, gio, glib, prelude::*, subclass::prelude::*};
 
+use log::warn;
 use num_enum::TryFromPrimitive;
+
+use crate::audio::model::AudioModel;
 
 #[derive(Debug, TryFromPrimitive)]
 #[repr(u32)]
@@ -42,6 +45,43 @@ impl PlaybackModeMenu {
     pub fn new() -> Self {
         Object::builder().build()
     }
+
+    pub fn bind_to_audio_model(&self, audio_model: &AudioModel) {
+        let imp = self.imp();
+        if let Err(err) = imp.audio_model.set(audio_model.clone()) {
+            warn!("Failed to set audio model in PlaybackModeMenu: {:?}", err);
+            return;
+        }
+
+        let Some(action) = imp.action.get() else {
+            warn!("PlaybackModeMenu action not initialized");
+            return;
+        };
+
+        let initial_mode = audio_model.playback_mode();
+        action.set_state(&initial_mode.to_variant());
+
+        // Update icon
+        if let Ok(mode) = PlaybackMode::try_from(initial_mode) {
+            imp.menu_button.set_icon_name(mode.icon_name());
+        }
+
+        audio_model
+            .bind_property("playback-mode", &*imp.menu_button, "icon-name")
+            .transform_to(|_, value: u32| {
+                PlaybackMode::try_from(value)
+                    .ok()
+                    .map(|mode| mode.icon_name().to_value())
+            })
+            .sync_create()
+            .build();
+
+        audio_model
+            .bind_property("playback-mode", action, "state")
+            .transform_to(|_, value: u32| Some(value.to_variant().to_value()))
+            .sync_create()
+            .build();
+    }
 }
 
 impl Default for PlaybackModeMenu {
@@ -51,6 +91,8 @@ impl Default for PlaybackModeMenu {
 }
 
 mod imp {
+    use std::cell::OnceCell;
+
     use adw::subclass::prelude::*;
     use gtk::{
         CompositeTemplate, TemplateChild, gio,
@@ -58,13 +100,15 @@ mod imp {
         prelude::*,
     };
 
-    use crate::ui::playback_mode::PlaybackMode;
+    use crate::{audio::model::AudioModel, ui::playback_mode::PlaybackMode};
 
     #[derive(CompositeTemplate, Default)]
     #[template(resource = "/io/m51/Gelly/ui/playback_mode.ui")]
     pub struct PlaybackModeMenu {
         #[template_child]
         pub menu_button: TemplateChild<gtk::MenuButton>,
+        pub audio_model: OnceCell<AudioModel>,
+        pub action: OnceCell<gio::SimpleAction>,
     }
 
     #[glib::object_subclass]
@@ -101,7 +145,7 @@ mod imp {
             self.menu_button.set_menu_model(Some(&menu));
         }
 
-        pub fn create_actiongroup(&self) -> gio::SimpleActionGroup {
+        fn create_actiongroup(&self) -> gio::SimpleActionGroup {
             let action_group = gio::SimpleActionGroup::new();
             let initial_state = (PlaybackMode::Normal as u32).to_variant();
             let action = gio::SimpleAction::new_stateful(
@@ -109,18 +153,24 @@ mod imp {
                 Some(&u32::static_variant_type()),
                 &initial_state,
             );
-            action.connect_activate(move |action, param| {
-                if let Some(new_state) = param {
-                    println!("Action activated with new state: {:?}", new_state);
-                    action.set_state(new_state);
 
-                    if let Some(mode_value) = new_state.get::<u32>()
-                        && let Ok(mode) = super::PlaybackMode::try_from(mode_value)
-                    {
-                        println!("Selected playback mode: {:?}", mode);
+            // Store action so we can bind to it later
+            let _ = self.action.set(action.clone());
+
+            action.connect_activate(glib::clone!(
+                #[weak(rename_to = imp)]
+                self,
+                move |action, param| {
+                    if let Some(new_state) = param {
+                        action.set_state(new_state);
+                        if let Some(mode_value) = new_state.get::<u32>()
+                            && let Some(audio_model) = imp.audio_model.get()
+                        {
+                            audio_model.set_playback_mode(mode_value);
+                        }
                     }
                 }
-            });
+            ));
             action_group.add_action(&action);
             action_group
         }
