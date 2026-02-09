@@ -199,8 +199,8 @@ mod imp {
         audio::{model::AudioModel, stream_info::discover_stream_info},
         library_utils::{album_for_item, artist_for_item},
         ui::{
-            album_art::AlbumArt, lyrics::Lyrics, stream_info_dialog,
-            widget_ext::WidgetApplicationExt,
+            album_art::AlbumArt, lyrics::Lyrics, playback_mode::PlaybackModeMenu,
+            stream_info_dialog, widget_ext::WidgetApplicationExt,
         },
     };
     use adw::{prelude::*, subclass::prelude::*};
@@ -253,6 +253,8 @@ mod imp {
         pub info_button: TemplateChild<gtk::Button>,
         #[template_child]
         pub lyrics: TemplateChild<gtk::Button>,
+        #[template_child]
+        pub playback_mode_menu: TemplateChild<PlaybackModeMenu>,
 
         pub audio_model: OnceCell<AudioModel>,
         pub lyrics_window: RefCell<Option<glib::WeakRef<adw::Window>>>,

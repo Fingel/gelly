@@ -13,6 +13,7 @@ pub mod lyrics;
 pub mod media_card;
 pub mod music_context_menu;
 pub mod page_traits;
+pub mod playback_mode;
 pub mod player_bar;
 pub mod playlist;
 pub mod playlist_detail;
