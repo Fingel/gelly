@@ -288,6 +288,22 @@ impl AudioModel {
         }
     }
 
+    fn next_shuffled(&self) {
+        let shuffle_order = self.get_shuffle_order();
+        let current_pos = self.imp().shuffle_index.get();
+
+        if current_pos < shuffle_order.len() {
+            let song_index = shuffle_order[current_pos];
+            self.load_song(song_index as i32);
+            self.play();
+            self.imp().shuffle_index.set(current_pos + 1);
+        } else {
+            self.new_shuffle_cycle();
+            self.stop();
+            self.emit_by_name::<()>("queue-finished", &[]);
+        }
+    }
+
     fn prev_linear(&self) {
         let prev_index = if self.get_position() > 3 {
             self.queue_index()
@@ -296,6 +312,31 @@ impl AudioModel {
         };
 
         self.load_song(prev_index);
+        self.play();
+    }
+
+    fn prev_shuffled(&self) {
+        let shuffle_order = self.get_shuffle_order();
+        let current_pos = self.imp().shuffle_index.get();
+
+        if self.get_position() > 3 {
+            // Restart current song if less then 3 seconds have elapsed
+            if let Some(&song_index) = shuffle_order.get(current_pos) {
+                self.load_song(song_index as i32);
+            }
+        } else if current_pos > 0 {
+            // Go to previous song
+            let prev_pos = current_pos - 1;
+            self.imp().shuffle_index.set(prev_pos);
+            if let Some(&song_index) = shuffle_order.get(prev_pos) {
+                self.load_song(song_index as i32);
+            }
+        } else {
+            // At start of shuffle - just restart first song
+            if let Some(&song_index) = shuffle_order.first() {
+                self.load_song(song_index as i32);
+            }
+        }
         self.play();
     }
 
@@ -381,47 +422,6 @@ impl AudioModel {
         let mut rng = rand::rngs::StdRng::seed_from_u64(self.imp().shuffle_seed.get());
         indicies.shuffle(&mut rng);
         indicies
-    }
-
-    fn next_shuffled(&self) {
-        let shuffle_order = self.get_shuffle_order();
-        let current_pos = self.imp().shuffle_index.get();
-
-        if current_pos < shuffle_order.len() {
-            let song_index = shuffle_order[current_pos];
-            self.load_song(song_index as i32);
-            self.play();
-            self.imp().shuffle_index.set(current_pos + 1);
-        } else {
-            self.new_shuffle_cycle();
-            self.stop();
-            self.emit_by_name::<()>("queue-finished", &[]);
-        }
-    }
-
-    fn prev_shuffled(&self) {
-        let shuffle_order = self.get_shuffle_order();
-        let current_pos = self.imp().shuffle_index.get();
-
-        if self.get_position() > 3 {
-            // Restart current song if less then 3 seconds have elapsed
-            if let Some(&song_index) = shuffle_order.get(current_pos) {
-                self.load_song(song_index as i32);
-            }
-        } else if current_pos > 0 {
-            // Go to previous song
-            let prev_pos = current_pos - 1;
-            self.imp().shuffle_index.set(prev_pos);
-            if let Some(&song_index) = shuffle_order.get(prev_pos) {
-                self.load_song(song_index as i32);
-            }
-        } else {
-            // At start of shuffle - just restart first song
-            if let Some(&song_index) = shuffle_order.first() {
-                self.load_song(song_index as i32);
-            }
-        }
-        self.play();
     }
 }
 
