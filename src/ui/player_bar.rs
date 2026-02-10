@@ -23,6 +23,9 @@ impl PlayerBar {
             Err(e) => debug!("Audio model already set: {:?}", e),
         };
 
+        // Bind playback mode menu
+        imp.playback_mode_menu.bind_to_audio_model(audio_model);
+
         audio_model.connect_closure(
             "play",
             false,
@@ -95,23 +98,6 @@ impl PlayerBar {
                     let volume = audio_model.volume();
                     player.imp().volume_scale.set_value(volume);
                     player.imp().update_volume_icon(volume);
-                }
-            ),
-        );
-
-        audio_model.connect_notify_local(
-            Some("shuffle-enabled"),
-            glib::clone!(
-                #[weak(rename_to = player)]
-                self,
-                move |audio_model, _| {
-                    let shuffled = audio_model.shuffle_enabled();
-                    let icon_name = if shuffled {
-                        "media-playlist-shuffle-symbolic"
-                    } else {
-                        "media-playlist-consecutive-symbolic"
-                    };
-                    player.imp().play_mode.set_icon_name(icon_name);
                 }
             ),
         );
@@ -199,8 +185,8 @@ mod imp {
         audio::{model::AudioModel, stream_info::discover_stream_info},
         library_utils::{album_for_item, artist_for_item},
         ui::{
-            album_art::AlbumArt, lyrics::Lyrics, stream_info_dialog,
-            widget_ext::WidgetApplicationExt,
+            album_art::AlbumArt, lyrics::Lyrics, playback_mode::PlaybackModeMenu,
+            stream_info_dialog, widget_ext::WidgetApplicationExt,
         },
     };
     use adw::{prelude::*, subclass::prelude::*};
@@ -248,11 +234,11 @@ mod imp {
         #[template_child]
         pub volume_scale: TemplateChild<gtk::Scale>,
         #[template_child]
-        pub play_mode: TemplateChild<gtk::Button>,
-        #[template_child]
         pub info_button: TemplateChild<gtk::Button>,
         #[template_child]
         pub lyrics: TemplateChild<gtk::Button>,
+        #[template_child]
+        pub playback_mode_menu: TemplateChild<PlaybackModeMenu>,
 
         pub audio_model: OnceCell<AudioModel>,
         pub lyrics_window: RefCell<Option<glib::WeakRef<adw::Window>>>,
@@ -308,18 +294,6 @@ mod imp {
                 "audio-volume-high-symbolic"
             };
             self.volume_button.set_icon_name(icon_name);
-        }
-
-        fn toggle_play_mode(&self) {
-            let audio_model = self.audio_model();
-            let shuffled = !audio_model.imp().shuffle_enabled.get();
-            audio_model.set_shuffle_enabled(shuffled);
-            let icon_name = if shuffled {
-                "media-playlist-shuffle-symbolic"
-            } else {
-                "media-playlist-consecutive-symbolic"
-            };
-            self.play_mode.set_icon_name(icon_name);
         }
 
         fn show_info_dialog(&self) {
@@ -444,14 +418,6 @@ mod imp {
                 move |_| {
                     imp.volume_scale.set_value(0.0);
                     imp.update_volume_icon(0.0);
-                }
-            ));
-
-            self.play_mode.connect_clicked(glib::clone!(
-                #[weak(rename_to = imp)]
-                self,
-                move |_| {
-                    imp.toggle_play_mode();
                 }
             ));
 

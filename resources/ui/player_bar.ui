@@ -215,12 +215,7 @@
               </object>
             </child>
             <child>
-              <object class="GtkButton" id="play_mode">
-                <property name="icon-name">media-playlist-consecutive-symbolic</property>
-                <property name="tooltip-text">Play Mode</property>
-                <style>
-                  <class name="flat" />
-                </style>
+              <object class="GellyPlaybackModeMenu" id="playback_mode_menu">
               </object>
             </child>
             <child>

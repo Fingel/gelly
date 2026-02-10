@@ -13,6 +13,7 @@ use crate::cache::ImageCache;
 use crate::config;
 use crate::jellyfin::api::ImageType;
 use crate::models::SongModel;
+use crate::ui::playback_mode::PlaybackMode;
 
 pub async fn build_metadata(song: &SongModel) -> Metadata {
     let mut metadata = Metadata::builder()
@@ -162,11 +163,21 @@ impl LocalPlayerInterface for AudioModel {
     }
 
     async fn loop_status(&self) -> fdo::Result<LoopStatus> {
-        Ok(LoopStatus::None) // TODO - could implement repeat modes later
+        match PlaybackMode::try_from(self.playback_mode()) {
+            Ok(PlaybackMode::Normal) => Ok(LoopStatus::None),
+            Ok(PlaybackMode::Shuffle) => Ok(LoopStatus::None), // Not handled by loop status
+            Ok(PlaybackMode::Repeat) => Ok(LoopStatus::Playlist),
+            Ok(PlaybackMode::RepeatOne) => Ok(LoopStatus::Track),
+            Err(_) => Ok(LoopStatus::None),
+        }
     }
 
-    async fn set_loop_status(&self, _loop_status: LoopStatus) -> mpris_server::zbus::Result<()> {
-        // TODO Could be implemented to control repeat modes
+    async fn set_loop_status(&self, loop_status: LoopStatus) -> mpris_server::zbus::Result<()> {
+        match loop_status {
+            LoopStatus::None => self.set_playback_mode(PlaybackMode::Normal as u32),
+            LoopStatus::Playlist => self.set_playback_mode(PlaybackMode::Repeat as u32),
+            LoopStatus::Track => self.set_playback_mode(PlaybackMode::RepeatOne as u32),
+        }
         Ok(())
     }
 
@@ -181,11 +192,15 @@ impl LocalPlayerInterface for AudioModel {
     }
 
     async fn shuffle(&self) -> fdo::Result<bool> {
-        Ok(self.imp().shuffle_enabled.get())
+        Ok(self.imp().playback_mode.get() == PlaybackMode::Shuffle as u32)
     }
 
     async fn set_shuffle(&self, shuffle: bool) -> mpris_server::zbus::Result<()> {
-        self.set_shuffle_enabled(shuffle);
+        self.set_playback_mode(if shuffle {
+            PlaybackMode::Shuffle as u32
+        } else {
+            PlaybackMode::Normal as u32
+        });
         Ok(())
     }
 
