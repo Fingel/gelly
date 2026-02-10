@@ -164,11 +164,11 @@ impl AudioModel {
             can_go_previous: start_index > 0,
             can_play: song_len > 0,
         });
-        if self.imp().shuffle_enabled.get() {
-            self.new_shuffle_cycle();
-        }
-        if song_len > 0 {
-            self.load_song(start_index as i32);
+        self.new_shuffle_cycle();
+        if song_len > 0
+            && let Some(next_index) = self.next_index()
+        {
+            self.load_song(next_index);
             self.play();
         } else {
             self.stop();
@@ -179,6 +179,7 @@ impl AudioModel {
         let queue = &self.imp().queue;
         queue.remove_all();
         queue.extend_from_slice(&songs);
+        self.new_shuffle_cycle();
     }
 
     pub fn append_to_queue(&self, songs: Vec<SongModel>) {
@@ -190,9 +191,7 @@ impl AudioModel {
             can_go_previous: current_index > 0,
             can_play: true,
         });
-        if self.imp().shuffle_enabled.get() {
-            self.new_shuffle_cycle();
-        }
+        self.new_shuffle_cycle();
     }
 
     pub fn prepend_to_queue(&self, songs: Vec<SongModel>) {
@@ -211,9 +210,7 @@ impl AudioModel {
             can_go_previous: current_index > 0,
             can_play: true,
         });
-        if self.imp().shuffle_enabled.get() {
-            self.new_shuffle_cycle();
-        }
+        self.new_shuffle_cycle();
     }
 
     pub fn clear_queue(&self) {
@@ -488,9 +485,6 @@ mod imp {
         #[property(get, set)]
         pub muted: Cell<bool>,
 
-        #[property(get, set = Self::set_shuffle_enabled)]
-        pub shuffle_enabled: Cell<bool>,
-
         #[property(get, set)]
         pub playback_mode: Cell<u32>,
 
@@ -514,7 +508,6 @@ mod imp {
                 duration: Cell::new(0),
                 volume: Cell::new(1.0),
                 muted: Cell::new(false),
-                shuffle_enabled: Cell::new(false),
                 playback_mode: Cell::new(0),
                 player: OnceCell::new(),
                 queue: gio::ListStore::new::<SongModel>(),
@@ -567,7 +560,11 @@ mod imp {
 
     impl AudioModel {
         pub fn set_shuffle_enabled(&self, enabled: bool) {
-            self.shuffle_enabled.set(enabled);
+            self.playback_mode.set(if enabled {
+                PlaybackMode::Shuffle as u32
+            } else {
+                PlaybackMode::Normal as u32
+            });
             if enabled {
                 self.obj().new_shuffle_cycle();
             }
