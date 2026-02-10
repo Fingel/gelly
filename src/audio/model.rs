@@ -166,7 +166,12 @@ impl AudioModel {
         });
         self.new_shuffle_cycle();
         if song_len > 0 {
-            self.load_song(start_index as i32);
+            let index = if self.playback_mode() == PlaybackMode::Shuffle as u32 {
+                self.next_index().unwrap_or(0)
+            } else {
+                start_index as i32
+            };
+            self.load_song(index);
             self.play();
         } else {
             self.stop();
