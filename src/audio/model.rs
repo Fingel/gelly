@@ -14,6 +14,7 @@ use crate::{
     config,
     models::SongModel,
     reporting::{PlaybackEvent, ReportingManager},
+    ui::playback_mode::PlaybackMode,
 };
 
 glib::wrapper! {
@@ -262,24 +263,7 @@ impl AudioModel {
     }
 
     pub fn next(&self) {
-        if self.imp().shuffle_enabled.get() {
-            self.next_shuffled();
-        } else {
-            self.next_linear();
-        }
-    }
-
-    pub fn prev(&self) {
-        if self.imp().shuffle_enabled.get() {
-            self.prev_shuffled();
-        } else {
-            self.prev_linear();
-        }
-    }
-
-    fn next_linear(&self) {
-        let next_index = self.queue_index() + 1;
-        if next_index < self.imp().queue.n_items() as i32 {
+        if let Some(next_index) = self.next_index() {
             self.load_song(next_index);
             self.play();
         } else {
@@ -288,56 +272,93 @@ impl AudioModel {
         }
     }
 
-    fn next_shuffled(&self) {
-        let shuffle_order = self.get_shuffle_order();
-        let current_pos = self.imp().shuffle_index.get();
-
-        if current_pos < shuffle_order.len() {
-            let song_index = shuffle_order[current_pos];
-            self.load_song(song_index as i32);
-            self.play();
-            self.imp().shuffle_index.set(current_pos + 1);
+    pub fn prev(&self) {
+        if let Some(prev_index) = self.prev_index() {
+            self.load_song(prev_index);
+            self.play()
         } else {
-            self.new_shuffle_cycle();
             self.stop();
-            self.emit_by_name::<()>("queue-finished", &[]);
         }
     }
 
-    fn prev_linear(&self) {
-        let prev_index = if self.get_position() > 3 {
-            self.queue_index()
-        } else {
-            (self.queue_index() - 1).max(0)
-        };
-
-        self.load_song(prev_index);
-        self.play();
+    pub fn next_index(&self) -> Option<i32> {
+        let mode = PlaybackMode::try_from(self.playback_mode()).unwrap_or(PlaybackMode::Normal);
+        match mode {
+            PlaybackMode::Normal => {
+                let next_index = self.queue_index() + 1;
+                if next_index < self.imp().queue.n_items() as i32 {
+                    Some(next_index)
+                } else {
+                    None
+                }
+            }
+            PlaybackMode::Shuffle => {
+                let shuffle_order = self.get_shuffle_order();
+                let current_pos = self.imp().shuffle_index.get();
+                if current_pos < shuffle_order.len() {
+                    shuffle_order.get(current_pos).map(|&song_index| {
+                        self.imp().shuffle_index.set(current_pos + 1);
+                        song_index as i32
+                    })
+                } else {
+                    self.new_shuffle_cycle();
+                    None
+                }
+            }
+            PlaybackMode::Repeat => {
+                let next_index = self.queue_index() + 1;
+                if next_index < self.imp().queue.n_items() as i32 {
+                    Some(next_index)
+                } else {
+                    Some(0)
+                }
+            }
+            PlaybackMode::RepeatOne => Some(self.queue_index()),
+        }
     }
 
-    fn prev_shuffled(&self) {
-        let shuffle_order = self.get_shuffle_order();
-        let current_pos = self.imp().shuffle_index.get();
-
-        if self.get_position() > 3 {
-            // Restart current song if less then 3 seconds have elapsed
-            if let Some(&song_index) = shuffle_order.get(current_pos) {
-                self.load_song(song_index as i32);
+    pub fn prev_index(&self) -> Option<i32> {
+        let mode = PlaybackMode::try_from(self.playback_mode()).unwrap_or(PlaybackMode::Normal);
+        match mode {
+            PlaybackMode::Normal => {
+                let index = if self.get_position() > 3 {
+                    self.queue_index()
+                } else {
+                    (self.queue_index() - 1).max(0)
+                };
+                Some(index)
             }
-        } else if current_pos > 0 {
-            // Go to previous song
-            let prev_pos = current_pos - 1;
-            self.imp().shuffle_index.set(prev_pos);
-            if let Some(&song_index) = shuffle_order.get(prev_pos) {
-                self.load_song(song_index as i32);
+            PlaybackMode::Shuffle => {
+                let shuffle_order = self.get_shuffle_order();
+                let current_pos = self.imp().shuffle_index.get();
+                if self.get_position() > 3 {
+                    // Restart current song if less then 3 seconds have elapsed
+                    shuffle_order.get(current_pos).map(|idx| *idx as i32)
+                } else if current_pos > 0 {
+                    // Go to previous song
+                    let prev_pos = current_pos - 1;
+                    self.imp().shuffle_index.set(prev_pos);
+                    shuffle_order.get(prev_pos).map(|idx| *idx as i32)
+                } else {
+                    // At start of shuffle - just restart first song
+                    shuffle_order.first().map(|idx| *idx as i32)
+                }
             }
-        } else {
-            // At start of shuffle - just restart first song
-            if let Some(&song_index) = shuffle_order.first() {
-                self.load_song(song_index as i32);
+            PlaybackMode::Repeat => {
+                let index = if self.get_position() > 3 {
+                    self.queue_index()
+                } else {
+                    let prev_index = self.queue_index() - 1;
+                    if prev_index >= 0 {
+                        prev_index
+                    } else {
+                        (self.imp().queue.n_items() as i32) - 1
+                    }
+                };
+                Some(index)
             }
+            PlaybackMode::RepeatOne => Some(self.queue_index()),
         }
-        self.play();
     }
 
     pub fn play(&self) {
