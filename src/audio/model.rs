@@ -165,10 +165,8 @@ impl AudioModel {
             can_play: song_len > 0,
         });
         self.new_shuffle_cycle();
-        if song_len > 0
-            && let Some(next_index) = self.next_index()
-        {
-            self.load_song(next_index);
+        if song_len > 0 {
+            self.load_song(start_index as i32);
             self.play();
         } else {
             self.stop();
