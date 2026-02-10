@@ -21,21 +21,15 @@
         </child>
         <child>
           <object class="GtkBox" id="box3">
-            <property name="width_request">48</property>
+            <property name="width_request">24</property>
             <property name="focusable">False</property>
             <property name="homogeneous">True</property>
-            <child>
-              <object class="GtkImage" id="playing_icon">
-                <property name="icon_name">media-playback-start-symbolic</property>
-                <property name="visible">False</property>
-              </object>
-            </child>
+            <property name="visible" bind-source="GellySong" bind-property="in-queue" bind-flags="invert-boolean"/>
             <child>
               <object class="GtkLabel" id="number_label">
                 <property name="focusable">False</property>
                 <property name="halign">end</property>
                 <property name="justify">right</property>
-                <property name="visible" bind-source="GellySong" bind-property="in-queue" bind-flags="invert-boolean"/>
                 <style>
                   <class name="dim-label"/>
                 </style>

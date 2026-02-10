@@ -62,7 +62,11 @@ impl Song {
     }
 
     pub fn set_playing(&self, playing: bool) {
-        self.imp().playing_icon.set_visible(playing);
+        if playing {
+            self.add_css_class("song-playing");
+        } else {
+            self.remove_css_class("song-playing");
+        }
     }
 
     pub fn setup_drag_and_drop(&self) {
@@ -320,8 +324,6 @@ mod imp {
         pub album_label: TemplateChild<gtk::Label>,
         #[template_child]
         pub duration_label: TemplateChild<gtk::Label>,
-        #[template_child]
-        pub playing_icon: TemplateChild<gtk::Image>,
         #[template_child]
         pub drag_handle_box: TemplateChild<gtk::Box>,
         #[template_child]
