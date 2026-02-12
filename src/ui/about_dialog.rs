@@ -11,5 +11,9 @@ pub fn show(parent: &Window) {
 
     dialog.set_developers(&["Austin Riba <austin@m51.io>"]);
     dialog.set_artists(&["Jakub Steiner"]);
+    dialog.add_link(
+        "Hire me for your next project!",
+        "https://www.pedaldrivenprogramming.com",
+    );
     dialog.present(Some(parent));
 }
