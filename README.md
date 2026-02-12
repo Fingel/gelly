@@ -6,19 +6,17 @@
     🦀🐧
 </p>
 
+<img width="920" height="675" alt="gelly2026-02-12" src="https://github.com/user-attachments/assets/75a75555-cd01-4b6f-8a40-92609285cdff" />
+
 ## Features
 
-- [x] Browse by album, artist and playlist
+- [x] Browse by album, artist, song and playlist
 - [x] MPRIS support
+- [x] Lyrics
+- [x] Replaygain  
 - [x] Search
 - [x] Edit Playlists
-- [ ] Eye candy
 - [x] Smart Playlists 
-    - [x] Shuffle songs 
-    - [x] Most played
-- [ ] Offline support
-
-<img width="1864" height="1350" alt="gellyxmas1" src="https://github.com/user-attachments/assets/f02bc3b8-bc44-4fb7-ba9d-a5c13ff19183" align="center" />
 
 ## Installation
 
