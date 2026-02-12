@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Copyright 2025 Austin Riba -->
+<!-- Copyright 2026 Austin Riba -->
 <component type="desktop-application">
   <id>io.m51.Gelly</id>
   <name>Gelly</name>
@@ -28,7 +28,7 @@
   <url type="bugtracker">https://github.com/Fingel/gelly/issues</url>
   <screenshots>
     <screenshot type="default">
-      <image>https://m51.io/misc/gellyimg/gellyxmas1.png</image>
+      <image>https://m51.io/misc/gellyimg/gelly-2026-02-12-2.png</image>
       <caption>Main window showing music library</caption>
     </screenshot>
     <screenshot>
@@ -37,6 +37,14 @@
     </screenshot>
   </screenshots>
   <releases>
+    <release version="0.18.0" date="2026-02-12">
+      <description>
+        <ul>
+          <li>New playback mode options: repeat one and repeat all.</li>
+          <li>Improved ui around marking the currently playing song.</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.17.0" date="2026-02-07">
       <description>
         <ul>
