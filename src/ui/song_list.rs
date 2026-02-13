@@ -71,6 +71,14 @@ impl SongList {
         Object::builder().build()
     }
 
+    fn is_loaded(&self) -> bool {
+        self.imp()
+            .store
+            .get()
+            .map(|store| store.n_items() > 0)
+            .unwrap_or(false)
+    }
+
     pub fn pull_songs(&self) {
         // Ensure factory is set up (will only happen once, after widget is attached)
         self.setup_factory();
@@ -112,7 +120,10 @@ impl SongList {
                 #[weak(rename_to = song_list)]
                 self,
                 move |_app: Application, _total_record_count: u64| {
-                    song_list.pull_songs();
+                    // Only refresh if songs have already been loaded once to prevent lag on startup
+                    if song_list.is_loaded() {
+                        song_list.pull_songs();
+                    }
                 }
             ),
         );
@@ -429,6 +440,16 @@ mod imp {
                 self.obj(),
                 move |_| {
                     song_list.sort_changed();
+                }
+            ));
+
+            self.obj().connect_map(glib::clone!(
+                #[weak(rename_to = song_list)]
+                self.obj(),
+                move |_| {
+                    if !song_list.is_loaded() {
+                        song_list.pull_songs();
+                    }
                 }
             ));
         }
