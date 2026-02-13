@@ -37,6 +37,13 @@
     </screenshot>
   </screenshots>
   <releases>
+    <release version="0.18.1" date="2026-02-13">
+      <description>
+        <ul>
+          <li>Fix a performance regression introduced by the song list.</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.18.0" date="2026-02-12">
       <description>
         <ul>
