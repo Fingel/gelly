@@ -8,7 +8,6 @@ use log::warn;
 
 use crate::{
     application::Application,
-    config,
     library_utils::all_songs,
     models::SongModel,
     ui::{
@@ -96,7 +95,6 @@ impl SongList {
                 .expect("SongList store should be initialized");
             store.remove_all();
             store.extend_from_slice(&songs);
-            self.apply_sorting();
         }
     }
 
@@ -167,12 +165,6 @@ impl SongList {
             let selection_model = gtk::SingleSelection::new(Some(sort_model));
             imp.track_list.set_model(Some(&selection_model));
         }
-    }
-
-    fn sort_changed(&self) {
-        config::set_songs_sort_by(self.imp().sort_dropdown.selected());
-        config::set_songs_sort_direction(self.imp().sort_direction.active());
-        self.apply_sorting();
     }
 
     fn apply_sorting(&self) {
@@ -353,8 +345,6 @@ mod imp {
         prelude::*,
     };
 
-    use crate::config;
-
     #[derive(CompositeTemplate, Default)]
     #[template(resource = "/io/m51/Gelly/ui/song_list.ui")]
     pub struct SongList {
@@ -401,10 +391,6 @@ mod imp {
             self.parent_constructed();
             self.obj().setup_model();
             self.setup_signals();
-
-            self.sort_dropdown.set_selected(config::get_songs_sort_by());
-            self.sort_direction
-                .set_active(config::get_songs_sort_direction());
         }
     }
     impl WidgetImpl for SongList {}
@@ -431,7 +417,7 @@ mod imp {
                 #[weak(rename_to = song_list)]
                 self.obj(),
                 move |_| {
-                    song_list.sort_changed();
+                    song_list.apply_sorting();
                 }
             ));
 
@@ -439,7 +425,7 @@ mod imp {
                 #[weak(rename_to = song_list)]
                 self.obj(),
                 move |_| {
-                    song_list.sort_changed();
+                    song_list.apply_sorting();
                 }
             ));
 
