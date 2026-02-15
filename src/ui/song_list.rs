@@ -95,6 +95,7 @@ impl SongList {
                 .expect("SongList store should be initialized");
             store.remove_all();
             store.extend_from_slice(&songs);
+            self.bind_song_count(store);
         }
     }
 
