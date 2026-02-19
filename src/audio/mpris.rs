@@ -252,7 +252,7 @@ impl LocalPlayerInterface for AudioModel {
     }
 
     async fn can_seek(&self) -> fdo::Result<bool> {
-        Ok(self.duration() > 0)
+        Ok(true)
     }
 
     async fn can_control(&self) -> fdo::Result<bool> {
