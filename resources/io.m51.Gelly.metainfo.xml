@@ -37,6 +37,15 @@
     </screenshot>
   </screenshots>
   <releases>
+    <release version="0.18.2" date="2026-02-13">
+      <description>
+        <ul>
+          <li>Fix illegible text in artist menu.</li>
+          <li>Fix song count not appearing in song list.</li>
+          <li>Fix not being able to seek using some MPRIS clients</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.18.1" date="2026-02-13">
       <description>
         <ul>
