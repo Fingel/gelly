@@ -38,7 +38,7 @@ progressbar.osd {
     );
 }
 
-.banner-gradient label {
+.banner-gradient .title-1 {
     color: white;
 }
 
