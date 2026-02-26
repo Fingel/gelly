@@ -100,8 +100,19 @@ impl SongList {
     }
 
     pub fn activate_song(&self, index: usize) {
-        let library = self.get_application().library().clone();
-        let songs = all_songs(&library.borrow());
+        let selection_model = self
+            .imp()
+            .track_list
+            .model()
+            .expect("Track list should have a model")
+            .downcast::<gtk::SingleSelection>()
+            .expect("Model should be a SingleSelection");
+        let current_model = selection_model
+            .model()
+            .expect("SingleSelection should have a model");
+        let songs = (0..current_model.n_items())
+            .filter_map(|i| current_model.item(i)?.downcast::<SongModel>().ok())
+            .collect();
         if let Some(audio_model) = self.get_application().audio_model() {
             audio_model.set_queue(songs, index);
         } else {
@@ -255,7 +266,7 @@ impl SongList {
         };
 
         let store = imp.store.get().expect("Store should be initialized");
-        let selection_model = gtk::NoSelection::new(Some(store.clone()));
+        let selection_model = gtk::SingleSelection::new(Some(store.clone()));
         let factory = gtk::SignalListItemFactory::new();
 
         factory.connect_setup(move |_, list_item| {
