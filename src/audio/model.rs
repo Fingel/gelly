@@ -5,7 +5,7 @@ use gtk::{
     subclass::prelude::*,
 };
 use log::warn;
-use rand::Rng;
+use rand::RngExt;
 use std::cell::{Cell, RefCell};
 use std::sync::OnceLock;
 

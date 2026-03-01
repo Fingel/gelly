@@ -90,7 +90,7 @@ pub fn songs_for_album(album_id: &str, library: &[MusicDto]) -> Vec<SongModel> {
 
 pub fn shuffle_songs(library: &[MusicDto], num: u64) -> Vec<MusicDto> {
     let mut rng = rand::rng();
-    let chosen = library.choose_multiple(&mut rng, num as usize);
+    let chosen = library.sample(&mut rng, num as usize);
     chosen.into_iter().cloned().collect()
 }
 
