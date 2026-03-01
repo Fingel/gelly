@@ -37,6 +37,14 @@
     </screenshot>
   </screenshots>
   <releases>
+    <release version="0.18.3" date="2026-03-01">
+      <description>
+        <ul>
+          <li>Fix incorrect song playback after searching/sorting in the song list</li>
+          <li>Updated dependencies</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.18.2" date="2026-02-13">
       <description>
         <ul>
