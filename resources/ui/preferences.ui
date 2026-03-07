@@ -41,6 +41,19 @@
                 </child>
               </object>
             </child>
+            <child>
+              <object class="AdwActionRow">
+                <property name="title" translatable="yes">Inhibit Suspend</property>
+                <property name="subtitle" translatable="yes">Prevents the system from suspending while playing</property>
+                <property name="use_underline">True</property>
+                <property name="activatable_widget">inhibit_suspend_switch</property>
+                <child>
+                  <object class="GtkSwitch" id="inhibit_suspend_switch">
+                    <property name="valign">center</property>
+                  </object>
+                </child>
+              </object>
+            </child>
           </object>
         </child>
         <child>

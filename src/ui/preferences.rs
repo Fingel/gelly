@@ -43,6 +43,10 @@ impl Preferences {
             .bind("normalize-audio", &*imp.normalize_audio_switch, "active")
             .build();
 
+        settings
+            .bind("inhibit-suspend", &*imp.inhibit_suspend_switch, "active")
+            .build();
+
         // Smart Playlists
         settings
             .bind(
@@ -102,6 +106,8 @@ mod imp {
         pub refresh_on_startup_switch: TemplateChild<gtk::Switch>,
         #[template_child]
         pub normalize_audio_switch: TemplateChild<gtk::Switch>,
+        #[template_child]
+        pub inhibit_suspend_switch: TemplateChild<gtk::Switch>,
         #[template_child]
         pub playlist_shuffle_enabled_switch: TemplateChild<gtk::Switch>,
         #[template_child]

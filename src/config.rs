@@ -177,6 +177,10 @@ pub fn get_normalize_audio_enabled() -> bool {
     settings().boolean("normalize-audio")
 }
 
+pub fn get_inhibit_suspend_enabled() -> bool {
+    settings().boolean("inhibit-suspend")
+}
+
 pub fn get_albums_sort_by() -> u32 {
     settings().uint("sort-albums-by")
 }

@@ -53,6 +53,10 @@
       <default>true</default>
       <summary>Normalize audio volume between tracks</summary>
     </key>
+    <key name="inhibit-suspend" type="b">
+      <default>false</default>
+      <summary>Inhibit suspend while playing</summary>
+    </key>
     <key name="sort-albums-by" type="u">
       <default>0</default>
       <summary>Sort albums by</summary>
