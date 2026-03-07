@@ -1,7 +1,7 @@
 use adw::subclass::prelude::ObjectSubclassIsExt;
 use glib::Object;
 use gtk::gio::prelude::SettingsExt;
-use gtk::prelude::ObjectExt;
+use gtk::prelude::{GtkApplicationExt, ObjectExt};
 use gtk::{gio, glib};
 
 use crate::async_utils::spawn_tokio;
@@ -108,6 +108,42 @@ impl Application {
                         "global-error",
                         &[&format!("Playback error: {}", error)],
                     );
+                }
+            ),
+        );
+
+        audio_model.connect_closure(
+            "play",
+            false,
+            glib::closure_local!(
+                #[weak(rename_to = app)]
+                self,
+                move |_audio_model: AudioModel| {
+                    app.update_inhibit(true);
+                }
+            ),
+        );
+
+        audio_model.connect_closure(
+            "pause",
+            false,
+            glib::closure_local!(
+                #[weak(rename_to = app)]
+                self,
+                move |_audio_model: AudioModel| {
+                    app.update_inhibit(false);
+                }
+            ),
+        );
+
+        audio_model.connect_closure(
+            "stop",
+            false,
+            glib::closure_local!(
+                #[weak(rename_to = app)]
+                self,
+                move |_audio_model: AudioModel| {
+                    app.update_inhibit(false);
                 }
             ),
         );
@@ -280,6 +316,26 @@ impl Application {
         )
     }
 
+    fn update_inhibit(&self, playing: bool) {
+        if playing && config::get_inhibit_suspend_enabled() {
+            if self.imp().inhibit_cookie.get() == 0 {
+                let window = self.active_window();
+                let cookie = self.inhibit(
+                    window.as_ref(),
+                    gtk::ApplicationInhibitFlags::SUSPEND,
+                    Some("Playing media"),
+                );
+                self.imp().inhibit_cookie.set(cookie);
+            }
+        } else {
+            let cookie = self.imp().inhibit_cookie.get();
+            if cookie != 0 {
+                self.uninhibit(cookie);
+                self.imp().inhibit_cookie.set(0);
+            }
+        }
+    }
+
     pub fn logout(&self) {
         let jellyfin = Jellyfin::default();
         self.clear_cache();
@@ -338,6 +394,7 @@ mod imp {
     use gtk::glib;
     use gtk::glib::subclass::Signal;
     use gtk::glib::types::StaticType;
+    use std::cell::Cell;
     use std::cell::RefCell;
     use std::rc::Rc;
     use std::sync::OnceLock;
@@ -358,6 +415,7 @@ mod imp {
         pub image_cache: RefCell<Option<ImageCache>>,
         pub audio_model: RefCell<Option<AudioModel>>,
         pub http_request_count: AtomicU32,
+        pub inhibit_cookie: Cell<u32>,
     }
 
     #[glib::object_subclass]
