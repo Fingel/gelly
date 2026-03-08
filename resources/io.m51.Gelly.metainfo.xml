@@ -37,6 +37,13 @@
     </screenshot>
   </screenshots>
   <releases>
+    <release version="0.19.0" date="2026-03-07">
+      <description>
+        <ul>
+          <li>Added a preference to inhibit the system from suspending during playback</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.18.3" date="2026-03-01">
       <description>
         <ul>
