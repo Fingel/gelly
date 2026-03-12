@@ -42,9 +42,7 @@ fn store_path() -> PathBuf {
 }
 
 // File layout: [1-byte version][12-byte nonce][ciphertext+tag]
-pub async fn save_secrets(
-    map: HashMap<String, String>,
-) -> Result<(), Box<dyn std::error::Error>> {
+pub async fn save_secrets(map: HashMap<String, String>) -> Result<(), Box<dyn std::error::Error>> {
     let master = retrieve_secret()
         .await
         .map_err(|e| format!("Couldn't retrieve secret, check XDG Portal availability: ({e})"))?;
@@ -61,7 +59,13 @@ pub async fn save_secrets(
     // store files between apps or versions from decrypting successfully
     let aad = format!("{}|{}", APP_ID, KEY_SCHEME_VERSION);
     let ciphertext = cipher
-        .encrypt(nonce, Payload { msg: &plaintext, aad: aad.as_bytes() })
+        .encrypt(
+            nonce,
+            Payload {
+                msg: &plaintext,
+                aad: aad.as_bytes(),
+            },
+        )
         .map_err(|e| format!("Encryption failed: {e}"))?;
 
     let path = store_path();
@@ -110,7 +114,10 @@ pub async fn load_secrets() -> Result<HashMap<String, String>, Box<dyn std::erro
     let plaintext = cipher
         .decrypt(
             Nonce::from_slice(nonce_bytes),
-            Payload { msg: ciphertext, aad: aad.as_bytes() },
+            Payload {
+                msg: ciphertext,
+                aad: aad.as_bytes(),
+            },
         )
         .map_err(|_| "Decryption failed: corrupt file, wrong key, or app/version mismatch")?;
 
