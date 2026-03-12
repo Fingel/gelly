@@ -1,5 +1,6 @@
+use gdk4::Texture;
 use glycin::Loader;
-use gtk::{gdk::Texture, glib};
+use gtk::glib;
 
 pub async fn bytes_to_texture(image_data: &[u8]) -> Result<Texture, glib::Error> {
     let image = Loader::new_vec(image_data.to_vec())
