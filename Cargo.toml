@@ -18,15 +18,14 @@ gstreamer-pbutils = { version = "0.25", features = ["v1_26"] }
 async-channel = "2.5.0"
 futures-util = "0.3.31"
 mpris-server = "0.9.0"
-glycin = { version = "=3.1.0-rc", features = ["gdk4", "tokio"] }
-gdk4 = "=0.11.0"
-gdk4-sys = "=0.11.0"
+glycin = { version = "3.1.0-rc", features = ["gdk4", "tokio"] }
+gdk4 = "0.11.0"
+gdk4-sys = "0.11.0"
 futures = "0.3.31"
 uuid = { version = "1.18.1", features = ["v4"] }
 rand = "0.10"
 num_enum = "0.7.5"
 ashpd = { version = "0.13.5", features = ["frontend", "tokio"] }
-zbus = "5.14.0"
 chacha20poly1305 = "0.10"
 sha2 = "0.10"
 hkdf = "0.12"
