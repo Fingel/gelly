@@ -331,16 +331,18 @@ impl AudioModel {
             PlaybackMode::Shuffle => {
                 let shuffle_order = self.get_shuffle_order();
                 let current_pos = self.imp().shuffle_index.get();
+                // shuffle_index points to next song, so current is at current_pos - 1
                 if self.get_position() > 3 {
-                    // Restart current song if less then 3 seconds have elapsed
-                    shuffle_order.get(current_pos).map(|idx| *idx as i32)
-                } else if current_pos > 0 {
+                    // Restart current song if more than 3 seconds have elapsed
+                    shuffle_order.get(current_pos - 1).map(|idx| *idx as i32)
+                } else if current_pos > 1 {
                     // Go to previous song
-                    let prev_pos = current_pos - 1;
-                    self.imp().shuffle_index.set(prev_pos);
+                    let prev_pos = current_pos - 2;
+                    self.imp().shuffle_index.set(current_pos - 1);
                     shuffle_order.get(prev_pos).map(|idx| *idx as i32)
                 } else {
                     // At start of shuffle - just restart first song
+                    self.imp().shuffle_index.set(1);
                     shuffle_order.first().map(|idx| *idx as i32)
                 }
             }
