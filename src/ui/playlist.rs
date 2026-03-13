@@ -38,7 +38,7 @@ impl Playlist {
 
     fn play_songs(&self, songs: Vec<SongModel>) {
         if let Some(audio_model) = self.get_application().audio_model() {
-            audio_model.set_queue(songs, 0);
+            audio_model.set_queue(songs, 0, false);
         } else {
             self.toast("Audio model not initialized, please restart", None);
             warn!("No audio model found");

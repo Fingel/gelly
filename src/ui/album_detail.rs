@@ -154,7 +154,7 @@ impl AlbumDetail {
     pub fn song_selected(&self, index: usize) {
         let songs = self.imp().songs.borrow().clone();
         if let Some(audio_model) = self.get_application().audio_model() {
-            audio_model.set_queue(songs, index);
+            audio_model.set_queue(songs, index, true);
         } else {
             self.toast("Audio model not initialized, please restart", None);
             warn!("No audio model found");
@@ -164,7 +164,7 @@ impl AlbumDetail {
     fn play_album(&self) {
         let songs = self.imp().songs.borrow().clone();
         if let Some(audio_model) = self.get_application().audio_model() {
-            audio_model.set_queue(songs, 0);
+            audio_model.set_queue(songs, 0, false);
         } else {
             self.toast("Audio model not initialized, please restart", None);
             warn!("No audio model found");

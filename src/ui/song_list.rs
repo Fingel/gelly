@@ -114,7 +114,7 @@ impl SongList {
             .filter_map(|i| current_model.item(i)?.downcast::<SongModel>().ok())
             .collect();
         if let Some(audio_model) = self.get_application().audio_model() {
-            audio_model.set_queue(songs, index);
+            audio_model.set_queue(songs, index, true);
         } else {
             self.toast("Audio model not initialized, please restart", None);
             warn!("No audio model found");

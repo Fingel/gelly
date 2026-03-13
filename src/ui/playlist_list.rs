@@ -78,7 +78,7 @@ impl TopPage for PlaylistList {
                                 if let Some(audio_model) =
                                     playlist_list.get_application().audio_model()
                                 {
-                                    audio_model.set_queue(songs, 0);
+                                    audio_model.set_queue(songs, 0, false);
                                 } else {
                                     playlist_list
                                         .toast("No audio model found, please restart.", None);

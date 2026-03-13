@@ -122,7 +122,7 @@ pub fn play_album(id: &str, app: &Application) {
     let library = app.library().clone();
     let songs = songs_for_album(id, &library.borrow());
     if let Some(audio_model) = app.audio_model() {
-        audio_model.set_queue(songs, 0);
+        audio_model.set_queue(songs, 0, false);
     } else {
         log::warn!("No audio model found");
     }
@@ -140,7 +140,7 @@ pub fn play_artist(id: &str, app: &Application) {
     let library = app.library().clone();
     let songs = songs_for_artist(id, &library.borrow());
     if let Some(audio_model) = app.audio_model() {
-        audio_model.set_queue(songs, 0);
+        audio_model.set_queue(songs, 0, false);
     } else {
         log::warn!("No audio model found");
     }

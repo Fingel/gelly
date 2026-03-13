@@ -154,7 +154,7 @@ impl AudioModel {
         self.imp().queue.n_items() as i32
     }
 
-    pub fn set_queue(&self, songs: Vec<SongModel>, start_index: usize) {
+    pub fn set_queue(&self, songs: Vec<SongModel>, start_index: usize, ignore_shuffle: bool) {
         let song_len = songs.len();
         let queue = &self.imp().queue;
         queue.remove_all();
@@ -166,7 +166,7 @@ impl AudioModel {
         });
         self.new_shuffle_cycle();
         if song_len > 0 {
-            let index = if self.playback_mode() == PlaybackMode::Shuffle as u32 {
+            let index = if self.playback_mode() == PlaybackMode::Shuffle as u32 && !ignore_shuffle {
                 self.next_index().unwrap_or(0)
             } else {
                 start_index as i32
