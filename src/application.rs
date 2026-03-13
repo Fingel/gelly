@@ -48,8 +48,10 @@ impl Application {
     pub fn initialize_jellyfin(&self) {
         let host = settings().string("hostname");
         let user_id = settings().string("user-id");
-        let token =
-            retrieve_jellyfin_api_token(host.as_str(), user_id.as_str()).unwrap_or_default();
+        let token = glib::MainContext::default()
+            .block_on(retrieve_jellyfin_api_token())
+            .unwrap_or_default()
+            .to_string();
 
         let jellyfin = Jellyfin::new(host.as_str(), &token, user_id.as_str());
         self.imp().jellyfin.replace(jellyfin);

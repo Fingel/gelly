@@ -91,33 +91,40 @@ impl Setup {
         let password = password.to_string();
         self.imp().connect_button.set_sensitive(false);
         app.http_with_loading(
-            async move { Jellyfin::new_authenticate(&host, &username, &password).await },
-            glib::clone!(
-                #[weak(rename_to=setup)]
-                self,
-                move |result| {
-                    match result {
-                        Ok(jellyfin) => {
-                            let user_id = jellyfin.user_id.clone();
-                            let token = jellyfin.token.clone();
-                            let host = jellyfin.host.clone();
-                            let app = setup.get_application();
-                            app.imp().jellyfin.replace(jellyfin);
-                            if let Err(err) = setup.save_server_settings(&host, &user_id, &token) {
-                                setup.toast("Credentials could not be saved. Do you have a keyring daemon running?", None);
-                                error!("Failed to save server settings. Aborting: {}", err);
+        async move { Jellyfin::new_authenticate(&host, &username, &password).await },
+        glib::clone!(
+            #[weak(rename_to=setup)]
+            self,
+            move |result| {
+                match result {
+                    Ok(jellyfin) => {
+                        let user_id = jellyfin.user_id.clone();
+                        let token = jellyfin.token.clone();
+                        let host = jellyfin.host.clone();
+                        let app = setup.get_application();
+                        app.imp().jellyfin.replace(jellyfin);
+                        glib::spawn_future_local(glib::clone!(
+                            #[weak]
+                            setup,
+                            async move {
+                                if let Err(err) = setup.save_server_settings(&host, &user_id, &token).await {
+                                    setup.toast("Credentials could not be saved. Do you have a keyring daemon running?", None);
+                                    error!("Failed to save server settings. Aborting: {}", err);
+                                } else {
+                                    setup.show_library_setup();
+                                }
                             }
-                            setup.show_library_setup();
-                        }
-                        Err(err) => setup.handle_connection_error(err),
+                        ));
                     }
-                    setup.imp().connect_button.set_sensitive(true);
+                    Err(err) => setup.handle_connection_error(err),
                 }
-            ),
-        );
+                setup.imp().connect_button.set_sensitive(true);
+            }
+        ),
+    );
     }
 
-    fn save_server_settings(
+    async fn save_server_settings(
         &self,
         host: &str,
         user_id: &str,
@@ -125,7 +132,7 @@ impl Setup {
     ) -> Result<(), Box<dyn Error>> {
         settings().set_string("hostname", host)?;
         settings().set_string("user-id", user_id)?;
-        store_jellyfin_api_token(host, user_id, token)?;
+        store_jellyfin_api_token(token).await?;
         Ok(())
     }
 

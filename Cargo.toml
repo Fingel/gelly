@@ -4,26 +4,32 @@ version = "0.19.0"
 edition = "2024"
 
 [dependencies]
-gtk = { version = "0.10.1", package = "gtk4", features = ["v4_20"] }
-adw = { version = "0.8.0", package = "libadwaita", features = ["v1_8"] }
+gtk = { version = "0.11", package = "gtk4", features = ["v4_20"] }
+adw = { version = "0.9.0", package = "libadwaita", features = ["v1_8"] }
 log = { version = "0.4.28", features = ["std"] }
 env_logger = { version = "0.11.8", features = ["color"] }
 tokio = { version = "1.47.1", features = ["rt-multi-thread", "sync"] }
 reqwest = { version = "0.13.1", features = ["json", "query"] }
 serde_json = { version = "1.0.143", features = ["std"] }
 serde = { version = "1.0.219", features = ["derive"] }
-thiserror = "2.0.16"
-gstreamer = { version = "0.24.4", features = ["v1_26"] }
-gstreamer-pbutils = { version = "0.24.4", features = ["v1_26"] }
+thiserror = "2.0.18"
+gstreamer = { version = "0.25", features = ["v1_26"] }
+gstreamer-pbutils = { version = "0.25", features = ["v1_26"] }
 async-channel = "2.5.0"
 futures-util = "0.3.31"
 mpris-server = "0.9.0"
-dbus-secret-service = "4.1.0"
-glycin = { version = "3.0.4", features = ["gdk4"] }
+glycin = { version = "3.1.0-rc", features = ["gdk4", "tokio"] }
+gdk4 = "0.11.0"
+gdk4-sys = "0.11.0"
 futures = "0.3.31"
 uuid = { version = "1.18.1", features = ["v4"] }
-rand = "0.10.0"
+rand = "0.10"
 num_enum = "0.7.5"
+ashpd = { version = "0.13.5", features = ["frontend", "tokio"] }
+chacha20poly1305 = "0.10"
+sha2 = "0.10"
+hkdf = "0.12"
+directories = "6.0.0"
 
 [build-dependencies]
-glib-build-tools = "0.21.0"
+glib-build-tools = "0.22.0"

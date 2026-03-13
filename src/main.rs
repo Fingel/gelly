@@ -16,9 +16,13 @@ mod jellyfin;
 mod library_utils;
 mod models;
 mod reporting;
+mod secret;
 mod ui;
 
 fn main() -> glib::ExitCode {
+    // Start tokio runtime to handle async
+    let rt = async_utils::tokio_rt();
+    let _guard = rt.enter();
     env_logger::init();
     gio::resources_register_include!("gelly.gresource").expect("Failed to register resources");
     let app = Application::new();

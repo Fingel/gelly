@@ -1,8 +1,9 @@
-use dbus_secret_service::{EncryptionType, Error, SecretService};
-use gtk::gio;
 use gtk::gio::prelude::SettingsExt;
+use gtk::{gio, glib::Error};
 use std::{cell::RefCell, collections::HashMap};
 use uuid::Uuid;
+
+use crate::secret::{self};
 
 pub static APP_ID: &str = "io.m51.Gelly";
 pub static VERSION: &str = env!("CARGO_PKG_VERSION");
@@ -50,10 +51,7 @@ pub fn settings() -> gio::Settings {
 
 /// Sets jellyfin settings to blank values and clears the API token
 pub fn logout() {
-    clear_jellyfin_api_token(
-        settings().string("hostname").as_str(),
-        settings().string("user-id").as_str(),
-    );
+    secret::clear_secrets();
     settings()
         .set_string("user-id", "")
         .expect("Failed to clear user-id");
@@ -62,70 +60,20 @@ pub fn logout() {
         .expect("Failed to clear library-id");
 }
 
-pub fn store_jellyfin_api_token(host: &str, user_id: &str, api_token: &str) -> Result<(), Error> {
-    let ss = SecretService::connect(EncryptionType::Plain)?;
-    let collection = ss.get_default_collection()?;
-    let mut properties = HashMap::new();
-    properties.insert("host", host);
-    properties.insert("user-id", user_id);
-    collection.create_item(
-        "Jellyfin API Token",
-        properties,
-        api_token.as_bytes(),
-        true,
-        "text/plain",
-    )?;
+pub async fn store_jellyfin_api_token(token: &str) -> Result<(), Error> {
+    let mut properties: HashMap<String, String> = HashMap::new();
+    properties.insert("token".into(), token.into());
+    secret::save_secrets(properties)
+        .await
+        .expect("Could not save secrets");
     Ok(())
 }
 
-pub fn retrieve_jellyfin_api_token(host: &str, user_id: &str) -> Option<String> {
-    let ss =
-        SecretService::connect(EncryptionType::Plain).expect("Could not connect to secret service");
-
-    let search_items = ss
-        .search_items(HashMap::from([("host", host), ("user-id", user_id)]))
-        .unwrap();
-
-    let item = match search_items.unlocked.first() {
-        Some(item) => item,
-        None => {
-            // if there aren't any, try to unlock them
-            if let Some(locked_item) = search_items.locked.first() {
-                locked_item.unlock().unwrap();
-                locked_item
-            } else {
-                return None;
-            }
-        }
-    };
-
-    let secret = item
-        .get_secret()
-        .expect("Unable to retrieve secret from keyring");
-    Some(String::from_utf8(secret).unwrap())
-}
-
-pub fn clear_jellyfin_api_token(host: &str, user_id: &str) {
-    let ss =
-        SecretService::connect(EncryptionType::Plain).expect("Could not connect to secret service");
-
-    let search_items = ss
-        .search_items(HashMap::from([("host", host), ("user-id", user_id)]))
-        .unwrap();
-
-    let item = match search_items.unlocked.first() {
-        Some(item) => item,
-        None => {
-            // if there aren't any, try to unlock them
-            if let Some(locked_item) = search_items.locked.first() {
-                locked_item.unlock().unwrap();
-                locked_item
-            } else {
-                return;
-            }
-        }
-    };
-    item.delete().expect("Unable to remove secret from keyring");
+pub async fn retrieve_jellyfin_api_token() -> Option<String> {
+    let ss = secret::load_secrets()
+        .await
+        .expect("Could not load secrets");
+    ss.get("token").cloned()
 }
 
 /// Return the client UUID, generating it if it doesn't exist
