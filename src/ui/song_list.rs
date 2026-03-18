@@ -48,12 +48,20 @@ impl TopPage for SongList {
         false
     }
 
-    fn reveal_search_bar(&self, visible: bool) {
-        self.imp().search_bar.set_search_mode(visible);
+    fn toggle_search_bar(&self) {
+        self.toggle_bar(&self.imp().search_bar);
     }
 
-    fn reveal_sort_bar(&self, visible: bool) {
-        self.imp().sort_bar.set_search_mode(visible);
+    fn toggle_sort_bar(&self) {
+        self.toggle_bar(&self.imp().sort_bar);
+    }
+
+    fn hide_search_bar(&self) {
+        self.imp().search_bar.set_search_mode(false);
+    }
+
+    fn hide_sort_bar(&self) {
+        self.imp().sort_bar.set_search_mode(false);
     }
 
     fn play_selected(&self) {

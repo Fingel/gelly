@@ -392,8 +392,8 @@ mod imp {
                     self,
                     move |_, _, _| {
                         window.obj().call_on_visible_page(|page| {
-                            page.reveal_search_bar(true);
-                            page.reveal_sort_bar(false);
+                            page.toggle_search_bar();
+                            page.hide_sort_bar();
                         });
                     }
                 ))
@@ -405,8 +405,8 @@ mod imp {
                     self,
                     move |_, _, _| {
                         window.obj().call_on_visible_page(|page| {
-                            page.reveal_search_bar(false);
-                            page.reveal_sort_bar(true);
+                            page.hide_search_bar();
+                            page.toggle_sort_bar();
                         });
                     }
                 ))

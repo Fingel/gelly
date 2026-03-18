@@ -32,8 +32,10 @@ impl TopPage for Queue {
         false
     }
 
-    fn reveal_search_bar(&self, _visible: bool) {}
-    fn reveal_sort_bar(&self, _visible: bool) {}
+    fn toggle_search_bar(&self) {}
+    fn toggle_sort_bar(&self) {}
+    fn hide_search_bar(&self) {}
+    fn hide_sort_bar(&self) {}
     fn play_selected(&self) {}
 }
 
