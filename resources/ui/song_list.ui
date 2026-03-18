@@ -71,8 +71,6 @@
         </child>
         <child>
           <object class="AdwClamp">
-            <property name="margin-bottom">24</property>
-            <property name="margin-top">24</property>
             <property name="maximum-size">1000</property>
             <child>
               <object class="GtkBox">
@@ -80,6 +78,7 @@
                 <property name="spacing">12</property>
                 <child>
                   <object class="GtkBox">
+                    <property name="margin-top">24</property>
                     <property name="orientation">horizontal</property>
                     <property name="spacing">6</property>
                     <child>

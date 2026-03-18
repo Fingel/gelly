@@ -9,9 +9,8 @@
           <object class="AdwNavigationPage" id="setup_servers">
             <property name="title" translatable="yes">Servers</property>
             <child>
-              <object class="GtkBox">
-                <property name="orientation">1</property>
-                <child>
+              <object class="AdwToolbarView">
+                <child type="top">
                   <object class="AdwHeaderBar" id="setup_header_bar">
                     <property name="title-widget">
                       <object class="AdwWindowTitle">
@@ -20,7 +19,7 @@
                     </property>
                   </object>
                 </child>
-                <child>
+                <property name="content">
                   <object class="GtkBox">
                     <property name="orientation">1</property>
                     <property name="halign">3</property>
@@ -62,32 +61,25 @@
                       </object>
                     </child>
                     <child>
-                      <object class="GtkListBox">
+                      <object class="GtkButton" id="connect_button">
+                        <property name="label">Connect</property>
+                        <property name="sensitive">false</property>
                         <style>
-                          <class name="boxed-list"/>
+                          <class name="suggested-action"/>
+                          <class name="pill"/>
                         </style>
-                        <child>
-                          <object class="AdwButtonRow" id="connect_button">
-                            <property name="title">Connect</property>
-                            <property name="sensitive">false</property>
-                            <style>
-                              <class name="suggested-action"/>
-                            </style>
-                          </object>
-                        </child>
                       </object>
                     </child>
                   </object>
-                </child>
+                </property>
               </object>
             </child>
           </object>
           <object class="AdwNavigationPage" id="setup_library">
             <property name="title">Choose Library</property>
             <child>
-              <object class="GtkBox">
-                <property name="orientation">1</property>
-                <child>
+              <object class="AdwToolbarView">
+                <child type="top">
                   <object class="AdwHeaderBar" id="setup_library_header_bar">
                     <property name="title-widget">
                       <object class="AdwWindowTitle">
@@ -96,17 +88,18 @@
                     </property>
                   </object>
                 </child>
-                <child>
+                <property name="content">
                   <object class="GtkBox">
                     <property name="orientation">vertical</property>
                     <property name="halign">center</property>
                     <property name="hexpand">true</property>
+                    <property name="spacing">24</property>
+                    <property name="margin-bottom">24</property>
+                    <property name="margin-top">24</property>
                     <child>
                       <object class="GtkLabel">
                         <property name="label" translatable="yes">Select music library</property>
                         <property name="wrap">true</property>
-                        <property name="margin-bottom">24</property>
-                        <property name="margin-top">24</property>
                         <style>
                           <class name="title-1"/>
                         </style>
@@ -115,7 +108,6 @@
                     <child>
                       <object class="GtkListBox" id="library_list">
                         <property name="selection-mode">none</property>
-                        <property name="margin-bottom">24</property>
                         <style>
                           <class name="boxed-list"/>
                         </style>
@@ -127,32 +119,27 @@
                       </object>
                     </child>
                     <child>
-                      <object class="GtkListBox">
-                        <property name="margin-bottom">24</property>
+                      <object class="GtkButton" id="library_button">
+                        <property name="label">Launch Gelly</property>
+                        <property name="sensitive">false</property>
                         <style>
-                          <class name="boxed-list"/>
+                          <class name="suggested-action"/>
+                          <class name="pill"/>
                         </style>
-                        <child>
-                          <object class="AdwButtonRow" id="library_button">
-                            <property name="title">Launch Gelly</property>
-                            <property name="sensitive">false</property>
-                            <style>
-                              <class name="suggested-action"/>
-                            </style>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="AdwButtonRow" id="cancel_library_button">
-                            <property name="title">Cancel</property>
-                            <style>
-                              <class name="destructive-action"/>
-                            </style>
-                          </object>
-                        </child>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkButton" id="cancel_library_button">
+                        <property name="label">Cancel</property>
+                        <property name="halign">center</property>
+                        <style>
+                          <class name="destructive-action"/>
+                          <class name="flat"/>
+                        </style>
                       </object>
                     </child>
                   </object>
-                </child>
+                </property>
               </object>
             </child>
           </object>

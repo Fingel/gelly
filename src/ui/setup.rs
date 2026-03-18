@@ -254,13 +254,13 @@ mod imp {
         #[template_child]
         pub password_entry: TemplateChild<adw::PasswordEntryRow>,
         #[template_child]
-        pub connect_button: TemplateChild<adw::ButtonRow>,
+        pub connect_button: TemplateChild<gtk::Button>,
         #[template_child]
         pub library_combo: TemplateChild<adw::ComboRow>,
         #[template_child]
-        pub library_button: TemplateChild<adw::ButtonRow>,
+        pub library_button: TemplateChild<gtk::Button>,
         #[template_child]
-        pub cancel_library_button: TemplateChild<adw::ButtonRow>,
+        pub cancel_library_button: TemplateChild<gtk::Button>,
         pub libraries: RefCell<Vec<LibraryDto>>,
     }
 
@@ -293,7 +293,7 @@ mod imp {
             });
 
             // Setup Connect Button
-            self.connect_button.connect_activated(glib::clone!(
+            self.connect_button.connect_clicked(glib::clone!(
                 #[weak(rename_to=imp)]
                 self,
                 move |_| {
@@ -312,7 +312,7 @@ mod imp {
             ));
 
             // Setup Library Button
-            self.library_button.connect_activated(glib::clone!(
+            self.library_button.connect_clicked(glib::clone!(
                 #[weak(rename_to=imp)]
                 self,
                 move |_| {
@@ -321,7 +321,7 @@ mod imp {
                 }
             ));
 
-            self.cancel_library_button.connect_activated(glib::clone!(
+            self.cancel_library_button.connect_clicked(glib::clone!(
                 #[weak(rename_to=imp)]
                 self,
                 move |_| {
