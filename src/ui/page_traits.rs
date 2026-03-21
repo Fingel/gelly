@@ -23,10 +23,15 @@ pub trait TopPage {
     fn can_search(&self) -> bool;
     fn can_sort(&self) -> bool;
     fn can_new(&self) -> bool;
-    fn reveal_search_bar(&self, visible: bool);
-    fn reveal_sort_bar(&self, visible: bool);
+    fn hide_search_bar(&self);
+    fn hide_sort_bar(&self);
+    fn toggle_search_bar(&self);
+    fn toggle_sort_bar(&self);
     fn play_selected(&self);
     fn create_new(&self) {
         warn!("New not implemented for this type");
+    }
+    fn toggle_bar(&self, bar: &gtk::SearchBar) {
+        bar.set_search_mode(!bar.is_search_mode());
     }
 }
