@@ -116,7 +116,6 @@
                                     </child>
                                     <property name="content">
                                       <object class="AdwClamp">
-                                        <property name="margin-bottom">24</property>
                                         <property name="margin-top">24</property>
                                         <property name="maximum-size">1000</property>
                                         <child>
