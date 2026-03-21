@@ -131,7 +131,6 @@
                             </child>
                             <child>
                               <object class="AdwNavigationPage" id="main_window">
-                                <property name="title" translatable="yes">Main</property>
                                 <child>
                                   <object class="AdwToolbarView">
                                     <child type="top">
