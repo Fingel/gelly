@@ -247,10 +247,7 @@ mod imp {
     };
     use log::{debug, warn};
 
-    use crate::ui::{
-        artist_detail::ArtistDetail, player_bar::big_player::BigPlayer,
-        player_bar::mini_player::MiniPlayerBar, song_list::SongList,
-    };
+    use crate::ui::{artist_detail::ArtistDetail, page_traits::TopPage, player_bar::{big_player::BigPlayer, mini_player::MiniPlayerBar}, song_list::SongList};
     use crate::ui::{playlist_list::PlaylistList, widget_ext::WidgetApplicationExt};
     use crate::ui::{queue::Queue, setup::Setup};
     use crate::{application::Application, ui::album_detail::AlbumDetail};
@@ -298,14 +295,14 @@ mod imp {
         pub player_bar: TemplateChild<MiniPlayerBar>,
         #[template_child]
         pub big_player: TemplateChild<BigPlayer>,
-        #[template_child]
+        #[template_child ]
         pub queue: TemplateChild<Queue>,
         #[template_child]
         pub progress_bar: TemplateChild<gtk::ProgressBar>,
         #[template_child]
-        pub sort_button: TemplateChild<gtk::Button>,
+        pub sort_button: TemplateChild<gtk::ToggleButton>,
         #[template_child]
-        pub search_button: TemplateChild<gtk::Button>,
+        pub search_button: TemplateChild<gtk::ToggleButton>,
         #[template_child]
         pub new_button: TemplateChild<gtk::Button>,
         #[template_child]
@@ -394,6 +391,16 @@ mod imp {
                 ))
                 .build();
 
+            self.album_list.bind_search_btn(&self.search_button);
+            self.artist_list.bind_search_btn(&self.search_button);
+            self.playlist_list.bind_search_btn(&self.search_button);
+            self.song_list.bind_search_btn(&self.search_button);
+
+            self.album_list.bind_sort_btn(&self.sort_button);
+            self.artist_list.bind_sort_btn(&self.sort_button);
+            self.playlist_list.bind_sort_btn(&self.sort_button);
+            self.song_list.bind_sort_btn(&self.sort_button);
+
             let action_search = ActionEntry::builder("search")
                 .activate(glib::clone!(
                     #[weak(rename_to=window)]
@@ -401,7 +408,6 @@ mod imp {
                     move |_, _, _| {
                         window.obj().call_on_visible_page(|page| {
                             page.toggle_search_bar();
-                            page.hide_sort_bar();
                         });
                     }
                 ))
@@ -413,7 +419,6 @@ mod imp {
                     self,
                     move |_, _, _| {
                         window.obj().call_on_visible_page(|page| {
-                            page.hide_search_bar();
                             page.toggle_sort_bar();
                         });
                     }

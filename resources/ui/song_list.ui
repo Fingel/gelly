@@ -4,17 +4,8 @@
   <template class="GellySongList" parent="GtkBox">
     <property name="orientation">vertical</property>
     <child>
-      <object class="GtkBox">
-        <property name="orientation">vertical</property>
-        <property name="valign">fill</property>
-        <child>
-          <object class="AdwStatusPage" id="empty">
-            <property name="title">No Songs</property>
-            <property name="icon-name">audio-x-generic-symbolic</property>
-            <property name="visible">true</property>
-          </object>
-        </child>
-        <child>
+      <object class="AdwToolbarView">
+        <child type="top">
           <object class="GtkSearchBar" id="search_bar">
             <property name="show-close-button">true</property>
             <property name="search-mode-enabled">false</property>
@@ -25,7 +16,7 @@
             </child>
           </object>
         </child>
-        <child>
+        <child type="top">
           <object class="GtkSearchBar" id="sort_bar">
             <property name="show-close-button">true</property>
             <property name="search-mode-enabled">false</property>
@@ -69,51 +60,64 @@
             </child>
           </object>
         </child>
-        <child>
-          <object class="AdwClamp">
-            <property name="maximum-size">1000</property>
+        <property name="content">
+          <object class="GtkBox">
+            <property name="orientation">vertical</property>
+            <property name="valign">fill</property>
             <child>
-              <object class="GtkBox">
-                <property name="orientation">vertical</property>
-                <property name="spacing">12</property>
+              <object class="AdwStatusPage" id="empty">
+                <property name="title">No Songs</property>
+                <property name="icon-name">audio-x-generic-symbolic</property>
+                <property name="visible">true</property>
+              </object>
+            </child>
+            <child>
+              <object class="AdwClamp">
+                <property name="maximum-size">1000</property>
                 <child>
                   <object class="GtkBox">
-                    <property name="margin-top">24</property>
-                    <property name="orientation">horizontal</property>
-                    <property name="spacing">6</property>
+                    <property name="orientation">vertical</property>
+                    <property name="spacing">12</property>
                     <child>
-                      <object class="GtkLabel" id="num_songs">
-                        <property name="halign">start</property>
-                        <style>
-                          <class name="title-2" />
-                        </style>
+                      <object class="GtkBox">
+                        <property name="margin-top">24</property>
+                        <property name="orientation">horizontal</property>
+                        <property name="spacing">6</property>
+                        <child>
+                          <object class="GtkLabel" id="num_songs">
+                            <property name="halign">start</property>
+                            <style>
+                              <class name="title-2" />
+                            </style>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkLabel">
+                            <property name="label">songs</property>
+                            <property name="halign">start</property>
+                            <style>
+                              <class name="title-2" />
+                              <class name="dimmed" />
+                            </style>
+                          </object>
+                        </child>
                       </object>
                     </child>
                     <child>
-                      <object class="GtkLabel">
-                        <property name="label">songs</property>
-                        <property name="halign">start</property>
-                        <style>
-                          <class name="title-2" />
-                          <class name="dimmed" />
-                        </style>
-                      </object>
-                    </child>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkScrolledWindow">
-                    <property name="hscrollbar-policy">never</property>
-                    <property name="vscrollbar-policy">automatic</property>
-                    <property name="propagate-natural-height">true</property>
-                    <property name="has-frame">false</property>
-                    <property name="vexpand">true</property>
-                    <child>
-                    <object class="GtkListView" id="track_list">
-                        <property name="width-request">300</property>
-                        <style>
-                          <class name="boxed-list" />
-                        </style>
+                      <object class="GtkScrolledWindow">
+                        <property name="hscrollbar-policy">never</property>
+                        <property name="vscrollbar-policy">automatic</property>
+                        <property name="propagate-natural-height">true</property>
+                        <property name="has-frame">false</property>
+                        <property name="vexpand">true</property>
+                        <child>
+                        <object class="GtkListView" id="track_list">
+                            <property name="width-request">300</property>
+                            <style>
+                              <class name="boxed-list" />
+                            </style>
+                          </object>
+                        </child>
                       </object>
                     </child>
                   </object>
@@ -121,7 +125,7 @@
               </object>
             </child>
           </object>
-        </child>
+        </property>
       </object>
     </child>
   </template>

@@ -32,10 +32,14 @@ impl TopPage for Queue {
         false
     }
 
-    fn toggle_search_bar(&self) {}
-    fn toggle_sort_bar(&self) {}
-    fn hide_search_bar(&self) {}
-    fn hide_sort_bar(&self) {}
+    fn search_bar(&self) -> Option<gtk::SearchBar> {
+        None
+    }
+
+    fn sort_bar(&self) -> Option<gtk::SearchBar> {
+        None
+    }
+
     fn play_selected(&self) {}
 }
 

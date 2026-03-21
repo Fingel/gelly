@@ -40,20 +40,12 @@ impl TopPage for ArtistList {
         false
     }
 
-    fn toggle_search_bar(&self) {
-        self.toggle_bar(&self.imp().search_bar);
+    fn search_bar(&self) -> Option<gtk::SearchBar> {
+        Some(self.imp().search_bar.clone())
     }
 
-    fn toggle_sort_bar(&self) {
-        self.toggle_bar(&self.imp().sort_bar);
-    }
-
-    fn hide_search_bar(&self) {
-        self.imp().search_bar.set_search_mode(false);
-    }
-
-    fn hide_sort_bar(&self) {
-        self.imp().sort_bar.set_search_mode(false);
+    fn sort_bar(&self) -> Option<gtk::SearchBar> {
+        Some(self.imp().sort_bar.clone())
     }
 
     fn play_selected(&self) {
@@ -310,6 +302,7 @@ mod imp {
                     artist_list.sort_changed();
                 }
             ));
+            self.search_bar.connect_entry(&self.search_entry.get());
         }
     }
     impl WidgetImpl for ArtistList {}
