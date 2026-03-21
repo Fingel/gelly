@@ -31,9 +31,8 @@
                 <property name="sidebar-position">start</property>
                 <property name="sidebar-width-fraction">0.33</property>
                 <property name="content">
-                  <object class="GtkBox" id="player_box">
-                    <property name="orientation">vertical</property>
-                    <child>
+                  <object class="AdwToolbarView" id="player_box">
+                    <property name="content">
                       <object class="GtkStack" id="setup_stack">
                         <child>
                           <object class="GellySetup" id="setup">
@@ -45,13 +44,12 @@
                               <object class="AdwNavigationPage" id="album_detail_page">
                                 <property name="title" translatable="yes">Album Detail</property>
                                 <child>
-                                  <object class="GtkBox">
-                                    <property name="orientation">1</property>
-                                    <child>
+                                  <object class="AdwToolbarView">
+                                    <child type="top">
                                       <object class="AdwHeaderBar">
                                       </object>
                                     </child>
-                                    <child>
+                                    <property name="content">
                                       <object class="GtkScrolledWindow">
                                         <property name="hscrollbar-policy">never</property>
                                         <property name="vscrollbar-policy">automatic</property>
@@ -70,7 +68,7 @@
                                           </object>
                                         </child>
                                       </object>
-                                    </child>
+                                    </property>
                                   </object>
                                 </child>
                               </object>
@@ -79,13 +77,12 @@
                               <object class="AdwNavigationPage" id="artist_detail_page">
                                 <property name="title" translatable="yes">Artist Detail</property>
                                 <child>
-                                  <object class="GtkBox">
-                                    <property name="orientation">1</property>
-                                    <child>
+                                  <object class="AdwToolbarView">
+                                    <child type="top">
                                       <object class="AdwHeaderBar">
                                       </object>
                                     </child>
-                                    <child>
+                                    <property name="content">
                                       <object class="GtkScrolledWindow">
                                         <property name="hscrollbar-policy">never</property>
                                         <property name="vscrollbar-policy">automatic</property>
@@ -103,7 +100,7 @@
                                           </object>
                                         </child>
                                       </object>
-                                    </child>
+                                    </property>
                                   </object>
                                 </child>
                               </object>
@@ -112,13 +109,12 @@
                               <object class="AdwNavigationPage" id="playlist_detail_page">
                                 <property name="title" translatable="yes">Playlist Detail</property>
                                 <child>
-                                  <object class="GtkBox">
-                                    <property name="orientation">1</property>
-                                    <child>
+                                  <object class="AdwToolbarView">
+                                    <child type="top">
                                       <object class="AdwHeaderBar">
                                       </object>
                                     </child>
-                                    <child>
+                                    <property name="content">
                                       <object class="AdwClamp">
                                         <property name="margin-bottom">24</property>
                                         <property name="margin-top">24</property>
@@ -128,7 +124,7 @@
                                           </object>
                                         </child>
                                       </object>
-                                    </child>
+                                    </property>
                                   </object>
                                 </child>
                               </object>
@@ -137,9 +133,8 @@
                               <object class="AdwNavigationPage" id="main_window">
                                 <property name="title" translatable="yes">Main</property>
                                 <child>
-                                  <object class="GtkBox">
-                                    <property name="orientation">1</property>
-                                    <child>
+                                  <object class="AdwToolbarView">
+                                    <child type="top">
                                       <object class="AdwHeaderBar" id="header_bar">
                                         <child type="start">
                                           <object class="GtkToggleButton" id="toggle_queue_button">
@@ -188,7 +183,7 @@
                                         </property>
                                       </object>
                                     </child>
-                                    <child>
+                                    <property name="content">
                                       <object class="AdwViewStack" id="stack">
                                         <property name="vexpand">true</property>
                                         <child>
@@ -240,8 +235,8 @@
                                           </object>
                                         </child>
                                       </object>
-                                    </child>
-                                    <child>
+                                    </property>
+                                    <child type="bottom">
                                       <object class="AdwViewSwitcherBar" id="switcher_bar">
                                         <property name="stack">stack</property>
                                       </object>
@@ -253,17 +248,16 @@
                           </object>
                         </child>
                       </object>
-                    </child>
-                    <child>
+                    </property>
+                    <child type="bottom">
                       <object class="GellyPlayerBar" id="player_bar">
                       </object>
                     </child>
                   </object>
                 </property>
                 <property name="sidebar">
-                  <object class="GtkBox" id="sidebar_box">
-                    <property name="orientation">vertical</property>
-                    <child>
+                  <object class="AdwToolbarView" id="sidebar_box">
+                    <child type="top">
                       <object class="AdwHeaderBar">
                         <property name="show-title">False</property>
                         <child type="start">
@@ -291,10 +285,10 @@
                         </child>
                       </object>
                     </child>
-                    <child>
+                    <property name="content">
                       <object class="GellyQueue" id="queue">
                       </object>
-                    </child>
+                    </property>
                   </object>
                 </property>
               </object>
