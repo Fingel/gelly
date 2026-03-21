@@ -5,12 +5,12 @@ use gtk::{gio, glib, subclass::prelude::*};
 use log::debug;
 
 glib::wrapper! {
-    pub struct PlayerBar(ObjectSubclass<imp::PlayerBar>)
+    pub struct BigPlayer(ObjectSubclass<imp::BigPlayer>)
     @extends gtk::Widget, gtk::Box,
         @implements gio::ActionMap, gio::ActionGroup, gtk::Accessible, gtk::Buildable, gtk::ConstraintTarget;
 }
 
-impl PlayerBar {
+impl BigPlayer {
     pub fn new() -> Self {
         Object::builder().build()
     }
@@ -34,7 +34,6 @@ impl PlayerBar {
                 self,
                 move |_audio_model: AudioModel| {
                     player.update_play_pause_button(true);
-                    player.reveal();
                 }
             ),
         );
@@ -59,7 +58,6 @@ impl PlayerBar {
                 self,
                 move |_audio_model: AudioModel| {
                     player.update_play_pause_button(false);
-                    player.hide();
                 }
             ),
         );
@@ -81,10 +79,6 @@ impl PlayerBar {
                 self,
                 move |audio_model, _| {
                     player.update_song_info(audio_model);
-                    // Show player bar when a song is loaded (queue-index >= 0)
-                    if audio_model.queue_index() >= 0 {
-                        player.reveal();
-                    }
                 }
             ),
         );
@@ -105,11 +99,6 @@ impl PlayerBar {
         // Initial update
         self.update_song_info(audio_model);
         self.update_play_pause_button(audio_model.playing());
-
-        // Show player bar if there's already a song loaded
-        if audio_model.queue_index() >= 0 {
-            self.reveal();
-        }
     }
 
     fn update_play_pause_button(&self, playing: bool) {
@@ -162,17 +151,9 @@ impl PlayerBar {
         let seconds = seconds % 60;
         format!("{}:{:02}", minutes, seconds)
     }
-
-    fn reveal(&self) {
-        self.imp().action_bar.set_revealed(true);
-    }
-
-    fn hide(&self) {
-        self.imp().action_bar.set_revealed(false);
-    }
 }
 
-impl Default for PlayerBar {
+impl Default for BigPlayer {
     fn default() -> Self {
         Self::new()
     }
@@ -198,11 +179,9 @@ mod imp {
     use log::warn;
 
     #[derive(CompositeTemplate, Default, Properties)]
-    #[template(resource = "/io/m51/Gelly/ui/player_bar.ui")]
-    #[properties(wrapper_type = super::PlayerBar)]
-    pub struct PlayerBar {
-        #[template_child]
-        pub action_bar: TemplateChild<gtk::ActionBar>,
+    #[template(resource = "/io/m51/Gelly/ui/big_player.ui")]
+    #[properties(wrapper_type = super::BigPlayer)]
+    pub struct BigPlayer {
         #[template_child]
         pub album_art: TemplateChild<AlbumArt>,
         #[template_child]
@@ -252,9 +231,9 @@ mod imp {
     }
 
     #[glib::object_subclass]
-    impl ObjectSubclass for PlayerBar {
-        const NAME: &'static str = "GellyPlayerBar";
-        type Type = super::PlayerBar;
+    impl ObjectSubclass for BigPlayer {
+        const NAME: &'static str = "GellyBigPlayer";
+        type Type = super::BigPlayer;
         type ParentType = gtk::Box;
 
         fn class_init(klass: &mut Self::Class) {
@@ -267,7 +246,7 @@ mod imp {
     }
 
     #[glib::derived_properties]
-    impl ObjectImpl for PlayerBar {
+    impl ObjectImpl for BigPlayer {
         fn constructed(&self) {
             self.parent_constructed();
             self.setup_signals();
@@ -275,10 +254,10 @@ mod imp {
         }
     }
 
-    impl BoxImpl for PlayerBar {}
-    impl WidgetImpl for PlayerBar {}
+    impl BoxImpl for BigPlayer {}
+    impl WidgetImpl for BigPlayer {}
 
-    impl PlayerBar {
+    impl BigPlayer {
         fn audio_model(&self) -> &AudioModel {
             self.audio_model.get().expect("AudioModel not initialized")
         }
@@ -441,7 +420,7 @@ mod imp {
                     }
                     let position = value as u32;
                     imp.position_label
-                        .set_text(&super::PlayerBar::format_time(position));
+                        .set_text(&super::BigPlayer::format_time(position));
 
                     // Schedule the actual seek after a delay
                     let source_id = glib::timeout_add_local(
@@ -492,7 +471,7 @@ mod imp {
                         let duration = imp.duration.borrow();
 
                         imp.position_label
-                            .set_text(&super::PlayerBar::format_time(*position));
+                            .set_text(&super::BigPlayer::format_time(*position));
 
                         if *duration > 0 {
                             imp.position_scale.set_value(*position as f64);
@@ -509,7 +488,7 @@ mod imp {
                     move |_, _| {
                         let duration = imp.duration.borrow();
                         imp.duration_label
-                            .set_text(&super::PlayerBar::format_time(*duration));
+                            .set_text(&super::BigPlayer::format_time(*duration));
 
                         if *duration > 0 {
                             imp.position_scale.adjustment().set_upper(*duration as f64);

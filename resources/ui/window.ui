@@ -5,7 +5,7 @@
     <property name="title">Gelly</property>
     <child>
       <object class="AdwBreakpoint">
-        <condition>max-width: 550sp</condition>
+        <condition>max-width: 800sp</condition>
         <setter object="header_bar" property="title-widget"></setter>
         <setter object="switcher_bar" property="reveal">true</setter>
         <setter object="split_view" property="collapsed">True</setter>
@@ -182,56 +182,70 @@
                                       </object>
                                     </child>
                                     <property name="content">
-                                      <object class="AdwViewStack" id="stack">
-                                        <property name="vexpand">true</property>
-                                        <child>
-                                          <object class="AdwViewStackPage" id="albums">
-                                            <property name="name">albums</property>
-                                            <property name="title" translatable="yes">Albums</property>
-                                            <property name="icon-name">media-optical-cd-audio-symbolic</property>
-                                            <property name="use-underline">true</property>
-                                            <property name="child">
-                                              <object class="GellyAlbumList" id="album_list">
+                                      <object class="AdwBottomSheet" id="bottom_sheet">
+                                        <property name="reveal-bottom-bar">false</property>
+                                        <property name="modal">true</property>
+                                        <property name="content">
+                                          <object class="AdwViewStack" id="stack">
+                                            <property name="vexpand">true</property>
+                                            <child>
+                                              <object class="AdwViewStackPage" id="albums">
+                                                <property name="name">albums</property>
+                                                <property name="title" translatable="yes">Albums</property>
+                                                <property name="icon-name">media-optical-cd-audio-symbolic</property>
+                                                <property name="use-underline">true</property>
+                                                <property name="child">
+                                                  <object class="GellyAlbumList" id="album_list">
+                                                  </object>
+                                                </property>
                                               </object>
-                                            </property>
-                                          </object>
-                                        </child>
-                                        <child>
-                                          <object class="AdwViewStackPage" id="artists">
-                                            <property name="name">artists</property>
-                                            <property name="title" translatable="yes">Artists</property>
-                                            <property name="icon-name">org.gnome.Settings-users-symbolic</property>
-                                            <property name="use-underline">true</property>
-                                            <property name="child">
-                                              <object class="GellyArtistList" id="artist_list">
+                                            </child>
+                                            <child>
+                                              <object class="AdwViewStackPage" id="artists">
+                                                <property name="name">artists</property>
+                                                <property name="title" translatable="yes">Artists</property>
+                                                <property name="icon-name">org.gnome.Settings-users-symbolic</property>
+                                                <property name="use-underline">true</property>
+                                                <property name="child">
+                                                  <object class="GellyArtistList" id="artist_list">
+                                                  </object>
+                                                </property>
                                               </object>
-                                            </property>
-                                          </object>
-                                        </child>
-                                        <child>
-                                          <object class="AdwViewStackPage" id="playlists">
-                                            <property name="name">playlists</property>
-                                            <property name="title" translatable="yes">Playlists</property>
-                                            <property name="icon-name">text-editor-symbolic</property>
-                                            <property name="use-underline">true</property>
-                                            <property name="child">
-                                              <object class="GellyPlaylistList" id="playlist_list">
+                                            </child>
+                                            <child>
+                                              <object class="AdwViewStackPage" id="playlists">
+                                                <property name="name">playlists</property>
+                                                <property name="title" translatable="yes">Playlists</property>
+                                                <property name="icon-name">text-editor-symbolic</property>
+                                                <property name="use-underline">true</property>
+                                                <property name="child">
+                                                  <object class="GellyPlaylistList" id="playlist_list">
+                                                  </object>
+                                                </property>
                                               </object>
-                                            </property>
+                                            </child>
+                                            <child>
+                                              <object class="AdwViewStackPage" id="song_page">
+                                                <property name="name">queue</property>
+                                                <property name="title" translatable="yes">Songs</property>
+                                                <property name="icon-name">audio-x-generic-symbolic</property>
+                                                <property name="use-underline">true</property>
+                                                <property name="child">
+                                                   <object class="GellySongList" id="song_list">
+                                                   </object>
+                                                </property>
+                                              </object>
+                                            </child>
                                           </object>
-                                        </child>
-                                        <child>
-                                          <object class="AdwViewStackPage" id="song_page">
-                                            <property name="name">queue</property>
-                                            <property name="title" translatable="yes">Songs</property>
-                                            <property name="icon-name">audio-x-generic-symbolic</property>
-                                            <property name="use-underline">true</property>
-                                            <property name="child">
-                                               <object class="GellySongList" id="song_list">
-                                               </object>
-                                            </property>
+                                        </property>
+                                        <property name="bottom-bar">
+                                          <object class="GellyMiniPlayerBar" id="player_bar">
                                           </object>
-                                        </child>
+                                        </property>
+                                        <property name="sheet">
+                                          <object class="GellyBigPlayer" id="big_player">
+                                          </object>
+                                        </property>
                                       </object>
                                     </property>
                                     <child type="bottom">
@@ -247,10 +261,6 @@
                         </child>
                       </object>
                     </property>
-                    <child type="bottom">
-                      <object class="GellyPlayerBar" id="player_bar">
-                      </object>
-                    </child>
                   </object>
                 </property>
                 <property name="sidebar">

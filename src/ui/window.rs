@@ -60,7 +60,9 @@ impl Window {
 
         // Initialize player bar with audio model
         if let Some(audio_model) = self.get_application().audio_model() {
-            imp.player_bar.bind_to_audio_model(&audio_model);
+            imp.player_bar
+                .bind_to_audio_model(&audio_model, &imp.bottom_sheet);
+            imp.big_player.bind_to_audio_model(&audio_model);
         }
     }
 
@@ -246,7 +248,10 @@ mod imp {
     };
     use log::{debug, warn};
 
-    use crate::ui::{artist_detail::ArtistDetail, player_bar::PlayerBar, song_list::SongList};
+    use crate::ui::{
+        artist_detail::ArtistDetail, big_player::BigPlayer, mini_player_bar::MiniPlayerBar,
+        song_list::SongList,
+    };
     use crate::ui::{playlist_list::PlaylistList, widget_ext::WidgetApplicationExt};
     use crate::ui::{queue::Queue, setup::Setup};
     use crate::{application::Application, ui::album_detail::AlbumDetail};
@@ -291,7 +296,9 @@ mod imp {
         #[template_child]
         pub song_list: TemplateChild<SongList>,
         #[template_child]
-        pub player_bar: TemplateChild<PlayerBar>,
+        pub player_bar: TemplateChild<MiniPlayerBar>,
+        #[template_child]
+        pub big_player: TemplateChild<BigPlayer>,
         #[template_child]
         pub queue: TemplateChild<Queue>,
         #[template_child]
@@ -304,6 +311,8 @@ mod imp {
         pub new_button: TemplateChild<gtk::Button>,
         #[template_child]
         pub split_view: TemplateChild<adw::OverlaySplitView>,
+        #[template_child]
+        pub bottom_sheet: TemplateChild<adw::BottomSheet>,
     }
 
     #[glib::object_subclass]

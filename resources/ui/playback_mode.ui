@@ -6,6 +6,9 @@
         <property name="focusable">True</property>
         <property name="receives_default">True</property>
         <property name="icon_name">media-playlist-consecutive-symbolic</property>
+        <style>
+          <class name="flat" />
+        </style>
       </object>
     </child>
   </template>
