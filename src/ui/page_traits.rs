@@ -40,30 +40,30 @@ pub trait TopPage {
     }
     fn search_bar(&self) -> Option<gtk::SearchBar>;
     fn sort_bar(&self) -> Option<gtk::SearchBar>;
-    fn __bind_bar_generic(
-        &self,
-        btn: &gtk::ToggleButton,
-        bar: Option<gtk::SearchBar>,
-        other_bar: Option<gtk::SearchBar>,
-    ) {
-        if let Some(bar) = bar {
-            btn.bind_property("active", &bar, "search-mode-enabled")
-                .bidirectional()
-                .build();
-            // make sure we make the 2 bars mutually exclusive
-            if let Some(obar) = other_bar {
-                bar.connect_search_mode_enabled_notify(move |bar| {
-                    if bar.is_search_mode() {
-                        obar.set_search_mode(false);
-                    }
-                });
-            }
-        }
-    }
     fn bind_search_btn(&self, btn: &gtk::ToggleButton) {
-        self.__bind_bar_generic(btn, self.search_bar(), self.sort_bar());
+        bind_bar_generic(btn, self.search_bar(), self.sort_bar());
     }
     fn bind_sort_btn(&self, btn: &gtk::ToggleButton) {
-        self.__bind_bar_generic(btn, self.sort_bar(), self.search_bar());
+        bind_bar_generic(btn, self.sort_bar(), self.search_bar());
+    }
+}
+
+fn bind_bar_generic(
+    btn: &gtk::ToggleButton,
+    bar: Option<gtk::SearchBar>,
+    other_bar: Option<gtk::SearchBar>,
+) {
+    if let Some(bar) = bar {
+        btn.bind_property("active", &bar, "search-mode-enabled")
+            .bidirectional()
+            .build();
+        // make sure we make the 2 bars mutually exclusive
+        if let Some(obar) = other_bar {
+            bar.connect_search_mode_enabled_notify(move |bar| {
+                if bar.is_search_mode() {
+                    obar.set_search_mode(false);
+                }
+            });
+        }
     }
 }
