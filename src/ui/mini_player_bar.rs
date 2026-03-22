@@ -1,4 +1,4 @@
-use crate::audio::model::AudioModel;
+use crate::{audio::model::AudioModel, ui::player_controls_trait::PlayerControls};
 use adw::prelude::*;
 use glib::Object;
 use gtk::{gio, glib, subclass::prelude::*};
@@ -10,9 +10,53 @@ glib::wrapper! {
         @implements gio::ActionMap, gio::ActionGroup, gtk::Accessible, gtk::Buildable, gtk::ConstraintTarget;
 }
 
+impl PlayerControls for MiniPlayerBar {
+    fn play_pause_btn(&self) -> &gtk::Button {
+        &self.imp().play_pause_button
+    }
+    fn title_label(&self) -> &gtk::Label {
+        &self.imp().title_label
+    }
+    fn artist_label(&self) -> &gtk::Label {
+        &self.imp().artist_label
+    }
+    fn album_label(&self) -> &gtk::Label {
+        &self.imp().album_label
+    }
+    fn lyrics_btn(&self) -> &gtk::Button {
+        &self.imp().lyrics
+    }
+    fn album_art(&self) -> &super::album_art::AlbumArt {
+        &self.imp().album_art
+    }
+    fn audio_model(&self) -> &AudioModel {
+        self.imp()
+            .audio_model
+            .get()
+            .expect("AudioModel not initialized")
+    }
+}
+
 impl MiniPlayerBar {
     pub fn new() -> Self {
         Object::builder().build()
+    }
+
+    pub fn set_small_mode(&self, small_mode: bool) {
+        let imp = self.imp();
+        imp.artist_button.set_visible(!small_mode);
+        imp.album_button.set_visible(!small_mode);
+        imp.artist_album_separator_label.set_visible(!small_mode);
+        imp.volume_button.set_visible(!small_mode);
+        imp.playback_mode_menu.set_visible(!small_mode);
+        imp.scale_position_label.set_visible(!small_mode);
+        imp.scale_duration_label.set_visible(!small_mode);
+        imp.position_scale.set_visible(!small_mode);
+        imp.info_button.set_visible(!small_mode);
+
+        imp.position_label.set_visible(small_mode);
+        imp.duration_label.set_visible(small_mode);
+        imp.duration_separator_label.set_visible(small_mode);
     }
 
     pub fn bind_to_audio_model(&self, audio_model: &AudioModel, bottom_sheet: &adw::BottomSheet) {
@@ -24,6 +68,16 @@ impl MiniPlayerBar {
         if let Err(e) = imp.audio_model.set(audio_model.clone()) {
             debug!("Audio model already set: {:?}", e);
         };
+
+        // Bind playback mode menu
+        imp.playback_mode_menu.bind_to_audio_model(audio_model);
+
+        imp.volume_scale
+            .adjustment()
+            .bind_property("value", audio_model, "volume")
+            .bidirectional()
+            .sync_create()
+            .build();
 
         audio_model.connect_closure(
             "play",
@@ -98,42 +152,6 @@ impl MiniPlayerBar {
         }
     }
 
-    fn update_play_pause_button(&self, playing: bool) {
-        let imp = self.imp();
-        if playing {
-            imp.play_pause_button
-                .set_icon_name("media-playback-pause-symbolic");
-            imp.play_pause_button.set_tooltip_text(Some("Pause"));
-        } else {
-            imp.play_pause_button
-                .set_icon_name("media-playback-start-symbolic");
-            imp.play_pause_button.set_tooltip_text(Some("Play"));
-        }
-    }
-
-    fn update_song_info(&self, audio_model: &AudioModel) {
-        let imp = self.imp();
-
-        // Update title
-        let title = audio_model.current_song_title();
-        imp.title_label.set_text(&title);
-
-        // Load album art
-        if let Some(song) = audio_model.current_song() {
-            self.load_album_art(&song.album_id(), &song.id());
-        }
-    }
-
-    fn load_album_art(&self, album_id: &str, song_id: &str) {
-        self.imp().album_art.set_item_id(song_id, Some(album_id));
-    }
-
-    fn format_time(seconds: u32) -> String {
-        let minutes = seconds / 60;
-        let seconds = seconds % 60;
-        format!("{}:{:02}", minutes, seconds)
-    }
-
     fn reveal(&self) {
         if let Some(w) = self.imp().bottom_sheet.get() {
             w.set_reveal_bottom_bar(true);
@@ -156,13 +174,22 @@ impl Default for MiniPlayerBar {
 mod imp {
     use std::cell::{OnceCell, RefCell};
 
-    use crate::{audio::model::AudioModel, ui::album_art::AlbumArt};
+    use crate::{
+        audio::{model::AudioModel, stream_info::discover_stream_info},
+        library_utils::{album_for_item, artist_for_item},
+        ui::{
+            album_art::AlbumArt, lyrics::Lyrics, playback_mode::PlaybackModeMenu,
+            player_controls_trait::PlayerControls, stream_info_dialog,
+            widget_ext::WidgetApplicationExt,
+        },
+    };
     use adw::{prelude::*, subclass::prelude::*};
     use glib::{Properties, subclass::InitializingObject};
     use gtk::{
         CompositeTemplate,
         glib::{self},
     };
+    use log::warn;
 
     #[derive(CompositeTemplate, Default, Properties)]
     #[template(resource = "/io/m51/Gelly/ui/mini_player_bar.ui")]
@@ -173,18 +200,50 @@ mod imp {
         #[template_child]
         pub title_label: TemplateChild<gtk::Label>,
         #[template_child]
+        pub artist_button: TemplateChild<gtk::Button>,
+        #[template_child]
+        pub artist_label: TemplateChild<gtk::Label>,
+        #[template_child]
+        pub album_button: TemplateChild<gtk::Button>,
+        #[template_child]
+        pub album_label: TemplateChild<gtk::Label>,
+        #[template_child]
         pub play_pause_button: TemplateChild<gtk::Button>,
         #[template_child]
         pub prev_button: TemplateChild<gtk::Button>,
         #[template_child]
         pub next_button: TemplateChild<gtk::Button>,
         #[template_child]
+        pub position_scale: TemplateChild<gtk::Scale>,
+        #[template_child]
         pub position_label: TemplateChild<gtk::Label>,
         #[template_child]
         pub duration_label: TemplateChild<gtk::Label>,
+        #[template_child]
+        pub scale_position_label: TemplateChild<gtk::Label>,
+        #[template_child]
+        pub scale_duration_label: TemplateChild<gtk::Label>,
+        #[template_child]
+        pub duration_separator_label: TemplateChild<gtk::Label>,
+        #[template_child]
+        pub artist_album_separator_label: TemplateChild<gtk::Label>,
+        #[template_child]
+        pub mute_button: TemplateChild<gtk::Button>,
+        #[template_child]
+        pub volume_button: TemplateChild<gtk::MenuButton>,
+        #[template_child]
+        pub volume_scale: TemplateChild<gtk::Scale>,
+        #[template_child]
+        pub info_button: TemplateChild<gtk::Button>,
+        #[template_child]
+        pub lyrics: TemplateChild<gtk::Button>,
+        #[template_child]
+        pub playback_mode_menu: TemplateChild<PlaybackModeMenu>,
 
         pub audio_model: OnceCell<AudioModel>,
         pub bottom_sheet: OnceCell<adw::BottomSheet>,
+        pub lyrics_window: RefCell<Option<glib::WeakRef<adw::Window>>>,
+        pub seek_debounce_id: RefCell<Option<glib::SourceId>>,
 
         #[property(get, set)]
         pub position: RefCell<u32>,
@@ -213,6 +272,7 @@ mod imp {
         fn constructed(&self) {
             self.parent_constructed();
             self.setup_signals();
+            self.setup_clickable_labels();
         }
     }
 
@@ -222,6 +282,110 @@ mod imp {
     impl MiniPlayerBar {
         fn audio_model(&self) -> &AudioModel {
             self.audio_model.get().expect("AudioModel not initialized")
+        }
+
+        pub fn update_volume_icon(&self, volume: f64) {
+            let icon_name = if volume == 0.0 {
+                "audio-volume-muted-symbolic"
+            } else if volume < 0.33 {
+                "audio-volume-low-symbolic"
+            } else if volume < 0.66 {
+                "audio-volume-medium-symbolic"
+            } else {
+                "audio-volume-high-symbolic"
+            };
+            self.volume_button.set_icon_name(icon_name);
+        }
+
+        fn show_info_dialog(&self) {
+            if let Some(uri) = self.audio_model().get_uri()
+                && let Some(song_model) = self.audio_model().current_song()
+            {
+                let song_id = song_model.id();
+                let jellyfin = self.obj().get_application().jellyfin();
+                discover_stream_info(
+                    &uri,
+                    &song_id,
+                    &jellyfin,
+                    glib::clone!(
+                        #[weak(rename_to = player_bar)]
+                        self,
+                        move |info| {
+                            stream_info_dialog::show(
+                                player_bar.obj().get_gtk_window().as_ref(),
+                                info,
+                            );
+                        }
+                    ),
+                );
+            } else {
+                warn!("Could not get current stream URI");
+            }
+        }
+
+        fn show_lyrics(&self) {
+            if let Some(window) = self
+                .lyrics_window
+                .borrow()
+                .as_ref()
+                .and_then(|w| w.upgrade())
+            {
+                window.present();
+            } else {
+                let lyrics_widget = Lyrics::new();
+
+                // Set the Jellyfin client
+                let jellyfin = self.obj().get_application().jellyfin();
+                lyrics_widget.set_jellyfin(&jellyfin);
+
+                // Bind to the audio model so it can listen for song changes
+                lyrics_widget.bind_to_audio_model(self.audio_model());
+
+                let window = adw::Window::new();
+                window.set_content(Some(&lyrics_widget));
+                window.set_default_size(500, 600);
+
+                if let Some(parent) = self.obj().get_gtk_window() {
+                    window.set_transient_for(Some(&parent));
+                }
+
+                // Clean up window reference when closed
+                window.connect_close_request(glib::clone!(
+                    #[weak(rename_to = imp)]
+                    self,
+                    #[upgrade_or]
+                    glib::Propagation::Proceed,
+                    move |_| {
+                        imp.lyrics_window.replace(None);
+                        glib::Propagation::Proceed
+                    }
+                ));
+
+                self.lyrics_window.replace(Some(window.downgrade()));
+                window.present();
+
+                // Fetch initial lyrics
+                let item_id = self.audio_model().current_song_id();
+                lyrics_widget.fetch_lyrics(&item_id);
+            }
+        }
+
+        fn show_artist(&self) {
+            let song_id = self.audio_model().current_song_id();
+            let window = self.obj().get_root_window();
+            let library = self.obj().get_application().library().clone();
+            if let Some(artist_model) = artist_for_item(&song_id, &library.borrow()) {
+                window.show_artist_detail(&artist_model);
+            }
+        }
+
+        fn show_album(&self) {
+            let song_id = self.audio_model().current_song_id();
+            let window = self.obj().get_root_window();
+            let library = self.obj().get_application().library().clone();
+            if let Some(album_model) = album_for_item(&song_id, &library.borrow()) {
+                window.show_album_detail(&album_model);
+            }
         }
 
         fn setup_signals(&self) {
@@ -249,6 +413,75 @@ mod imp {
                 }
             ));
 
+            self.mute_button.connect_clicked(glib::clone!(
+                #[weak(rename_to = imp)]
+                self,
+                move |_| {
+                    imp.volume_scale.set_value(0.0);
+                    imp.update_volume_icon(0.0);
+                }
+            ));
+
+            self.info_button.connect_clicked(glib::clone!(
+                #[weak(rename_to = imp)]
+                self,
+                move |_| {
+                    imp.show_info_dialog();
+                }
+            ));
+
+            self.position_scale.connect_change_value(glib::clone!(
+                #[weak(rename_to = imp)]
+                self,
+                #[upgrade_or]
+                glib::Propagation::Proceed,
+                move |_, _, value| {
+                    // Cancel existing debounce
+                    if let Some(source_id) = imp.seek_debounce_id.take() {
+                        source_id.remove();
+                    }
+                    let position = value as u32;
+                    imp.position_label
+                        .set_text(&super::MiniPlayerBar::format_time(position));
+
+                    // Schedule the actual seek after a delay
+                    let source_id = glib::timeout_add_local(
+                        std::time::Duration::from_millis(150),
+                        glib::clone!(
+                            #[weak]
+                            imp,
+                            #[upgrade_or]
+                            glib::ControlFlow::Break,
+                            move || {
+                                imp.audio_model().seek(position);
+                                imp.seek_debounce_id.replace(None);
+                                glib::ControlFlow::Break
+                            }
+                        ),
+                    );
+
+                    imp.seek_debounce_id.replace(Some(source_id));
+                    glib::Propagation::Proceed
+                }
+            ));
+
+            self.volume_scale.connect_value_changed(glib::clone!(
+                #[weak(rename_to = imp)]
+                self,
+                move |scale| {
+                    let volume = scale.value();
+                    imp.update_volume_icon(volume);
+                }
+            ));
+
+            self.lyrics.connect_clicked(glib::clone!(
+                #[weak(rename_to = imp)]
+                self,
+                move |_| {
+                    imp.show_lyrics();
+                }
+            ));
+
             self.obj().connect_notify_local(
                 Some("position"),
                 glib::clone!(
@@ -256,8 +489,16 @@ mod imp {
                     self,
                     move |_, _| {
                         let position = imp.position.borrow();
+                        let duration = imp.duration.borrow();
+
                         imp.position_label
                             .set_text(&super::MiniPlayerBar::format_time(*position));
+                        imp.scale_position_label
+                            .set_text(&super::MiniPlayerBar::format_time(*position));
+
+                        if *duration > 0 {
+                            imp.position_scale.set_value(*position as f64);
+                        }
                     }
                 ),
             );
@@ -271,9 +512,36 @@ mod imp {
                         let duration = imp.duration.borrow();
                         imp.duration_label
                             .set_text(&super::MiniPlayerBar::format_time(*duration));
+                        imp.scale_duration_label
+                            .set_text(&super::MiniPlayerBar::format_time(*duration));
+
+                        if *duration > 0 {
+                            imp.position_scale.adjustment().set_upper(*duration as f64);
+                        }
                     }
                 ),
             );
+        }
+
+        fn setup_clickable_labels(&self) {
+            self.artist_button.set_cursor_from_name(Some("pointer"));
+            self.album_button.set_cursor_from_name(Some("pointer"));
+
+            self.artist_button.connect_clicked(glib::clone!(
+                #[weak(rename_to = imp)]
+                self,
+                move |_| {
+                    imp.show_artist();
+                }
+            ));
+
+            self.album_button.connect_clicked(glib::clone!(
+                #[weak(rename_to = imp)]
+                self,
+                move |_| {
+                    imp.show_album();
+                }
+            ));
         }
     }
 }

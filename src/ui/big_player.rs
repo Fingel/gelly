@@ -1,4 +1,4 @@
-use crate::audio::model::AudioModel;
+use crate::{audio::model::AudioModel, ui::player_controls_trait::PlayerControls};
 use adw::prelude::*;
 use glib::Object;
 use gtk::{gio, glib, subclass::prelude::*};
@@ -10,6 +10,33 @@ glib::wrapper! {
         @implements gio::ActionMap, gio::ActionGroup, gtk::Accessible, gtk::Buildable, gtk::ConstraintTarget;
 }
 
+impl PlayerControls for BigPlayer {
+    fn play_pause_btn(&self) -> &gtk::Button {
+        &self.imp().play_pause_button
+    }
+    fn title_label(&self) -> &gtk::Label {
+        &self.imp().title_label
+    }
+    fn artist_label(&self) -> &gtk::Label {
+        &self.imp().artist_label
+    }
+    fn album_label(&self) -> &gtk::Label {
+        &self.imp().album_label
+    }
+    fn lyrics_btn(&self) -> &gtk::Button {
+        &self.imp().lyrics
+    }
+    fn album_art(&self) -> &super::album_art::AlbumArt {
+        &self.imp().album_art
+    }
+    fn audio_model(&self) -> &AudioModel {
+        self.imp()
+            .audio_model
+            .get()
+            .expect("AudioModel not initialized")
+    }
+}
+
 impl BigPlayer {
     pub fn new() -> Self {
         Object::builder().build()
@@ -18,13 +45,19 @@ impl BigPlayer {
     pub fn bind_to_audio_model(&self, audio_model: &AudioModel) {
         let imp = self.imp();
 
-        match imp.audio_model.set(audio_model.clone()) {
-            Ok(_) => (),
-            Err(e) => debug!("Audio model already set: {:?}", e),
+        if let Err(e) = imp.audio_model.set(audio_model.clone()) {
+            debug!("Audio model already set: {:?}", e);
         };
 
         // Bind playback mode menu
         imp.playback_mode_menu.bind_to_audio_model(audio_model);
+
+        imp.volume_scale
+            .adjustment()
+            .bind_property("value", self.audio_model(), "volume")
+            .bidirectional()
+            .sync_create()
+            .build();
 
         audio_model.connect_closure(
             "play",
@@ -100,57 +133,6 @@ impl BigPlayer {
         self.update_song_info(audio_model);
         self.update_play_pause_button(audio_model.playing());
     }
-
-    fn update_play_pause_button(&self, playing: bool) {
-        let imp = self.imp();
-        if playing {
-            imp.play_pause_button
-                .set_icon_name("media-playback-pause-symbolic");
-            imp.play_pause_button.set_tooltip_text(Some("Pause"));
-        } else {
-            imp.play_pause_button
-                .set_icon_name("media-playback-start-symbolic");
-            imp.play_pause_button.set_tooltip_text(Some("Play"));
-        }
-    }
-
-    fn update_song_info(&self, audio_model: &AudioModel) {
-        let imp = self.imp();
-
-        // Update title and artist
-        let title = audio_model.current_song_title();
-        let artists = audio_model.current_song_artists();
-        let album = audio_model.current_song_album();
-        let artist_str = if artists.is_empty() {
-            "Unknown Artist".to_string()
-        } else {
-            artists.join(", ")
-        };
-
-        imp.title_label.set_text(&title);
-        imp.artist_label.set_text(&artist_str);
-        imp.album_label.set_text(&album);
-
-        // Load album art and lyrics if available
-        if let Some(song) = audio_model.current_song() {
-            self.toggle_lyrics(song.has_lyrics());
-            self.load_album_art(&song.album_id(), &song.id());
-        }
-    }
-
-    fn toggle_lyrics(&self, has_lyrics: bool) {
-        self.imp().lyrics.set_visible(has_lyrics);
-    }
-
-    fn load_album_art(&self, album_id: &str, song_id: &str) {
-        self.imp().album_art.set_item_id(song_id, Some(album_id));
-    }
-
-    fn format_time(seconds: u32) -> String {
-        let minutes = seconds / 60;
-        let seconds = seconds % 60;
-        format!("{}:{:02}", minutes, seconds)
-    }
 }
 
 impl Default for BigPlayer {
@@ -167,7 +149,8 @@ mod imp {
         library_utils::{album_for_item, artist_for_item},
         ui::{
             album_art::AlbumArt, lyrics::Lyrics, playback_mode::PlaybackModeMenu,
-            stream_info_dialog, widget_ext::WidgetApplicationExt,
+            player_controls_trait::PlayerControls, stream_info_dialog,
+            widget_ext::WidgetApplicationExt,
         },
     };
     use adw::{prelude::*, subclass::prelude::*};
@@ -448,7 +431,6 @@ mod imp {
                 self,
                 move |scale| {
                     let volume = scale.value();
-                    imp.audio_model().imp().set_volume(volume);
                     imp.update_volume_icon(volume);
                 }
             ));

@@ -40,6 +40,13 @@ impl AudioModel {
             .expect("Player should only be initialized once");
 
         let obj_weak = self.downgrade();
+        self.connect_volume_notify(glib::clone!(
+            #[weak(rename_to = this)]
+            self,
+            move |_| {
+                this.apply_volume();
+            }
+        ));
         glib::spawn_future_local(async move {
             while let Ok(event) = event_reciever.recv().await {
                 let Some(obj) = obj_weak.upgrade() else { break };

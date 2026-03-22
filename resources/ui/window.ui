@@ -4,7 +4,7 @@
   <template class="GellyApplicationWindow" parent="AdwApplicationWindow">
     <property name="title">Gelly</property>
     <child>
-      <object class="AdwBreakpoint">
+      <object class="AdwBreakpoint" id="breakpoint">
         <condition>max-width: 800sp</condition>
         <setter object="header_bar" property="title-widget"></setter>
         <setter object="switcher_bar" property="reveal">true</setter>

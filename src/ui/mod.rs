@@ -16,6 +16,7 @@ pub mod mini_player_bar;
 pub mod music_context_menu;
 pub mod page_traits;
 pub mod playback_mode;
+pub mod player_controls_trait;
 pub mod playlist;
 pub mod playlist_detail;
 pub mod playlist_dialogs;
