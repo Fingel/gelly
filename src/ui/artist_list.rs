@@ -48,6 +48,10 @@ impl TopPage for ArtistList {
         Some(self.imp().sort_bar.clone())
     }
 
+    fn search_entry(&self) -> Option<gtk::SearchEntry> {
+        Some(self.imp().search_entry.clone().upcast())
+    }
+
     fn play_selected(&self) {
         if let Some(selection) = self.imp().grid_view.model()
             && let Some(single_selection) = selection.downcast_ref::<gtk::SingleSelection>()

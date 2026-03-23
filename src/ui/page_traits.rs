@@ -1,4 +1,7 @@
-use gtk::glib::object::ObjectExt;
+use gtk::{
+    glib::{self, clone, object::ObjectExt},
+    prelude::WidgetExt,
+};
 use log::warn;
 
 use crate::models::model_traits::ItemModel;
@@ -40,11 +43,31 @@ pub trait TopPage {
     }
     fn search_bar(&self) -> Option<gtk::SearchBar>;
     fn sort_bar(&self) -> Option<gtk::SearchBar>;
-    fn bind_search_btn(&self, btn: &gtk::ToggleButton) {
-        bind_bar_generic(btn, self.search_bar(), self.sort_bar());
+    fn search_entry(&self) -> Option<gtk::SearchEntry>;
+    fn bind_search_btn(
+        &self,
+        btn: &gtk::ToggleButton,
+        stack: adw::ViewStack,
+        stack_page: gtk::Widget,
+    ) {
+        bind_bar_generic(
+            btn,
+            self.search_bar(),
+            self.sort_bar(),
+            self.search_entry(),
+            Some(stack),
+            Some(stack_page),
+        );
     }
     fn bind_sort_btn(&self, btn: &gtk::ToggleButton) {
-        bind_bar_generic(btn, self.sort_bar(), self.search_bar());
+        bind_bar_generic(
+            btn,
+            self.sort_bar(),
+            self.search_bar(),
+            self.search_entry(),
+            None,
+            None,
+        );
     }
 }
 
@@ -52,18 +75,34 @@ fn bind_bar_generic(
     btn: &gtk::ToggleButton,
     bar: Option<gtk::SearchBar>,
     other_bar: Option<gtk::SearchBar>,
+    search_entry: Option<gtk::SearchEntry>,
+    stack: Option<adw::ViewStack>,
+    stack_page: Option<gtk::Widget>,
 ) {
     if let Some(bar) = bar {
         btn.bind_property("active", &bar, "search-mode-enabled")
             .bidirectional()
             .build();
         // make sure we make the 2 bars mutually exclusive
-        if let Some(obar) = other_bar {
-            bar.connect_search_mode_enabled_notify(move |bar| {
-                if bar.is_search_mode() {
+        bar.connect_search_mode_enabled_notify(move |bar| {
+            if bar.is_search_mode() {
+                if let Some(obar) = other_bar.as_ref() {
                     obar.set_search_mode(false);
                 }
-            });
-        }
+                if let Some(entry) = search_entry.as_ref()
+                    && let Some(stack) = stack.as_ref()
+                    && let Some(page) = stack_page.as_ref()
+                    && stack.visible_child().is_some_and(|child| child == *page)
+                {
+                    glib::idle_add_local_once(clone!(
+                        #[weak]
+                        entry,
+                        move || {
+                            entry.grab_focus();
+                        }
+                    ));
+                }
+            }
+        });
     }
 }

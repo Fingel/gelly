@@ -247,7 +247,12 @@ mod imp {
     };
     use log::{debug, warn};
 
-    use crate::ui::{artist_detail::ArtistDetail, page_traits::TopPage, player_bar::{big_player::BigPlayer, mini_player::MiniPlayerBar}, song_list::SongList};
+    use crate::ui::{
+        artist_detail::ArtistDetail,
+        page_traits::TopPage,
+        player_bar::{big_player::BigPlayer, mini_player::MiniPlayerBar},
+        song_list::SongList,
+    };
     use crate::ui::{playlist_list::PlaylistList, widget_ext::WidgetApplicationExt};
     use crate::ui::{queue::Queue, setup::Setup};
     use crate::{application::Application, ui::album_detail::AlbumDetail};
@@ -295,7 +300,7 @@ mod imp {
         pub player_bar: TemplateChild<MiniPlayerBar>,
         #[template_child]
         pub big_player: TemplateChild<BigPlayer>,
-        #[template_child ]
+        #[template_child]
         pub queue: TemplateChild<Queue>,
         #[template_child]
         pub progress_bar: TemplateChild<gtk::ProgressBar>,
@@ -391,10 +396,26 @@ mod imp {
                 ))
                 .build();
 
-            self.album_list.bind_search_btn(&self.search_button);
-            self.artist_list.bind_search_btn(&self.search_button);
-            self.playlist_list.bind_search_btn(&self.search_button);
-            self.song_list.bind_search_btn(&self.search_button);
+            self.album_list.bind_search_btn(
+                &self.search_button,
+                self.stack.clone(),
+                self.album_list.get().clone().upcast(),
+            );
+            self.artist_list.bind_search_btn(
+                &self.search_button,
+                self.stack.clone(),
+                self.artist_list.get().clone().upcast(),
+            );
+            self.playlist_list.bind_search_btn(
+                &self.search_button,
+                self.stack.clone(),
+                self.playlist_list.get().clone().upcast(),
+            );
+            self.song_list.bind_search_btn(
+                &self.search_button,
+                self.stack.clone(),
+                self.song_list.get().clone().upcast(),
+            );
 
             self.album_list.bind_sort_btn(&self.sort_button);
             self.artist_list.bind_sort_btn(&self.sort_button);

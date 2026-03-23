@@ -41,6 +41,10 @@ impl TopPage for Queue {
     }
 
     fn play_selected(&self) {}
+
+    fn search_entry(&self) -> Option<gtk::SearchEntry> {
+        None
+    }
 }
 
 impl Queue {
