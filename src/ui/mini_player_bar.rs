@@ -57,6 +57,24 @@ impl MiniPlayerBar {
         imp.position_label.set_visible(small_mode);
         imp.duration_label.set_visible(small_mode);
         imp.duration_separator_label.set_visible(small_mode);
+
+        let margin = if small_mode {
+            imp.album_art.set_size(42);
+
+            imp.title_label.set_halign(gtk::Align::Start);
+            imp.song_info_box.set_halign(gtk::Align::Start);
+            3
+        } else {
+            imp.album_art.set_size(84);
+
+            imp.title_label.set_halign(gtk::Align::Center);
+            imp.song_info_box.set_halign(gtk::Align::Fill);
+            6
+        };
+        self.set_margin_top(margin);
+        self.set_margin_bottom(margin);
+        self.set_margin_start(margin);
+        self.set_margin_end(margin);
     }
 
     pub fn bind_to_audio_model(&self, audio_model: &AudioModel, bottom_sheet: &adw::BottomSheet) {
@@ -239,6 +257,8 @@ mod imp {
         pub lyrics: TemplateChild<gtk::Button>,
         #[template_child]
         pub playback_mode_menu: TemplateChild<PlaybackModeMenu>,
+        #[template_child]
+        pub song_info_box: TemplateChild<gtk::Box>,
 
         pub audio_model: OnceCell<AudioModel>,
         pub bottom_sheet: OnceCell<adw::BottomSheet>,
