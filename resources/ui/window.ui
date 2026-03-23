@@ -4,8 +4,14 @@
   <template class="GellyApplicationWindow" parent="AdwApplicationWindow">
     <property name="title">Gelly</property>
     <child>
-      <object class="AdwBreakpoint" id="breakpoint">
+      <object class="AdwBreakpoint" id="sidebar_breakpoint">
         <condition>max-width: 800sp</condition>
+        <setter object="split_view" property="collapsed">True</setter>
+      </object>
+    </child>
+    <child>
+      <object class="AdwBreakpoint" id="breakpoint">
+        <condition>max-width: 550sp</condition>
         <setter object="header_bar" property="title-widget"></setter>
         <setter object="switcher_bar" property="reveal">true</setter>
         <setter object="split_view" property="collapsed">True</setter>
