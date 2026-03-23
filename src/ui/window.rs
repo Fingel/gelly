@@ -49,8 +49,7 @@ impl Window {
 
     pub fn show_main_page(&self) {
         let imp = self.imp();
-        imp.setup_stack
-            .set_visible_child(&imp.main_navigation.get());
+        imp.setup_stack.set_visible_child(&imp.bottom_sheet.get());
         imp.main_navigation.replace(&[imp.main_window.get()]);
         imp.album_list.setup_library_connection();
         imp.artist_list.setup_library_connection();
@@ -184,7 +183,7 @@ impl Window {
         if maximized {
             self.maximize();
         }
-        self.imp().player_bar.set_small_mode(width < 800);
+        self.imp().player_bar.set_small_mode(width < 550);
     }
 
     pub fn loading_visible(&self, visible: bool) {
@@ -244,7 +243,7 @@ mod imp {
     use gtk::{
         CompositeTemplate,
         gio::{ActionEntry, prelude::ActionMapExtManual},
-        glib,
+        glib::{self, clone},
         prelude::*,
     };
     use log::{debug, warn};
@@ -649,6 +648,29 @@ mod imp {
                 self.player_bar,
                 move |_| {
                     mini_player.set_small_mode(false);
+                }
+            ));
+
+            self.bottom_sheet.connect_reveal_bottom_bar_notify(clone!(
+                #[weak(rename_to = main)]
+                self.main_navigation,
+                move |bs| {
+                    main.set_margin_bottom(if bs.reveals_bottom_bar() {
+                        bs.bottom_bar_height()
+                    } else {
+                        0
+                    });
+                }
+            ));
+            self.bottom_sheet.connect_bottom_bar_height_notify(clone!(
+                #[weak(rename_to = main)]
+                self.main_navigation,
+                move |bs| {
+                    main.set_margin_bottom(if bs.reveals_bottom_bar() {
+                        bs.bottom_bar_height()
+                    } else {
+                        0
+                    });
                 }
             ));
         }
