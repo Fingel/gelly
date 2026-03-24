@@ -63,12 +63,18 @@ impl MiniPlayerBar {
 
             imp.title_label.set_halign(gtk::Align::Start);
             imp.song_info_box.set_halign(gtk::Align::Start);
+            imp.subtitle_box.set_halign(gtk::Align::Start);
+            imp.all_buttons_box
+                .set_orientation(gtk::Orientation::Horizontal);
             3
         } else {
             imp.album_art.set_size(84);
 
             imp.title_label.set_halign(gtk::Align::Center);
             imp.song_info_box.set_halign(gtk::Align::Fill);
+            imp.subtitle_box.set_halign(gtk::Align::Center);
+            imp.all_buttons_box
+                .set_orientation(gtk::Orientation::Vertical);
             6
         };
         self.set_margin_top(margin);
@@ -259,6 +265,10 @@ mod imp {
         pub playback_mode_menu: TemplateChild<PlaybackModeMenu>,
         #[template_child]
         pub song_info_box: TemplateChild<gtk::Box>,
+        #[template_child]
+        pub subtitle_box: TemplateChild<gtk::Box>,
+        #[template_child]
+        pub all_buttons_box: TemplateChild<gtk::Box>,
 
         pub audio_model: OnceCell<AudioModel>,
         pub bottom_sheet: OnceCell<adw::BottomSheet>,
