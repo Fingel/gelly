@@ -312,6 +312,10 @@ mod imp {
         pub split_view: TemplateChild<adw::OverlaySplitView>,
         #[template_child]
         pub bottom_sheet: TemplateChild<adw::BottomSheet>,
+        #[template_child]
+        pub breakpoint: TemplateChild<adw::Breakpoint>,
+        #[template_child]
+        pub sidebar_breakpoint: TemplateChild<adw::Breakpoint>,
     }
 
     #[glib::object_subclass]
@@ -631,6 +635,24 @@ mod imp {
                     app.refresh_all(config::get_refresh_on_startup());
                 }
             ));
+
+            {
+                let breakpoint_fn = move |collapse: bool| {
+                    clone!(
+                        #[weak(rename_to = split_view)]
+                        self.split_view,
+                        move |_: &adw::Breakpoint| {
+                            let sidebar_open = split_view.shows_sidebar();
+                            split_view.set_collapsed(collapse);
+                            split_view.set_show_sidebar(sidebar_open);
+                        }
+                    )
+                };
+                for breakpoint in [&self.breakpoint, &self.sidebar_breakpoint] {
+                    breakpoint.connect_apply(breakpoint_fn(true));
+                    breakpoint.connect_unapply(breakpoint_fn(false));
+                }
+            }
 
             let update_margin = clone!(
                 #[weak(rename_to = main)]
