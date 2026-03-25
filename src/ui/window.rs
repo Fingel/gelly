@@ -249,8 +249,8 @@ mod imp {
     use log::{debug, warn};
 
     use crate::ui::{
-        artist_detail::ArtistDetail, big_player::BigPlayer, mini_player_bar::MiniPlayerBar,
-        song_list::SongList,
+        artist_detail::ArtistDetail, player_bar::big_player::BigPlayer,
+        player_bar::mini_player_bar::MiniPlayerBar, song_list::SongList,
     };
     use crate::ui::{playlist_list::PlaylistList, widget_ext::WidgetApplicationExt};
     use crate::ui::{queue::Queue, setup::Setup};

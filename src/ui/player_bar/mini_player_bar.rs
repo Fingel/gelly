@@ -1,16 +1,19 @@
-use crate::{audio::model::AudioModel, ui::player_controls_trait::PlayerControls};
+use crate::{
+    audio::model::AudioModel,
+    ui::{album_art::AlbumArt, player_bar::player_controls_trait::PlayerControls},
+};
 use adw::prelude::*;
 use glib::Object;
 use gtk::{gio, glib, subclass::prelude::*};
 use log::debug;
 
 glib::wrapper! {
-    pub struct BigPlayer(ObjectSubclass<imp::BigPlayer>)
+    pub struct MiniPlayerBar(ObjectSubclass<imp::MiniPlayerBar>)
     @extends gtk::Widget, gtk::Box,
         @implements gio::ActionMap, gio::ActionGroup, gtk::Accessible, gtk::Buildable, gtk::ConstraintTarget;
 }
 
-impl PlayerControls for BigPlayer {
+impl PlayerControls for MiniPlayerBar {
     fn play_pause_btn(&self) -> &gtk::Button {
         &self.imp().play_pause_button
     }
@@ -26,7 +29,7 @@ impl PlayerControls for BigPlayer {
     fn lyrics_btn(&self) -> &gtk::Button {
         &self.imp().lyrics
     }
-    fn album_art(&self) -> &super::album_art::AlbumArt {
+    fn album_art(&self) -> &AlbumArt {
         &self.imp().album_art
     }
     fn audio_model(&self) -> &AudioModel {
@@ -37,13 +40,57 @@ impl PlayerControls for BigPlayer {
     }
 }
 
-impl BigPlayer {
+impl MiniPlayerBar {
     pub fn new() -> Self {
         Object::builder().build()
     }
 
-    pub fn bind_to_audio_model(&self, audio_model: &AudioModel) {
+    pub fn set_small_mode(&self, small_mode: bool) {
         let imp = self.imp();
+        imp.artist_button.set_visible(!small_mode);
+        imp.album_button.set_visible(!small_mode);
+        imp.artist_album_separator_label.set_visible(!small_mode);
+        imp.volume_button.set_visible(!small_mode);
+        imp.playback_mode_menu.set_visible(!small_mode);
+        imp.scale_position_label.set_visible(!small_mode);
+        imp.scale_duration_label.set_visible(!small_mode);
+        imp.position_scale.set_visible(!small_mode);
+        imp.info_button.set_visible(!small_mode);
+
+        imp.position_label.set_visible(small_mode);
+        imp.duration_label.set_visible(small_mode);
+        imp.duration_separator_label.set_visible(small_mode);
+
+        let margin = if small_mode {
+            imp.album_art.set_size(42);
+
+            imp.title_label.set_halign(gtk::Align::Start);
+            imp.song_info_box.set_halign(gtk::Align::Start);
+            imp.subtitle_box.set_halign(gtk::Align::Start);
+            imp.all_buttons_box
+                .set_orientation(gtk::Orientation::Horizontal);
+            3
+        } else {
+            imp.album_art.set_size(84);
+
+            imp.title_label.set_halign(gtk::Align::Center);
+            imp.song_info_box.set_halign(gtk::Align::Fill);
+            imp.subtitle_box.set_halign(gtk::Align::Center);
+            imp.all_buttons_box
+                .set_orientation(gtk::Orientation::Vertical);
+            6
+        };
+        self.set_margin_top(margin);
+        self.set_margin_bottom(margin);
+        self.set_margin_start(margin);
+        self.set_margin_end(margin);
+    }
+
+    pub fn bind_to_audio_model(&self, audio_model: &AudioModel, bottom_sheet: &adw::BottomSheet) {
+        let imp = self.imp();
+        if let Err(e) = imp.bottom_sheet.set(bottom_sheet.clone()) {
+            debug!("Bottom Sheet already set: {:?}", e);
+        }
 
         if let Err(e) = imp.audio_model.set(audio_model.clone()) {
             debug!("Audio model already set: {:?}", e);
@@ -54,7 +101,7 @@ impl BigPlayer {
 
         imp.volume_scale
             .adjustment()
-            .bind_property("value", self.audio_model(), "volume")
+            .bind_property("value", audio_model, "volume")
             .bidirectional()
             .sync_create()
             .build();
@@ -67,6 +114,7 @@ impl BigPlayer {
                 self,
                 move |_audio_model: AudioModel| {
                     player.update_play_pause_button(true);
+                    player.reveal();
                 }
             ),
         );
@@ -91,6 +139,7 @@ impl BigPlayer {
                 self,
                 move |_audio_model: AudioModel| {
                     player.update_play_pause_button(false);
+                    player.hide();
                 }
             ),
         );
@@ -112,19 +161,10 @@ impl BigPlayer {
                 self,
                 move |audio_model, _| {
                     player.update_song_info(audio_model);
-                }
-            ),
-        );
-
-        audio_model.connect_notify_local(
-            Some("volume"),
-            glib::clone!(
-                #[weak(rename_to = player)]
-                self,
-                move |audio_model, _| {
-                    let volume = audio_model.volume();
-                    player.imp().volume_scale.set_value(volume);
-                    player.imp().update_volume_icon(volume);
+                    // Show player bar when a song is loaded (queue-index >= 0)
+                    if audio_model.queue_index() >= 0 {
+                        player.reveal();
+                    }
                 }
             ),
         );
@@ -132,10 +172,27 @@ impl BigPlayer {
         // Initial update
         self.update_song_info(audio_model);
         self.update_play_pause_button(audio_model.playing());
+
+        // Show player bar if there's already a song loaded
+        if audio_model.queue_index() >= 0 {
+            self.reveal();
+        }
+    }
+
+    fn reveal(&self) {
+        if let Some(w) = self.imp().bottom_sheet.get() {
+            w.set_reveal_bottom_bar(true);
+        }
+    }
+
+    fn hide(&self) {
+        if let Some(w) = self.imp().bottom_sheet.get() {
+            w.set_reveal_bottom_bar(false);
+        }
     }
 }
 
-impl Default for BigPlayer {
+impl Default for MiniPlayerBar {
     fn default() -> Self {
         Self::new()
     }
@@ -149,7 +206,7 @@ mod imp {
         library_utils::{album_for_item, artist_for_item},
         ui::{
             album_art::AlbumArt, lyrics::Lyrics, playback_mode::PlaybackModeMenu,
-            player_controls_trait::PlayerControls, stream_info_dialog,
+            player_bar::player_controls_trait::PlayerControls, stream_info_dialog,
             widget_ext::WidgetApplicationExt,
         },
     };
@@ -162,9 +219,9 @@ mod imp {
     use log::warn;
 
     #[derive(CompositeTemplate, Default, Properties)]
-    #[template(resource = "/io/m51/Gelly/ui/big_player.ui")]
-    #[properties(wrapper_type = super::BigPlayer)]
-    pub struct BigPlayer {
+    #[template(resource = "/io/m51/Gelly/ui/mini_player_bar.ui")]
+    #[properties(wrapper_type = super::MiniPlayerBar)]
+    pub struct MiniPlayerBar {
         #[template_child]
         pub album_art: TemplateChild<AlbumArt>,
         #[template_child]
@@ -190,6 +247,14 @@ mod imp {
         #[template_child]
         pub duration_label: TemplateChild<gtk::Label>,
         #[template_child]
+        pub scale_position_label: TemplateChild<gtk::Label>,
+        #[template_child]
+        pub scale_duration_label: TemplateChild<gtk::Label>,
+        #[template_child]
+        pub duration_separator_label: TemplateChild<gtk::Label>,
+        #[template_child]
+        pub artist_album_separator_label: TemplateChild<gtk::Label>,
+        #[template_child]
         pub mute_button: TemplateChild<gtk::Button>,
         #[template_child]
         pub volume_button: TemplateChild<gtk::MenuButton>,
@@ -201,8 +266,15 @@ mod imp {
         pub lyrics: TemplateChild<gtk::Button>,
         #[template_child]
         pub playback_mode_menu: TemplateChild<PlaybackModeMenu>,
+        #[template_child]
+        pub song_info_box: TemplateChild<gtk::Box>,
+        #[template_child]
+        pub subtitle_box: TemplateChild<gtk::Box>,
+        #[template_child]
+        pub all_buttons_box: TemplateChild<gtk::Box>,
 
         pub audio_model: OnceCell<AudioModel>,
+        pub bottom_sheet: OnceCell<adw::BottomSheet>,
         pub lyrics_window: RefCell<Option<glib::WeakRef<adw::Window>>>,
         pub seek_debounce_id: RefCell<Option<glib::SourceId>>,
 
@@ -214,9 +286,9 @@ mod imp {
     }
 
     #[glib::object_subclass]
-    impl ObjectSubclass for BigPlayer {
-        const NAME: &'static str = "GellyBigPlayer";
-        type Type = super::BigPlayer;
+    impl ObjectSubclass for MiniPlayerBar {
+        const NAME: &'static str = "GellyMiniPlayerBar";
+        type Type = super::MiniPlayerBar;
         type ParentType = gtk::Box;
 
         fn class_init(klass: &mut Self::Class) {
@@ -229,7 +301,7 @@ mod imp {
     }
 
     #[glib::derived_properties]
-    impl ObjectImpl for BigPlayer {
+    impl ObjectImpl for MiniPlayerBar {
         fn constructed(&self) {
             self.parent_constructed();
             self.setup_signals();
@@ -237,10 +309,10 @@ mod imp {
         }
     }
 
-    impl BoxImpl for BigPlayer {}
-    impl WidgetImpl for BigPlayer {}
+    impl BoxImpl for MiniPlayerBar {}
+    impl WidgetImpl for MiniPlayerBar {}
 
-    impl BigPlayer {
+    impl MiniPlayerBar {
         fn audio_model(&self) -> &AudioModel {
             self.audio_model.get().expect("AudioModel not initialized")
         }
@@ -403,7 +475,7 @@ mod imp {
                     }
                     let position = value as u32;
                     imp.position_label
-                        .set_text(&super::BigPlayer::format_time(position));
+                        .set_text(&super::MiniPlayerBar::format_time(position));
 
                     // Schedule the actual seek after a delay
                     let source_id = glib::timeout_add_local(
@@ -453,7 +525,9 @@ mod imp {
                         let duration = imp.duration.borrow();
 
                         imp.position_label
-                            .set_text(&super::BigPlayer::format_time(*position));
+                            .set_text(&super::MiniPlayerBar::format_time(*position));
+                        imp.scale_position_label
+                            .set_text(&super::MiniPlayerBar::format_time(*position));
 
                         if *duration > 0 {
                             imp.position_scale.set_value(*position as f64);
@@ -470,7 +544,9 @@ mod imp {
                     move |_, _| {
                         let duration = imp.duration.borrow();
                         imp.duration_label
-                            .set_text(&super::BigPlayer::format_time(*duration));
+                            .set_text(&super::MiniPlayerBar::format_time(*duration));
+                        imp.scale_duration_label
+                            .set_text(&super::MiniPlayerBar::format_time(*duration));
 
                         if *duration > 0 {
                             imp.position_scale.adjustment().set_upper(*duration as f64);
