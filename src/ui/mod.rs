@@ -27,5 +27,6 @@ pub mod song;
 pub mod song_list;
 pub mod song_utils;
 pub mod stream_info_dialog;
+pub mod volume_button;
 pub mod widget_ext;
 pub mod window;

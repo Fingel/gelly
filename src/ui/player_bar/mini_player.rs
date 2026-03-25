@@ -52,7 +52,8 @@ impl MiniPlayerBar {
         // Bind playback mode menu
         imp.playback_mode_menu.bind_to_audio_model(audio_model);
 
-        imp.volume_scale
+        imp.volume_button
+            .scale()
             .adjustment()
             .bind_property("value", audio_model, "volume")
             .bidirectional()
@@ -156,7 +157,10 @@ mod imp {
 
     use crate::{
         audio::model::AudioModel,
-        ui::{album_art::AlbumArt, playback_mode::PlaybackModeMenu, player_bar::common::PlayerImp},
+        ui::{
+            album_art::AlbumArt, playback_mode::PlaybackModeMenu, player_bar::common::PlayerImp,
+            volume_button::VolumeButton,
+        },
     };
     use adw::{prelude::*, subclass::prelude::*};
     use glib::{Properties, WeakRef, subclass::InitializingObject};
@@ -198,11 +202,7 @@ mod imp {
         #[template_child]
         pub scale_duration_label: TemplateChild<gtk::Label>,
         #[template_child]
-        pub mute_button: TemplateChild<gtk::Button>,
-        #[template_child]
-        pub volume_button: TemplateChild<gtk::MenuButton>,
-        #[template_child]
-        pub volume_scale: TemplateChild<gtk::Scale>,
+        pub volume_button: TemplateChild<VolumeButton>,
         #[template_child]
         pub info_button: TemplateChild<gtk::Button>,
         #[template_child]
@@ -274,14 +274,8 @@ mod imp {
         fn prev_button(&self) -> &gtk::Button {
             &self.prev_button
         }
-        fn mute_button(&self) -> &gtk::Button {
-            &self.mute_button
-        }
-        fn volume_button(&self) -> &gtk::MenuButton {
+        fn volume_control(&self) -> &VolumeButton {
             &self.volume_button
-        }
-        fn volume_scale(&self) -> &gtk::Scale {
-            &self.volume_scale
         }
         fn info_button(&self) -> &gtk::Button {
             &self.info_button

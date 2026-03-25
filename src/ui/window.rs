@@ -643,8 +643,10 @@ mod imp {
                     });
                 }
             );
-            self.bottom_sheet.connect_reveal_bottom_bar_notify(update_margin.clone());
-            self.bottom_sheet.connect_bottom_bar_height_notify(update_margin);
+            self.bottom_sheet
+                .connect_reveal_bottom_bar_notify(update_margin.clone());
+            self.bottom_sheet
+                .connect_bottom_bar_height_notify(update_margin);
         }
 
         fn signals() -> &'static [Signal] {

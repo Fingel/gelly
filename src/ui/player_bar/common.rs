@@ -2,7 +2,8 @@ use crate::{
     audio::{model::AudioModel, stream_info::discover_stream_info},
     library_utils::{album_for_item, artist_for_item},
     ui::{
-        album_art::AlbumArt, lyrics::Lyrics, stream_info_dialog, widget_ext::WidgetApplicationExt,
+        album_art::AlbumArt, lyrics::Lyrics, stream_info_dialog, volume_button::VolumeButton,
+        widget_ext::WidgetApplicationExt,
     },
 };
 use adw::prelude::*;
@@ -75,10 +76,14 @@ where
     fn play_pause_button(&self) -> &gtk::Button;
     fn next_button(&self) -> &gtk::Button;
     fn prev_button(&self) -> &gtk::Button;
-    fn mute_button(&self) -> &gtk::Button;
-    fn volume_button(&self) -> &gtk::MenuButton;
-    fn volume_scale(&self) -> &gtk::Scale;
+    fn volume_control(&self) -> &VolumeButton;
     fn info_button(&self) -> &gtk::Button;
+    fn mute_button(&self) -> &gtk::Button {
+        self.volume_control().mute_button()
+    }
+    fn volume_scale(&self) -> &gtk::Scale {
+        self.volume_control().scale()
+    }
     fn position_scale(&self) -> &gtk::Scale;
     fn position_label(&self) -> &gtk::Label;
     fn duration_label(&self) -> &gtk::Label;
@@ -104,7 +109,7 @@ where
         } else {
             "audio-volume-high-symbolic"
         };
-        self.volume_button().set_icon_name(icon_name);
+        self.volume_control().set_icon_name(icon_name);
     }
 
     fn show_info_dialog(&self) {
