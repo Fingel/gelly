@@ -1,3 +1,3 @@
 pub mod big_player;
 pub mod common;
-pub mod mini_player_bar;
+pub mod mini_player;
