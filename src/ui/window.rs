@@ -632,28 +632,19 @@ mod imp {
                 }
             ));
 
-            self.bottom_sheet.connect_reveal_bottom_bar_notify(clone!(
+            let update_margin = clone!(
                 #[weak(rename_to = main)]
                 self.main_navigation,
-                move |bs| {
+                move |bs: &adw::BottomSheet| {
                     main.set_margin_bottom(if bs.reveals_bottom_bar() {
                         bs.bottom_bar_height()
                     } else {
                         0
                     });
                 }
-            ));
-            self.bottom_sheet.connect_bottom_bar_height_notify(clone!(
-                #[weak(rename_to = main)]
-                self.main_navigation,
-                move |bs| {
-                    main.set_margin_bottom(if bs.reveals_bottom_bar() {
-                        bs.bottom_bar_height()
-                    } else {
-                        0
-                    });
-                }
-            ));
+            );
+            self.bottom_sheet.connect_reveal_bottom_bar_notify(update_margin.clone());
+            self.bottom_sheet.connect_bottom_bar_height_notify(update_margin);
         }
 
         fn signals() -> &'static [Signal] {
