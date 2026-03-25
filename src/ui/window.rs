@@ -183,7 +183,6 @@ impl Window {
         if maximized {
             self.maximize();
         }
-        self.imp().player_bar.set_small_mode(width < 550);
     }
 
     pub fn loading_visible(&self, visible: bool) {
@@ -313,8 +312,6 @@ mod imp {
         pub split_view: TemplateChild<adw::OverlaySplitView>,
         #[template_child]
         pub bottom_sheet: TemplateChild<adw::BottomSheet>,
-        #[template_child]
-        pub breakpoint: TemplateChild<adw::Breakpoint>,
     }
 
     #[glib::object_subclass]
@@ -632,22 +629,6 @@ mod imp {
 
                     // Refresh library once all signals are connected
                     app.refresh_all(config::get_refresh_on_startup());
-                }
-            ));
-
-            self.breakpoint.connect_apply(glib::clone!(
-                #[weak(rename_to = mini_player)]
-                self.player_bar,
-                move |_| {
-                    mini_player.set_small_mode(true);
-                }
-            ));
-
-            self.breakpoint.connect_unapply(glib::clone!(
-                #[weak(rename_to = mini_player)]
-                self.player_bar,
-                move |_| {
-                    mini_player.set_small_mode(false);
                 }
             ));
 

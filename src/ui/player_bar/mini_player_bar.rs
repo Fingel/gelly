@@ -4,13 +4,13 @@ use crate::{
 };
 use adw::prelude::*;
 use glib::Object;
-use gtk::{gio, glib, subclass::prelude::*};
+use gtk::{glib, subclass::prelude::*};
 use log::debug;
 
 glib::wrapper! {
     pub struct MiniPlayerBar(ObjectSubclass<imp::MiniPlayerBar>)
-    @extends gtk::Widget, gtk::Box,
-        @implements gio::ActionMap, gio::ActionGroup, gtk::Accessible, gtk::Buildable, gtk::ConstraintTarget;
+    @extends gtk::Widget, adw::BreakpointBin,
+        @implements gtk::Accessible, gtk::Buildable, gtk::ConstraintTarget;
 }
 
 impl PlayerControls for MiniPlayerBar {
@@ -43,47 +43,6 @@ impl PlayerControls for MiniPlayerBar {
 impl MiniPlayerBar {
     pub fn new() -> Self {
         Object::builder().build()
-    }
-
-    pub fn set_small_mode(&self, small_mode: bool) {
-        let imp = self.imp();
-        imp.artist_button.set_visible(!small_mode);
-        imp.album_button.set_visible(!small_mode);
-        imp.artist_album_separator_label.set_visible(!small_mode);
-        imp.volume_button.set_visible(!small_mode);
-        imp.playback_mode_menu.set_visible(!small_mode);
-        imp.scale_position_label.set_visible(!small_mode);
-        imp.scale_duration_label.set_visible(!small_mode);
-        imp.position_scale.set_visible(!small_mode);
-        imp.info_button.set_visible(!small_mode);
-
-        imp.position_label.set_visible(small_mode);
-        imp.duration_label.set_visible(small_mode);
-        imp.duration_separator_label.set_visible(small_mode);
-
-        let margin = if small_mode {
-            imp.album_art.set_size(42);
-
-            imp.title_label.set_halign(gtk::Align::Start);
-            imp.song_info_box.set_halign(gtk::Align::Start);
-            imp.subtitle_box.set_halign(gtk::Align::Start);
-            imp.all_buttons_box
-                .set_orientation(gtk::Orientation::Horizontal);
-            3
-        } else {
-            imp.album_art.set_size(84);
-
-            imp.title_label.set_halign(gtk::Align::Center);
-            imp.song_info_box.set_halign(gtk::Align::Fill);
-            imp.subtitle_box.set_halign(gtk::Align::Center);
-            imp.all_buttons_box
-                .set_orientation(gtk::Orientation::Vertical);
-            6
-        };
-        self.set_margin_top(margin);
-        self.set_margin_bottom(margin);
-        self.set_margin_start(margin);
-        self.set_margin_end(margin);
     }
 
     pub fn bind_to_audio_model(&self, audio_model: &AudioModel, bottom_sheet: &adw::BottomSheet) {
@@ -251,10 +210,6 @@ mod imp {
         #[template_child]
         pub scale_duration_label: TemplateChild<gtk::Label>,
         #[template_child]
-        pub duration_separator_label: TemplateChild<gtk::Label>,
-        #[template_child]
-        pub artist_album_separator_label: TemplateChild<gtk::Label>,
-        #[template_child]
         pub mute_button: TemplateChild<gtk::Button>,
         #[template_child]
         pub volume_button: TemplateChild<gtk::MenuButton>,
@@ -266,12 +221,6 @@ mod imp {
         pub lyrics: TemplateChild<gtk::Button>,
         #[template_child]
         pub playback_mode_menu: TemplateChild<PlaybackModeMenu>,
-        #[template_child]
-        pub song_info_box: TemplateChild<gtk::Box>,
-        #[template_child]
-        pub subtitle_box: TemplateChild<gtk::Box>,
-        #[template_child]
-        pub all_buttons_box: TemplateChild<gtk::Box>,
 
         pub audio_model: OnceCell<AudioModel>,
         pub bottom_sheet: OnceCell<adw::BottomSheet>,
@@ -289,7 +238,7 @@ mod imp {
     impl ObjectSubclass for MiniPlayerBar {
         const NAME: &'static str = "GellyMiniPlayerBar";
         type Type = super::MiniPlayerBar;
-        type ParentType = gtk::Box;
+        type ParentType = adw::BreakpointBin;
 
         fn class_init(klass: &mut Self::Class) {
             klass.bind_template();
@@ -309,7 +258,7 @@ mod imp {
         }
     }
 
-    impl BoxImpl for MiniPlayerBar {}
+    impl adw::subclass::prelude::BreakpointBinImpl for MiniPlayerBar {}
     impl WidgetImpl for MiniPlayerBar {}
 
     impl MiniPlayerBar {
