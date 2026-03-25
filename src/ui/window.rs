@@ -49,8 +49,7 @@ impl Window {
 
     pub fn show_main_page(&self) {
         let imp = self.imp();
-        imp.setup_stack
-            .set_visible_child(&imp.main_navigation.get());
+        imp.setup_stack.set_visible_child(&imp.bottom_sheet.get());
         imp.main_navigation.replace(&[imp.main_window.get()]);
         imp.album_list.setup_library_connection();
         imp.artist_list.setup_library_connection();
@@ -60,7 +59,9 @@ impl Window {
 
         // Initialize player bar with audio model
         if let Some(audio_model) = self.get_application().audio_model() {
-            imp.player_bar.bind_to_audio_model(&audio_model);
+            imp.player_bar
+                .bind_to_audio_model(&audio_model, &imp.bottom_sheet);
+            imp.big_player.bind_to_audio_model(&audio_model);
         }
     }
 
@@ -241,12 +242,15 @@ mod imp {
     use gtk::{
         CompositeTemplate,
         gio::{ActionEntry, prelude::ActionMapExtManual},
-        glib,
+        glib::{self, clone},
         prelude::*,
     };
     use log::{debug, warn};
 
-    use crate::ui::{artist_detail::ArtistDetail, player_bar::PlayerBar, song_list::SongList};
+    use crate::ui::{
+        artist_detail::ArtistDetail, player_bar::big_player::BigPlayer,
+        player_bar::mini_player::MiniPlayerBar, song_list::SongList,
+    };
     use crate::ui::{playlist_list::PlaylistList, widget_ext::WidgetApplicationExt};
     use crate::ui::{queue::Queue, setup::Setup};
     use crate::{application::Application, ui::album_detail::AlbumDetail};
@@ -291,7 +295,9 @@ mod imp {
         #[template_child]
         pub song_list: TemplateChild<SongList>,
         #[template_child]
-        pub player_bar: TemplateChild<PlayerBar>,
+        pub player_bar: TemplateChild<MiniPlayerBar>,
+        #[template_child]
+        pub big_player: TemplateChild<BigPlayer>,
         #[template_child]
         pub queue: TemplateChild<Queue>,
         #[template_child]
@@ -304,6 +310,8 @@ mod imp {
         pub new_button: TemplateChild<gtk::Button>,
         #[template_child]
         pub split_view: TemplateChild<adw::OverlaySplitView>,
+        #[template_child]
+        pub bottom_sheet: TemplateChild<adw::BottomSheet>,
     }
 
     #[glib::object_subclass]
@@ -623,6 +631,22 @@ mod imp {
                     app.refresh_all(config::get_refresh_on_startup());
                 }
             ));
+
+            let update_margin = clone!(
+                #[weak(rename_to = main)]
+                self.main_navigation,
+                move |bs: &adw::BottomSheet| {
+                    main.set_margin_bottom(if bs.reveals_bottom_bar() {
+                        bs.bottom_bar_height()
+                    } else {
+                        0
+                    });
+                }
+            );
+            self.bottom_sheet
+                .connect_reveal_bottom_bar_notify(update_margin.clone());
+            self.bottom_sheet
+                .connect_bottom_bar_height_notify(update_margin);
         }
 
         fn signals() -> &'static [Signal] {

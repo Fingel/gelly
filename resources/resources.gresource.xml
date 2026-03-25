@@ -9,7 +9,8 @@
     <file compressed="true" preprocess="xml-stripblanks">ui/album.ui</file>
     <file compressed="true" preprocess="xml-stripblanks">ui/album_art.ui</file>
     <file compressed="true" preprocess="xml-stripblanks">ui/song.ui</file>
-    <file compressed="true" preprocess="xml-stripblanks">ui/player_bar.ui</file>
+    <file compressed="true" preprocess="xml-stripblanks">ui/player_bar/big_player.ui</file>
+    <file compressed="true" preprocess="xml-stripblanks">ui/player_bar/mini_player.ui</file>
     <file compressed="true" preprocess="xml-stripblanks">ui/artist_list.ui</file>
     <file compressed="true" preprocess="xml-stripblanks">ui/artist.ui</file>
     <file compressed="true" preprocess="xml-stripblanks">ui/artist_detail.ui</file>
@@ -23,6 +24,7 @@
     <file compressed="true" preprocess="xml-stripblanks">ui/preferences.ui</file>
     <file compressed="true" preprocess="xml-stripblanks">ui/lyrics.ui</file>
     <file compressed="true" preprocess="xml-stripblanks">ui/playback_mode.ui</file>
+    <file compressed="true" preprocess="xml-stripblanks">ui/volume_button.ui</file>
     <file compressed="true" preprocess="xml-stripblanks">icons/subtitles-symbolic.svg</file>
     <file alias="metainfo.xml" compressed="true">io.m51.Gelly.metainfo.xml</file>
   </gresource>
