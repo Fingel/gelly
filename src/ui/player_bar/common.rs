@@ -287,6 +287,7 @@ where
             let weak = weak.clone();
             move |scale| {
                 if let Some(obj) = weak.upgrade() {
+                    obj.imp().audio_model().imp().set_volume(scale.value());
                     obj.imp().update_volume_icon(scale.value());
                 }
             }
