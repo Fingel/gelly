@@ -1,6 +1,6 @@
 use crate::{
     audio::model::AudioModel,
-    ui::{album_art::AlbumArt, player_bar::player_controls_trait::PlayerControls},
+    ui::{album_art::AlbumArt, player_bar::common::PlayerControls},
 };
 use adw::prelude::*;
 use glib::Object;
@@ -152,7 +152,7 @@ mod imp {
         library_utils::{album_for_item, artist_for_item},
         ui::{
             album_art::AlbumArt, lyrics::Lyrics, playback_mode::PlaybackModeMenu,
-            player_bar::player_controls_trait::PlayerControls, stream_info_dialog,
+            player_bar::common::PlayerControls, stream_info_dialog,
             widget_ext::WidgetApplicationExt,
         },
     };
