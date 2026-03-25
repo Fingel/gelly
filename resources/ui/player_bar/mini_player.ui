@@ -11,7 +11,7 @@
         <setter object="artist_button" property="visible">false</setter>
         <setter object="album_button" property="visible">false</setter>
         <setter object="artist_album_separator_label" property="visible">false</setter>
-        <setter object="volume_button" property="visible">false</setter>
+        <setter object="volume_control" property="visible">false</setter>
         <setter object="playback_mode_menu" property="visible">false</setter>
         <setter object="scale_position_label" property="visible">false</setter>
         <setter object="scale_duration_label" property="visible">false</setter>
@@ -237,7 +237,7 @@
                 <property name="valign">center</property>
                 <property name="spacing">3</property>
                 <child>
-                  <object class="GtkButton" id="lyrics">
+                  <object class="GtkButton" id="lyrics_button">
                     <property name="icon-name">subtitles-symbolic</property>
                     <property name="visible">false</property>
                     <property name="tooltip-text">Lyrics</property>
@@ -251,7 +251,7 @@
                   </object>
                 </child>
                 <child>
-                  <object class="GellyVolumeButton" id="volume_button"/>
+                  <object class="GellyVolumeButton" id="volume_control"/>
                 </child>
               </object>
             </child>

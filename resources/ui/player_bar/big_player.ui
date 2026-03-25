@@ -187,7 +187,7 @@
               </object>
             </child>
             <child>
-              <object class="GtkButton" id="lyrics">
+              <object class="GtkButton" id="lyrics_button">
                 <property name="icon-name">subtitles-symbolic</property>
                 <property name="visible">false</property>
                 <property name="tooltip-text">Lyrics</property>
@@ -201,7 +201,7 @@
               </object>
             </child>
             <child>
-              <object class="GellyVolumeButton" id="volume_button"/>
+              <object class="GellyVolumeButton" id="volume_control"/>
             </child>
           </object>
         </child>

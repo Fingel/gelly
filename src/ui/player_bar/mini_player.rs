@@ -28,7 +28,7 @@ impl MiniPlayerBar {
         // Bind playback mode menu
         imp.playback_mode_menu.bind_to_audio_model(audio_model);
 
-        imp.volume_button
+        imp.volume_control
             .scale()
             .adjustment()
             .bind_property("value", audio_model, "volume")
@@ -178,11 +178,11 @@ mod imp {
         #[template_child]
         pub scale_duration_label: TemplateChild<gtk::Label>,
         #[template_child]
-        pub volume_button: TemplateChild<VolumeButton>,
+        pub volume_control: TemplateChild<VolumeButton>,
         #[template_child]
         pub info_button: TemplateChild<gtk::Button>,
         #[template_child]
-        pub lyrics: TemplateChild<gtk::Button>,
+        pub lyrics_button: TemplateChild<gtk::Button>,
         #[template_child]
         pub playback_mode_menu: TemplateChild<PlaybackModeMenu>,
 
@@ -251,7 +251,7 @@ mod imp {
             &self.prev_button
         }
         fn volume_control(&self) -> &VolumeButton {
-            &self.volume_button
+            &self.volume_control
         }
         fn info_button(&self) -> &gtk::Button {
             &self.info_button
@@ -266,7 +266,7 @@ mod imp {
             &self.duration_label
         }
         fn lyrics_button(&self) -> &gtk::Button {
-            &self.lyrics
+            &self.lyrics_button
         }
         fn artist_button(&self) -> &gtk::Button {
             &self.artist_button
