@@ -170,7 +170,7 @@ mod imp {
     };
 
     #[derive(CompositeTemplate, Default, Properties)]
-    #[template(resource = "/io/m51/Gelly/ui/mini_player_bar.ui")]
+    #[template(resource = "/io/m51/Gelly/ui/player_bar/mini_player.ui")]
     #[properties(wrapper_type = super::MiniPlayerBar)]
     pub struct MiniPlayerBar {
         #[template_child]

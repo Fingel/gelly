@@ -143,7 +143,7 @@ mod imp {
     };
 
     #[derive(CompositeTemplate, Default, Properties)]
-    #[template(resource = "/io/m51/Gelly/ui/big_player.ui")]
+    #[template(resource = "/io/m51/Gelly/ui/player_bar/big_player.ui")]
     #[properties(wrapper_type = super::BigPlayer)]
     pub struct BigPlayer {
         #[template_child]
