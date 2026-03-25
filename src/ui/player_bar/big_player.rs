@@ -1,7 +1,4 @@
-use crate::{
-    audio::model::AudioModel,
-    ui::{album_art::AlbumArt, player_bar::common::PlayerControls},
-};
+use crate::{audio::model::AudioModel, ui::player_bar::common::PlayerImp};
 use adw::prelude::*;
 use glib::Object;
 use gtk::{gio, glib, subclass::prelude::*};
@@ -11,27 +8,6 @@ glib::wrapper! {
     pub struct BigPlayer(ObjectSubclass<imp::BigPlayer>)
     @extends gtk::Widget, gtk::Box,
         @implements gio::ActionMap, gio::ActionGroup, gtk::Accessible, gtk::Buildable, gtk::ConstraintTarget;
-}
-
-impl PlayerControls for BigPlayer {
-    fn play_pause_btn(&self) -> &gtk::Button {
-        &self.imp().play_pause_button
-    }
-    fn title_label(&self) -> &gtk::Label {
-        &self.imp().title_label
-    }
-    fn artist_label(&self) -> &gtk::Label {
-        &self.imp().artist_label
-    }
-    fn album_label(&self) -> &gtk::Label {
-        &self.imp().album_label
-    }
-    fn lyrics_btn(&self) -> &gtk::Button {
-        &self.imp().lyrics
-    }
-    fn album_art(&self) -> &AlbumArt {
-        &self.imp().album_art
-    }
 }
 
 impl BigPlayer {
@@ -63,7 +39,7 @@ impl BigPlayer {
                 #[weak(rename_to = player)]
                 self,
                 move |_audio_model: AudioModel| {
-                    player.update_play_pause_button(true);
+                    player.imp().update_play_pause_button(true);
                 }
             ),
         );
@@ -75,7 +51,7 @@ impl BigPlayer {
                 #[weak(rename_to = player)]
                 self,
                 move |_audio_model: AudioModel| {
-                    player.update_play_pause_button(false);
+                    player.imp().update_play_pause_button(false);
                 }
             ),
         );
@@ -87,7 +63,7 @@ impl BigPlayer {
                 #[weak(rename_to = player)]
                 self,
                 move |_audio_model: AudioModel| {
-                    player.update_play_pause_button(false);
+                    player.imp().update_play_pause_button(false);
                 }
             ),
         );
@@ -107,15 +83,15 @@ impl BigPlayer {
             glib::clone!(
                 #[weak(rename_to = player)]
                 self,
-                move |audio_model, _| {
-                    player.update_song_info(audio_model);
+                move |_audio_model, _| {
+                    player.imp().update_song_info();
                 }
             ),
         );
 
         // Initial update
-        self.update_song_info(audio_model);
-        self.update_play_pause_button(audio_model.playing());
+        self.imp().update_song_info();
+        self.imp().update_play_pause_button(audio_model.playing());
     }
 }
 
@@ -265,6 +241,18 @@ mod imp {
         }
         fn album_button(&self) -> &gtk::Button {
             &self.album_button
+        }
+        fn title_label(&self) -> &gtk::Label {
+            &self.title_label
+        }
+        fn artist_label(&self) -> &gtk::Label {
+            &self.artist_label
+        }
+        fn album_label(&self) -> &gtk::Label {
+            &self.album_label
+        }
+        fn album_art(&self) -> &AlbumArt {
+            &self.album_art
         }
     }
 }

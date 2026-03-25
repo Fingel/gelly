@@ -18,61 +18,19 @@ pub fn format_time(seconds: u32) -> String {
     format!("{}:{:02}", minutes, seconds)
 }
 
-pub trait PlayerControls {
-    fn play_pause_btn(&self) -> &gtk::Button;
-    fn title_label(&self) -> &gtk::Label;
-    fn artist_label(&self) -> &gtk::Label;
-    fn album_label(&self) -> &gtk::Label;
-    fn lyrics_btn(&self) -> &gtk::Button;
-    fn album_art(&self) -> &AlbumArt;
-    fn update_play_pause_button(&self, playing: bool) {
-        let btn = self.play_pause_btn();
-        if playing {
-            btn.set_icon_name("media-playback-pause-symbolic");
-            btn.set_tooltip_text(Some("Pause"));
-        } else {
-            btn.set_icon_name("media-playback-start-symbolic");
-            btn.set_tooltip_text(Some("Play"));
-        }
-    }
-    fn update_song_info(&self, audio_model: &AudioModel) {
-        let title = audio_model.current_song_title();
-        let artists = audio_model.current_song_artists();
-        let album = audio_model.current_song_album();
-        let artist_str = if artists.is_empty() {
-            "Unknown Artist".to_string()
-        } else {
-            artists.join(", ")
-        };
-        self.title_label().set_text(&title);
-        self.artist_label().set_text(&artist_str);
-        self.album_label().set_text(&album);
-        if let Some(song) = audio_model.current_song() {
-            self.toggle_lyrics(song.has_lyrics());
-            self.load_album_art(&song.album_id(), &song.id());
-        }
-    }
-    fn toggle_lyrics(&self, has_lyrics: bool) {
-        self.lyrics_btn().set_visible(has_lyrics);
-    }
-    fn load_album_art(&self, album_id: &str, song_id: &str) {
-        self.album_art().set_item_id(song_id, Some(album_id));
-    }
-}
-
 pub trait PlayerImp: ObjectSubclassExt + glib::clone::Downgrade + 'static
 where
     Self::Type: IsA<gtk::Widget>,
     Self::Type: ObjectSubclassIs<Subclass = Self>,
 {
-    // --- Required: state ---
+    // state
     fn audio_model(&self) -> &AudioModel;
     fn lyrics_window(&self) -> &RefCell<Option<WeakRef<adw::Window>>>;
     fn seek_debounce_id(&self) -> &RefCell<Option<glib::SourceId>>;
     fn position_storage(&self) -> &RefCell<u32>;
     fn duration_storage(&self) -> &RefCell<u32>;
 
-    // --- Required: widgets ---
+    // widgets
     fn play_pause_button(&self) -> &gtk::Button;
     fn next_button(&self) -> &gtk::Button;
     fn prev_button(&self) -> &gtk::Button;
@@ -90,13 +48,52 @@ where
     fn lyrics_button(&self) -> &gtk::Button;
     fn artist_button(&self) -> &gtk::Button;
     fn album_button(&self) -> &gtk::Button;
+    fn title_label(&self) -> &gtk::Label;
+    fn artist_label(&self) -> &gtk::Label;
+    fn album_label(&self) -> &gtk::Label;
+    fn album_art(&self) -> &AlbumArt;
 
-    /// Called after the common position update. Override to update any
-    /// additional labels (e.g. `scale_position_label` in the mini player).
+    fn update_play_pause_button(&self, playing: bool) {
+        let btn = self.play_pause_button();
+        if playing {
+            btn.set_icon_name("media-playback-pause-symbolic");
+            btn.set_tooltip_text(Some("Pause"));
+        } else {
+            btn.set_icon_name("media-playback-start-symbolic");
+            btn.set_tooltip_text(Some("Play"));
+        }
+    }
+
+    fn update_song_info(&self) {
+        let audio_model = self.audio_model();
+        let title = audio_model.current_song_title();
+        let artists = audio_model.current_song_artists();
+        let album = audio_model.current_song_album();
+        let artist_str = if artists.is_empty() {
+            "Unknown Artist".to_string()
+        } else {
+            artists.join(", ")
+        };
+        self.title_label().set_text(&title);
+        self.artist_label().set_text(&artist_str);
+        self.album_label().set_text(&album);
+        if let Some(song) = audio_model.current_song() {
+            self.toggle_lyrics(song.has_lyrics());
+            self.load_album_art(&song.album_id(), &song.id());
+        }
+    }
+
+    fn toggle_lyrics(&self, has_lyrics: bool) {
+        self.lyrics_button().set_visible(has_lyrics);
+    }
+
+    fn load_album_art(&self, album_id: &str, song_id: &str) {
+        self.album_art().set_item_id(song_id, Some(album_id));
+    }
+
+    // These functions are called after the common position and duration updates,
+    // allowing subclasses to do additional updates or logic.
     fn extra_position_update(&self, _position: u32) {}
-
-    /// Called after the common duration update. Override to update any
-    /// additional labels (e.g. `scale_duration_label` in the mini player).
     fn extra_duration_update(&self, _duration: u32) {}
 
     fn update_volume_icon(&self, volume: f64) {

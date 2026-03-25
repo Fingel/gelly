@@ -1,7 +1,4 @@
-use crate::{
-    audio::model::AudioModel,
-    ui::{album_art::AlbumArt, player_bar::common::PlayerControls},
-};
+use crate::{audio::model::AudioModel, ui::player_bar::common::PlayerImp};
 use adw::prelude::*;
 use glib::Object;
 use gtk::{glib, subclass::prelude::*};
@@ -11,27 +8,6 @@ glib::wrapper! {
     pub struct MiniPlayerBar(ObjectSubclass<imp::MiniPlayerBar>)
     @extends gtk::Widget, adw::BreakpointBin,
         @implements gtk::Accessible, gtk::Buildable, gtk::ConstraintTarget;
-}
-
-impl PlayerControls for MiniPlayerBar {
-    fn play_pause_btn(&self) -> &gtk::Button {
-        &self.imp().play_pause_button
-    }
-    fn title_label(&self) -> &gtk::Label {
-        &self.imp().title_label
-    }
-    fn artist_label(&self) -> &gtk::Label {
-        &self.imp().artist_label
-    }
-    fn album_label(&self) -> &gtk::Label {
-        &self.imp().album_label
-    }
-    fn lyrics_btn(&self) -> &gtk::Button {
-        &self.imp().lyrics
-    }
-    fn album_art(&self) -> &AlbumArt {
-        &self.imp().album_art
-    }
 }
 
 impl MiniPlayerBar {
@@ -67,7 +43,7 @@ impl MiniPlayerBar {
                 #[weak(rename_to = player)]
                 self,
                 move |_audio_model: AudioModel| {
-                    player.update_play_pause_button(true);
+                    player.imp().update_play_pause_button(true);
                     player.reveal();
                 }
             ),
@@ -80,7 +56,7 @@ impl MiniPlayerBar {
                 #[weak(rename_to = player)]
                 self,
                 move |_audio_model: AudioModel| {
-                    player.update_play_pause_button(false);
+                    player.imp().update_play_pause_button(false);
                 }
             ),
         );
@@ -92,7 +68,7 @@ impl MiniPlayerBar {
                 #[weak(rename_to = player)]
                 self,
                 move |_audio_model: AudioModel| {
-                    player.update_play_pause_button(false);
+                    player.imp().update_play_pause_button(false);
                     player.hide();
                 }
             ),
@@ -114,7 +90,7 @@ impl MiniPlayerBar {
                 #[weak(rename_to = player)]
                 self,
                 move |audio_model, _| {
-                    player.update_song_info(audio_model);
+                    player.imp().update_song_info();
                     // Show player bar when a song is loaded (queue-index >= 0)
                     if audio_model.queue_index() >= 0 {
                         player.reveal();
@@ -124,8 +100,8 @@ impl MiniPlayerBar {
         );
 
         // Initial update
-        self.update_song_info(audio_model);
-        self.update_play_pause_button(audio_model.playing());
+        self.imp().update_song_info();
+        self.imp().update_play_pause_button(audio_model.playing());
 
         // Show player bar if there's already a song loaded
         if audio_model.queue_index() >= 0 {
@@ -297,6 +273,18 @@ mod imp {
         }
         fn album_button(&self) -> &gtk::Button {
             &self.album_button
+        }
+        fn title_label(&self) -> &gtk::Label {
+            &self.title_label
+        }
+        fn artist_label(&self) -> &gtk::Label {
+            &self.artist_label
+        }
+        fn album_label(&self) -> &gtk::Label {
+            &self.album_label
+        }
+        fn album_art(&self) -> &AlbumArt {
+            &self.album_art
         }
 
         fn extra_position_update(&self, position: u32) {
