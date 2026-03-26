@@ -142,10 +142,12 @@
                                 </child>
                                 <child>
                                   <object class="AdwNavigationPage" id="main_window">
+                                  <property name="title" translatable="yes">Main</property>
                                     <child>
                                       <object class="AdwToolbarView">
                                         <child type="top">
                                           <object class="AdwHeaderBar" id="header_bar">
+                                            <property name="show-title">false</property>
                                             <child type="start">
                                               <object class="GtkToggleButton" id="toggle_queue_button">
                                                 <property name="action-name">win.toggle-queue</property>
