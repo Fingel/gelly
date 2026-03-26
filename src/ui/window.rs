@@ -89,8 +89,6 @@ impl Window {
     {
         let imp = self.imp();
         imp.main_navigation.replace(&[imp.main_window.get()]);
-        imp.search_button.set_visible(page.can_search());
-        imp.sort_button.set_visible(page.can_sort());
         imp.new_button.set_visible(page.can_new());
     }
 
@@ -248,8 +246,10 @@ mod imp {
     use log::{debug, warn};
 
     use crate::ui::{
-        artist_detail::ArtistDetail, player_bar::big_player::BigPlayer,
-        player_bar::mini_player::MiniPlayerBar, song_list::SongList,
+        artist_detail::ArtistDetail,
+        page_traits::TopPage,
+        player_bar::{big_player::BigPlayer, mini_player::MiniPlayerBar},
+        song_list::SongList,
     };
     use crate::ui::{playlist_list::PlaylistList, widget_ext::WidgetApplicationExt};
     use crate::ui::{queue::Queue, setup::Setup};
@@ -303,15 +303,19 @@ mod imp {
         #[template_child]
         pub progress_bar: TemplateChild<gtk::ProgressBar>,
         #[template_child]
-        pub sort_button: TemplateChild<gtk::Button>,
+        pub sort_button: TemplateChild<gtk::ToggleButton>,
         #[template_child]
-        pub search_button: TemplateChild<gtk::Button>,
+        pub search_button: TemplateChild<gtk::ToggleButton>,
         #[template_child]
         pub new_button: TemplateChild<gtk::Button>,
         #[template_child]
         pub split_view: TemplateChild<adw::OverlaySplitView>,
         #[template_child]
         pub bottom_sheet: TemplateChild<adw::BottomSheet>,
+        #[template_child]
+        pub search_bar: TemplateChild<gtk::SearchBar>,
+        #[template_child]
+        pub search_entry: TemplateChild<gtk::SearchEntry>,
     }
 
     #[glib::object_subclass]
@@ -399,26 +403,47 @@ mod imp {
                     #[weak(rename_to=window)]
                     self,
                     move |_, _, _| {
-                        window.obj().call_on_visible_page(|page| {
-                            page.toggle_search_bar();
-                            page.hide_sort_bar();
-                        });
+                        window
+                            .search_bar
+                            .set_search_mode(!window.search_bar.is_search_mode());
                     }
                 ))
                 .build();
 
-            let action_sort = ActionEntry::builder("sort")
-                .activate(glib::clone!(
-                    #[weak(rename_to=window)]
-                    self,
-                    move |_, _, _| {
-                        window.obj().call_on_visible_page(|page| {
-                            page.hide_search_bar();
-                            page.toggle_sort_bar();
-                        });
-                    }
-                ))
+            self.search_button
+                .bind_property("active", &self.search_bar.get(), "search-mode-enabled")
+                .bidirectional()
                 .build();
+
+            self.search_button.connect_active_notify(glib::clone!(
+                #[weak(rename_to = sort_button)]
+                self.sort_button,
+                move |search_button| {
+                    if search_button.is_active() {
+                        sort_button.set_active(false);
+                    }
+                }
+            ));
+
+            self.sort_button.connect_active_notify(glib::clone!(
+                #[weak(rename_to = search_button)]
+                self.search_button,
+                move |sort_button| {
+                    if sort_button.is_active() {
+                        search_button.set_active(false);
+                    }
+                }
+            ));
+
+            self.album_list.bind_sort_bar(&self.sort_button);
+            self.artist_list.bind_sort_bar(&self.sort_button);
+            self.playlist_list.bind_sort_bar(&self.sort_button);
+            self.song_list.bind_sort_bar(&self.sort_button);
+            self.album_list.setup_search_connection(&self.search_entry);
+            self.artist_list.setup_search_connection(&self.search_entry);
+            self.playlist_list
+                .setup_search_connection(&self.search_entry);
+            self.song_list.setup_search_connection(&self.search_entry);
 
             let action_new = ActionEntry::builder("new")
                 .activate(glib::clone!(
@@ -520,7 +545,6 @@ mod imp {
                 action_refresh_library,
                 action_request_library_rescan,
                 action_search,
-                action_sort,
                 action_new,
                 action_play_selected,
                 action_about,

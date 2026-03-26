@@ -2,7 +2,6 @@ use crate::{
     async_utils::spawn_tokio,
     models::SongModel,
     ui::{
-        page_traits::TopPage,
         playlist_dialogs,
         song::{Song, SongOptions},
         song_utils,
@@ -17,26 +16,6 @@ glib::wrapper! {
     pub struct Queue(ObjectSubclass<imp::Queue>)
     @extends gtk::Widget, gtk::Box,
         @implements gio::ActionMap, gio::ActionGroup, gtk::Accessible, gtk::Buildable, gtk::ConstraintTarget;
-}
-
-impl TopPage for Queue {
-    fn can_search(&self) -> bool {
-        false
-    }
-
-    fn can_sort(&self) -> bool {
-        false
-    }
-
-    fn can_new(&self) -> bool {
-        false
-    }
-
-    fn toggle_search_bar(&self) {}
-    fn toggle_sort_bar(&self) {}
-    fn hide_search_bar(&self) {}
-    fn hide_sort_bar(&self) {}
-    fn play_selected(&self) {}
 }
 
 impl Queue {

@@ -1,3 +1,4 @@
+use gtk::{glib::prelude::*, prelude::*};
 use log::warn;
 
 use crate::models::model_traits::ItemModel;
@@ -20,18 +21,27 @@ pub trait DetailPage {
 }
 
 pub trait TopPage {
-    fn can_search(&self) -> bool;
-    fn can_sort(&self) -> bool;
     fn can_new(&self) -> bool;
-    fn hide_search_bar(&self);
-    fn hide_sort_bar(&self);
-    fn toggle_search_bar(&self);
-    fn toggle_sort_bar(&self);
     fn play_selected(&self);
     fn create_new(&self) {
         warn!("New not implemented for this type");
     }
-    fn toggle_bar(&self, bar: &gtk::SearchBar) {
-        bar.set_search_mode(!bar.is_search_mode());
+    fn search_changed(&self, query: &str);
+    fn sort_bar(&self) -> gtk::SearchBar;
+    fn setup_search_connection(&self, search_entry: &gtk::SearchEntry)
+    where
+        Self: gtk::prelude::ObjectType,
+    {
+        let weak_self = self.downgrade();
+        search_entry.connect_search_changed(move |entry| {
+            if let Some(list_view) = weak_self.upgrade() {
+                list_view.search_changed(&entry.text());
+            }
+        });
+    }
+    fn bind_sort_bar(&self, btn: &gtk::ToggleButton) {
+        btn.bind_property("active", &self.sort_bar(), "search-mode-enabled")
+            .bidirectional()
+            .build();
     }
 }
