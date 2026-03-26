@@ -31,32 +31,8 @@ pub enum AlbumSort {
 }
 
 impl TopPage for AlbumList {
-    fn can_search(&self) -> bool {
-        true
-    }
-
-    fn can_sort(&self) -> bool {
-        true
-    }
-
     fn can_new(&self) -> bool {
         false
-    }
-
-    fn toggle_search_bar(&self) {
-        self.toggle_bar(&self.imp().search_bar);
-    }
-
-    fn toggle_sort_bar(&self) {
-        self.toggle_bar(&self.imp().sort_bar);
-    }
-
-    fn hide_search_bar(&self) {
-        self.imp().search_bar.set_search_mode(false);
-    }
-
-    fn hide_sort_bar(&self) {
-        self.imp().sort_bar.set_search_mode(false);
     }
 
     fn play_selected(&self) {
@@ -67,6 +43,33 @@ impl TopPage for AlbumList {
         {
             play_album(&album_model.id(), &self.get_application());
         }
+    }
+
+    fn search_changed(&self, query: &str) {
+        let imp = self.imp();
+        let store = imp.store.get().expect("Store should be initialized");
+        let sorter = if let Some(current_sorter) = imp.current_sorter.borrow().as_ref() {
+            current_sorter.clone()
+        } else {
+            let default_sorter = self.build_sorter(AlbumSort::DateAdded, SortDirection::Ascending);
+            imp.current_sorter.replace(Some(default_sorter.clone()));
+            default_sorter
+        };
+        let filters = vec![
+            imp.name_filter
+                .get()
+                .expect("Name filter should be initialized")
+                .clone(),
+            imp.artists_filter
+                .get()
+                .expect("Artists filter should be initialized")
+                .clone(),
+        ];
+        apply_multi_filter_search(query, sorter.upcast(), store, &filters, &imp.grid_view);
+    }
+
+    fn sort_bar(&self) -> gtk::SearchBar {
+        self.imp().sort_bar.clone()
     }
 }
 
@@ -113,29 +116,6 @@ impl AlbumList {
                 }
             ),
         );
-    }
-
-    pub fn search_changed(&self, query: &str) {
-        let imp = self.imp();
-        let store = imp.store.get().expect("Store should be initialized");
-        let sorter = if let Some(current_sorter) = imp.current_sorter.borrow().as_ref() {
-            current_sorter.clone()
-        } else {
-            let default_sorter = self.build_sorter(AlbumSort::DateAdded, SortDirection::Ascending);
-            imp.current_sorter.replace(Some(default_sorter.clone()));
-            default_sorter
-        };
-        let filters = vec![
-            imp.name_filter
-                .get()
-                .expect("Name filter should be initialized")
-                .clone(),
-            imp.artists_filter
-                .get()
-                .expect("Artists filter should be initialized")
-                .clone(),
-        ];
-        apply_multi_filter_search(query, sorter.upcast(), store, &filters, &imp.grid_view);
     }
 
     fn sort_changed(&self) {
@@ -252,7 +232,7 @@ mod imp {
 
     use adw::subclass::prelude::*;
     use glib::subclass::InitializingObject;
-    use gtk::{CompositeTemplate, gio, glib, prelude::*};
+    use gtk::{CompositeTemplate, gio, glib};
 
     use crate::config;
 
@@ -263,10 +243,6 @@ mod imp {
         pub grid_view: TemplateChild<gtk::GridView>,
         #[template_child]
         pub empty: TemplateChild<adw::StatusPage>,
-        #[template_child]
-        pub search_bar: TemplateChild<gtk::SearchBar>,
-        #[template_child]
-        pub search_entry: TemplateChild<gtk::SearchEntry>,
         #[template_child]
         pub sort_bar: TemplateChild<gtk::SearchBar>,
         #[template_child]
@@ -310,14 +286,6 @@ mod imp {
                 self.obj(),
                 move |_, position| {
                     album_list.activate_album(position);
-                }
-            ));
-
-            self.search_entry.connect_search_changed(glib::clone!(
-                #[weak(rename_to = album_list)]
-                self.obj(),
-                move |entry| {
-                    album_list.search_changed(&entry.text());
                 }
             ));
 

@@ -36,32 +36,8 @@ pub enum SongSort {
 }
 
 impl TopPage for SongList {
-    fn can_search(&self) -> bool {
-        true
-    }
-
-    fn can_sort(&self) -> bool {
-        true
-    }
-
     fn can_new(&self) -> bool {
         false
-    }
-
-    fn toggle_search_bar(&self) {
-        self.toggle_bar(&self.imp().search_bar);
-    }
-
-    fn toggle_sort_bar(&self) {
-        self.toggle_bar(&self.imp().sort_bar);
-    }
-
-    fn hide_search_bar(&self) {
-        self.imp().search_bar.set_search_mode(false);
-    }
-
-    fn hide_sort_bar(&self) {
-        self.imp().sort_bar.set_search_mode(false);
     }
 
     fn play_selected(&self) {
@@ -70,6 +46,50 @@ impl TopPage for SongList {
         {
             self.activate_song(single_selection.selected() as usize);
         }
+    }
+
+    fn search_changed(&self, query: &str) {
+        let imp = self.imp();
+        let store = imp.store.get().expect("Store should be initialized");
+        let sorter = if let Some(current_sorter) = imp.current_sorter.borrow().as_ref() {
+            current_sorter.clone()
+        } else {
+            let default_sorter = self.build_sorter(SongSort::DateAdded, SortDirection::Ascending);
+            imp.current_sorter.replace(Some(default_sorter.clone()));
+            default_sorter
+        };
+        let filters = vec![
+            imp.name_filter
+                .get()
+                .expect("Name filter should be initialized")
+                .clone(),
+            imp.artist_filter
+                .get()
+                .expect("Artist filter should be initialized")
+                .clone(),
+        ];
+        if query.is_empty() {
+            let sort_model = SortListModel::new(Some(store.clone()), Some(sorter));
+            self.bind_song_count(&sort_model);
+            let selection_model = gtk::SingleSelection::new(Some(sort_model));
+            imp.track_list.set_model(Some(&selection_model));
+        } else {
+            let any_filter = gtk::AnyFilter::new();
+            for filter in filters {
+                filter.set_search(Some(query));
+                any_filter.append(filter.clone());
+            }
+
+            let filter_model = FilterListModel::new(Some(store.clone()), Some(any_filter));
+            let sort_model = SortListModel::new(Some(filter_model), Some(sorter));
+            self.bind_song_count(&sort_model);
+            let selection_model = gtk::SingleSelection::new(Some(sort_model));
+            imp.track_list.set_model(Some(&selection_model));
+        }
+    }
+
+    fn sort_bar(&self) -> gtk::SearchBar {
+        self.imp().sort_bar.clone()
     }
 }
 
@@ -145,46 +165,6 @@ impl SongList {
                 }
             ),
         );
-    }
-
-    pub fn search_changed(&self, query: &str) {
-        let imp = self.imp();
-        let store = imp.store.get().expect("Store should be initialized");
-        let sorter = if let Some(current_sorter) = imp.current_sorter.borrow().as_ref() {
-            current_sorter.clone()
-        } else {
-            let default_sorter = self.build_sorter(SongSort::DateAdded, SortDirection::Ascending);
-            imp.current_sorter.replace(Some(default_sorter.clone()));
-            default_sorter
-        };
-        let filters = vec![
-            imp.name_filter
-                .get()
-                .expect("Name filter should be initialized")
-                .clone(),
-            imp.artist_filter
-                .get()
-                .expect("Artist filter should be initialized")
-                .clone(),
-        ];
-        if query.is_empty() {
-            let sort_model = SortListModel::new(Some(store.clone()), Some(sorter));
-            self.bind_song_count(&sort_model);
-            let selection_model = gtk::SingleSelection::new(Some(sort_model));
-            imp.track_list.set_model(Some(&selection_model));
-        } else {
-            let any_filter = gtk::AnyFilter::new();
-            for filter in filters {
-                filter.set_search(Some(query));
-                any_filter.append(filter.clone());
-            }
-
-            let filter_model = FilterListModel::new(Some(store.clone()), Some(any_filter));
-            let sort_model = SortListModel::new(Some(filter_model), Some(sorter));
-            self.bind_song_count(&sort_model);
-            let selection_model = gtk::SingleSelection::new(Some(sort_model));
-            imp.track_list.set_model(Some(&selection_model));
-        }
     }
 
     fn apply_sorting(&self) {
@@ -373,10 +353,6 @@ mod imp {
         #[template_child]
         pub empty: TemplateChild<adw::StatusPage>,
         #[template_child]
-        pub search_bar: TemplateChild<gtk::SearchBar>,
-        #[template_child]
-        pub search_entry: TemplateChild<gtk::SearchEntry>,
-        #[template_child]
         pub sort_bar: TemplateChild<gtk::SearchBar>,
         #[template_child]
         pub sort_dropdown: TemplateChild<gtk::DropDown>,
@@ -422,14 +398,6 @@ mod imp {
                 self,
                 move |_, position| {
                     imp.obj().activate_song(position as usize);
-                }
-            ));
-
-            self.search_entry.connect_search_changed(glib::clone!(
-                #[weak(rename_to = song_list)]
-                self.obj(),
-                move |entry| {
-                    song_list.search_changed(&entry.text());
                 }
             ));
 

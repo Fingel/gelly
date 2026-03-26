@@ -157,19 +157,15 @@
                                               </object>
                                             </child>
                                             <child type="start">
-                                              <object class="GtkButton" id="search_button">
-                                                <property name="action-name">win.search</property>
+                                              <object class="GtkToggleButton" id="search_button">
                                                 <property name="icon-name">edit-find-symbolic</property>
                                                 <property name="tooltip-text" translatable="yes">Search</property>
-                                                <property name="visible">true</property>
                                               </object>
                                             </child>
                                             <child type="start">
-                                              <object class="GtkButton" id="sort_button">
-                                                <property name="action-name">win.sort</property>
+                                              <object class="GtkToggleButton" id="sort_button">
                                                 <property name="icon-name">view-sort-descending-symbolic</property>
                                                 <property name="tooltip-text" translatable="yes">Sort</property>
-                                                <property name="visible">true</property>
                                               </object>
                                             </child>
                                             <child type="start">
@@ -193,6 +189,17 @@
                                                 <property name="policy">1</property>
                                               </object>
                                             </property>
+                                          </object>
+                                        </child>
+                                        <child type="top">
+                                          <object class="GtkSearchBar" id="search_bar">
+                                            <property name="show-close-button">true</property>
+                                            <property name="search-mode-enabled">false</property>
+                                            <child>
+                                              <object class="GtkSearchEntry" id="search_entry">
+                                                <property name="placeholder-text">Search...</property>
+                                              </object>
+                                            </child>
                                           </object>
                                         </child>
                                         <property name="content">

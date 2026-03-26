@@ -28,32 +28,8 @@ pub enum ArtistSort {
 }
 
 impl TopPage for ArtistList {
-    fn can_search(&self) -> bool {
-        true
-    }
-
-    fn can_sort(&self) -> bool {
-        true
-    }
-
     fn can_new(&self) -> bool {
         false
-    }
-
-    fn toggle_search_bar(&self) {
-        self.toggle_bar(&self.imp().search_bar);
-    }
-
-    fn toggle_sort_bar(&self) {
-        self.toggle_bar(&self.imp().sort_bar);
-    }
-
-    fn hide_search_bar(&self) {
-        self.imp().search_bar.set_search_mode(false);
-    }
-
-    fn hide_sort_bar(&self) {
-        self.imp().sort_bar.set_search_mode(false);
     }
 
     fn play_selected(&self) {
@@ -64,6 +40,27 @@ impl TopPage for ArtistList {
         {
             play_artist(&artist_model.id(), &self.get_application());
         }
+    }
+
+    fn search_changed(&self, query: &str) {
+        let imp = self.imp();
+        let store = imp.store.get().expect("Store should be initialized");
+        let name_filter = imp
+            .name_filter
+            .get()
+            .expect("Name filter should be initialized");
+        let sorter = if let Some(current_sorter) = imp.current_sorter.borrow().as_ref() {
+            current_sorter.clone()
+        } else {
+            let default_sorter = self.build_sorter(ArtistSort::Name, SortDirection::Ascending);
+            imp.current_sorter.replace(Some(default_sorter.clone()));
+            default_sorter
+        };
+        apply_single_filter_search(query, sorter.upcast(), store, name_filter, &imp.grid_view);
+    }
+
+    fn sort_bar(&self) -> gtk::SearchBar {
+        self.imp().sort_bar.clone()
     }
 }
 
@@ -110,23 +107,6 @@ impl ArtistList {
                 }
             ),
         );
-    }
-
-    pub fn search_changed(&self, query: &str) {
-        let imp = self.imp();
-        let store = imp.store.get().expect("Store should be initialized");
-        let name_filter = imp
-            .name_filter
-            .get()
-            .expect("Name filter should be initialized");
-        let sorter = if let Some(current_sorter) = imp.current_sorter.borrow().as_ref() {
-            current_sorter.clone()
-        } else {
-            let default_sorter = self.build_sorter(ArtistSort::Name, SortDirection::Ascending);
-            imp.current_sorter.replace(Some(default_sorter.clone()));
-            default_sorter
-        };
-        apply_single_filter_search(query, sorter.upcast(), store, name_filter, &imp.grid_view);
     }
 
     fn sort_changed(&self) {
@@ -228,7 +208,7 @@ mod imp {
 
     use adw::subclass::prelude::*;
     use glib::subclass::InitializingObject;
-    use gtk::{CompositeTemplate, gio, glib, prelude::*};
+    use gtk::{CompositeTemplate, gio, glib};
 
     use crate::config;
 
@@ -239,10 +219,6 @@ mod imp {
         pub grid_view: TemplateChild<gtk::GridView>,
         #[template_child]
         pub empty: TemplateChild<adw::StatusPage>,
-        #[template_child]
-        pub search_bar: TemplateChild<gtk::SearchBar>,
-        #[template_child]
-        pub search_entry: TemplateChild<gtk::SearchEntry>,
         #[template_child]
         pub sort_bar: TemplateChild<gtk::SearchBar>,
         #[template_child]
@@ -284,14 +260,6 @@ mod imp {
                 self.obj(),
                 move |_, position| {
                     artist_list.activate_artist(position);
-                }
-            ));
-
-            self.search_entry.connect_search_changed(glib::clone!(
-                #[weak(rename_to = artist_list)]
-                self.obj(),
-                move |entry| {
-                    artist_list.search_changed(&entry.text());
                 }
             ));
 
