@@ -89,7 +89,7 @@ impl TopPage for SongList {
     }
 
     fn sort_bar(&self) -> gtk::SearchBar {
-        self.imp().sort_bar.clone()
+        self.imp().sort_bar.get()
     }
 }
 

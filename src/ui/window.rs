@@ -415,34 +415,35 @@ mod imp {
                 .bidirectional()
                 .build();
 
+            self.search_button.connect_active_notify(glib::clone!(
+                #[weak(rename_to = sort_button)]
+                self.sort_button,
+                move |search_button| {
+                    if search_button.is_active() {
+                        sort_button.set_active(false);
+                    }
+                }
+            ));
+
+            self.sort_button.connect_active_notify(glib::clone!(
+                #[weak(rename_to = search_button)]
+                self.search_button,
+                move |sort_button| {
+                    if sort_button.is_active() {
+                        search_button.set_active(false);
+                    }
+                }
+            ));
+
             self.album_list.bind_sort_bar(&self.sort_button);
             self.artist_list.bind_sort_bar(&self.sort_button);
             self.playlist_list.bind_sort_bar(&self.sort_button);
             self.song_list.bind_sort_bar(&self.sort_button);
-
-            self.album_list
-                .setup_bar_mutual_exclusion(&self.search_bar.get());
-            self.artist_list
-                .setup_bar_mutual_exclusion(&self.search_bar.get());
+            self.album_list.setup_search_connection(&self.search_entry);
+            self.artist_list.setup_search_connection(&self.search_entry);
             self.playlist_list
-                .setup_bar_mutual_exclusion(&self.search_bar.get());
-            self.song_list
-                .setup_bar_mutual_exclusion(&self.search_bar.get());
-            macro_rules! connect_search {
-                ($list:expr) => {{
-                    self.search_entry.connect_search_changed(glib::clone!(
-                        #[weak(rename_to = list)]
-                        $list,
-                        move |entry| {
-                            list.search_changed(&entry.text());
-                        }
-                    ));
-                }};
-            }
-            connect_search!(self.album_list);
-            connect_search!(self.artist_list);
-            connect_search!(self.playlist_list);
-            connect_search!(self.song_list);
+                .setup_search_connection(&self.search_entry);
+            self.song_list.setup_search_connection(&self.search_entry);
 
             let action_new = ActionEntry::builder("new")
                 .activate(glib::clone!(

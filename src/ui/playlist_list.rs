@@ -81,7 +81,7 @@ impl TopPage for PlaylistList {
         }
     }
     fn sort_bar(&self) -> gtk::SearchBar {
-        self.imp().sort_bar.clone()
+        self.imp().sort_bar.get()
     }
 
     fn search_changed(&self, query: &str) {
