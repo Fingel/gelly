@@ -33,6 +33,7 @@
             <child>
               <object class="AdwOverlaySplitView" id="split_view">
                 <property name="collapsed">false</property>
+                <property name="pin-sidebar">true</property>
                 <property name="show-sidebar">false</property>
                 <property name="sidebar-position">start</property>
                 <property name="sidebar-width-fraction">0.33</property>
