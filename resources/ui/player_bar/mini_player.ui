@@ -6,7 +6,7 @@
     <property name="height-request">48</property>
     <child>
       <object class="AdwBreakpoint">
-        <condition>max-width: 550sp</condition>
+        <condition>max-width: 600sp</condition>
         <!-- Hide normal-mode elements -->
         <setter object="artist_button" property="visible">false</setter>
         <setter object="album_button" property="visible">false</setter>
