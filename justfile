@@ -41,3 +41,13 @@ dev-remote host: schemas
     WAYLAND_DISPLAY_VAR="${WAYLAND_DISPLAY:-wayland-0}"
 
     ssh {{ host }} "WAYLAND_DISPLAY=$WAYLAND_DISPLAY_VAR RUST_LOG='debug,glycin=off,glycin_utils=off' waypipe -n ssh $DEV_HOST $BINARY_PATH"
+
+navidrome:
+    podman run \
+      --replace \
+      --name navidrome \
+      -v $MUSIC_DIR:/music:ro \
+      -v ./scratch/navidrome-data:/data \
+      -p 4533:4533 \
+      -e ND_LOGLEVEL=info \
+      deluan/navidrome:latest
