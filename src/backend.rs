@@ -186,15 +186,3 @@ impl Default for Backend {
         Self::Jellyfin(Jellyfin::default())
     }
 }
-
-impl From<Jellyfin> for Backend {
-    fn from(value: Jellyfin) -> Self {
-        Self::Jellyfin(value)
-    }
-}
-
-impl From<Subsonic> for Backend {
-    fn from(value: Subsonic) -> Self {
-        Self::Subsonic(value)
-    }
-}
