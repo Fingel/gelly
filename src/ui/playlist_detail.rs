@@ -1,6 +1,7 @@
 use crate::{
     async_utils::spawn_tokio,
-    jellyfin::{JellyfinError, api::MusicDto, utils::format_duration},
+    backend::BackendError,
+    jellyfin::{api::MusicDto, utils::format_duration},
     library_utils::songs_for_playlist,
     models::{PlaylistModel, SongModel},
     ui::{
@@ -226,7 +227,7 @@ impl PlaylistDetail {
             glib::clone!(
                 #[weak(rename_to=playlist_detail)]
                 self,
-                move |result: Result<Vec<MusicDto>, JellyfinError>| {
+                move |result: Result<Vec<MusicDto>, BackendError>| {
                     match result {
                         Ok(music_data) => {
                             let songs: Vec<SongModel> =

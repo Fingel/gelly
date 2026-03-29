@@ -1,11 +1,11 @@
 use std::error::Error;
 
 use crate::async_utils::spawn_tokio;
-use crate::backend::Backend;
+use crate::backend::{Backend, BackendError};
 use crate::config::{
     BackendType, set_backend_type, settings, store_jellyfin_api_token, store_subsonic_password,
 };
-use crate::jellyfin::{Jellyfin, JellyfinError};
+use crate::jellyfin::Jellyfin;
 use crate::subsonic::Subsonic;
 use crate::ui::widget_ext::WidgetApplicationExt;
 use adw::prelude::*;
@@ -30,8 +30,8 @@ pub struct ServerFormValues {
 #[derive(Debug)]
 enum ConnectionAttemptError {
     Both {
-        jellyfin: JellyfinError,
-        subsonic: JellyfinError,
+        jellyfin: BackendError,
+        subsonic: BackendError,
     },
 }
 
@@ -190,8 +190,8 @@ impl Setup {
     fn handle_connection_error(&self, error: ConnectionAttemptError) {
         match error {
             ConnectionAttemptError::Both { jellyfin, subsonic } => {
-                let jellyfin_transport = matches!(jellyfin, JellyfinError::Transport(_));
-                let subsonic_transport = matches!(subsonic, JellyfinError::Transport(_));
+                let jellyfin_transport = matches!(jellyfin, BackendError::Transport(_));
+                let subsonic_transport = matches!(subsonic, BackendError::Transport(_));
 
                 if jellyfin_transport && subsonic_transport {
                     self.host_error();
@@ -206,8 +206,8 @@ impl Setup {
                     return;
                 }
 
-                let jellyfin_auth = matches!(jellyfin, JellyfinError::AuthenticationFailed { .. });
-                let subsonic_auth = matches!(subsonic, JellyfinError::AuthenticationFailed { .. });
+                let jellyfin_auth = matches!(jellyfin, BackendError::AuthenticationFailed { .. });
+                let subsonic_auth = matches!(subsonic, BackendError::AuthenticationFailed { .. });
 
                 if jellyfin_auth || subsonic_auth {
                     self.toast("Invalid credentials", None);

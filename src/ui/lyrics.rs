@@ -5,8 +5,8 @@ use log::debug;
 use crate::{
     async_utils::spawn_tokio,
     audio::model::AudioModel,
-    backend::Backend,
-    jellyfin::{JellyfinError, api::Lyric},
+    backend::{Backend, BackendError},
+    jellyfin::api::Lyric,
 };
 
 glib::wrapper! {
@@ -94,7 +94,7 @@ impl Lyrics {
                             obj.update_lyrics_position(0u32);
                         }
                         Err(err) => {
-                            let message = if matches!(err, JellyfinError::Http { status, .. } if status == 404)
+                            let message = if matches!(err, BackendError::Http { status, .. } if status == 404)
                             {
                                 "No lyrics found."
                             } else {

@@ -1,6 +1,6 @@
 use crate::{
-    backend::Backend,
-    jellyfin::{JellyfinError, api::MusicDto},
+    backend::{Backend, BackendError},
+    jellyfin::api::MusicDto,
     library_utils::{most_played_songs, shuffle_songs},
 };
 
@@ -76,7 +76,7 @@ impl PlaylistType {
         &self,
         backend: &Backend,
         library: &[MusicDto],
-    ) -> Result<Vec<MusicDto>, JellyfinError> {
+    ) -> Result<Vec<MusicDto>, BackendError> {
         match self {
             PlaylistType::Regular { id, .. } => {
                 let playlist_items = backend.get_playlist_items(id).await?;

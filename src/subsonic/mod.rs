@@ -3,8 +3,8 @@ use rand::RngExt;
 use reqwest::{Client, Response, StatusCode, Url};
 use serde::de::DeserializeOwned;
 
+use crate::backend::BackendError;
 use crate::config;
-use crate::jellyfin::JellyfinError;
 use crate::jellyfin::api::{
     ArtistItemsDto, ImageType, LibraryDto, LibraryDtoList, LyricsResponse, MediaSource,
     MediaStream, MusicDto, MusicDtoList, PlaybackInfo, PlaybackReport, PlaybackReportStatus,
@@ -61,11 +61,11 @@ impl Subsonic {
         host: &str,
         username: &str,
         password: &str,
-    ) -> Result<Self, JellyfinError> {
+    ) -> Result<Self, BackendError> {
         debug!("Subsonic::new_authenticate(host={host}, username={username})");
 
         if host.trim().is_empty() || username.trim().is_empty() || password.trim().is_empty() {
-            return Err(JellyfinError::AuthenticationFailed {
+            return Err(BackendError::AuthenticationFailed {
                 message: "Missing host/username/password".to_string(),
             });
         }
@@ -76,14 +76,14 @@ impl Subsonic {
     }
 
     // https://github.com/opensubsonic/open-subsonic-api/blob/main/content/en/docs/Endpoints/ping.md
-    async fn ping(&self) -> Result<(), JellyfinError> {
+    async fn ping(&self) -> Result<(), BackendError> {
         let response = self.get_subsonic("ping", &[]).await?;
         self.ensure_ok_response(&response)?;
         Ok(())
     }
 
     // https://github.com/opensubsonic/open-subsonic-api/blob/main/content/en/docs/Endpoints/getmusicfolders.md
-    pub async fn get_views(&self) -> Result<LibraryDtoList, JellyfinError> {
+    pub async fn get_views(&self) -> Result<LibraryDtoList, BackendError> {
         debug!("Subsonic::get_views()");
 
         let response = self.get_subsonic("getMusicFolders", &[]).await?;
@@ -113,7 +113,7 @@ impl Subsonic {
         Ok(LibraryDtoList { items })
     }
 
-    pub async fn get_library(&self, library_id: &str) -> Result<MusicDtoList, JellyfinError> {
+    pub async fn get_library(&self, library_id: &str) -> Result<MusicDtoList, BackendError> {
         debug!("Subsonic::get_library(library_id={library_id})");
 
         let album_ids = self.get_album_ids(library_id).await?;
@@ -133,7 +133,7 @@ impl Subsonic {
     }
 
     // https://github.com/opensubsonic/open-subsonic-api/blob/main/content/en/docs/Endpoints/getalbumlist2.md
-    async fn get_album_ids(&self, library_id: &str) -> Result<Vec<String>, JellyfinError> {
+    async fn get_album_ids(&self, library_id: &str) -> Result<Vec<String>, BackendError> {
         let mut album_ids = Vec::new();
         let mut offset: u32 = 0;
 
@@ -185,13 +185,13 @@ impl Subsonic {
     }
 
     // https://github.com/opensubsonic/open-subsonic-api/blob/main/content/en/docs/Endpoints/getalbum.md
-    async fn get_album(&self, album_id: &str) -> Result<Vec<MusicDto>, JellyfinError> {
+    async fn get_album(&self, album_id: &str) -> Result<Vec<MusicDto>, BackendError> {
         let response = self
             .get_subsonic("getAlbum", &[("id".to_string(), album_id.to_string())])
             .await?;
         self.ensure_ok_response(&response)?;
 
-        let album = response.album.ok_or_else(|| JellyfinError::Http {
+        let album = response.album.ok_or_else(|| BackendError::Http {
             status: StatusCode::BAD_GATEWAY,
             message: "Subsonic response missing album payload".to_string(),
         })?;
@@ -259,7 +259,7 @@ impl Subsonic {
     }
 
     // https://github.com/opensubsonic/open-subsonic-api/blob/main/content/en/docs/Endpoints/getplaylists.md
-    pub async fn get_playlists(&self) -> Result<PlaylistDtoList, JellyfinError> {
+    pub async fn get_playlists(&self) -> Result<PlaylistDtoList, BackendError> {
         debug!("Subsonic::get_playlists()");
 
         let response = self.get_subsonic("getPlaylists", &[]).await?;
@@ -290,7 +290,7 @@ impl Subsonic {
     pub async fn get_playlist_items(
         &self,
         playlist_id: &str,
-    ) -> Result<PlaylistItems, JellyfinError> {
+    ) -> Result<PlaylistItems, BackendError> {
         debug!("Subsonic::get_playlist_items(playlist_id={playlist_id})");
 
         let response = self
@@ -301,7 +301,7 @@ impl Subsonic {
             .await?;
         self.ensure_ok_response(&response)?;
 
-        let playlist = response.playlist.ok_or_else(|| JellyfinError::Http {
+        let playlist = response.playlist.ok_or_else(|| BackendError::Http {
             status: StatusCode::BAD_GATEWAY,
             message: "Subsonic response missing playlist payload".to_string(),
         })?;
@@ -332,7 +332,7 @@ impl Subsonic {
         &self,
         name: &str,
         items: Vec<String>,
-    ) -> Result<String, JellyfinError> {
+    ) -> Result<String, BackendError> {
         debug!("Subsonic::new_playlist(name={name})");
         let mut params = vec![("name".to_string(), name.to_string())];
 
@@ -343,7 +343,7 @@ impl Subsonic {
         let response = self.get_subsonic("createPlaylist", &params).await?;
         self.ensure_ok_response(&response)?;
 
-        let playlist = response.playlist.ok_or_else(|| JellyfinError::Http {
+        let playlist = response.playlist.ok_or_else(|| BackendError::Http {
             status: StatusCode::BAD_GATEWAY,
             message: "Subsonic createPlaylist response missing playlist payload".to_string(),
         })?;
@@ -356,7 +356,7 @@ impl Subsonic {
         &self,
         playlist_id: &str,
         item_ids: &[String],
-    ) -> Result<(), JellyfinError> {
+    ) -> Result<(), BackendError> {
         debug!(
             "Subsonic::add_playlist_items(playlist_id={playlist_id}, count={})",
             item_ids.len()
@@ -380,7 +380,7 @@ impl Subsonic {
         playlist_id: &str,
         item_id: &str,
         new_index: i32,
-    ) -> Result<(), JellyfinError> {
+    ) -> Result<(), BackendError> {
         debug!(
             "Subsonic::move_playlist_item(playlist_id={playlist_id}, item_id={item_id}, new_index={new_index})"
         );
@@ -393,7 +393,7 @@ impl Subsonic {
             .await?;
         self.ensure_ok_response(&response)?;
 
-        let playlist = response.playlist.ok_or_else(|| JellyfinError::Http {
+        let playlist = response.playlist.ok_or_else(|| BackendError::Http {
             status: StatusCode::BAD_GATEWAY,
             message: "Subsonic getPlaylist response missing playlist payload".to_string(),
         })?;
@@ -421,7 +421,7 @@ impl Subsonic {
         &self,
         playlist_id: &str,
         item_id: &str,
-    ) -> Result<(), JellyfinError> {
+    ) -> Result<(), BackendError> {
         debug!("Subsonic::remove_playlist_item(playlist_id={playlist_id}, item_id={item_id})");
 
         let response = self
@@ -432,7 +432,7 @@ impl Subsonic {
             .await?;
         self.ensure_ok_response(&response)?;
 
-        let playlist = response.playlist.ok_or_else(|| JellyfinError::Http {
+        let playlist = response.playlist.ok_or_else(|| BackendError::Http {
             status: StatusCode::BAD_GATEWAY,
             message: "Subsonic getPlaylist response missing playlist payload".to_string(),
         })?;
@@ -441,7 +441,7 @@ impl Subsonic {
             .entry
             .iter()
             .position(|s| s.id == item_id)
-            .ok_or_else(|| JellyfinError::Http {
+            .ok_or_else(|| BackendError::Http {
                 status: StatusCode::NOT_FOUND,
                 message: format!("Item {item_id} not found in playlist {playlist_id}"),
             })?;
@@ -457,7 +457,7 @@ impl Subsonic {
     }
 
     // https://github.com/opensubsonic/open-subsonic-api/blob/main/content/en/docs/Endpoints/deleteplaylist.md
-    pub async fn delete_item(&self, item_id: &str) -> Result<(), JellyfinError> {
+    pub async fn delete_item(&self, item_id: &str) -> Result<(), BackendError> {
         debug!("Subsonic::delete_item(item_id={item_id})");
         let params = vec![("id".to_string(), item_id.to_string())];
         let response = self.get_subsonic("deletePlaylist", &params).await?;
@@ -466,7 +466,7 @@ impl Subsonic {
     }
 
     // https://github.com/opensubsonic/open-subsonic-api/blob/main/content/en/docs/Endpoints/startscan.md
-    pub async fn request_library_rescan(&self, _library_id: &str) -> Result<(), JellyfinError> {
+    pub async fn request_library_rescan(&self, _library_id: &str) -> Result<(), BackendError> {
         debug!("Subsonic::request_library_rescan()");
         let response = self.get_subsonic("startScan", &[]).await?;
         self.ensure_ok_response(&response)?;
@@ -478,7 +478,7 @@ impl Subsonic {
         &self,
         item_id: &str,
         image_type: ImageType,
-    ) -> Result<Vec<u8>, JellyfinError> {
+    ) -> Result<Vec<u8>, BackendError> {
         debug!(
             "Subsonic::get_image(item_id={item_id}, image_type={})",
             image_type.as_str()
@@ -495,11 +495,11 @@ impl Subsonic {
         if status.is_success() {
             Ok(response.bytes().await?.to_vec())
         } else if status == StatusCode::UNAUTHORIZED {
-            Err(JellyfinError::AuthenticationFailed {
+            Err(BackendError::AuthenticationFailed {
                 message: response.text().await?,
             })
         } else {
-            Err(JellyfinError::Http {
+            Err(BackendError::Http {
                 status,
                 message: response.text().await?,
             })
@@ -527,7 +527,7 @@ impl Subsonic {
     }
 
     // https://github.com/opensubsonic/open-subsonic-api/blob/main/content/en/docs/Endpoints/getsong.md
-    pub async fn get_playback_info(&self, item_id: &str) -> Result<PlaybackInfo, JellyfinError> {
+    pub async fn get_playback_info(&self, item_id: &str) -> Result<PlaybackInfo, BackendError> {
         debug!("Subsonic::get_playback_info(item_id={item_id})");
 
         let response = self
@@ -535,7 +535,7 @@ impl Subsonic {
             .await?;
         self.ensure_ok_response(&response)?;
 
-        let song = response.song.ok_or_else(|| JellyfinError::Http {
+        let song = response.song.ok_or_else(|| BackendError::Http {
             status: StatusCode::BAD_GATEWAY,
             message: "Subsonic getSong response missing song payload".to_string(),
         })?;
@@ -567,7 +567,7 @@ impl Subsonic {
         &self,
         report: &PlaybackReport,
         state: &PlaybackReportStatus,
-    ) -> Result<(), JellyfinError> {
+    ) -> Result<(), BackendError> {
         let submission = match state {
             PlaybackReportStatus::Started => "false",
             PlaybackReportStatus::InProgress => return Ok(()),
@@ -590,7 +590,7 @@ impl Subsonic {
     }
 
     // https://github.com/opensubsonic/open-subsonic-api/blob/main/content/en/docs/Endpoints/getLyricsBySongId.md
-    pub async fn fetch_lyrics(&self, item_id: &str) -> Result<LyricsResponse, JellyfinError> {
+    pub async fn fetch_lyrics(&self, item_id: &str) -> Result<LyricsResponse, BackendError> {
         debug!("Subsonic::fetch_lyrics(item_id={item_id})");
 
         let response = self
@@ -632,7 +632,7 @@ impl Subsonic {
         &self,
         endpoint: &str,
         extra_params: &[(String, String)],
-    ) -> Result<SubsonicResponse, JellyfinError> {
+    ) -> Result<SubsonicResponse, BackendError> {
         let envelope: SubsonicEnvelope = self.get_json(endpoint, extra_params).await?;
         Ok(envelope.response)
     }
@@ -641,7 +641,7 @@ impl Subsonic {
         &self,
         endpoint: &str,
         extra_params: &[(String, String)],
-    ) -> Result<T, JellyfinError> {
+    ) -> Result<T, BackendError> {
         let url = self.rest_url(endpoint);
         let mut params = self.auth_params();
         params.extend_from_slice(extra_params);
@@ -651,7 +651,7 @@ impl Subsonic {
         Ok(serde_json::from_str::<T>(&body)?)
     }
 
-    fn ensure_ok_response(&self, response: &SubsonicResponse) -> Result<(), JellyfinError> {
+    fn ensure_ok_response(&self, response: &SubsonicResponse) -> Result<(), BackendError> {
         if response.is_ok() {
             return Ok(());
         }
@@ -660,16 +660,16 @@ impl Subsonic {
             return Err(self.map_api_error(error.code, error.message.clone()));
         }
 
-        Err(JellyfinError::Http {
+        Err(BackendError::Http {
             status: StatusCode::BAD_GATEWAY,
             message: "Subsonic API returned non-ok status".to_string(),
         })
     }
 
-    fn map_api_error(&self, code: i32, message: String) -> JellyfinError {
+    fn map_api_error(&self, code: i32, message: String) -> BackendError {
         match code {
-            40 => JellyfinError::AuthenticationFailed { message },
-            _ => JellyfinError::Http {
+            40 => BackendError::AuthenticationFailed { message },
+            _ => BackendError::Http {
                 status: StatusCode::BAD_GATEWAY,
                 message: format!("Subsonic error {}: {}", code, message),
             },
@@ -702,15 +702,15 @@ impl Subsonic {
             .expect("Failed to construct Subsonic endpoint URL")
     }
 
-    async fn handle_http_response(&self, response: Response) -> Result<String, JellyfinError> {
+    async fn handle_http_response(&self, response: Response) -> Result<String, BackendError> {
         let status = response.status();
         let body = response.text().await?;
         if status.is_success() {
             Ok(body)
         } else if status == StatusCode::UNAUTHORIZED {
-            Err(JellyfinError::AuthenticationFailed { message: body })
+            Err(BackendError::AuthenticationFailed { message: body })
         } else {
-            Err(JellyfinError::Http {
+            Err(BackendError::Http {
                 status,
                 message: body,
             })

@@ -1,11 +1,29 @@
+use reqwest::StatusCode;
+use thiserror::Error;
+
 use crate::jellyfin::{
-    Jellyfin, JellyfinError,
+    Jellyfin,
     api::{
         ImageType, LibraryDtoList, LyricsResponse, MusicDtoList, PlaybackInfo, PlaybackReport,
         PlaybackReportStatus, PlaylistDtoList, PlaylistItems,
     },
 };
 use crate::subsonic::Subsonic;
+
+#[derive(Error, Debug)]
+pub enum BackendError {
+    #[error("Transport error: {0}")]
+    Transport(#[from] reqwest::Error),
+
+    #[error("HTTP error: {status} - {message}")]
+    Http { status: StatusCode, message: String },
+
+    #[error("Authentication failed: {message}")]
+    AuthenticationFailed { message: String },
+
+    #[error("JSON parsing error: {0}")]
+    JsonParsing(#[from] serde_json::Error),
+}
 
 #[derive(Debug, Clone)]
 pub enum Backend {
@@ -21,21 +39,21 @@ impl Backend {
         }
     }
 
-    pub async fn get_views(&self) -> Result<LibraryDtoList, JellyfinError> {
+    pub async fn get_views(&self) -> Result<LibraryDtoList, BackendError> {
         match self {
             Self::Jellyfin(jellyfin) => jellyfin.get_views().await,
             Self::Subsonic(subsonic) => subsonic.get_views().await,
         }
     }
 
-    pub async fn get_library(&self, library_id: &str) -> Result<MusicDtoList, JellyfinError> {
+    pub async fn get_library(&self, library_id: &str) -> Result<MusicDtoList, BackendError> {
         match self {
             Self::Jellyfin(jellyfin) => jellyfin.get_library(library_id).await,
             Self::Subsonic(subsonic) => subsonic.get_library(library_id).await,
         }
     }
 
-    pub async fn get_playlists(&self) -> Result<PlaylistDtoList, JellyfinError> {
+    pub async fn get_playlists(&self) -> Result<PlaylistDtoList, BackendError> {
         match self {
             Self::Jellyfin(jellyfin) => jellyfin.get_playlists().await,
             Self::Subsonic(subsonic) => subsonic.get_playlists().await,
@@ -45,7 +63,7 @@ impl Backend {
     pub async fn get_playlist_items(
         &self,
         playlist_id: &str,
-    ) -> Result<PlaylistItems, JellyfinError> {
+    ) -> Result<PlaylistItems, BackendError> {
         match self {
             Self::Jellyfin(jellyfin) => jellyfin.get_playlist_items(playlist_id).await,
             Self::Subsonic(subsonic) => subsonic.get_playlist_items(playlist_id).await,
@@ -56,7 +74,7 @@ impl Backend {
         &self,
         name: &str,
         items: Vec<String>,
-    ) -> Result<String, JellyfinError> {
+    ) -> Result<String, BackendError> {
         match self {
             Self::Jellyfin(jellyfin) => jellyfin.new_playlist(name, items).await,
             Self::Subsonic(subsonic) => subsonic.new_playlist(name, items).await,
@@ -67,7 +85,7 @@ impl Backend {
         &self,
         playlist_id: &str,
         item_ids: &[String],
-    ) -> Result<(), JellyfinError> {
+    ) -> Result<(), BackendError> {
         match self {
             Self::Jellyfin(jellyfin) => jellyfin.add_playlist_items(playlist_id, item_ids).await,
             Self::Subsonic(subsonic) => subsonic.add_playlist_items(playlist_id, item_ids).await,
@@ -79,7 +97,7 @@ impl Backend {
         playlist_id: &str,
         item_id: &str,
         new_index: i32,
-    ) -> Result<(), JellyfinError> {
+    ) -> Result<(), BackendError> {
         match self {
             Self::Jellyfin(jellyfin) => {
                 jellyfin
@@ -98,21 +116,21 @@ impl Backend {
         &self,
         playlist_id: &str,
         item_id: &str,
-    ) -> Result<(), JellyfinError> {
+    ) -> Result<(), BackendError> {
         match self {
             Self::Jellyfin(jellyfin) => jellyfin.remove_playlist_item(playlist_id, item_id).await,
             Self::Subsonic(subsonic) => subsonic.remove_playlist_item(playlist_id, item_id).await,
         }
     }
 
-    pub async fn delete_item(&self, item_id: &str) -> Result<(), JellyfinError> {
+    pub async fn delete_item(&self, item_id: &str) -> Result<(), BackendError> {
         match self {
             Self::Jellyfin(jellyfin) => jellyfin.delete_item(item_id).await,
             Self::Subsonic(subsonic) => subsonic.delete_item(item_id).await,
         }
     }
 
-    pub async fn request_library_rescan(&self, library_id: &str) -> Result<(), JellyfinError> {
+    pub async fn request_library_rescan(&self, library_id: &str) -> Result<(), BackendError> {
         match self {
             Self::Jellyfin(jellyfin) => jellyfin.request_library_rescan(library_id).await,
             Self::Subsonic(subsonic) => subsonic.request_library_rescan(library_id).await,
@@ -123,7 +141,7 @@ impl Backend {
         &self,
         item_id: &str,
         image_type: ImageType,
-    ) -> Result<Vec<u8>, JellyfinError> {
+    ) -> Result<Vec<u8>, BackendError> {
         match self {
             Self::Jellyfin(jellyfin) => jellyfin.get_image(item_id, image_type).await,
             Self::Subsonic(subsonic) => subsonic.get_image(item_id, image_type).await,
@@ -137,7 +155,7 @@ impl Backend {
         }
     }
 
-    pub async fn get_playback_info(&self, item_id: &str) -> Result<PlaybackInfo, JellyfinError> {
+    pub async fn get_playback_info(&self, item_id: &str) -> Result<PlaybackInfo, BackendError> {
         match self {
             Self::Jellyfin(jellyfin) => jellyfin.get_playback_info(item_id).await,
             Self::Subsonic(subsonic) => subsonic.get_playback_info(item_id).await,
@@ -148,14 +166,14 @@ impl Backend {
         &self,
         report: &PlaybackReport,
         state: &PlaybackReportStatus,
-    ) -> Result<(), JellyfinError> {
+    ) -> Result<(), BackendError> {
         match self {
             Self::Jellyfin(jellyfin) => jellyfin.playback_report(report, state).await,
             Self::Subsonic(subsonic) => subsonic.playback_report(report, state).await,
         }
     }
 
-    pub async fn fetch_lyrics(&self, item_id: &str) -> Result<LyricsResponse, JellyfinError> {
+    pub async fn fetch_lyrics(&self, item_id: &str) -> Result<LyricsResponse, BackendError> {
         match self {
             Self::Jellyfin(jellyfin) => jellyfin.fetch_lyrics(item_id).await,
             Self::Subsonic(subsonic) => subsonic.fetch_lyrics(item_id).await,

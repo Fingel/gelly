@@ -3,7 +3,10 @@ use gstreamer_pbutils::{Discoverer, prelude::*};
 use gtk::glib;
 use thiserror::Error;
 
-use crate::{async_utils::spawn_tokio, backend::Backend, jellyfin::JellyfinError};
+use crate::{
+    async_utils::spawn_tokio,
+    backend::{Backend, BackendError},
+};
 
 #[derive(Error, Debug)]
 pub enum StreamInfoError {
@@ -11,7 +14,7 @@ pub enum StreamInfoError {
     Glib(#[from] glib::Error),
 
     #[error("Jellyfin error: {0}")]
-    Jellyfin(#[from] JellyfinError),
+    Jellyfin(#[from] BackendError),
 }
 
 #[derive(Default, Debug)]

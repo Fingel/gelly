@@ -7,12 +7,13 @@ use gtk::{gio, glib};
 use crate::async_utils::spawn_tokio;
 use crate::audio::model::AudioModel;
 use crate::backend::Backend;
+use crate::backend::BackendError;
 use crate::cache::{ImageCache, LibraryCache};
 use crate::config::{
     self, BackendType, retrieve_jellyfin_api_token, retrieve_subsonic_password, settings,
 };
+use crate::jellyfin::Jellyfin;
 use crate::jellyfin::api::{MusicDto, MusicDtoList, PlaylistDto, PlaylistDtoList};
-use crate::jellyfin::{Jellyfin, JellyfinError};
 use crate::subsonic::Subsonic;
 use log::{debug, error, warn};
 use std::cell::RefCell;
@@ -190,9 +191,9 @@ impl Application {
         self.imp().audio_model.borrow().clone()
     }
 
-    fn handle_jellyfin_error(&self, error: JellyfinError, operation: &str) {
+    fn handle_backend_error(&self, error: BackendError, operation: &str) {
         match error {
-            JellyfinError::AuthenticationFailed { message } => {
+            BackendError::AuthenticationFailed { message } => {
                 log::error!("Authentication failed during {}: {}", operation, message);
                 self.emit_by_name::<()>("force-logout", &[]);
             }
@@ -229,7 +230,7 @@ impl Application {
             glib::clone!(
                 #[weak(rename_to=app)]
                 self,
-                move |result: Result<MusicDtoList, JellyfinError>| {
+                move |result: Result<MusicDtoList, BackendError>| {
                     match result {
                         Ok(library) => {
                             let library_cnt = library.items.len() as u64;
@@ -237,7 +238,7 @@ impl Application {
                             app.imp().library.replace(library.items);
                             app.emit_by_name::<()>("library-refreshed", &[&library_cnt]);
                         }
-                        Err(err) => app.handle_jellyfin_error(err, "refresh_library"),
+                        Err(err) => app.handle_backend_error(err, "refresh_library"),
                     }
                 },
             ),
@@ -277,7 +278,7 @@ impl Application {
             glib::clone!(
                 #[weak(rename_to=app)]
                 self,
-                move |result: Result<PlaylistDtoList, JellyfinError>| {
+                move |result: Result<PlaylistDtoList, BackendError>| {
                     match result {
                         Ok(playlists) => {
                             let playlist_cnt = playlists.items.len() as u64;
@@ -285,7 +286,7 @@ impl Application {
                             app.imp().playlists.replace(playlists.items);
                             app.emit_by_name::<()>("playlists-refreshed", &[&playlist_cnt]);
                         }
-                        Err(err) => app.handle_jellyfin_error(err, "refresh_playlists"),
+                        Err(err) => app.handle_backend_error(err, "refresh_playlists"),
                     }
                 }
             ),
@@ -321,10 +322,10 @@ impl Application {
             glib::clone!(
                 #[weak(rename_to=app)]
                 self,
-                move |result: Result<(), JellyfinError>| {
+                move |result: Result<(), BackendError>| {
                     match result {
                         Ok(()) => app.emit_by_name::<()>("library-rescan-requested", &[]),
-                        Err(err) => app.handle_jellyfin_error(err, "request_library_rescan"),
+                        Err(err) => app.handle_backend_error(err, "request_library_rescan"),
                     }
                 }
             ),

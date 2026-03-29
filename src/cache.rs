@@ -6,12 +6,9 @@ use thiserror::Error;
 use tokio::sync::{Mutex, Semaphore};
 
 use crate::{
-    backend::Backend,
+    backend::{Backend, BackendError},
     config::APP_ID,
-    jellyfin::{
-        JellyfinError,
-        api::{ImageType, MusicDto, MusicDtoList, PlaylistDto, PlaylistDtoList},
-    },
+    jellyfin::api::{ImageType, MusicDto, MusicDtoList, PlaylistDto, PlaylistDtoList},
 };
 
 // Cache versions of the library structs that fail on deserialization errors instead of skipping.
@@ -71,7 +68,7 @@ pub enum CacheError {
     Io(#[from] std::io::Error),
 
     #[error("Jellyfin error: {0}")]
-    Jellyfin(#[from] JellyfinError),
+    Jellyfin(#[from] BackendError),
 
     #[error("Deserialization error: {0}")]
     Deserialize(#[from] serde_json::Error),
