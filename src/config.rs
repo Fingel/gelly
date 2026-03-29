@@ -259,7 +259,7 @@ pub fn get_playlist_most_played_enabled() -> bool {
 }
 
 pub fn get_normalize_audio_enabled() -> bool {
-    settings().boolean("normalize-audio")
+    settings().boolean("normalize-audio") && get_backend_type() != BackendType::Subsonic
 }
 
 pub fn get_inhibit_suspend_enabled() -> bool {
