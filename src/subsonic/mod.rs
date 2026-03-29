@@ -196,54 +196,42 @@ impl Subsonic {
             message: "Subsonic response missing album payload".to_string(),
         })?;
 
-        let album_name = album.name.clone();
-        let album_id_fallback = album.id.clone();
-        let album_artist = album.artist.clone();
-        let album_artist_id = album.artist_id.clone();
-        let album_year = album.year;
-        let album_created = album.created.clone();
+        let fallback = AlbumFallback {
+            album_id: album.id.clone(),
+            album_name: album.name.clone(),
+            artist_name: album.artist.clone(),
+            artist_id: album.artist_id.clone(),
+            year: album.year,
+            created: album.created.clone(),
+        };
 
         let songs = album
             .song
             .into_iter()
-            .map(|song| {
-                self.song_to_music_dto(
-                    song,
-                    AlbumFallback {
-                        album_id: album_id_fallback.clone(),
-                        album_name: album_name.clone(),
-                        artist_name: album_artist.clone(),
-                        artist_id: album_artist_id.clone(),
-                        year: album_year,
-                        created: album_created.clone(),
-                    },
-                )
-            })
+            .map(|song| self.song_to_music_dto(song, &fallback))
             .collect();
 
         Ok(songs)
     }
 
-    fn song_to_music_dto(&self, song: Song, fallback: AlbumFallback) -> MusicDto {
-        let album = song.album.clone().unwrap_or(fallback.album_name);
-        let album_id = song.album_id.clone().unwrap_or(fallback.album_id);
+    fn song_to_music_dto(&self, song: Song, fallback: &AlbumFallback) -> MusicDto {
+        let album = song.album.unwrap_or_else(|| fallback.album_name.clone());
+        let album_id = song.album_id.unwrap_or_else(|| fallback.album_id.clone());
 
         let artist_name = song
             .album_artist
-            .clone()
-            .or(song.artist.clone())
-            .or(fallback.artist_name)
+            .or(song.artist)
+            .or(fallback.artist_name.clone())
             .unwrap_or_else(|| "Unknown Artist".to_string());
 
         let artist_id = song
             .artist_id
-            .clone()
-            .or(fallback.artist_id)
+            .or(fallback.artist_id.clone())
             .unwrap_or_default();
 
         let duration_ticks = song.duration.unwrap_or(0).saturating_mul(10_000_000);
 
-        let date_created = song.created.clone().or(fallback.created);
+        let date_created = song.created.or_else(|| fallback.created.clone());
         let production_year = song.year.or(fallback.year);
 
         MusicDto {
@@ -318,22 +306,19 @@ impl Subsonic {
             message: "Subsonic response missing playlist payload".to_string(),
         })?;
 
+        let album_fallback = AlbumFallback {
+            album_id: String::new(),
+            album_name: "Unknown Album".to_string(),
+            artist_name: None,
+            artist_id: None,
+            year: None,
+            created: None,
+        };
+
         let items = playlist
             .entry
             .into_iter()
-            .map(|song| {
-                self.song_to_music_dto(
-                    song,
-                    AlbumFallback {
-                        album_id: String::new(),
-                        album_name: "Unknown Album".to_string(),
-                        artist_name: None,
-                        artist_id: None,
-                        year: None,
-                        created: None,
-                    },
-                )
-            })
+            .map(|song| self.song_to_music_dto(song, &album_fallback))
             .collect::<Vec<_>>();
 
         Ok(PlaylistItems {
