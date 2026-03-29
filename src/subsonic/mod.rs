@@ -258,10 +258,29 @@ impl Subsonic {
     }
 
     pub async fn get_playlists(&self) -> Result<PlaylistDtoList, JellyfinError> {
-        info!("Subsonic::get_playlists() [stub]");
+        info!("Subsonic::get_playlists()");
+
+        let response = self.get_subsonic("getPlaylists", &[]).await?;
+        self.ensure_ok_response(&response)?;
+
+        let items = response
+            .playlists
+            .map(|payload| {
+                payload
+                    .playlist
+                    .into_iter()
+                    .map(|playlist| crate::jellyfin::api::PlaylistDto {
+                        id: playlist.id,
+                        name: playlist.name,
+                        child_count: playlist.song_count.unwrap_or(0),
+                    })
+                    .collect::<Vec<_>>()
+            })
+            .unwrap_or_default();
+
         Ok(PlaylistDtoList {
-            items: vec![],
-            total_record_count: 0,
+            total_record_count: items.len() as u64,
+            items,
         })
     }
 
