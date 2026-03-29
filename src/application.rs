@@ -55,8 +55,8 @@ impl Application {
         let backend = match config::get_backend_type() {
             BackendType::Jellyfin => {
                 let user_id = settings().string("user-id");
-                let token =
-                    retrieve_jellyfin_api_token(host.as_str(), user_id.as_str()).unwrap_or_default();
+                let token = retrieve_jellyfin_api_token(host.as_str(), user_id.as_str())
+                    .unwrap_or_default();
                 Backend::Jellyfin(Jellyfin::new(host.as_str(), &token, user_id.as_str()))
             }
             BackendType::Subsonic => {

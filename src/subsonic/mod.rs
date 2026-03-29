@@ -136,8 +136,12 @@ impl Subsonic {
             ];
 
             let normalized_library_id = library_id.trim();
-            if !normalized_library_id.is_empty() && normalized_library_id != ALL_FOLDERS_LIBRARY_ID {
-                params.push(("musicFolderId".to_string(), normalized_library_id.to_string()));
+            if !normalized_library_id.is_empty() && normalized_library_id != ALL_FOLDERS_LIBRARY_ID
+            {
+                params.push((
+                    "musicFolderId".to_string(),
+                    normalized_library_id.to_string(),
+                ));
             }
 
             let response = self.get_subsonic("getAlbumList2", &params).await?;
@@ -300,7 +304,10 @@ impl Subsonic {
         debug!("Subsonic::get_playlist_items(playlist_id={playlist_id})");
 
         let response = self
-            .get_subsonic("getPlaylist", &[("id".to_string(), playlist_id.to_string())])
+            .get_subsonic(
+                "getPlaylist",
+                &[("id".to_string(), playlist_id.to_string())],
+            )
             .await?;
         self.ensure_ok_response(&response)?;
 
@@ -385,10 +392,15 @@ impl Subsonic {
         item_id: &str,
         new_index: i32,
     ) -> Result<(), JellyfinError> {
-        debug!("Subsonic::move_playlist_item(playlist_id={playlist_id}, item_id={item_id}, new_index={new_index})");
+        debug!(
+            "Subsonic::move_playlist_item(playlist_id={playlist_id}, item_id={item_id}, new_index={new_index})"
+        );
 
         let response = self
-            .get_subsonic("getPlaylist", &[("id".to_string(), playlist_id.to_string())])
+            .get_subsonic(
+                "getPlaylist",
+                &[("id".to_string(), playlist_id.to_string())],
+            )
             .await?;
         self.ensure_ok_response(&response)?;
 
@@ -424,7 +436,10 @@ impl Subsonic {
         debug!("Subsonic::remove_playlist_item(playlist_id={playlist_id}, item_id={item_id})");
 
         let response = self
-            .get_subsonic("getPlaylist", &[("id".to_string(), playlist_id.to_string())])
+            .get_subsonic(
+                "getPlaylist",
+                &[("id".to_string(), playlist_id.to_string())],
+            )
             .await?;
         self.ensure_ok_response(&response)?;
 
@@ -693,9 +708,7 @@ impl Subsonic {
 
     fn rest_url(&self, endpoint: &str) -> Url {
         let host = self.host.trim_end_matches('/');
-        let endpoint = endpoint
-            .trim_start_matches('/')
-            .trim_end_matches(".view");
+        let endpoint = endpoint.trim_start_matches('/').trim_end_matches(".view");
         Url::parse(&format!("{host}/rest/{endpoint}.view"))
             .expect("Failed to construct Subsonic endpoint URL")
     }
