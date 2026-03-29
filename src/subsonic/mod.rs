@@ -325,10 +325,24 @@ impl Subsonic {
     pub async fn new_playlist(
         &self,
         name: &str,
-        _items: Vec<String>,
+        items: Vec<String>,
     ) -> Result<String, JellyfinError> {
-        info!("Subsonic::new_playlist(name={name}) [stub]");
-        Ok(format!("stub-playlist-{name}"))
+        info!("Subsonic::new_playlist(name={name})");
+        let mut params = vec![("name".to_string(), name.to_string())];
+
+        for item_id in &items {
+            params.push(("songId".to_string(), item_id.clone()));
+        }
+
+        let response = self.get_subsonic("createPlaylist", &params).await?;
+        self.ensure_ok_response(&response)?;
+
+        let playlist = response.playlist.ok_or_else(|| JellyfinError::Http {
+            status: StatusCode::BAD_GATEWAY,
+            message: "Subsonic createPlaylist response missing playlist payload".to_string(),
+        })?;
+
+        Ok(playlist.id)
     }
 
     pub async fn add_playlist_items(
@@ -337,9 +351,18 @@ impl Subsonic {
         item_ids: &[String],
     ) -> Result<(), JellyfinError> {
         info!(
-            "Subsonic::add_playlist_items(playlist_id={playlist_id}, count={}) [stub]",
+            "Subsonic::add_playlist_items(playlist_id={playlist_id}, count={})",
             item_ids.len()
         );
+
+        let mut params = vec![("playlistId".to_string(), playlist_id.to_string())];
+
+        for item_id in item_ids {
+            params.push(("songIdToAdd".to_string(), item_id.clone()));
+        }
+
+        let response = self.get_subsonic("updatePlaylist", &params).await?;
+        self.ensure_ok_response(&response)?;
         Ok(())
     }
 
@@ -349,9 +372,32 @@ impl Subsonic {
         item_id: &str,
         new_index: i32,
     ) -> Result<(), JellyfinError> {
-        info!(
-            "Subsonic::move_playlist_item(playlist_id={playlist_id}, item_id={item_id}, new_index={new_index}) [stub]"
-        );
+        info!("Subsonic::move_playlist_item(playlist_id={playlist_id}, item_id={item_id}, new_index={new_index})");
+
+        let response = self
+            .get_subsonic("getPlaylist", &[("id".to_string(), playlist_id.to_string())])
+            .await?;
+        self.ensure_ok_response(&response)?;
+
+        let playlist = response.playlist.ok_or_else(|| JellyfinError::Http {
+            status: StatusCode::BAD_GATEWAY,
+            message: "Subsonic getPlaylist response missing playlist payload".to_string(),
+        })?;
+
+        let mut song_ids: Vec<String> = playlist.entry.into_iter().map(|s| s.id).collect();
+        if let Some(current_pos) = song_ids.iter().position(|id| id == item_id) {
+            song_ids.remove(current_pos);
+            let insert_at = (new_index as usize).min(song_ids.len());
+            song_ids.insert(insert_at, item_id.to_string());
+        }
+
+        let mut params = vec![("playlistId".to_string(), playlist_id.to_string())];
+        for id in &song_ids {
+            params.push(("songId".to_string(), id.clone()));
+        }
+
+        let response = self.get_subsonic("createPlaylist", &params).await?;
+        self.ensure_ok_response(&response)?;
         Ok(())
     }
 
@@ -360,14 +406,42 @@ impl Subsonic {
         playlist_id: &str,
         item_id: &str,
     ) -> Result<(), JellyfinError> {
-        info!(
-            "Subsonic::remove_playlist_item(playlist_id={playlist_id}, item_id={item_id}) [stub]"
-        );
+        info!("Subsonic::remove_playlist_item(playlist_id={playlist_id}, item_id={item_id})");
+
+        let response = self
+            .get_subsonic("getPlaylist", &[("id".to_string(), playlist_id.to_string())])
+            .await?;
+        self.ensure_ok_response(&response)?;
+
+        let playlist = response.playlist.ok_or_else(|| JellyfinError::Http {
+            status: StatusCode::BAD_GATEWAY,
+            message: "Subsonic getPlaylist response missing playlist payload".to_string(),
+        })?;
+
+        let index = playlist
+            .entry
+            .iter()
+            .position(|s| s.id == item_id)
+            .ok_or_else(|| JellyfinError::Http {
+                status: StatusCode::NOT_FOUND,
+                message: format!("Item {item_id} not found in playlist {playlist_id}"),
+            })?;
+
+        let params = vec![
+            ("playlistId".to_string(), playlist_id.to_string()),
+            ("songIndexToRemove".to_string(), index.to_string()),
+        ];
+
+        let response = self.get_subsonic("updatePlaylist", &params).await?;
+        self.ensure_ok_response(&response)?;
         Ok(())
     }
 
     pub async fn delete_item(&self, item_id: &str) -> Result<(), JellyfinError> {
-        info!("Subsonic::delete_item(item_id={item_id}) [stub]");
+        info!("Subsonic::delete_item(item_id={item_id})");
+        let params = vec![("id".to_string(), item_id.to_string())];
+        let response = self.get_subsonic("deletePlaylist", &params).await?;
+        self.ensure_ok_response(&response)?;
         Ok(())
     }
 
