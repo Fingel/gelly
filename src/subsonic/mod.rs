@@ -5,9 +5,9 @@ use serde::de::DeserializeOwned;
 use crate::config;
 use crate::jellyfin::JellyfinError;
 use crate::jellyfin::api::{
-    ArtistItemsDto, ImageType, LibraryDto, LibraryDtoList, LyricsResponse, MusicDto, MusicDtoList,
-    PlaybackInfo, PlaybackReport, PlaybackReportStatus, PlaylistDtoList, PlaylistItems,
-    UserDataDto,
+    ArtistItemsDto, ImageType, LibraryDto, LibraryDtoList, LyricsResponse, MediaSource,
+    MediaStream, MusicDto, MusicDtoList, PlaybackInfo, PlaybackReport, PlaybackReportStatus,
+    PlaylistDtoList, PlaylistItems, UserDataDto,
 };
 use crate::subsonic::api::{Song, SubsonicEnvelope, SubsonicResponse};
 
@@ -445,8 +445,10 @@ impl Subsonic {
         Ok(())
     }
 
-    pub async fn request_library_rescan(&self, library_id: &str) -> Result<(), JellyfinError> {
-        info!("Subsonic::request_library_rescan(library_id={library_id}) [stub]");
+    pub async fn request_library_rescan(&self, _library_id: &str) -> Result<(), JellyfinError> {
+        info!("Subsonic::request_library_rescan()");
+        let response = self.get_subsonic("startScan", &[]).await?;
+        self.ensure_ok_response(&response)?;
         Ok(())
     }
 
@@ -456,29 +458,83 @@ impl Subsonic {
         image_type: ImageType,
     ) -> Result<Vec<u8>, JellyfinError> {
         info!(
-            "Subsonic::get_image(item_id={item_id}, image_type={}) [stub]",
+            "Subsonic::get_image(item_id={item_id}, image_type={})",
             image_type.as_str()
         );
 
-        // Return a "not found"-style error so existing UI fallback paths stay in control.
-        Err(JellyfinError::Http {
-            status: StatusCode::NOT_FOUND,
-            message: "Subsonic skeleton has no image support".to_string(),
-        })
+        let url = self.rest_url("getCoverArt");
+        let mut params = self.auth_params();
+        params.retain(|(k, _)| k != "f");
+        params.push(("id".to_string(), item_id.to_string()));
+
+        let response = self.client.get(url).query(&params).send().await?;
+        let status = response.status();
+
+        if status.is_success() {
+            Ok(response.bytes().await?.to_vec())
+        } else if status == StatusCode::UNAUTHORIZED {
+            Err(JellyfinError::AuthenticationFailed {
+                message: response.text().await?,
+            })
+        } else {
+            Err(JellyfinError::Http {
+                status,
+                message: response.text().await?,
+            })
+        }
     }
 
     pub fn get_stream_uri(&self, item_id: &str) -> String {
-        info!("Subsonic::get_stream_uri(item_id={item_id}) [stub]");
+        info!("Subsonic::get_stream_uri(item_id={item_id})");
 
-        // Returning a harmless placeholder URI for now.
-        // Playback is expected to fail until real stream mapping is implemented.
-        "about:blank".to_string()
+        let mut url = self.rest_url("stream");
+
+        let mut params = self.auth_params();
+        params.retain(|(k, _)| k != "f");
+        params.push(("id".to_string(), item_id.to_string()));
+
+        {
+            let mut pairs = url.query_pairs_mut();
+            for (k, v) in &params {
+                pairs.append_pair(k, v);
+            }
+        }
+
+        url.to_string()
     }
 
     pub async fn get_playback_info(&self, item_id: &str) -> Result<PlaybackInfo, JellyfinError> {
-        info!("Subsonic::get_playback_info(item_id={item_id}) [stub]");
+        info!("Subsonic::get_playback_info(item_id={item_id})");
+
+        let response = self
+            .get_subsonic("getSong", &[("id".to_string(), item_id.to_string())])
+            .await?;
+        self.ensure_ok_response(&response)?;
+
+        let song = response.song.ok_or_else(|| JellyfinError::Http {
+            status: StatusCode::BAD_GATEWAY,
+            message: "Subsonic getSong response missing song payload".to_string(),
+        })?;
+
+        let media_stream = MediaStream {
+            type_: Some("Audio".to_string()),
+            codec: song.suffix.clone(),
+            bit_rate: song.bit_rate,
+            sample_rate: song.sampling_rate,
+            channels: song.channel_count,
+        };
+
+        let media_source = MediaSource {
+            media_streams: vec![media_stream],
+            container: song.suffix,
+            size: song.size,
+            supports_direct_play: Some(true),
+            supports_direct_stream: Some(true),
+            supports_transcoding: Some(false),
+        };
+
         Ok(PlaybackInfo {
-            media_sources: vec![],
+            media_sources: vec![media_source],
         })
     }
 

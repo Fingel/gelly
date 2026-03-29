@@ -57,6 +57,7 @@ pub struct SubsonicResponse {
 
     pub playlists: Option<PlaylistsPayload>,
     pub playlist: Option<Playlist>,
+    pub song: Option<Song>,
 }
 
 impl SubsonicResponse {
@@ -134,6 +135,11 @@ pub struct Song {
     pub year: Option<u32>,
     pub created: Option<String>,
     pub play_count: Option<u64>,
+    pub suffix: Option<String>,
+    pub size: Option<u64>,
+    pub bit_rate: Option<u64>,
+    pub sampling_rate: Option<u64>,
+    pub channel_count: Option<u32>,
 }
 
 #[derive(Debug, Clone, Deserialize)]
