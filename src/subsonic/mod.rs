@@ -13,7 +13,7 @@ use crate::subsonic::api::{Song, SubsonicEnvelope, SubsonicResponse};
 
 pub mod api;
 
-const SUBSONIC_API_VERSION: &str = "1.16.1";
+const SUBSONIC_API_VERSION: &str = "1.15.0";
 const SUBSONIC_CLIENT_NAME: &str = "gelly";
 const ALL_FOLDERS_LIBRARY_ID: &str = "__gelly_subsonic_all__";
 const ALBUM_LIST_PAGE_SIZE: u32 = 500;
@@ -65,12 +65,14 @@ impl Subsonic {
         Ok(subsonic)
     }
 
+    // https://github.com/opensubsonic/open-subsonic-api/blob/main/content/en/docs/Endpoints/ping.md
     async fn ping(&self) -> Result<(), JellyfinError> {
         let response = self.get_subsonic("ping", &[]).await?;
         self.ensure_ok_response(&response)?;
         Ok(())
     }
 
+    // https://github.com/opensubsonic/open-subsonic-api/blob/main/content/en/docs/Endpoints/getmusicfolders.md
     pub async fn get_views(&self) -> Result<LibraryDtoList, JellyfinError> {
         debug!("Subsonic::get_views()");
 
@@ -120,6 +122,7 @@ impl Subsonic {
         })
     }
 
+    // https://github.com/opensubsonic/open-subsonic-api/blob/main/content/en/docs/Endpoints/getalbumlist2.md
     async fn get_album_ids(&self, library_id: &str) -> Result<Vec<String>, JellyfinError> {
         let mut album_ids = Vec::new();
         let mut offset: u32 = 0;
@@ -167,6 +170,7 @@ impl Subsonic {
         Ok(album_ids)
     }
 
+    // https://github.com/opensubsonic/open-subsonic-api/blob/main/content/en/docs/Endpoints/getalbum.md
     async fn get_album(&self, album_id: &str) -> Result<Vec<MusicDto>, JellyfinError> {
         let response = self
             .get_subsonic("getAlbum", &[("id".to_string(), album_id.to_string())])
@@ -259,6 +263,7 @@ impl Subsonic {
         }
     }
 
+    // https://github.com/opensubsonic/open-subsonic-api/blob/main/content/en/docs/Endpoints/getplaylists.md
     pub async fn get_playlists(&self) -> Result<PlaylistDtoList, JellyfinError> {
         debug!("Subsonic::get_playlists()");
 
@@ -286,6 +291,7 @@ impl Subsonic {
         })
     }
 
+    // https://github.com/opensubsonic/open-subsonic-api/blob/main/content/en/docs/Endpoints/getplaylist.md
     pub async fn get_playlist_items(
         &self,
         playlist_id: &str,
@@ -324,6 +330,7 @@ impl Subsonic {
         })
     }
 
+    // https://github.com/opensubsonic/open-subsonic-api/blob/main/content/en/docs/Endpoints/createplaylist.md
     pub async fn new_playlist(
         &self,
         name: &str,
@@ -347,6 +354,7 @@ impl Subsonic {
         Ok(playlist.id)
     }
 
+    // https://github.com/opensubsonic/open-subsonic-api/blob/main/content/en/docs/Endpoints/updateplaylist.md
     pub async fn add_playlist_items(
         &self,
         playlist_id: &str,
@@ -368,6 +376,8 @@ impl Subsonic {
         Ok(())
     }
 
+    // https://github.com/opensubsonic/open-subsonic-api/blob/main/content/en/docs/Endpoints/getplaylist.md
+    // https://github.com/opensubsonic/open-subsonic-api/blob/main/content/en/docs/Endpoints/createplaylist.md
     pub async fn move_playlist_item(
         &self,
         playlist_id: &str,
@@ -403,6 +413,8 @@ impl Subsonic {
         Ok(())
     }
 
+    // https://github.com/opensubsonic/open-subsonic-api/blob/main/content/en/docs/Endpoints/getplaylist.md
+    // https://github.com/opensubsonic/open-subsonic-api/blob/main/content/en/docs/Endpoints/updateplaylist.md
     pub async fn remove_playlist_item(
         &self,
         playlist_id: &str,
@@ -439,6 +451,7 @@ impl Subsonic {
         Ok(())
     }
 
+    // https://github.com/opensubsonic/open-subsonic-api/blob/main/content/en/docs/Endpoints/deleteplaylist.md
     pub async fn delete_item(&self, item_id: &str) -> Result<(), JellyfinError> {
         debug!("Subsonic::delete_item(item_id={item_id})");
         let params = vec![("id".to_string(), item_id.to_string())];
@@ -447,6 +460,7 @@ impl Subsonic {
         Ok(())
     }
 
+    // https://github.com/opensubsonic/open-subsonic-api/blob/main/content/en/docs/Endpoints/startscan.md
     pub async fn request_library_rescan(&self, _library_id: &str) -> Result<(), JellyfinError> {
         debug!("Subsonic::request_library_rescan()");
         let response = self.get_subsonic("startScan", &[]).await?;
@@ -454,6 +468,7 @@ impl Subsonic {
         Ok(())
     }
 
+    // https://github.com/opensubsonic/open-subsonic-api/blob/main/content/en/docs/Endpoints/getcoverart.md
     pub async fn get_image(
         &self,
         item_id: &str,
@@ -486,6 +501,7 @@ impl Subsonic {
         }
     }
 
+    // https://github.com/opensubsonic/open-subsonic-api/blob/main/content/en/docs/Endpoints/stream.md
     pub fn get_stream_uri(&self, item_id: &str) -> String {
         debug!("Subsonic::get_stream_uri(item_id={item_id})");
 
@@ -505,6 +521,7 @@ impl Subsonic {
         url.to_string()
     }
 
+    // https://github.com/opensubsonic/open-subsonic-api/blob/main/content/en/docs/Endpoints/getsong.md
     pub async fn get_playback_info(&self, item_id: &str) -> Result<PlaybackInfo, JellyfinError> {
         debug!("Subsonic::get_playback_info(item_id={item_id})");
 
@@ -540,6 +557,7 @@ impl Subsonic {
         })
     }
 
+    // https://github.com/opensubsonic/open-subsonic-api/blob/main/content/en/docs/Endpoints/scrobble.md
     pub async fn playback_report(
         &self,
         report: &PlaybackReport,
@@ -566,6 +584,7 @@ impl Subsonic {
         Ok(())
     }
 
+    // https://github.com/opensubsonic/open-subsonic-api/blob/main/content/en/docs/Endpoints/getLyricsBySongId.md
     pub async fn fetch_lyrics(&self, item_id: &str) -> Result<LyricsResponse, JellyfinError> {
         debug!("Subsonic::fetch_lyrics(item_id={item_id})");
 
