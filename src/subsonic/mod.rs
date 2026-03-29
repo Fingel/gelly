@@ -1,4 +1,4 @@
-use log::{info, warn};
+use log::{debug, warn};
 use reqwest::{Client, Response, StatusCode, Url};
 use serde::de::DeserializeOwned;
 
@@ -33,7 +33,7 @@ impl Subsonic {
             .build()
             .expect("Failed to create HTTP client");
 
-        info!("Subsonic::new(host={host}, username={username})");
+        debug!("Subsonic::new(host={host}, username={username})");
         Self {
             client,
             host: host.to_string(),
@@ -43,7 +43,7 @@ impl Subsonic {
     }
 
     pub fn is_authenticated(&self) -> bool {
-        info!("Subsonic::is_authenticated()");
+        debug!("Subsonic::is_authenticated()");
         !self.host.is_empty() && !self.username.is_empty() && !self.password.is_empty()
     }
 
@@ -52,7 +52,7 @@ impl Subsonic {
         username: &str,
         password: &str,
     ) -> Result<Self, JellyfinError> {
-        info!("Subsonic::new_authenticate(host={host}, username={username}) [stub]");
+        debug!("Subsonic::new_authenticate(host={host}, username={username}) [stub]");
 
         if host.trim().is_empty() || username.trim().is_empty() || password.trim().is_empty() {
             return Err(JellyfinError::AuthenticationFailed {
@@ -72,7 +72,7 @@ impl Subsonic {
     }
 
     pub async fn get_views(&self) -> Result<LibraryDtoList, JellyfinError> {
-        info!("Subsonic::get_views()");
+        debug!("Subsonic::get_views()");
 
         let response = self.get_subsonic("getMusicFolders", &[]).await?;
         self.ensure_ok_response(&response)?;
@@ -102,7 +102,7 @@ impl Subsonic {
     }
 
     pub async fn get_library(&self, library_id: &str) -> Result<MusicDtoList, JellyfinError> {
-        info!("Subsonic::get_library(library_id={library_id})");
+        debug!("Subsonic::get_library(library_id={library_id})");
 
         let album_ids = self.get_album_ids(library_id).await?;
         let mut items = Vec::<MusicDto>::new();
@@ -260,7 +260,7 @@ impl Subsonic {
     }
 
     pub async fn get_playlists(&self) -> Result<PlaylistDtoList, JellyfinError> {
-        info!("Subsonic::get_playlists()");
+        debug!("Subsonic::get_playlists()");
 
         let response = self.get_subsonic("getPlaylists", &[]).await?;
         self.ensure_ok_response(&response)?;
@@ -290,7 +290,7 @@ impl Subsonic {
         &self,
         playlist_id: &str,
     ) -> Result<PlaylistItems, JellyfinError> {
-        info!("Subsonic::get_playlist_items(playlist_id={playlist_id})");
+        debug!("Subsonic::get_playlist_items(playlist_id={playlist_id})");
 
         let response = self
             .get_subsonic("getPlaylist", &[("id".to_string(), playlist_id.to_string())])
@@ -329,7 +329,7 @@ impl Subsonic {
         name: &str,
         items: Vec<String>,
     ) -> Result<String, JellyfinError> {
-        info!("Subsonic::new_playlist(name={name})");
+        debug!("Subsonic::new_playlist(name={name})");
         let mut params = vec![("name".to_string(), name.to_string())];
 
         for item_id in &items {
@@ -352,7 +352,7 @@ impl Subsonic {
         playlist_id: &str,
         item_ids: &[String],
     ) -> Result<(), JellyfinError> {
-        info!(
+        debug!(
             "Subsonic::add_playlist_items(playlist_id={playlist_id}, count={})",
             item_ids.len()
         );
@@ -374,7 +374,7 @@ impl Subsonic {
         item_id: &str,
         new_index: i32,
     ) -> Result<(), JellyfinError> {
-        info!("Subsonic::move_playlist_item(playlist_id={playlist_id}, item_id={item_id}, new_index={new_index})");
+        debug!("Subsonic::move_playlist_item(playlist_id={playlist_id}, item_id={item_id}, new_index={new_index})");
 
         let response = self
             .get_subsonic("getPlaylist", &[("id".to_string(), playlist_id.to_string())])
@@ -408,7 +408,7 @@ impl Subsonic {
         playlist_id: &str,
         item_id: &str,
     ) -> Result<(), JellyfinError> {
-        info!("Subsonic::remove_playlist_item(playlist_id={playlist_id}, item_id={item_id})");
+        debug!("Subsonic::remove_playlist_item(playlist_id={playlist_id}, item_id={item_id})");
 
         let response = self
             .get_subsonic("getPlaylist", &[("id".to_string(), playlist_id.to_string())])
@@ -440,7 +440,7 @@ impl Subsonic {
     }
 
     pub async fn delete_item(&self, item_id: &str) -> Result<(), JellyfinError> {
-        info!("Subsonic::delete_item(item_id={item_id})");
+        debug!("Subsonic::delete_item(item_id={item_id})");
         let params = vec![("id".to_string(), item_id.to_string())];
         let response = self.get_subsonic("deletePlaylist", &params).await?;
         self.ensure_ok_response(&response)?;
@@ -448,7 +448,7 @@ impl Subsonic {
     }
 
     pub async fn request_library_rescan(&self, _library_id: &str) -> Result<(), JellyfinError> {
-        info!("Subsonic::request_library_rescan()");
+        debug!("Subsonic::request_library_rescan()");
         let response = self.get_subsonic("startScan", &[]).await?;
         self.ensure_ok_response(&response)?;
         Ok(())
@@ -459,7 +459,7 @@ impl Subsonic {
         item_id: &str,
         image_type: ImageType,
     ) -> Result<Vec<u8>, JellyfinError> {
-        info!(
+        debug!(
             "Subsonic::get_image(item_id={item_id}, image_type={})",
             image_type.as_str()
         );
@@ -487,7 +487,7 @@ impl Subsonic {
     }
 
     pub fn get_stream_uri(&self, item_id: &str) -> String {
-        info!("Subsonic::get_stream_uri(item_id={item_id})");
+        debug!("Subsonic::get_stream_uri(item_id={item_id})");
 
         let mut url = self.rest_url("stream");
 
@@ -506,7 +506,7 @@ impl Subsonic {
     }
 
     pub async fn get_playback_info(&self, item_id: &str) -> Result<PlaybackInfo, JellyfinError> {
-        info!("Subsonic::get_playback_info(item_id={item_id})");
+        debug!("Subsonic::get_playback_info(item_id={item_id})");
 
         let response = self
             .get_subsonic("getSong", &[("id".to_string(), item_id.to_string())])
@@ -551,7 +551,7 @@ impl Subsonic {
             PlaybackReportStatus::Stopped => "true",
         };
 
-        info!(
+        debug!(
             "Subsonic::playback_report(item_id={}, submission={submission})",
             report.item_id
         );
@@ -567,7 +567,7 @@ impl Subsonic {
     }
 
     pub async fn fetch_lyrics(&self, item_id: &str) -> Result<LyricsResponse, JellyfinError> {
-        info!("Subsonic::fetch_lyrics(item_id={item_id})");
+        debug!("Subsonic::fetch_lyrics(item_id={item_id})");
 
         let response = self
             .get_subsonic(
