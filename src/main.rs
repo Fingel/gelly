@@ -17,6 +17,7 @@ mod jellyfin;
 mod library_utils;
 mod models;
 mod reporting;
+mod subsonic;
 mod ui;
 
 fn main() -> glib::ExitCode {

@@ -9,7 +9,7 @@ use crate::{
     backend::Backend,
     config::APP_ID,
     jellyfin::{
-        Jellyfin, JellyfinError,
+        JellyfinError,
         api::{ImageType, MusicDto, MusicDtoList, PlaylistDto, PlaylistDtoList},
     },
 };

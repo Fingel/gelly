@@ -6,10 +6,14 @@ use gtk::{gio, glib};
 
 use crate::async_utils::spawn_tokio;
 use crate::audio::model::AudioModel;
+use crate::backend::Backend;
 use crate::cache::{ImageCache, LibraryCache};
-use crate::config::{self, retrieve_jellyfin_api_token, settings};
+use crate::config::{
+    self, BackendType, retrieve_jellyfin_api_token, retrieve_subsonic_password, settings,
+};
 use crate::jellyfin::api::{MusicDto, MusicDtoList, PlaylistDto, PlaylistDtoList};
 use crate::jellyfin::{Jellyfin, JellyfinError};
+use crate::subsonic::Subsonic;
 use log::{debug, error, warn};
 use std::cell::RefCell;
 use std::rc::Rc;
@@ -28,7 +32,7 @@ impl Application {
             .property("flags", gio::ApplicationFlags::FLAGS_NONE)
             .build();
         app.load_settings();
-        app.initialize_jellyfin();
+        app.initialize_backend();
         app.initialize_library_cache();
         app.initialize_image_cache();
         app.initialize_audio_model();
@@ -46,16 +50,23 @@ impl Application {
     }
 
     pub fn initialize_backend(&self) {
-        // TODO choose jellyfin/subsonic
         let host = settings().string("hostname");
-        let user_id = settings().string("user-id");
-        let token =
-            retrieve_jellyfin_api_token(host.as_str(), user_id.as_str()).unwrap_or_default();
 
-        let username = "foo"
-        let password = "bar"
+        let backend = match config::get_backend_type() {
+            BackendType::Jellyfin => {
+                let user_id = settings().string("user-id");
+                let token =
+                    retrieve_jellyfin_api_token(host.as_str(), user_id.as_str()).unwrap_or_default();
+                Backend::Jellyfin(Jellyfin::new(host.as_str(), &token, user_id.as_str()))
+            }
+            BackendType::Subsonic => {
+                let username = settings().string("subsonic-username");
+                let password = retrieve_subsonic_password(host.as_str(), username.as_str())
+                    .unwrap_or_default();
+                Backend::Subsonic(Subsonic::new(host.as_str(), username.as_str(), &password))
+            }
+        };
 
-        let backend = Backend::Subsonic(Subsonic::new(host.as_str(), username.as_str(), &password));
         self.imp().backend.replace(backend);
     }
 
@@ -343,7 +354,7 @@ impl Application {
     pub fn logout(&self) {
         let backend = Backend::default();
         self.clear_cache();
-        self.imp().jellyfin.replace(jellyfin);
+        self.imp().backend.replace(backend);
         self.imp().library.replace(Vec::new());
         self.imp().library_id.replace(String::new());
         config::logout();
@@ -405,8 +416,8 @@ mod imp {
     use std::sync::atomic::AtomicU32;
 
     use crate::audio::model::AudioModel;
+    use crate::backend::Backend;
     use crate::cache::{ImageCache, LibraryCache};
-    use crate::jellyfin::Jellyfin;
     use crate::jellyfin::api::{MusicDto, PlaylistDto};
 
     #[derive(Default)]

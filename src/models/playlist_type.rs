@@ -79,7 +79,7 @@ impl PlaylistType {
     ) -> Result<Vec<MusicDto>, JellyfinError> {
         match self {
             PlaylistType::Regular { id, .. } => {
-                let playlist_items = jellyfin.get_playlist_items(id).await?;
+                let playlist_items = backend.get_playlist_items(id).await?;
                 Ok(playlist_items.items)
             }
             PlaylistType::ShuffleLibrary { count } => {
