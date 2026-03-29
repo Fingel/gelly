@@ -58,6 +58,7 @@ pub struct SubsonicResponse {
     pub playlists: Option<PlaylistsPayload>,
     pub playlist: Option<Playlist>,
     pub song: Option<Song>,
+    pub lyrics_list: Option<LyricsList>,
 }
 
 impl SubsonicResponse {
@@ -166,4 +167,26 @@ pub struct Playlist {
 
     #[serde(default, deserialize_with = "deserialize_items_skip_errors")]
     pub entry: Vec<Song>,
+}
+
+#[derive(Debug, Clone, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct LyricsList {
+    #[serde(default, deserialize_with = "deserialize_items_skip_errors")]
+    pub structured_lyrics: Vec<StructuredLyrics>,
+}
+
+#[derive(Debug, Clone, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct StructuredLyrics {
+    pub synced: bool,
+    #[serde(default, deserialize_with = "deserialize_items_skip_errors")]
+    pub line: Vec<LyricLine>,
+}
+
+#[derive(Debug, Clone, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct LyricLine {
+    pub value: String,
+    pub start: Option<u64>,
 }

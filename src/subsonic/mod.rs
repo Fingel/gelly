@@ -253,7 +253,9 @@ impl Subsonic {
             user_data: UserDataDto {
                 play_count: song.play_count.unwrap_or(0),
             },
-            has_lyrics: false,
+            // there's no eqvivalent to that except for doing another API call
+            // so it'll be `true` and just show an empty window for the time being
+            has_lyrics: true,
         }
     }
 
@@ -543,21 +545,63 @@ impl Subsonic {
         report: &PlaybackReport,
         state: &PlaybackReportStatus,
     ) -> Result<(), JellyfinError> {
-        let state_name = match state {
-            PlaybackReportStatus::Started => "Started",
-            PlaybackReportStatus::InProgress => "InProgress",
-            PlaybackReportStatus::Stopped => "Stopped",
+        let submission = match state {
+            PlaybackReportStatus::Started => "false",
+            PlaybackReportStatus::InProgress => return Ok(()),
+            PlaybackReportStatus::Stopped => "true",
         };
+
         info!(
             "Subsonic::playback_report(item_id={}, state={state_name}) [stub]",
             report.item_id
         );
+
+        let params = vec![
+            ("id".to_string(), report.item_id.clone()),
+            ("submission".to_string(), submission.to_string()),
+        ];
+
+        let response = self.get_subsonic("scrobble", &params).await?;
+        self.ensure_ok_response(&response)?;
         Ok(())
     }
 
     pub async fn fetch_lyrics(&self, item_id: &str) -> Result<LyricsResponse, JellyfinError> {
-        info!("Subsonic::fetch_lyrics(item_id={item_id}) [stub]");
-        Ok(LyricsResponse { lyrics: vec![] })
+        info!("Subsonic::fetch_lyrics(item_id={item_id})");
+
+        let response = self
+            .get_subsonic(
+                "getLyricsBySongId",
+                &[("id".to_string(), item_id.to_string())],
+            )
+            .await?;
+        self.ensure_ok_response(&response)?;
+
+        let lyrics = response
+            .lyrics_list
+            .map(|list| {
+                // Use synced lyrics if available
+                let entry = list
+                    .structured_lyrics
+                    .iter()
+                    .find(|l| l.synced)
+                    .or_else(|| list.structured_lyrics.first());
+                entry
+                    .map(|l| {
+                        l.line
+                            .iter()
+                            .map(|line| crate::jellyfin::api::Lyric {
+                                text: line.value.clone(),
+                                // Subsonic timestamps are in ms; Jellyfin uses ticks (100ns).
+                                start: line.start.map(|ms| ms * 10_000),
+                            })
+                            .collect::<Vec<_>>()
+                    })
+                    .unwrap_or_default()
+            })
+            .unwrap_or_default();
+
+        Ok(LyricsResponse { lyrics })
     }
 
     async fn get_subsonic(
