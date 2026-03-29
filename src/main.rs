@@ -10,6 +10,7 @@ use ui::window::Window;
 mod application;
 mod async_utils;
 mod audio;
+mod backend;
 mod cache;
 mod config;
 mod jellyfin;

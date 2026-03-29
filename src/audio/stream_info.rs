@@ -42,7 +42,7 @@ pub struct StreamInfo {
 pub fn discover_stream_info(
     uri: &str,
     song_id: &str,
-    jellyfin: &Jellyfin,
+    jellyfin: &Backend,
     callback: impl FnOnce(StreamInfo) + 'static,
 ) {
     let uri = uri.to_string();

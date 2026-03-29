@@ -41,18 +41,22 @@ impl Application {
     }
 
     pub fn setup_complete(&self) -> bool {
-        let jellyfin = self.imp().jellyfin.borrow();
-        jellyfin.is_authenticated() && !self.imp().library_id.borrow().is_empty()
+        let backend = self.imp().backend.borrow();
+        backend.is_authenticated() && !self.imp().library_id.borrow().is_empty()
     }
 
-    pub fn initialize_jellyfin(&self) {
+    pub fn initialize_backend(&self) {
+        // TODO choose jellyfin/subsonic
         let host = settings().string("hostname");
         let user_id = settings().string("user-id");
         let token =
             retrieve_jellyfin_api_token(host.as_str(), user_id.as_str()).unwrap_or_default();
 
-        let jellyfin = Jellyfin::new(host.as_str(), &token, user_id.as_str());
-        self.imp().jellyfin.replace(jellyfin);
+        let username = "foo"
+        let password = "bar"
+
+        let backend = Backend::Subsonic(Subsonic::new(host.as_str(), username.as_str(), &password));
+        self.imp().backend.replace(backend);
     }
 
     pub fn initialize_library_cache(&self) {
@@ -151,8 +155,8 @@ impl Application {
         self.imp().audio_model.replace(Some(audio_model));
     }
 
-    pub fn jellyfin(&self) -> Jellyfin {
-        self.imp().jellyfin.borrow().clone()
+    pub fn jellyfin(&self) -> Backend {
+        self.imp().backend.borrow().clone()
     }
 
     pub fn library(&self) -> Rc<RefCell<Vec<MusicDto>>> {
@@ -337,7 +341,7 @@ impl Application {
     }
 
     pub fn logout(&self) {
-        let jellyfin = Jellyfin::default();
+        let backend = Backend::default();
         self.clear_cache();
         self.imp().jellyfin.replace(jellyfin);
         self.imp().library.replace(Vec::new());
@@ -407,7 +411,7 @@ mod imp {
 
     #[derive(Default)]
     pub struct Application {
-        pub jellyfin: RefCell<Jellyfin>,
+        pub backend: RefCell<Backend>,
         pub library: Rc<RefCell<Vec<MusicDto>>>,
         pub playlists: Rc<RefCell<Vec<PlaylistDto>>>,
         pub library_id: RefCell<String>,

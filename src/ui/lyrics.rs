@@ -5,7 +5,8 @@ use log::debug;
 use crate::{
     async_utils::spawn_tokio,
     audio::model::AudioModel,
-    jellyfin::{Jellyfin, JellyfinError, api::Lyric},
+    backend::Backend,
+    jellyfin::{JellyfinError, api::Lyric},
 };
 
 glib::wrapper! {
@@ -19,10 +20,10 @@ impl Lyrics {
         Object::builder().build()
     }
 
-    pub fn set_jellyfin(&self, jellyfin: &Jellyfin) {
+    pub fn set_jellyfin(&self, backend: &Backend) {
         let imp = self.imp();
-        if let Err(e) = imp.jellyfin.set(jellyfin.clone()) {
-            debug!("Jellyfin client already set: {:?}", e);
+        if let Err(e) = imp.jellyfin.set(backend.clone()) {
+            debug!("Backend client already set: {:?}", e);
         }
     }
 
@@ -179,10 +180,7 @@ mod imp {
         glib::{self},
     };
 
-    use crate::{
-        audio::model::AudioModel,
-        jellyfin::{Jellyfin, api::Lyric},
-    };
+    use crate::{audio::model::AudioModel, backend::Backend, jellyfin::api::Lyric};
     use std::cell::{OnceCell, RefCell};
 
     #[derive(CompositeTemplate, Default)]
@@ -197,7 +195,7 @@ mod imp {
         #[template_child]
         pub lyrics_box: TemplateChild<gtk::Box>,
         pub audio_model: OnceCell<AudioModel>,
-        pub jellyfin: OnceCell<Jellyfin>,
+        pub jellyfin: OnceCell<Backend>,
         pub lyrics: RefCell<Vec<Lyric>>,
         pub lyrics_labels: RefCell<Vec<gtk::Label>>,
     }

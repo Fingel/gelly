@@ -6,6 +6,7 @@ use thiserror::Error;
 use tokio::sync::{Mutex, Semaphore};
 
 use crate::{
+    backend::Backend,
     config::APP_ID,
     jellyfin::{
         Jellyfin, JellyfinError,
@@ -156,7 +157,7 @@ impl ImageCache {
         &self,
         primary: &str,
         fallback: Option<&str>,
-        jellyfin: &Jellyfin,
+        jellyfin: &Backend,
     ) -> Result<Vec<u8>, CacheError> {
         match fallback {
             None => self.get_image(primary, ImageType::Primary, jellyfin).await,
@@ -183,7 +184,7 @@ impl ImageCache {
         &self,
         item_id: &str,
         image_type: ImageType,
-        jellyfin: &Jellyfin,
+        jellyfin: &Backend,
     ) -> Result<Vec<u8>, CacheError> {
         loop {
             if let Ok(bytes) = self.load_from_disk(item_id, image_type) {
@@ -219,7 +220,7 @@ impl ImageCache {
         &self,
         item_id: &str,
         image_type: ImageType,
-        jellyfin: &Jellyfin,
+        jellyfin: &Backend,
     ) -> Result<Vec<u8>, CacheError> {
         debug!("Downloading album art for {}", item_id);
         let image_data = jellyfin.get_image(item_id, image_type).await?;
