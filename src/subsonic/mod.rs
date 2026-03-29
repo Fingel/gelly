@@ -1,20 +1,22 @@
-use log::info;
+use log::{info, warn};
 use reqwest::{Client, Response, StatusCode, Url};
 use serde::de::DeserializeOwned;
 
 use crate::config;
 use crate::jellyfin::JellyfinError;
 use crate::jellyfin::api::{
-    ImageType, LibraryDto, LibraryDtoList, LyricsResponse, MusicDtoList, PlaybackInfo,
-    PlaybackReport, PlaybackReportStatus, PlaylistDtoList, PlaylistItems,
+    ArtistItemsDto, ImageType, LibraryDto, LibraryDtoList, LyricsResponse, MusicDto, MusicDtoList,
+    PlaybackInfo, PlaybackReport, PlaybackReportStatus, PlaylistDtoList, PlaylistItems,
+    UserDataDto,
 };
-use crate::subsonic::api::{SubsonicEnvelope, SubsonicResponse};
+use crate::subsonic::api::{Song, SubsonicEnvelope, SubsonicResponse};
 
 pub mod api;
 
 const SUBSONIC_API_VERSION: &str = "1.16.1";
 const SUBSONIC_CLIENT_NAME: &str = "gelly";
 const ALL_FOLDERS_LIBRARY_ID: &str = "__gelly_subsonic_all__";
+const ALBUM_LIST_PAGE_SIZE: u32 = 500;
 
 #[derive(Debug, Clone)]
 pub struct Subsonic {
@@ -100,11 +102,159 @@ impl Subsonic {
     }
 
     pub async fn get_library(&self, library_id: &str) -> Result<MusicDtoList, JellyfinError> {
-        info!("Subsonic::get_library(library_id={library_id}) [stub]");
+        info!("Subsonic::get_library(library_id={library_id})");
+
+        let album_ids = self.get_album_ids(library_id).await?;
+        let mut items = Vec::<MusicDto>::new();
+
+        for album_id in album_ids {
+            match self.get_album(&album_id).await {
+                Ok(mut songs) => items.append(&mut songs),
+                Err(err) => warn!("Failed to fetch album {}: {}", album_id, err),
+            }
+        }
+
         Ok(MusicDtoList {
-            items: vec![],
-            total_record_count: 0,
+            total_record_count: items.len() as u64,
+            items,
         })
+    }
+
+    async fn get_album_ids(&self, library_id: &str) -> Result<Vec<String>, JellyfinError> {
+        let mut album_ids = Vec::new();
+        let mut offset: u32 = 0;
+
+        loop {
+            let mut params = vec![
+                ("type".to_string(), "alphabeticalByName".to_string()),
+                ("size".to_string(), ALBUM_LIST_PAGE_SIZE.to_string()),
+                ("offset".to_string(), offset.to_string()),
+            ];
+
+            let normalized_library_id = library_id.trim();
+            if !normalized_library_id.is_empty() && normalized_library_id != ALL_FOLDERS_LIBRARY_ID {
+                params.push(("musicFolderId".to_string(), normalized_library_id.to_string()));
+            }
+
+            let response = self.get_subsonic("getAlbumList2", &params).await?;
+            self.ensure_ok_response(&response)?;
+
+            let page = response
+                .album_list2
+                .map(|payload| {
+                    payload
+                        .album
+                        .into_iter()
+                        .map(|album| album.id)
+                        .collect::<Vec<_>>()
+                })
+                .unwrap_or_default();
+
+            if page.is_empty() {
+                break;
+            }
+
+            let count = page.len() as u32;
+            album_ids.extend(page);
+
+            if count < ALBUM_LIST_PAGE_SIZE {
+                break;
+            }
+
+            offset += count;
+        }
+
+        Ok(album_ids)
+    }
+
+    async fn get_album(&self, album_id: &str) -> Result<Vec<MusicDto>, JellyfinError> {
+        let response = self
+            .get_subsonic("getAlbum", &[("id".to_string(), album_id.to_string())])
+            .await?;
+        self.ensure_ok_response(&response)?;
+
+        let album = response.album.ok_or_else(|| JellyfinError::Http {
+            status: StatusCode::BAD_GATEWAY,
+            message: "Subsonic response missing album payload".to_string(),
+        })?;
+
+        let album_name = album.name.clone();
+        let album_id_fallback = album.id.clone();
+        let album_artist = album.artist.clone();
+        let album_artist_id = album.artist_id.clone();
+        let album_year = album.year;
+        let album_created = album.created.clone();
+
+        let songs = album
+            .song
+            .into_iter()
+            .map(|song| {
+                self.song_to_music_dto(
+                    song,
+                    album_id_fallback.clone(),
+                    album_name.clone(),
+                    album_artist.clone(),
+                    album_artist_id.clone(),
+                    album_year,
+                    album_created.clone(),
+                )
+            })
+            .collect();
+
+        Ok(songs)
+    }
+
+    fn song_to_music_dto(
+        &self,
+        song: Song,
+        fallback_album_id: String,
+        fallback_album_name: String,
+        fallback_artist_name: Option<String>,
+        fallback_artist_id: Option<String>,
+        fallback_year: Option<u32>,
+        fallback_created: Option<String>,
+    ) -> MusicDto {
+        let album = song.album.clone().unwrap_or(fallback_album_name);
+        let album_id = song.album_id.clone().unwrap_or(fallback_album_id);
+
+        let artist_name = song
+            .album_artist
+            .clone()
+            .or(song.artist.clone())
+            .or(fallback_artist_name)
+            .unwrap_or_else(|| "Unknown Artist".to_string());
+
+        let artist_id = song
+            .artist_id
+            .clone()
+            .or(fallback_artist_id)
+            .unwrap_or_default();
+
+        let duration_ticks = song.duration.unwrap_or(0).saturating_mul(10_000_000);
+
+        let date_created = song.created.clone().or(fallback_created);
+        let production_year = song.year.or(fallback_year);
+
+        MusicDto {
+            name: song.title,
+            id: song.id,
+            date_created,
+            run_time_ticks: duration_ticks,
+            album,
+            album_artists: vec![ArtistItemsDto {
+                name: artist_name,
+                id: artist_id,
+            }],
+            album_id,
+            normalization_gain: None,
+            production_year,
+            index_number: song.track,
+            parent_index_number: song.disc_number,
+            user_data: UserDataDto {
+                play_count: song.play_count.unwrap_or(0),
+            },
+            has_lyrics: false,
+        }
     }
 
     pub async fn get_playlists(&self) -> Result<PlaylistDtoList, JellyfinError> {

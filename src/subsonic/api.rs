@@ -48,6 +48,12 @@ pub struct SubsonicResponse {
     pub status: String,
     pub error: Option<SubsonicError>,
     pub music_folders: Option<MusicFoldersPayload>,
+
+    // Needed by get_library flow:
+    // - getAlbumList2 -> album_list2
+    // - getAlbum      -> album
+    pub album_list2: Option<AlbumList2Payload>,
+    pub album: Option<Album>,
 }
 
 impl SubsonicResponse {
@@ -79,4 +85,49 @@ pub struct MusicFolder {
     #[serde(deserialize_with = "deserialize_id_string")]
     pub id: String,
     pub name: String,
+}
+
+#[derive(Debug, Clone, Deserialize)]
+pub struct AlbumList2Payload {
+    #[serde(default, deserialize_with = "deserialize_items_skip_errors")]
+    pub album: Vec<AlbumListEntry>,
+}
+
+#[derive(Debug, Clone, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct AlbumListEntry {
+    #[serde(deserialize_with = "deserialize_id_string")]
+    pub id: String,
+}
+
+#[derive(Debug, Clone, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct Album {
+    pub id: String,
+    pub name: String,
+    pub artist: Option<String>,
+    pub artist_id: Option<String>,
+    pub created: Option<String>,
+    pub year: Option<u32>,
+
+    #[serde(default, deserialize_with = "deserialize_items_skip_errors")]
+    pub song: Vec<Song>,
+}
+
+#[derive(Debug, Clone, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct Song {
+    pub id: String,
+    pub title: String,
+    pub album: Option<String>,
+    pub album_id: Option<String>,
+    pub artist: Option<String>,
+    pub artist_id: Option<String>,
+    pub album_artist: Option<String>,
+    pub duration: Option<u64>,
+    pub track: Option<u32>,
+    pub disc_number: Option<u32>,
+    pub year: Option<u32>,
+    pub created: Option<String>,
+    pub play_count: Option<u64>,
 }
