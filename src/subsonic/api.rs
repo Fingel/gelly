@@ -56,6 +56,7 @@ pub struct SubsonicResponse {
     pub album: Option<Album>,
 
     pub playlists: Option<PlaylistsPayload>,
+    pub playlist: Option<Playlist>,
 }
 
 impl SubsonicResponse {
@@ -119,6 +120,7 @@ pub struct Album {
 #[derive(Debug, Clone, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Song {
+    #[serde(deserialize_with = "deserialize_id_string")]
     pub id: String,
     pub title: String,
     pub album: Option<String>,
@@ -147,4 +149,15 @@ pub struct PlaylistSummary {
     pub id: String,
     pub name: String,
     pub song_count: Option<u64>,
+}
+
+#[derive(Debug, Clone, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct Playlist {
+    #[serde(deserialize_with = "deserialize_id_string")]
+    pub id: String,
+    pub name: String,
+
+    #[serde(default, deserialize_with = "deserialize_items_skip_errors")]
+    pub entry: Vec<Song>,
 }

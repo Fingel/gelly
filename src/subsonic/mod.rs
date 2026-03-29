@@ -288,10 +288,37 @@ impl Subsonic {
         &self,
         playlist_id: &str,
     ) -> Result<PlaylistItems, JellyfinError> {
-        info!("Subsonic::get_playlist_items(playlist_id={playlist_id}) [stub]");
+        info!("Subsonic::get_playlist_items(playlist_id={playlist_id})");
+
+        let response = self
+            .get_subsonic("getPlaylist", &[("id".to_string(), playlist_id.to_string())])
+            .await?;
+        self.ensure_ok_response(&response)?;
+
+        let playlist = response.playlist.ok_or_else(|| JellyfinError::Http {
+            status: StatusCode::BAD_GATEWAY,
+            message: "Subsonic response missing playlist payload".to_string(),
+        })?;
+
+        let items = playlist
+            .entry
+            .into_iter()
+            .map(|song| {
+                self.song_to_music_dto(
+                    song,
+                    String::new(),
+                    "Unknown Album".to_string(),
+                    None,
+                    None,
+                    None,
+                    None,
+                )
+            })
+            .collect::<Vec<_>>();
+
         Ok(PlaylistItems {
-            items: vec![],
-            total_record_count: 0,
+            total_record_count: items.len() as u64,
+            items,
         })
     }
 
