@@ -1,4 +1,5 @@
 use log::{debug, warn};
+use rand::RngExt;
 use reqwest::{Client, Response, StatusCode, Url};
 use serde::de::DeserializeOwned;
 
@@ -672,9 +673,18 @@ impl Subsonic {
     }
 
     fn auth_params(&self) -> Vec<(String, String)> {
+        let salt: String = rand::rng()
+            .sample_iter(rand::distr::Alphanumeric)
+            .take(16)
+            .map(char::from)
+            .collect();
+
+        let token = format!("{:x}", md5::compute(format!("{}{}", self.password, salt)));
+
         vec![
             ("u".to_string(), self.username.clone()),
-            ("p".to_string(), self.password.clone()),
+            ("t".to_string(), token),
+            ("s".to_string(), salt),
             ("v".to_string(), SUBSONIC_API_VERSION.to_string()),
             ("c".to_string(), SUBSONIC_CLIENT_NAME.to_string()),
             ("f".to_string(), "json".to_string()),
