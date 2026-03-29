@@ -52,7 +52,7 @@ impl Subsonic {
         username: &str,
         password: &str,
     ) -> Result<Self, JellyfinError> {
-        debug!("Subsonic::new_authenticate(host={host}, username={username}) [stub]");
+        debug!("Subsonic::new_authenticate(host={host}, username={username})");
 
         if host.trim().is_empty() || username.trim().is_empty() || password.trim().is_empty() {
             return Err(JellyfinError::AuthenticationFailed {
