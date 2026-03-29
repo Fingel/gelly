@@ -1,5 +1,3 @@
-#![allow(dead_code)]
-
 use serde::{Deserialize, Deserializer};
 use serde_json::Value;
 
@@ -11,7 +9,7 @@ where
     T: Deserialize<'de>,
 {
     let items = Vec::<Value>::deserialize(deserializer)?;
-    let result = items
+    let result: Vec<T> = items
         .into_iter()
         .filter_map(|item| match T::deserialize(item) {
             Ok(value) => Some(value),
@@ -24,6 +22,20 @@ where
     Ok(result)
 }
 
+fn deserialize_id_string<'de, D>(deserializer: D) -> Result<String, D::Error>
+where
+    D: Deserializer<'de>,
+{
+    let value = Value::deserialize(deserializer)?;
+    match value {
+        Value::String(s) => Ok(s),
+        Value::Number(n) => Ok(n.to_string()),
+        _ => Err(serde::de::Error::custom(
+            "expected music folder id as string or integer",
+        )),
+    }
+}
+
 #[derive(Debug, Clone, Deserialize)]
 pub struct SubsonicEnvelope {
     #[serde(rename = "subsonic-response")]
@@ -34,8 +46,8 @@ pub struct SubsonicEnvelope {
 #[serde(rename_all = "camelCase")]
 pub struct SubsonicResponse {
     pub status: String,
-    pub version: Option<String>,
     pub error: Option<SubsonicError>,
+    pub music_folders: Option<MusicFoldersPayload>,
 }
 
 impl SubsonicResponse {
@@ -49,4 +61,22 @@ impl SubsonicResponse {
 pub struct SubsonicError {
     pub code: i32,
     pub message: String,
+}
+
+#[derive(Debug, Clone, Deserialize)]
+pub struct MusicFoldersPayload {
+    #[serde(
+        default,
+        rename = "musicFolder",
+        deserialize_with = "deserialize_items_skip_errors"
+    )]
+    pub music_folders: Vec<MusicFolder>,
+}
+
+#[derive(Debug, Clone, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct MusicFolder {
+    #[serde(deserialize_with = "deserialize_id_string")]
+    pub id: String,
+    pub name: String,
 }

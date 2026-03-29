@@ -14,6 +14,7 @@ pub mod api;
 
 const SUBSONIC_API_VERSION: &str = "1.16.1";
 const SUBSONIC_CLIENT_NAME: &str = "gelly";
+const ALL_FOLDERS_LIBRARY_ID: &str = "__gelly_subsonic_all__";
 
 #[derive(Debug, Clone)]
 pub struct Subsonic {
@@ -69,13 +70,33 @@ impl Subsonic {
     }
 
     pub async fn get_views(&self) -> Result<LibraryDtoList, JellyfinError> {
-        info!("Subsonic::get_views() [stub]");
-        Ok(LibraryDtoList {
-            items: vec![LibraryDto {
-                id: "stub-music".to_string(),
+        info!("Subsonic::get_views()");
+
+        let response = self.get_subsonic("getMusicFolders", &[]).await?;
+        self.ensure_ok_response(&response)?;
+
+        let mut items = response
+            .music_folders
+            .map(|folders| {
+                folders
+                    .music_folders
+                    .into_iter()
+                    .map(|folder| LibraryDto {
+                        id: folder.id,
+                        name: folder.name,
+                    })
+                    .collect::<Vec<_>>()
+            })
+            .unwrap_or_default();
+
+        if items.is_empty() {
+            items.push(LibraryDto {
+                id: ALL_FOLDERS_LIBRARY_ID.to_string(),
                 name: "Music".to_string(),
-            }],
-        })
+            });
+        }
+
+        Ok(LibraryDtoList { items })
     }
 
     pub async fn get_library(&self, library_id: &str) -> Result<MusicDtoList, JellyfinError> {
