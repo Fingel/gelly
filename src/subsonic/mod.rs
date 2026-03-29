@@ -1,14 +1,23 @@
 use log::info;
-use reqwest::StatusCode;
+use reqwest::{Client, Response, StatusCode, Url};
+use serde::de::DeserializeOwned;
 
+use crate::config;
 use crate::jellyfin::JellyfinError;
 use crate::jellyfin::api::{
     ImageType, LibraryDto, LibraryDtoList, LyricsResponse, MusicDtoList, PlaybackInfo,
     PlaybackReport, PlaybackReportStatus, PlaylistDtoList, PlaylistItems,
 };
+use crate::subsonic::api::{SubsonicEnvelope, SubsonicResponse};
+
+pub mod api;
+
+const SUBSONIC_API_VERSION: &str = "1.16.1";
+const SUBSONIC_CLIENT_NAME: &str = "gelly";
 
 #[derive(Debug, Clone)]
 pub struct Subsonic {
+    client: Client,
     pub host: String,
     pub username: String,
     pub password: String,
@@ -16,8 +25,14 @@ pub struct Subsonic {
 
 impl Subsonic {
     pub fn new(host: &str, username: &str, password: &str) -> Self {
+        let client = Client::builder()
+            .user_agent(format!("Gelly/{}", config::VERSION))
+            .build()
+            .expect("Failed to create HTTP client");
+
         info!("Subsonic::new(host={host}, username={username})");
         Self {
+            client,
             host: host.to_string(),
             username: username.to_string(),
             password: password.to_string(),
@@ -42,7 +57,15 @@ impl Subsonic {
             });
         }
 
-        Ok(Self::new(host, username, password))
+        let subsonic = Self::new(host, username, password);
+        subsonic.ping().await?;
+        Ok(subsonic)
+    }
+
+    async fn ping(&self) -> Result<(), JellyfinError> {
+        let response = self.get_subsonic("ping", &[]).await?;
+        self.ensure_ok_response(&response)?;
+        Ok(())
     }
 
     pub async fn get_views(&self) -> Result<LibraryDtoList, JellyfinError> {
@@ -188,6 +211,88 @@ impl Subsonic {
     pub async fn fetch_lyrics(&self, item_id: &str) -> Result<LyricsResponse, JellyfinError> {
         info!("Subsonic::fetch_lyrics(item_id={item_id}) [stub]");
         Ok(LyricsResponse { lyrics: vec![] })
+    }
+
+    async fn get_subsonic(
+        &self,
+        endpoint: &str,
+        extra_params: &[(String, String)],
+    ) -> Result<SubsonicResponse, JellyfinError> {
+        let envelope: SubsonicEnvelope = self.get_json(endpoint, extra_params).await?;
+        Ok(envelope.response)
+    }
+
+    async fn get_json<T: DeserializeOwned>(
+        &self,
+        endpoint: &str,
+        extra_params: &[(String, String)],
+    ) -> Result<T, JellyfinError> {
+        let url = self.rest_url(endpoint);
+        let mut params = self.auth_params();
+        params.extend_from_slice(extra_params);
+
+        let response = self.client.get(url).query(&params).send().await?;
+        let body = self.handle_http_response(response).await?;
+        Ok(serde_json::from_str::<T>(&body)?)
+    }
+
+    fn ensure_ok_response(&self, response: &SubsonicResponse) -> Result<(), JellyfinError> {
+        if response.is_ok() {
+            return Ok(());
+        }
+
+        if let Some(error) = &response.error {
+            return Err(self.map_api_error(error.code, error.message.clone()));
+        }
+
+        Err(JellyfinError::Http {
+            status: StatusCode::BAD_GATEWAY,
+            message: "Subsonic API returned non-ok status".to_string(),
+        })
+    }
+
+    fn map_api_error(&self, code: i32, message: String) -> JellyfinError {
+        match code {
+            40 => JellyfinError::AuthenticationFailed { message },
+            _ => JellyfinError::Http {
+                status: StatusCode::BAD_GATEWAY,
+                message: format!("Subsonic error {}: {}", code, message),
+            },
+        }
+    }
+
+    fn auth_params(&self) -> Vec<(String, String)> {
+        vec![
+            ("u".to_string(), self.username.clone()),
+            ("p".to_string(), self.password.clone()),
+            ("v".to_string(), SUBSONIC_API_VERSION.to_string()),
+            ("c".to_string(), SUBSONIC_CLIENT_NAME.to_string()),
+            ("f".to_string(), "json".to_string()),
+        ]
+    }
+
+    fn rest_url(&self, endpoint: &str) -> Url {
+        let host = self.host.trim_end_matches('/');
+        let endpoint = endpoint
+            .trim_start_matches('/')
+            .trim_end_matches(".view");
+        Url::parse(&format!("{host}/rest/{endpoint}.view"))
+            .expect("Failed to construct Subsonic endpoint URL")
+    }
+
+    async fn handle_http_response(&self, response: Response) -> Result<String, JellyfinError> {
+        let status = response.status();
+        let body = response.text().await?;
+        if status.is_success() {
+            Ok(body)
+        } else if status == StatusCode::UNAUTHORIZED {
+            Err(JellyfinError::AuthenticationFailed { message: body })
+        } else {
+            Err(JellyfinError::Http {
+                status,
+                message: body,
+            })
+        }
     }
 }
 

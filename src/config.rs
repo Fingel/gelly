@@ -71,6 +71,16 @@ pub fn settings() -> gio::Settings {
     })
 }
 
+pub fn get_backend_type() -> BackendType {
+    BackendType::from_str(settings().string("backend-type").as_str())
+}
+
+pub fn set_backend_type(backend_type: BackendType) {
+    settings()
+        .set_string("backend-type", backend_type.as_str())
+        .expect("Failed to set backend type");
+}
+
 /// Sets jellyfin settings to blank values and clears the API token
 pub fn logout() {
     clear_jellyfin_api_token(
