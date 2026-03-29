@@ -552,7 +552,7 @@ impl Subsonic {
         };
 
         info!(
-            "Subsonic::playback_report(item_id={}, state={state_name}) [stub]",
+            "Subsonic::playback_report(item_id={}, submission={submission})",
             report.item_id
         );
 
