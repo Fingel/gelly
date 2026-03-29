@@ -27,6 +27,15 @@ pub struct Subsonic {
     pub password: String,
 }
 
+struct AlbumFallback {
+    album_id: String,
+    album_name: String,
+    artist_name: Option<String>,
+    artist_id: Option<String>,
+    year: Option<u32>,
+    created: Option<String>,
+}
+
 impl Subsonic {
     pub fn new(host: &str, username: &str, password: &str) -> Self {
         let client = Client::builder()
@@ -200,12 +209,14 @@ impl Subsonic {
             .map(|song| {
                 self.song_to_music_dto(
                     song,
-                    album_id_fallback.clone(),
-                    album_name.clone(),
-                    album_artist.clone(),
-                    album_artist_id.clone(),
-                    album_year,
-                    album_created.clone(),
+                    AlbumFallback {
+                        album_id: album_id_fallback.clone(),
+                        album_name: album_name.clone(),
+                        artist_name: album_artist.clone(),
+                        artist_id: album_artist_id.clone(),
+                        year: album_year,
+                        created: album_created.clone(),
+                    },
                 )
             })
             .collect();
@@ -213,36 +224,27 @@ impl Subsonic {
         Ok(songs)
     }
 
-    fn song_to_music_dto(
-        &self,
-        song: Song,
-        fallback_album_id: String,
-        fallback_album_name: String,
-        fallback_artist_name: Option<String>,
-        fallback_artist_id: Option<String>,
-        fallback_year: Option<u32>,
-        fallback_created: Option<String>,
-    ) -> MusicDto {
-        let album = song.album.clone().unwrap_or(fallback_album_name);
-        let album_id = song.album_id.clone().unwrap_or(fallback_album_id);
+    fn song_to_music_dto(&self, song: Song, fallback: AlbumFallback) -> MusicDto {
+        let album = song.album.clone().unwrap_or(fallback.album_name);
+        let album_id = song.album_id.clone().unwrap_or(fallback.album_id);
 
         let artist_name = song
             .album_artist
             .clone()
             .or(song.artist.clone())
-            .or(fallback_artist_name)
+            .or(fallback.artist_name)
             .unwrap_or_else(|| "Unknown Artist".to_string());
 
         let artist_id = song
             .artist_id
             .clone()
-            .or(fallback_artist_id)
+            .or(fallback.artist_id)
             .unwrap_or_default();
 
         let duration_ticks = song.duration.unwrap_or(0).saturating_mul(10_000_000);
 
-        let date_created = song.created.clone().or(fallback_created);
-        let production_year = song.year.or(fallback_year);
+        let date_created = song.created.clone().or(fallback.created);
+        let production_year = song.year.or(fallback.year);
 
         MusicDto {
             name: song.title,
@@ -322,12 +324,14 @@ impl Subsonic {
             .map(|song| {
                 self.song_to_music_dto(
                     song,
-                    String::new(),
-                    "Unknown Album".to_string(),
-                    None,
-                    None,
-                    None,
-                    None,
+                    AlbumFallback {
+                        album_id: String::new(),
+                        album_name: "Unknown Album".to_string(),
+                        artist_name: None,
+                        artist_id: None,
+                        year: None,
+                        created: None,
+                    },
                 )
             })
             .collect::<Vec<_>>();
