@@ -19,7 +19,7 @@ For all other installations:
     RUST_LOG=debug gelly
 
 Depending on the issue, it may also be helpful to include logs from the Jellyfin server. 
-They can be found udner the admin dashboard -> Logs.
+They can be found under the admin dashboard -> Logs.
   
 ## Submitting Changes
 
