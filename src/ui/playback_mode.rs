@@ -1,7 +1,7 @@
 use glib::Object;
 use gtk::{self, gio, glib, prelude::*, subclass::prelude::*};
 
-use log::warn;
+use log::{debug, warn};
 use num_enum::TryFromPrimitive;
 
 use crate::audio::model::AudioModel;
@@ -49,7 +49,7 @@ impl PlaybackModeMenu {
     pub fn bind_to_audio_model(&self, audio_model: &AudioModel) {
         let imp = self.imp();
         if let Err(err) = imp.audio_model.set(audio_model.clone()) {
-            warn!("Failed to set audio model in PlaybackModeMenu: {:?}", err);
+            debug!("Failed to set audio model in PlaybackModeMenu: {:?}", err);
             return;
         }
 
