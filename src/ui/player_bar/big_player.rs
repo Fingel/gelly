@@ -105,7 +105,11 @@ mod imp {
 
     use crate::{
         audio::model::AudioModel,
-        ui::{album_art::AlbumArt, playback_mode::PlaybackModeMenu, player_bar::common::PlayerImp},
+        config,
+        ui::{
+            album_art::AlbumArt, album_art_background::album_art_widget_snapshot,
+            playback_mode::PlaybackModeMenu, player_bar::common::PlayerImp,
+        },
     };
     use adw::{prelude::*, subclass::prelude::*};
     use glib::{Properties, WeakRef};
@@ -160,6 +164,12 @@ mod imp {
 
         #[property(get, set)]
         pub duration: RefCell<u32>,
+
+        #[property(get, set)]
+        pub use_album_art_background: RefCell<bool>,
+
+        #[property(nullable, get, set)]
+        pub album_art_paintable: RefCell<Option<gtk::gdk::Paintable>>,
     }
 
     #[glib::object_subclass]
@@ -184,11 +194,65 @@ mod imp {
             self.setup_common_signals();
             self.setup_clickable_labels();
             self.setup_volume_icons();
+
+            let settings = config::settings();
+            settings
+                .bind(
+                    "album-art-window-background",
+                    &*self.obj(),
+                    "use-album-art-background",
+                )
+                .build();
+            self.obj()
+                .connect_use_album_art_background_notify(glib::clone!(
+                    #[weak(rename_to = this)]
+                    self,
+                    move |_| {
+                        this.update_album_art_paintable(this.obj().use_album_art_background());
+                    }
+                ));
+
+            self.album_art.connect_closure(
+                "album-art-changed",
+                true,
+                glib::closure_local!(
+                    #[weak(rename_to = this)]
+                    self,
+                    move |_: AlbumArt, has_album_art: bool| {
+                        this.update_album_art_paintable(
+                            if *this.use_album_art_background.borrow() {
+                                has_album_art
+                            } else {
+                                false
+                            },
+                        );
+                    }
+                ),
+            );
         }
     }
 
     impl BoxImpl for BigPlayer {}
-    impl WidgetImpl for BigPlayer {}
+    impl WidgetImpl for BigPlayer {
+        fn snapshot(&self, snapshot: &gtk::Snapshot) {
+            let obj = self.obj();
+            if let Some(root) = obj.root() {
+                let root_w = root.width();
+                let root_h = root.height();
+                album_art_widget_snapshot(
+                    snapshot,
+                    self.album_art_paintable.borrow().as_ref(),
+                    root_w as f64,
+                    root_h as f64,
+                    Some((
+                        (obj.width() - root_w) as f32,
+                        (obj.height() - root_h) as f32,
+                    )),
+                );
+            }
+            self.parent_snapshot(snapshot);
+        }
+    }
 
     impl PlayerImp for BigPlayer {
         fn audio_model(&self) -> &AudioModel {
@@ -250,6 +314,16 @@ mod imp {
         }
         fn album_art(&self) -> &AlbumArt {
             &self.album_art
+        }
+    }
+
+    impl BigPlayer {
+        pub fn update_album_art_paintable(&self, has_album_art: bool) {
+            self.obj().set_album_art_paintable(if has_album_art {
+                self.album_art.imp().album_image.paintable()
+            } else {
+                None
+            });
         }
     }
 }

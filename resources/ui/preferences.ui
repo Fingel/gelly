@@ -23,6 +23,11 @@
                 </child>
               </object>
             </child>
+            <child>
+              <object class="AdwSwitchRow" id="album_art_background_row">
+                <property name="title" translatable="yes">Blurred album art background</property>
+              </object>
+            </child>
           </object>
         </child>
         <child>

@@ -246,6 +246,7 @@ mod imp {
     use log::{debug, warn};
 
     use crate::ui::{
+        album_art_background::album_art_widget_snapshot,
         artist_detail::ArtistDetail,
         page_traits::TopPage,
         player_bar::{big_player::BigPlayer, mini_player::MiniPlayerBar},
@@ -671,6 +672,18 @@ mod imp {
                 .connect_reveal_bottom_bar_notify(update_margin.clone());
             self.bottom_sheet
                 .connect_bottom_bar_height_notify(update_margin);
+
+            self.big_player.connect_album_art_paintable_notify(clone!(
+                #[weak(rename_to = this)]
+                self,
+                move |big_player| {
+                    if big_player.album_art_paintable().is_some() {
+                        this.obj().add_css_class("album-art-background");
+                    } else {
+                        this.obj().remove_css_class("album-art-background");
+                    }
+                }
+            ));
         }
 
         fn signals() -> &'static [Signal] {
@@ -685,7 +698,19 @@ mod imp {
         }
     }
 
-    impl WidgetImpl for Window {}
+    impl WidgetImpl for Window {
+        fn snapshot(&self, snapshot: &gtk::Snapshot) {
+            let obj = self.obj();
+            album_art_widget_snapshot(
+                snapshot,
+                self.big_player.imp().album_art_paintable.borrow().as_ref(),
+                obj.width() as f64,
+                obj.height() as f64,
+                None,
+            );
+            self.parent_snapshot(snapshot);
+        }
+    }
 
     impl WindowImpl for Window {
         fn close_request(&self) -> glib::Propagation {

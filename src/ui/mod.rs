@@ -1,6 +1,7 @@
 pub mod about_dialog;
 pub mod album;
 pub mod album_art;
+pub mod album_art_background;
 pub mod album_detail;
 pub mod album_list;
 pub mod artist;

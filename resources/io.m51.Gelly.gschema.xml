@@ -81,5 +81,9 @@
       <default>0</default>
       <summary>Sort playlists direction</summary>
     </key>
+    <key name="album-art-window-background" type="b">
+      <default>true</default>
+      <summary>Show current song blurred album art as window background</summary>
+    </key>
   </schema>
 </schemalist>

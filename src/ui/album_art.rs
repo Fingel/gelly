@@ -3,7 +3,12 @@ use crate::{
     ui::{image_utils::bytes_to_texture, widget_ext::WidgetApplicationExt},
 };
 use glib::Object;
-use gtk::{gio, glib, prelude::WidgetExt, subclass::prelude::*};
+use gtk::{
+    gio,
+    glib::{self, object::ObjectExt},
+    prelude::WidgetExt,
+    subclass::prelude::*,
+};
 use log::{debug, warn};
 
 glib::wrapper! {
@@ -116,6 +121,7 @@ impl AlbumArt {
                         Err(err) => {
                             warn!("Failed to load image {}", err);
                             album_art.show_error();
+                            album_art.emit_by_name::<()>("album-art-changed", &[&false]);
                         }
                     }
                 }
@@ -134,10 +140,13 @@ mod imp {
     use glib::subclass::InitializingObject;
     use gtk::{
         CompositeTemplate,
-        glib::{self, Properties},
+        glib::{self, Properties, subclass::Signal},
         prelude::*,
     };
-    use std::cell::{Cell, RefCell};
+    use std::{
+        cell::{Cell, RefCell},
+        sync::OnceLock,
+    };
 
     #[derive(Properties, CompositeTemplate, Default)]
     #[properties(wrapper_type = super::AlbumArt)]
@@ -188,6 +197,25 @@ mod imp {
                 .bind_property("size", &self.album_image.get(), "pixel-size")
                 .sync_create()
                 .build();
+
+            self.album_image.connect_paintable_notify(glib::clone!(
+                #[weak(rename_to = this)]
+                self,
+                move |_| {
+                    this.obj().emit_by_name::<()>("album-art-changed", &[&true]);
+                }
+            ));
+        }
+
+        fn signals() -> &'static [Signal] {
+            static SIGNALS: OnceLock<Vec<Signal>> = OnceLock::new();
+            SIGNALS.get_or_init(|| {
+                vec![
+                    Signal::builder("album-art-changed")
+                        .param_types([bool::static_type()])
+                        .build(),
+                ]
+            })
         }
     }
 }
