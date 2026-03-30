@@ -5,7 +5,7 @@ use log::debug;
 use crate::{
     async_utils::spawn_tokio,
     audio::model::AudioModel,
-    jellyfin::{Jellyfin, JellyfinError, api::Lyric},
+    jellyfin::{Jellyfin, api::Lyric},
 };
 
 glib::wrapper! {
@@ -92,18 +92,7 @@ impl Lyrics {
                             obj.create_lyrics_widgets(lyrics_resp.lyrics);
                             obj.update_lyrics_position(0u32);
                         }
-                        Err(err) => {
-                            let message = if matches!(err, JellyfinError::Http { status, .. } if status == 404)
-                            {
-                                "No lyrics found."
-                            } else {
-                                "Error fetching lyrics."
-                            };
-                            obj.create_lyrics_widgets(vec![Lyric {
-                                text: message.to_string(),
-                                start: None,
-                            }]);
-                        }
+                        Err(_) => obj.create_lyrics_widgets(vec![]),
                     }
                 }
             ),
@@ -117,6 +106,10 @@ impl Lyrics {
         while let Some(child) = imp.lyrics_box.first_child() {
             imp.lyrics_box.remove(&child);
         }
+
+        // With Subsonic, we don't know if lyrics exist until we fetch them
+        // so show this label if there are no lyrics.
+        imp.lyrics_label_empty.set_visible(lyrics.is_empty());
 
         let mut labels = Vec::new();
 
@@ -196,6 +189,8 @@ mod imp {
         pub artist_label: TemplateChild<gtk::Label>,
         #[template_child]
         pub lyrics_box: TemplateChild<gtk::Box>,
+        #[template_child]
+        pub lyrics_label_empty: TemplateChild<gtk::Label>,
         pub audio_model: OnceCell<AudioModel>,
         pub jellyfin: OnceCell<Jellyfin>,
         pub lyrics: RefCell<Vec<Lyric>>,

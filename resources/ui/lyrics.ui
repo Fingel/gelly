@@ -52,6 +52,20 @@
                   </object>
                 </child>
                 <child>
+                  <object class="GtkLabel" id="lyrics_label_empty">
+                    <property name="label">No lyrics available</property>
+                    <property name="visible">false</property>
+                    <property name="wrap">true</property>
+                    <property name="justify">center</property>
+                    <property name="halign">center</property>
+                    <property name="valign">center</property>
+                    <style>
+                      <class name="title-3" />
+                      <class name="dim-label"/>
+                    </style>
+                  </object>
+                </child>
+                <child>
                   <object class="GtkBox" id="lyrics_box">
                     <property name="orientation">vertical</property>
                     <property name="spacing">6</property>
