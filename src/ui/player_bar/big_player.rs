@@ -20,6 +20,7 @@ impl BigPlayer {
 
         if let Err(e) = imp.audio_model.set(audio_model.clone()) {
             debug!("Audio model already set: {:?}", e);
+            return;
         };
 
         imp.playback_mode_menu.bind_to_audio_model(audio_model);

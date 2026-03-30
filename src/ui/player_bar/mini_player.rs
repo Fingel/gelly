@@ -19,6 +19,7 @@ impl MiniPlayerBar {
         let imp = self.imp();
         if let Err(e) = imp.bottom_sheet.set(bottom_sheet.clone()) {
             debug!("Bottom Sheet already set: {:?}", e);
+            return;
         }
 
         if let Err(e) = imp.audio_model.set(audio_model.clone()) {
