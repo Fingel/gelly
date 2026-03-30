@@ -32,7 +32,11 @@ impl Default for VolumeButton {
 }
 
 mod imp {
-    use gtk::{CompositeTemplate, TemplateChild, glib, subclass::prelude::*};
+    use gtk::{
+        CompositeTemplate, EventControllerScrollFlags, TemplateChild, glib,
+        prelude::{AdjustmentExt, RangeExt, WidgetExt},
+        subclass::prelude::*,
+    };
 
     #[derive(CompositeTemplate, Default)]
     #[template(resource = "/io/m51/Gelly/ui/volume_button.ui")]
@@ -60,7 +64,33 @@ mod imp {
         }
     }
 
-    impl ObjectImpl for VolumeButton {}
+    impl ObjectImpl for VolumeButton {
+        fn constructed(&self) {
+            // update volume level in tooltip, starts from 100% in template
+            let adjustment = self.obj().scale().adjustment();
+            adjustment.connect_value_changed(glib::clone!(
+                #[weak(rename_to = menu_button)]
+                self.menu_button,
+                move |adj| {
+                    menu_button.set_tooltip_text(Some(&format!(
+                        "Volume ({}%)",
+                        (adj.value() * 100.0).round()
+                    )));
+                }
+            ));
+
+            let scroll_event_controller = gtk::EventControllerScroll::new(
+                EventControllerScrollFlags::VERTICAL | EventControllerScrollFlags::DISCRETE,
+            );
+            scroll_event_controller.connect_scroll(move |_, _, delta_y| {
+                // -1 is scroll up, 1 is scroll down
+                adjustment
+                    .set_value((adjustment.value() + (-(delta_y.trunc()) * 0.05)).clamp(0.0, 1.0));
+                glib::Propagation::Stop
+            });
+            self.menu_button.add_controller(scroll_event_controller);
+        }
+    }
     impl WidgetImpl for VolumeButton {}
     impl BoxImpl for VolumeButton {}
 }

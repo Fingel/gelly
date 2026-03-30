@@ -5,7 +5,7 @@
     <child>
       <object class="GtkMenuButton" id="menu_button">
         <property name="icon-name">audio-volume-high-symbolic</property>
-        <property name="tooltip-text">Volume</property>
+        <property name="tooltip-text">Volume (100%)</property>
         <style>
           <class name="flat"/>
         </style>
