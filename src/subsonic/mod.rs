@@ -508,13 +508,21 @@ impl Subsonic {
 
     // https://github.com/opensubsonic/open-subsonic-api/blob/main/content/en/docs/Endpoints/stream.md
     pub fn get_stream_uri(&self, item_id: &str) -> String {
-        debug!("Subsonic::get_stream_uri(item_id={item_id})");
+        let max_bitrate = config::get_max_bitrate().unwrap_or(0);
+        let format = if max_bitrate > 0 {
+            config::get_transcoding_profile().codec.to_string()
+        } else {
+            "raw".to_string()
+        };
+        debug!("Subsonic::get_stream_uri(item_id={item_id} bitrate={max_bitrate} format={format})");
 
         let mut url = self.rest_url("stream");
 
         let mut params = self.auth_params();
         params.retain(|(k, _)| k != "f");
         params.push(("id".to_string(), item_id.to_string()));
+        params.push(("maxBitRate".to_string(), max_bitrate.to_string()));
+        params.push(("format".to_string(), format));
 
         {
             let mut pairs = url.query_pairs_mut();

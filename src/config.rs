@@ -243,7 +243,15 @@ pub fn set_transcoding_profile(profile: TranscodingProfile) {
 pub fn get_max_bitrate() -> Option<i32> {
     // from settings as kbps
     let value = settings().int("max-bitrate");
-    if value == 0 { None } else { Some(value * 1000) }
+    if value == 0 {
+        None
+    } else {
+        if get_backend_type() == BackendType::Jellyfin {
+            Some(value.saturating_mul(1000))
+        } else {
+            Some(value)
+        }
+    }
 }
 
 pub fn get_refresh_on_startup() -> bool {
