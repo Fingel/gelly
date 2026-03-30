@@ -26,8 +26,6 @@ impl BigPlayer {
         imp.playback_mode_menu.bind_to_audio_model(audio_model);
 
         imp.volume_control
-            .scale()
-            .adjustment()
             .bind_property("value", audio_model, "volume")
             .bidirectional()
             .sync_create()
@@ -107,10 +105,7 @@ mod imp {
 
     use crate::{
         audio::model::AudioModel,
-        ui::{
-            album_art::AlbumArt, playback_mode::PlaybackModeMenu, player_bar::common::PlayerImp,
-            volume_button::VolumeButton,
-        },
+        ui::{album_art::AlbumArt, playback_mode::PlaybackModeMenu, player_bar::common::PlayerImp},
     };
     use adw::{prelude::*, subclass::prelude::*};
     use glib::{Properties, WeakRef};
@@ -148,7 +143,7 @@ mod imp {
         #[template_child]
         pub duration_label: TemplateChild<gtk::Label>,
         #[template_child]
-        pub volume_control: TemplateChild<VolumeButton>,
+        pub volume_control: TemplateChild<gtk::ScaleButton>,
         #[template_child]
         pub info_button: TemplateChild<gtk::Button>,
         #[template_child]
@@ -188,6 +183,7 @@ mod imp {
             self.parent_constructed();
             self.setup_common_signals();
             self.setup_clickable_labels();
+            self.setup_volume_icons();
         }
     }
 
@@ -219,7 +215,7 @@ mod imp {
         fn prev_button(&self) -> &gtk::Button {
             &self.prev_button
         }
-        fn volume_control(&self) -> &VolumeButton {
+        fn volume_control(&self) -> &gtk::ScaleButton {
             &self.volume_control
         }
         fn info_button(&self) -> &gtk::Button {

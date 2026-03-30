@@ -484,7 +484,7 @@ mod imp {
         #[property(get, set)]
         pub duration: Cell<u32>,
 
-        #[property(get, set)]
+        #[property(get, set = Self::set_volume)]
         pub volume: Cell<f64>,
 
         #[property(get, set)]
@@ -575,7 +575,6 @@ mod imp {
             }
         }
 
-        // TODO change these to gobject setters
         pub fn set_volume(&self, volume: f64) {
             let clamped_volume = volume.clamp(0.0, 1.0);
             self.volume.set(clamped_volume);
