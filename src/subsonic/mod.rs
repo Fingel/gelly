@@ -562,7 +562,7 @@ impl Subsonic {
             size: song.size,
             supports_direct_play: Some(true),
             supports_direct_stream: Some(true),
-            supports_transcoding: Some(false),
+            supports_transcoding: Some(true),
         };
 
         Ok(PlaybackInfo {
