@@ -2,8 +2,7 @@ use crate::{
     audio::{model::AudioModel, stream_info::discover_stream_info},
     library_utils::{album_for_item, artist_for_item},
     ui::{
-        album_art::AlbumArt, lyrics::Lyrics, stream_info_dialog, volume_button::VolumeButton,
-        widget_ext::WidgetApplicationExt,
+        album_art::AlbumArt, lyrics::Lyrics, stream_info_dialog, widget_ext::WidgetApplicationExt,
     },
 };
 use adw::prelude::*;
@@ -34,14 +33,8 @@ where
     fn play_pause_button(&self) -> &gtk::Button;
     fn next_button(&self) -> &gtk::Button;
     fn prev_button(&self) -> &gtk::Button;
-    fn volume_control(&self) -> &VolumeButton;
+    fn volume_control(&self) -> &gtk::ScaleButton;
     fn info_button(&self) -> &gtk::Button;
-    fn mute_button(&self) -> &gtk::Button {
-        self.volume_control().mute_button()
-    }
-    fn volume_scale(&self) -> &gtk::Scale {
-        self.volume_control().scale()
-    }
     fn position_scale(&self) -> &gtk::Scale;
     fn position_label(&self) -> &gtk::Label;
     fn duration_label(&self) -> &gtk::Label;
@@ -95,19 +88,6 @@ where
     // allowing subclasses to do additional updates or logic.
     fn extra_position_update(&self, _position: u32) {}
     fn extra_duration_update(&self, _duration: u32) {}
-
-    fn update_volume_icon(&self, volume: f64) {
-        let icon_name = if volume == 0.0 {
-            "audio-volume-muted-symbolic"
-        } else if volume < 0.33 {
-            "audio-volume-low-symbolic"
-        } else if volume < 0.66 {
-            "audio-volume-medium-symbolic"
-        } else {
-            "audio-volume-high-symbolic"
-        };
-        self.volume_control().set_icon_name(icon_name);
-    }
 
     fn show_info_dialog(&self) {
         if let Some(uri) = self.audio_model().get_uri()
@@ -206,6 +186,21 @@ where
         });
     }
 
+    fn setup_volume_icons(&self) {
+        self.volume_control()
+            .minus_button()
+            .set_icon_name("audio-volume-low-symbolic");
+        self.volume_control()
+            .plus_button()
+            .set_icon_name("audio-volume-high-symbolic");
+        self.volume_control().set_icons(&[
+            "audio-volume-muted-symbolic",
+            "audio-volume-high-symbolic",
+            "audio-volume-low-symbolic",
+            "audio-volume-medium-symbolic",
+        ]);
+    }
+
     fn setup_common_signals(&self) {
         let weak = self.obj().downgrade();
 
@@ -236,16 +231,18 @@ where
             }
         });
 
-        self.mute_button().connect_clicked({
+        let middle_click = gtk::GestureClick::new();
+        middle_click.set_button(gtk::gdk::BUTTON_MIDDLE);
+        middle_click.connect_pressed({
             let weak = weak.clone();
-            move |_| {
+            move |_, _, _, _| {
                 if let Some(obj) = weak.upgrade() {
-                    let imp = obj.imp();
-                    imp.volume_scale().set_value(0.0);
-                    imp.update_volume_icon(0.0);
+                    let vol = obj.imp().volume_control();
+                    vol.set_value(if vol.value() == 0.0 { 1.0 } else { 0.0 });
                 }
             }
         });
+        self.volume_control().add_controller(middle_click);
 
         self.info_button().connect_clicked({
             let weak = weak.clone();
@@ -282,16 +279,6 @@ where
                 });
                 imp.seek_debounce_id().replace(Some(source_id));
                 glib::Propagation::Proceed
-            }
-        });
-
-        self.volume_scale().connect_value_changed({
-            let weak = weak.clone();
-            move |scale| {
-                if let Some(obj) = weak.upgrade() {
-                    obj.imp().audio_model().imp().set_volume(scale.value());
-                    obj.imp().update_volume_icon(scale.value());
-                }
             }
         });
 

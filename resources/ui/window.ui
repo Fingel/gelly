@@ -3,6 +3,7 @@
   <requires lib="gtk" version="4.0"/>
   <template class="GellyApplicationWindow" parent="AdwApplicationWindow">
     <property name="title">Gelly</property>
+    <property name="height-request">500</property>
     <child>
       <object class="AdwBreakpoint" id="sidebar_breakpoint">
         <condition>max-width: 800sp</condition>
