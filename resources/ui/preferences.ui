@@ -31,7 +31,7 @@
             <child>
               <object class="AdwActionRow">
                 <property name="title" translatable="yes">Normalize Audio</property>
-                <property name="subtitle" translatable="yes">Normalizes volume levels across tracks.</property>
+                <property name="subtitle" translatable="yes">Normalizes volume levels across tracks. Has no effect on Subsonic backends.</property>
                 <property name="use_underline">True</property>
                 <property name="activatable_widget">normalize_audio_switch</property>
                 <child>
@@ -59,7 +59,7 @@
         <child>
           <object class="AdwPreferencesGroup">
           <property name="title" translatable="yes">Transcoding</property>
-          <property name="description" translatable="yes">Transcoding is helpful if you are on a bandwidth limited environment. Restrictive settings may cause Jellyfin to transcode audio files.</property>
+          <property name="description" translatable="yes">Transcoding reduces stream quality and bandwidth at the expense of processing power on the server. Note that Subsonic backends cannot seek transcoded streams.</property>
             <child>
               <object class="AdwComboRow" id="transcoding_profile_row">
                 <property name="title" translatable="yes">Transcoding Profile</property>
