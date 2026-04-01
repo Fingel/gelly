@@ -272,6 +272,8 @@ where
                         if let Some(obj) = weak.upgrade() {
                             let imp = obj.imp();
                             imp.audio_model().seek(position);
+                            imp.position_scale()
+                                .set_value(imp.audio_model().position() as f64);
                             imp.seek_debounce_id().replace(None);
                         }
                         glib::ControlFlow::Break

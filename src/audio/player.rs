@@ -79,15 +79,16 @@ impl AudioPlayer {
         self.set_state(gst::State::Null);
     }
 
-    pub fn seek(&self, position_s: u64) {
+    pub fn seek(&self, position_s: u64) -> Result<(), ()> {
         let position = gst::ClockTime::from_seconds(position_s);
         match self
             .pipeline
             .seek_simple(gst::SeekFlags::FLUSH | gst::SeekFlags::KEY_UNIT, position)
         {
-            Ok(_) => (),
+            Ok(_) => Ok(()),
             Err(err) => {
                 warn!("Failed to seek player: {}", err);
+                Err(())
             }
         }
     }
