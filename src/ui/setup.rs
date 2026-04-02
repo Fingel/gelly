@@ -1,8 +1,12 @@
 use std::error::Error;
 
 use crate::async_utils::spawn_tokio;
-use crate::config::{settings, store_jellyfin_api_token};
-use crate::jellyfin::{Jellyfin, JellyfinError};
+use crate::backend::{Backend, BackendError};
+use crate::config::{
+    BackendType, set_backend_type, settings, store_jellyfin_api_token, store_subsonic_password,
+};
+use crate::jellyfin::Jellyfin;
+use crate::subsonic::Subsonic;
 use crate::ui::widget_ext::WidgetApplicationExt;
 use adw::prelude::*;
 use adw::subclass::prelude::ObjectSubclassIsExt;
@@ -21,6 +25,14 @@ pub struct ServerFormValues {
     pub host: String,
     pub username: String,
     pub password: String,
+}
+
+#[derive(Debug)]
+enum ConnectionAttemptError {
+    Both {
+        jellyfin: BackendError,
+        subsonic: BackendError,
+    },
 }
 
 impl Setup {
@@ -91,19 +103,49 @@ impl Setup {
         let password = password.to_string();
         self.imp().connect_button.set_sensitive(false);
         app.http_with_loading(
-            async move { Jellyfin::new_authenticate(&host, &username, &password).await },
+            async move {
+                match Jellyfin::new_authenticate(&host, &username, &password).await {
+                    Ok(jellyfin) => Ok(Backend::Jellyfin(jellyfin)),
+                    Err(jellyfin_err) => {
+                        match Subsonic::new_authenticate(&host, &username, &password).await {
+                            Ok(subsonic) => Ok(Backend::Subsonic(subsonic)),
+                            Err(subsonic_err) => Err(ConnectionAttemptError::Both {
+                                jellyfin: jellyfin_err,
+                                subsonic: subsonic_err,
+                            }),
+                        }
+                    }
+                }
+            },
             glib::clone!(
                 #[weak(rename_to=setup)]
                 self,
                 move |result| {
                     match result {
-                        Ok(jellyfin) => {
+                        Ok(Backend::Jellyfin(jellyfin)) => {
                             let user_id = jellyfin.user_id.clone();
                             let token = jellyfin.token.clone();
                             let host = jellyfin.host.clone();
+
                             let app = setup.get_application();
-                            app.imp().jellyfin.replace(jellyfin);
-                            if let Err(err) = setup.save_server_settings(&host, &user_id, &token) {
+                            app.imp().backend.replace(Backend::Jellyfin(jellyfin));
+
+                            if let Err(err) = setup.save_jellyfin_server_settings(&host, &user_id, &token) {
+                                setup.toast("Credentials could not be saved. Do you have a keyring daemon running?", None);
+                                error!("Failed to save Jellyfin server settings. Aborting: {}", err);
+                            }
+
+                            setup.show_library_setup();
+                        }
+                        Ok(Backend::Subsonic(subsonic)) => {
+                            let host = subsonic.host.clone();
+                            let username = subsonic.username.clone();
+                            let password = subsonic.password.clone();
+
+                            let app = setup.get_application();
+                            app.imp().backend.replace(Backend::Subsonic(subsonic));
+
+                            if let Err(err) = setup.save_subsonic_server_settings(&host, &username, &password) {
                                 setup.toast("Credentials could not be saved. Do you have a keyring daemon running?", None);
                                 error!("Failed to save server settings. Aborting: {}", err);
                             }
@@ -117,7 +159,7 @@ impl Setup {
         );
     }
 
-    fn save_server_settings(
+    fn save_jellyfin_server_settings(
         &self,
         host: &str,
         user_id: &str,
@@ -125,34 +167,63 @@ impl Setup {
     ) -> Result<(), Box<dyn Error>> {
         settings().set_string("hostname", host)?;
         settings().set_string("user-id", user_id)?;
+        settings().set_string("subsonic-username", "")?;
+        set_backend_type(BackendType::Jellyfin);
         store_jellyfin_api_token(host, user_id, token)?;
         Ok(())
     }
 
-    fn handle_connection_error(&self, error: JellyfinError) {
+    fn save_subsonic_server_settings(
+        &self,
+        host: &str,
+        username: &str,
+        password: &str,
+    ) -> Result<(), Box<dyn Error>> {
+        settings().set_string("hostname", host)?;
+        settings().set_string("user-id", "")?;
+        settings().set_string("subsonic-username", username)?;
+        set_backend_type(BackendType::Subsonic);
+        store_subsonic_password(host, username, password)?;
+        Ok(())
+    }
+
+    fn handle_connection_error(&self, error: ConnectionAttemptError) {
         match error {
-            JellyfinError::Transport(err) => {
-                self.host_error();
-                self.toast(
-                    "Connection error. Please supply a full URL (http://example.com:8096)",
-                    None,
-                );
-                debug!("Transport error: {}", err);
-            }
-            JellyfinError::Http { status, message } => {
-                self.toast("HTTP {} error when attempting to authenticate", None);
+            ConnectionAttemptError::Both { jellyfin, subsonic } => {
+                let jellyfin_transport = matches!(jellyfin, BackendError::Transport(_));
+                let subsonic_transport = matches!(subsonic, BackendError::Transport(_));
+
+                if jellyfin_transport && subsonic_transport {
+                    self.host_error();
+                    self.toast(
+                        "Connection error. Please supply a full URL (http://example.com:8096)",
+                        None,
+                    );
+                    debug!(
+                        "Authentication failed: both backends had transport errors (jellyfin={:?}, subsonic={:?})",
+                        jellyfin, subsonic
+                    );
+                    return;
+                }
+
+                let jellyfin_auth = matches!(jellyfin, BackendError::AuthenticationFailed { .. });
+                let subsonic_auth = matches!(subsonic, BackendError::AuthenticationFailed { .. });
+
+                if jellyfin_auth || subsonic_auth {
+                    self.toast("Invalid credentials", None);
+                    self.authentication_error();
+                    debug!(
+                        "Authentication failed: jellyfin={:?}, subsonic={:?}",
+                        jellyfin, subsonic
+                    );
+                    return;
+                }
+
+                self.toast("Could not authenticate with Jellyfin or Subsonic", None);
                 warn!(
-                    "HTTP {} error: {} when attempting to authenticate",
-                    status, message
+                    "Authentication failed for both backends. jellyfin={:?}, subsonic={:?}",
+                    jellyfin, subsonic
                 );
-            }
-            JellyfinError::AuthenticationFailed { message } => {
-                self.toast("Invalid credentials", None);
-                self.authentication_error();
-                debug!("Authentication failed: {}", message);
-            }
-            _ => {
-                dbg!(error);
             }
         }
     }

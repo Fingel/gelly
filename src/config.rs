@@ -11,6 +11,29 @@ thread_local! {
     static SETTINGS: RefCell<Option<gio::Settings>> = const { RefCell::new(None) };
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+pub enum BackendType {
+    #[default]
+    Jellyfin,
+    Subsonic,
+}
+
+impl BackendType {
+    pub fn as_str(self) -> &'static str {
+        match self {
+            BackendType::Jellyfin => "jellyfin",
+            BackendType::Subsonic => "subsonic",
+        }
+    }
+
+    pub fn from_str(value: &str) -> Self {
+        match value {
+            "subsonic" => BackendType::Subsonic,
+            _ => BackendType::Jellyfin,
+        }
+    }
+}
+
 #[derive(Debug, Clone, PartialEq)]
 pub struct TranscodingProfile {
     pub name: &'static str,
@@ -48,6 +71,16 @@ pub fn settings() -> gio::Settings {
     })
 }
 
+pub fn get_backend_type() -> BackendType {
+    BackendType::from_str(settings().string("backend-type").as_str())
+}
+
+pub fn set_backend_type(backend_type: BackendType) {
+    settings()
+        .set_string("backend-type", backend_type.as_str())
+        .expect("Failed to set backend type");
+}
+
 /// Sets jellyfin settings to blank values and clears the API token
 pub fn logout() {
     clear_jellyfin_api_token(
@@ -58,8 +91,14 @@ pub fn logout() {
         .set_string("user-id", "")
         .expect("Failed to clear user-id");
     settings()
+        .set_string("subsonic-username", "")
+        .expect("Failed to clear subsonic-username");
+    settings()
         .set_string("library-id", "")
         .expect("Failed to clear library-id");
+    settings()
+        .set_string("backend-type", BackendType::Jellyfin.as_str())
+        .expect("Failed to reset backend-type");
 }
 
 pub fn store_jellyfin_api_token(host: &str, user_id: &str, api_token: &str) -> Result<(), Error> {
@@ -128,6 +167,52 @@ pub fn clear_jellyfin_api_token(host: &str, user_id: &str) {
     item.delete().expect("Unable to remove secret from keyring");
 }
 
+pub fn store_subsonic_password(host: &str, username: &str, password: &str) -> Result<(), Error> {
+    let ss = SecretService::connect(EncryptionType::Plain)?;
+    let collection = ss.get_default_collection()?;
+    let mut properties = HashMap::new();
+    properties.insert("host", host);
+    properties.insert("subsonic-username", username);
+    collection.create_item(
+        "Subsonic Password",
+        properties,
+        password.as_bytes(),
+        true,
+        "text/plain",
+    )?;
+    Ok(())
+}
+
+pub fn retrieve_subsonic_password(host: &str, username: &str) -> Option<String> {
+    let ss =
+        SecretService::connect(EncryptionType::Plain).expect("Could not connect to secret service");
+
+    let search_items = ss
+        .search_items(HashMap::from([
+            ("host", host),
+            ("subsonic-username", username),
+        ]))
+        .unwrap();
+
+    let item = match search_items.unlocked.first() {
+        Some(item) => item,
+        None => {
+            // if there aren't any, try to unlock them
+            if let Some(locked_item) = search_items.locked.first() {
+                locked_item.unlock().unwrap();
+                locked_item
+            } else {
+                return None;
+            }
+        }
+    };
+
+    let secret = item
+        .get_secret()
+        .expect("Unable to retrieve secret from keyring");
+    Some(String::from_utf8(secret).unwrap())
+}
+
 /// Return the client UUID, generating it if it doesn't exist
 pub fn application_uuid() -> String {
     let uuid = settings().string("uuid").as_str().to_string();
@@ -158,7 +243,15 @@ pub fn set_transcoding_profile(profile: TranscodingProfile) {
 pub fn get_max_bitrate() -> Option<i32> {
     // from settings as kbps
     let value = settings().int("max-bitrate");
-    if value == 0 { None } else { Some(value * 1000) }
+    if value == 0 {
+        None
+    } else {
+        if get_backend_type() == BackendType::Jellyfin {
+            Some(value.saturating_mul(1000))
+        } else {
+            Some(value)
+        }
+    }
 }
 
 pub fn get_refresh_on_startup() -> bool {
@@ -174,7 +267,7 @@ pub fn get_playlist_most_played_enabled() -> bool {
 }
 
 pub fn get_normalize_audio_enabled() -> bool {
-    settings().boolean("normalize-audio")
+    settings().boolean("normalize-audio") && get_backend_type() != BackendType::Subsonic
 }
 
 pub fn get_inhibit_suspend_enabled() -> bool {

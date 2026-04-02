@@ -1,5 +1,6 @@
 use crate::{
-    jellyfin::{Jellyfin, JellyfinError, api::MusicDto},
+    backend::{Backend, BackendError},
+    jellyfin::api::MusicDto,
     library_utils::{most_played_songs, shuffle_songs},
 };
 
@@ -73,12 +74,12 @@ impl PlaylistType {
 
     pub async fn load_song_data(
         &self,
-        jellyfin: &Jellyfin,
+        backend: &Backend,
         library: &[MusicDto],
-    ) -> Result<Vec<MusicDto>, JellyfinError> {
+    ) -> Result<Vec<MusicDto>, BackendError> {
         match self {
             PlaylistType::Regular { id, .. } => {
-                let playlist_items = jellyfin.get_playlist_items(id).await?;
+                let playlist_items = backend.get_playlist_items(id).await?;
                 Ok(playlist_items.items)
             }
             PlaylistType::ShuffleLibrary { count } => {

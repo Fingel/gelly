@@ -6,10 +6,15 @@ use gtk::{gio, glib};
 
 use crate::async_utils::spawn_tokio;
 use crate::audio::model::AudioModel;
+use crate::backend::Backend;
+use crate::backend::BackendError;
 use crate::cache::{ImageCache, LibraryCache};
-use crate::config::{self, retrieve_jellyfin_api_token, settings};
+use crate::config::{
+    self, BackendType, retrieve_jellyfin_api_token, retrieve_subsonic_password, settings,
+};
+use crate::jellyfin::Jellyfin;
 use crate::jellyfin::api::{MusicDto, MusicDtoList, PlaylistDto, PlaylistDtoList};
-use crate::jellyfin::{Jellyfin, JellyfinError};
+use crate::subsonic::Subsonic;
 use log::{debug, error, warn};
 use std::cell::RefCell;
 use std::rc::Rc;
@@ -28,7 +33,7 @@ impl Application {
             .property("flags", gio::ApplicationFlags::FLAGS_NONE)
             .build();
         app.load_settings();
-        app.initialize_jellyfin();
+        app.initialize_backend();
         app.initialize_library_cache();
         app.initialize_image_cache();
         app.initialize_audio_model();
@@ -41,18 +46,29 @@ impl Application {
     }
 
     pub fn setup_complete(&self) -> bool {
-        let jellyfin = self.imp().jellyfin.borrow();
-        jellyfin.is_authenticated() && !self.imp().library_id.borrow().is_empty()
+        let backend = self.imp().backend.borrow();
+        backend.is_authenticated() && !self.imp().library_id.borrow().is_empty()
     }
 
-    pub fn initialize_jellyfin(&self) {
+    pub fn initialize_backend(&self) {
         let host = settings().string("hostname");
-        let user_id = settings().string("user-id");
-        let token =
-            retrieve_jellyfin_api_token(host.as_str(), user_id.as_str()).unwrap_or_default();
 
-        let jellyfin = Jellyfin::new(host.as_str(), &token, user_id.as_str());
-        self.imp().jellyfin.replace(jellyfin);
+        let backend = match config::get_backend_type() {
+            BackendType::Jellyfin => {
+                let user_id = settings().string("user-id");
+                let token = retrieve_jellyfin_api_token(host.as_str(), user_id.as_str())
+                    .unwrap_or_default();
+                Backend::Jellyfin(Jellyfin::new(host.as_str(), &token, user_id.as_str()))
+            }
+            BackendType::Subsonic => {
+                let username = settings().string("subsonic-username");
+                let password = retrieve_subsonic_password(host.as_str(), username.as_str())
+                    .unwrap_or_default();
+                Backend::Subsonic(Subsonic::new(host.as_str(), username.as_str(), &password))
+            }
+        };
+
+        self.imp().backend.replace(backend);
     }
 
     pub fn initialize_library_cache(&self) {
@@ -151,8 +167,8 @@ impl Application {
         self.imp().audio_model.replace(Some(audio_model));
     }
 
-    pub fn jellyfin(&self) -> Jellyfin {
-        self.imp().jellyfin.borrow().clone()
+    pub fn jellyfin(&self) -> Backend {
+        self.imp().backend.borrow().clone()
     }
 
     pub fn library(&self) -> Rc<RefCell<Vec<MusicDto>>> {
@@ -175,9 +191,9 @@ impl Application {
         self.imp().audio_model.borrow().clone()
     }
 
-    fn handle_jellyfin_error(&self, error: JellyfinError, operation: &str) {
+    fn handle_backend_error(&self, error: BackendError, operation: &str) {
         match error {
-            JellyfinError::AuthenticationFailed { message } => {
+            BackendError::AuthenticationFailed { message } => {
                 log::error!("Authentication failed during {}: {}", operation, message);
                 self.emit_by_name::<()>("force-logout", &[]);
             }
@@ -214,7 +230,7 @@ impl Application {
             glib::clone!(
                 #[weak(rename_to=app)]
                 self,
-                move |result: Result<MusicDtoList, JellyfinError>| {
+                move |result: Result<MusicDtoList, BackendError>| {
                     match result {
                         Ok(library) => {
                             let library_cnt = library.items.len() as u64;
@@ -222,7 +238,7 @@ impl Application {
                             app.imp().library.replace(library.items);
                             app.emit_by_name::<()>("library-refreshed", &[&library_cnt]);
                         }
-                        Err(err) => app.handle_jellyfin_error(err, "refresh_library"),
+                        Err(err) => app.handle_backend_error(err, "refresh_library"),
                     }
                 },
             ),
@@ -262,7 +278,7 @@ impl Application {
             glib::clone!(
                 #[weak(rename_to=app)]
                 self,
-                move |result: Result<PlaylistDtoList, JellyfinError>| {
+                move |result: Result<PlaylistDtoList, BackendError>| {
                     match result {
                         Ok(playlists) => {
                             let playlist_cnt = playlists.items.len() as u64;
@@ -270,7 +286,7 @@ impl Application {
                             app.imp().playlists.replace(playlists.items);
                             app.emit_by_name::<()>("playlists-refreshed", &[&playlist_cnt]);
                         }
-                        Err(err) => app.handle_jellyfin_error(err, "refresh_playlists"),
+                        Err(err) => app.handle_backend_error(err, "refresh_playlists"),
                     }
                 }
             ),
@@ -306,10 +322,10 @@ impl Application {
             glib::clone!(
                 #[weak(rename_to=app)]
                 self,
-                move |result: Result<(), JellyfinError>| {
+                move |result: Result<(), BackendError>| {
                     match result {
                         Ok(()) => app.emit_by_name::<()>("library-rescan-requested", &[]),
-                        Err(err) => app.handle_jellyfin_error(err, "request_library_rescan"),
+                        Err(err) => app.handle_backend_error(err, "request_library_rescan"),
                     }
                 }
             ),
@@ -337,9 +353,9 @@ impl Application {
     }
 
     pub fn logout(&self) {
-        let jellyfin = Jellyfin::default();
+        let backend = Backend::default();
         self.clear_cache();
-        self.imp().jellyfin.replace(jellyfin);
+        self.imp().backend.replace(backend);
         self.imp().library.replace(Vec::new());
         self.imp().library_id.replace(String::new());
         config::logout();
@@ -401,13 +417,13 @@ mod imp {
     use std::sync::atomic::AtomicU32;
 
     use crate::audio::model::AudioModel;
+    use crate::backend::Backend;
     use crate::cache::{ImageCache, LibraryCache};
-    use crate::jellyfin::Jellyfin;
     use crate::jellyfin::api::{MusicDto, PlaylistDto};
 
     #[derive(Default)]
     pub struct Application {
-        pub jellyfin: RefCell<Jellyfin>,
+        pub backend: RefCell<Backend>,
         pub library: Rc<RefCell<Vec<MusicDto>>>,
         pub playlists: Rc<RefCell<Vec<PlaylistDto>>>,
         pub library_id: RefCell<String>,

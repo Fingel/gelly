@@ -1,6 +1,7 @@
 use crate::{
     async_utils::spawn_tokio,
-    jellyfin::{JellyfinError, api::MusicDto, utils::format_duration},
+    backend::BackendError,
+    jellyfin::{api::MusicDto, utils::format_duration},
     library_utils::songs_for_playlist,
     models::{PlaylistModel, SongModel},
     ui::{
@@ -226,7 +227,7 @@ impl PlaylistDetail {
             glib::clone!(
                 #[weak(rename_to=playlist_detail)]
                 self,
-                move |result: Result<Vec<MusicDto>, JellyfinError>| {
+                move |result: Result<Vec<MusicDto>, BackendError>| {
                     match result {
                         Ok(music_data) => {
                             let songs: Vec<SongModel> =
@@ -391,20 +392,21 @@ impl PlaylistDetail {
         // Persist the change
         let playlist_id = playlist_model.id();
         let app = self.get_application();
+        let backend = app.jellyfin();
 
-        glib::spawn_future_local(glib::clone!(
-            #[weak(rename_to = playlist_detail)]
-            self,
+        spawn_tokio(
             async move {
-                let jellyfin_client = app.jellyfin();
-                match jellyfin_client
+                backend
                     .move_playlist_item(&playlist_id, &item_id, target_index as i32)
                     .await
-                {
+            },
+            glib::clone!(
+                #[weak(rename_to = playlist_detail)]
+                self,
+                move |result| match result {
                     Ok(_) => {
                         log::debug!(
-                            "Successfully moved playlist item '{}' from position {} to {}",
-                            item_id,
+                            "Successfully moved playlist item from position {} to {}",
                             source_index,
                             target_index
                         );
@@ -416,8 +418,8 @@ impl PlaylistDetail {
                         playlist_detail.pull_tracks();
                     }
                 }
-            }
-        ));
+            ),
+        );
     }
 
     fn handle_remove_from_playlist(&self, song_id: String) {

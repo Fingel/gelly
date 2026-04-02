@@ -6,9 +6,9 @@ use futures::stream::{self, StreamExt};
 use log::{debug, warn};
 use reqwest::{Client, Response, StatusCode};
 use serde_json::json;
-use thiserror::Error;
 use tokio::time::Instant;
 
+use crate::backend::BackendError;
 use crate::config;
 use crate::jellyfin::api::{
     ImageType, LibraryDtoList, LyricsResponse, MusicDtoList, NewPlaylist, NewPlaylistResponse,
@@ -19,21 +19,6 @@ pub mod api;
 pub mod utils;
 
 static CLIENT_ID: &str = "Gelly";
-
-#[derive(Error, Debug)]
-pub enum JellyfinError {
-    #[error("Transport error: {0}")]
-    Transport(#[from] reqwest::Error),
-
-    #[error("HTTP error: {status} - {message}")]
-    Http { status: StatusCode, message: String },
-
-    #[error("Authentication failed: {message}")]
-    AuthenticationFailed { message: String },
-
-    #[error("JSON parsing error: {0}")]
-    JsonParsing(#[from] serde_json::Error),
-}
 
 #[derive(Debug, Clone)]
 pub struct Jellyfin {
@@ -66,7 +51,7 @@ impl Jellyfin {
         host: &str,
         username: &str,
         password: &str,
-    ) -> Result<Self, JellyfinError> {
+    ) -> Result<Self, BackendError> {
         let mut jellyfin = Self::new(host, "", "");
         let resp = jellyfin.authenticate(username, password).await?;
         jellyfin.token = resp.access_token;
@@ -79,7 +64,7 @@ impl Jellyfin {
         &self,
         username: &str,
         password: &str,
-    ) -> Result<AuthenticateResponse, JellyfinError> {
+    ) -> Result<AuthenticateResponse, BackendError> {
         let body = json!({
             "Username": username,
             "Pw": password
@@ -89,13 +74,13 @@ impl Jellyfin {
         Ok(serde_json::from_str(&body)?)
     }
 
-    pub async fn get_views(&self) -> Result<LibraryDtoList, JellyfinError> {
+    pub async fn get_views(&self) -> Result<LibraryDtoList, BackendError> {
         let response = self.get("UserViews", None).await?;
         let body = self.handle_response(response).await?;
         Ok(serde_json::from_str(&body)?)
     }
 
-    pub async fn get_library(&self, library_id: &str) -> Result<MusicDtoList, JellyfinError> {
+    pub async fn get_library(&self, library_id: &str) -> Result<MusicDtoList, BackendError> {
         // Time library download so we can keep an eye on it.
         let now = Instant::now();
         const LIMIT: u64 = 250;
@@ -167,7 +152,7 @@ impl Jellyfin {
         library_id: &str,
         start_index: u64,
         limit: u64,
-    ) -> Result<MusicDtoList, JellyfinError> {
+    ) -> Result<MusicDtoList, BackendError> {
         let start_index = start_index.to_string();
         let limit = limit.to_string();
         let params = vec![
@@ -188,7 +173,7 @@ impl Jellyfin {
         Ok(serde_json::from_str(&body)?)
     }
 
-    pub async fn get_playlists(&self) -> Result<PlaylistDtoList, JellyfinError> {
+    pub async fn get_playlists(&self) -> Result<PlaylistDtoList, BackendError> {
         let params = vec![
             ("IncludeItemTypes", "Playlist"),
             ("sortBy", "DateCreated"),
@@ -209,7 +194,7 @@ impl Jellyfin {
     pub async fn get_playlist_items(
         &self,
         playlist_id: &str,
-    ) -> Result<PlaylistItems, JellyfinError> {
+    ) -> Result<PlaylistItems, BackendError> {
         let path = format!("Playlists/{}/Items", playlist_id);
         let response = self.get(&path, None).await?;
         let body = self.handle_response(response).await?;
@@ -220,7 +205,7 @@ impl Jellyfin {
         &self,
         playlist_id: &str,
         item_ids: &[String],
-    ) -> Result<(), JellyfinError> {
+    ) -> Result<(), BackendError> {
         let path = format!("Playlists/{}/Items", playlist_id);
         let ids = item_ids.join(",");
         let params = vec![("ids", ids.as_str()), ("userId", &self.user_id)];
@@ -234,7 +219,7 @@ impl Jellyfin {
         playlist_id: &str,
         item_id: &str,
         new_index: i32,
-    ) -> Result<(), JellyfinError> {
+    ) -> Result<(), BackendError> {
         let path = format!(
             "Playlists/{}/Items/{}/Move/{}",
             playlist_id, item_id, new_index
@@ -248,7 +233,7 @@ impl Jellyfin {
         &self,
         playlist_id: &str,
         item_id: &str,
-    ) -> Result<(), JellyfinError> {
+    ) -> Result<(), BackendError> {
         let path = format!("Playlists/{}/Items/", playlist_id);
         let params = vec![("entryIds", item_id)];
         self.delete(&path, Some(&params)).await?;
@@ -259,7 +244,7 @@ impl Jellyfin {
         &self,
         name: &str,
         items: Vec<String>,
-    ) -> Result<String, JellyfinError> {
+    ) -> Result<String, BackendError> {
         let path = "Playlists/";
         let body = NewPlaylist {
             name: name.to_string(),
@@ -275,13 +260,13 @@ impl Jellyfin {
         Ok(playlist_response.id)
     }
 
-    pub async fn delete_item(&self, item_id: &str) -> Result<(), JellyfinError> {
+    pub async fn delete_item(&self, item_id: &str) -> Result<(), BackendError> {
         let path = format!("Items/{}", item_id);
         self.delete(&path, None).await?;
         Ok(())
     }
 
-    pub async fn request_library_rescan(&self, library_id: &str) -> Result<(), JellyfinError> {
+    pub async fn request_library_rescan(&self, library_id: &str) -> Result<(), BackendError> {
         let params = vec![
             ("itemId", library_id),
             ("Recursive", "true"),
@@ -306,7 +291,7 @@ impl Jellyfin {
         &self,
         item_id: &str,
         image_type: ImageType,
-    ) -> Result<Vec<u8>, JellyfinError> {
+    ) -> Result<Vec<u8>, BackendError> {
         let params = match image_type {
             ImageType::Backdrop => vec![
                 ("maxWidth", "1920"),
@@ -352,7 +337,7 @@ impl Jellyfin {
         )
     }
 
-    pub async fn get_playback_info(&self, item_id: &str) -> Result<PlaybackInfo, JellyfinError> {
+    pub async fn get_playback_info(&self, item_id: &str) -> Result<PlaybackInfo, BackendError> {
         let response = self
             .get(&format!("Items/{}/PlaybackInfo", item_id), None)
             .await?;
@@ -364,7 +349,7 @@ impl Jellyfin {
         &self,
         report: &PlaybackReport,
         state: &PlaybackReportStatus,
-    ) -> Result<(), JellyfinError> {
+    ) -> Result<(), BackendError> {
         let path = match state {
             PlaybackReportStatus::Started => "",
             PlaybackReportStatus::InProgress => "Progress",
@@ -377,7 +362,7 @@ impl Jellyfin {
         Ok(())
     }
 
-    pub async fn fetch_lyrics(&self, item_id: &str) -> Result<LyricsResponse, JellyfinError> {
+    pub async fn fetch_lyrics(&self, item_id: &str) -> Result<LyricsResponse, BackendError> {
         let response = self.get(&format!("Audio/{}/Lyrics", item_id), None).await?;
         let body = self.handle_response(response).await?;
         Ok(serde_json::from_str(&body)?)
@@ -412,7 +397,7 @@ impl Jellyfin {
         )
     }
 
-    async fn post_json<T>(&self, endpoint: &str, body: &T) -> Result<Response, JellyfinError>
+    async fn post_json<T>(&self, endpoint: &str, body: &T) -> Result<Response, BackendError>
     where
         T: serde::Serialize,
     {
@@ -436,7 +421,7 @@ impl Jellyfin {
         endpoint: &str,
         params: Option<&[(&str, &str)]>,
         body: Option<String>,
-    ) -> Result<Response, JellyfinError> {
+    ) -> Result<Response, BackendError> {
         let url = self.format_url(endpoint);
         debug!("Sending POST request to {}", url);
         let request = self
@@ -454,7 +439,7 @@ impl Jellyfin {
         &self,
         endpoint: &str,
         params: Option<&[(&str, &str)]>,
-    ) -> Result<Response, JellyfinError> {
+    ) -> Result<Response, BackendError> {
         let url = self.format_url(endpoint);
         debug!("Sending GET request to {}", url);
         let request = self
@@ -470,7 +455,7 @@ impl Jellyfin {
         &self,
         endpoint: &str,
         params: Option<&[(&str, &str)]>,
-    ) -> Result<Response, JellyfinError> {
+    ) -> Result<Response, BackendError> {
         let url = self.format_url(endpoint);
         debug!("Sending DELETE request to {}", url);
         let request = self
@@ -491,7 +476,7 @@ impl Jellyfin {
     }
 
     /// Responsible for error handling when reading responses from Jellyfin
-    async fn handle_response(&self, response: Response) -> Result<String, JellyfinError> {
+    async fn handle_response(&self, response: Response) -> Result<String, BackendError> {
         let status = response.status();
         if status.is_success() {
             let response_body = response.text().await?;
@@ -503,14 +488,14 @@ impl Jellyfin {
                 .unwrap_or_else(|_| "Unknown Error".to_string());
 
             match status {
-                StatusCode::UNAUTHORIZED => Err(JellyfinError::AuthenticationFailed { message }),
-                _ => Err(JellyfinError::Http { status, message }),
+                StatusCode::UNAUTHORIZED => Err(BackendError::AuthenticationFailed { message }),
+                _ => Err(BackendError::Http { status, message }),
             }
         }
     }
 
     /// Same as handle_response but does not deserialize the response body.
-    async fn handle_binary_response(&self, response: Response) -> Result<Vec<u8>, JellyfinError> {
+    async fn handle_binary_response(&self, response: Response) -> Result<Vec<u8>, BackendError> {
         let status = response.status();
         if status.is_success() {
             let response_body = response.bytes().await?;
@@ -522,8 +507,8 @@ impl Jellyfin {
                 .unwrap_or_else(|_| "Unknown Error".to_string());
 
             match status {
-                StatusCode::UNAUTHORIZED => Err(JellyfinError::AuthenticationFailed { message }),
-                _ => Err(JellyfinError::Http { status, message }),
+                StatusCode::UNAUTHORIZED => Err(BackendError::AuthenticationFailed { message }),
+                _ => Err(BackendError::Http { status, message }),
             }
         }
     }

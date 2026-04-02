@@ -10,12 +10,14 @@ use ui::window::Window;
 mod application;
 mod async_utils;
 mod audio;
+mod backend;
 mod cache;
 mod config;
 mod jellyfin;
 mod library_utils;
 mod models;
 mod reporting;
+mod subsonic;
 mod ui;
 
 fn main() -> glib::ExitCode {

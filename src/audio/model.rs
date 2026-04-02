@@ -11,7 +11,7 @@ use std::sync::OnceLock;
 
 use crate::{
     audio::player::{AudioPlayer, PlayerEvent, PlayerState},
-    config,
+    config::{self, BackendType},
     models::SongModel,
     reporting::{PlaybackEvent, ReportingManager},
     ui::playback_mode::PlaybackMode,
@@ -378,11 +378,19 @@ impl AudioModel {
     }
 
     pub fn seek(&self, position: u32) {
-        self.player().seek(position as u64);
-        self.set_property("position", position);
-        self.report_event(PlaybackEvent::Seeked {
-            position: position.into(),
-        });
+        if self.player().seek(position as u64).is_ok() {
+            self.set_property("position", position);
+            self.report_event(PlaybackEvent::Seeked {
+                position: position.into(),
+            });
+        } else {
+            let msg = if config::get_backend_type() == BackendType::Subsonic {
+                "Subsonic does not support seeking transcoded streams."
+            } else {
+                "Failed to seek"
+            };
+            self.emit_by_name::<()>("error", &[&msg.to_string()]);
+        }
     }
 
     pub fn get_uri(&self) -> Option<String> {
