@@ -2,7 +2,7 @@
     <img width="150" height="150" src="https://github.com/user-attachments/assets/156e5858-a48e-4ea5-a4e4-6fbcd6644dd7" align="center" /><br />
     <br />
     <strong style="font-size: 26px;">Gelly</strong><br>
-    <em>A native, lightweight Jellyfin client for music. Written in Rust and GTK.</em>
+    <em>A native, lightweight music client for Jellyfin and Subsonic. Built with Rust and GTK.</em>
     🦀🐧
 </p>
 
@@ -10,12 +10,13 @@
 
 ## Features
 
-- [x] Browse by album, artist, song and playlist
-- [x] MPRIS support
+- [x] Supports both Jellyfin and Subsonic/Navidrome backends
+- [x] MPRIS
 - [x] Lyrics
-- [x] Replaygain  
+- [x] Replaygain (Jellyfin only)
+- [x] Transcoding
 - [x] Search
-- [x] Edit Playlists
+- [x] Playlist management
 - [x] Smart Playlists 
 
 ## Installation
@@ -38,7 +39,6 @@ Gelly is available on the [aur](https://aur.archlinux.org/packages/gelly):
 
 
 ### NixOS
-Gelly is currently packaged for unstable. 
 
     nix-shell -p gelly
 
@@ -56,26 +56,23 @@ that might fix this issue.
 
 ## Development
 
-Gelly doesn't have many dependencies. Make sure you have the development libraries 
-for the following installed:
+Make sure you have the development libraries for the following installed:
 
 * GTK
 * Libadwaita
 * Gstreamer
 
-The name of these packages depends on your distribution, but usually something like, 
-for example, `gstreamer-dev`. Note that Arch Linux includes development libs with the main
+The name of these packages depends on your distribution, 
+but will usually be something like `gstreamer-dev`. Note that Arch Linux includes development libs with the main
 package, btw, so you don't need to install anything extra.
+
+Gelly leverages [gtk-rs](https://gtk-rs.org/) for GTK bindings. 
 
 You will also need a rust compiler installed. Gelly does *not* require any nightly 
 features from Rust. 
 
-To make things easy, also install the [just](https://github.com/casey/just) command runner.
-
-Gelly leverages [gtk-rs](https://gtk-rs.org/) for GTK bindings. The majority of the code
-in Gelly is related to these bindings.
-
-Building and launching a development build of Gelly should then simply be a matter of:
+To make things easy, also install the [just](https://github.com/casey/just) command runner. Building and 
+launching a development build of Gelly should then simply be a matter of:
 
     just
 
