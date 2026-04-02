@@ -25,7 +25,8 @@
             </child>
             <child>
               <object class="AdwSwitchRow" id="album_art_background_row">
-                <property name="title" translatable="yes">Blurred album art background</property>
+                <property name="title" translatable="yes">Extra eye candy</property>
+                <property name="subtitle" translatable="yes">Utilizes transparency, blurred backgrounds, etc.</property>
               </object>
             </child>
           </object>
@@ -36,7 +37,7 @@
             <child>
               <object class="AdwActionRow">
                 <property name="title" translatable="yes">Normalize Audio</property>
-                <property name="subtitle" translatable="yes">Normalizes volume levels across tracks. Has no effect on Subsonic backends.</property>
+                <property name="subtitle" translatable="yes">Not supported on Subsonic backends.</property>
                 <property name="use_underline">True</property>
                 <property name="activatable_widget">normalize_audio_switch</property>
                 <child>
