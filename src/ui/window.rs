@@ -703,7 +703,7 @@ mod imp {
             let obj = self.obj();
             album_art_widget_snapshot(
                 snapshot,
-                self.big_player.imp().album_art_paintable.borrow().as_ref(),
+                self.big_player.album_art_paintable().as_ref(),
                 obj.width() as f64,
                 obj.height() as f64,
                 None,
