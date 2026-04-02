@@ -3,22 +3,19 @@
   <requires lib="gtk" version="4.0"/>
   <template class="GellyAlbumArt" parent="GtkBox">
     <property name="halign">center</property>
-		<property name="margin-start">6</property>
+    <property name="margin-start">6</property>
     <property name="margin-end">6</property>
     <property name="margin-top">6</property>
     <property name="margin-bottom">6</property>
     <property name="orientation">vertical</property>
+    <property name="overflow">hidden</property>
+    <style>
+      <class name="card"/>
+    </style>
     <child>
       <object class="GtkOverlay">
         <child>
-          <object class="GtkFrame" id="image_frame">
-            <style>
-              <class name="album-image-frame"/>
-            </style>
-            <property name="child">
-              <object class="GtkImage" id="album_image">
-              </object>
-            </property>
+          <object class="GtkImage" id="album_image">
           </object>
         </child>
         <child type="overlay">
@@ -35,7 +32,6 @@
           <object class="GtkImage" id="error_icon">
             <property name="tooltip-text" translatable="yes">Missing album art</property>
             <property name="icon-name">audio-x-generic-symbolic</property>
-            <property name="pixel-size">100</property>
             <property name="halign">center</property>
             <property name="valign">center</property>
             <property name="visible">false</property>

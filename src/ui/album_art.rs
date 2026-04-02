@@ -192,6 +192,11 @@ mod imp {
                 widget.load_image();
             });
 
+            self.obj()
+                .bind_property("size", &self.error_icon.get(), "pixel-size")
+                .transform_to(move |_, size: u32| Some(((size as f32 * 0.4) as i32).max(1)))
+                .sync_create()
+                .build();
             // Bind the width and height properties to the picture widget
             self.obj()
                 .bind_property("size", &self.album_image.get(), "pixel-size")
