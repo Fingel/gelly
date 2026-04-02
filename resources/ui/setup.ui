@@ -11,63 +11,57 @@
             <child>
               <object class="AdwToolbarView">
                 <child type="top">
-                  <object class="AdwHeaderBar" id="setup_header_bar">
-                    <property name="title-widget">
-                      <object class="AdwWindowTitle">
-                        <property name="title" translatable="yes">Setup Gelly</property>
-                      </object>
-                    </property>
-                  </object>
+                  <object class="AdwHeaderBar"/>
                 </child>
                 <property name="content">
-                  <object class="GtkBox">
-                    <property name="orientation">1</property>
-                    <property name="halign">3</property>
+                  <object class="AdwStatusPage">
+                    <property name="icon-name">network-server-symbolic</property>
+                    <property name="title" translatable="yes">Connect to Server</property>
+                    <property name="description" translatable="yes">Gelly supports Jellyfin and Subsonic/Navidrome. Enter the full server URL including protocol and port. For Jellyfin this is usually 8096, Navidrome uses 4533.</property>
                     <child>
-                      <object class="GtkLabel">
-                        <property name="label" translatable="yes">Connect to Jellyfin</property>
-                        <property name="wrap">true</property>
-                        <property name="margin-bottom">24</property>
-                        <property name="margin-top">24</property>
-                        <style>
-                          <class name="title-1"/>
-                        </style>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkListBox">
-                        <property name="selection-mode">none</property>
-                        <property name="margin-bottom">24</property>
-                        <style>
-                          <class name="boxed-list"/>
-                        </style>
-                        <child>
-                          <object class="AdwEntryRow" id="host_entry">
-                          <property name="title">Host URL</property>
-                          <property name="input-purpose">url</property>
-                          <property name="tooltip-text">Enter the complete server address including protocol (http:// or https://) and port number (:8096)</property>
+                      <object class="AdwClamp">
+                        <property name="child">
+                          <object class="GtkBox">
+                            <property name="orientation">vertical</property>
+                            <property name="spacing">24</property>
+                            <child>
+                              <object class="GtkListBox">
+                                <property name="selection-mode">none</property>
+                                <style>
+                                  <class name="boxed-list"/>
+                                </style>
+                                <child>
+                                  <object class="AdwEntryRow" id="host_entry">
+                                    <property name="title">Host URL</property>
+                                    <property name="input-purpose">url</property>
+                                    <property name="tooltip-text">Enter the complete server address including protocol (http:// or https://) and port number (:8096)</property>
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="AdwEntryRow" id="username_entry">
+                                    <property name="title">Username</property>
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="AdwPasswordEntryRow" id="password_entry">
+                                    <property name="title">Password</property>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkButton" id="connect_button">
+                                <property name="label">Connect</property>
+                                <property name="sensitive">false</property>
+                                <property name="halign">center</property>
+                                <style>
+                                  <class name="suggested-action"/>
+                                  <class name="pill"/>
+                                </style>
+                              </object>
+                            </child>
                           </object>
-                        </child>
-                        <child>
-                          <object class="AdwEntryRow" id="username_entry">
-                            <property name="title">Username</property>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="AdwPasswordEntryRow" id="password_entry">
-                            <property name="title">Password</property>
-                          </object>
-                        </child>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkButton" id="connect_button">
-                        <property name="label">Connect</property>
-                        <property name="sensitive">false</property>
-                        <style>
-                          <class name="suggested-action"/>
-                          <class name="pill"/>
-                        </style>
+                        </property>
                       </object>
                     </child>
                   </object>
@@ -80,62 +74,55 @@
             <child>
               <object class="AdwToolbarView">
                 <child type="top">
-                  <object class="AdwHeaderBar" id="setup_library_header_bar">
-                    <property name="title-widget">
-                      <object class="AdwWindowTitle">
-                        <property name="title" translatable="yes">Select Library</property>
-                      </object>
-                    </property>
-                  </object>
+                  <object class="AdwHeaderBar"/>
                 </child>
                 <property name="content">
-                  <object class="GtkBox">
-                    <property name="orientation">vertical</property>
-                    <property name="halign">center</property>
-                    <property name="hexpand">true</property>
-                    <property name="spacing">24</property>
-                    <property name="margin-bottom">24</property>
-                    <property name="margin-top">24</property>
+                  <object class="AdwStatusPage">
+                    <property name="icon-name">folder-new-symbolic</property>
+                    <property name="title" translatable="yes">Select Library</property>
+                    <property name="description" translatable="yes">Choose which library Gelly will use to load your music.</property>
                     <child>
-                      <object class="GtkLabel">
-                        <property name="label" translatable="yes">Select music library</property>
-                        <property name="wrap">true</property>
-                        <style>
-                          <class name="title-1"/>
-                        </style>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkListBox" id="library_list">
-                        <property name="selection-mode">none</property>
-                        <style>
-                          <class name="boxed-list"/>
-                        </style>
-                        <child>
-                          <object class="AdwComboRow" id="library_combo">
-                            <property name="title" translatable="yes">Library: </property>
+                      <object class="AdwClamp">
+                        <property name="child">
+                          <object class="GtkBox">
+                            <property name="orientation">vertical</property>
+                            <property name="spacing">24</property>
+                            <child>
+                              <object class="GtkListBox">
+                                <property name="selection-mode">none</property>
+                                <style>
+                                  <class name="boxed-list"/>
+                                </style>
+                                <child>
+                                  <object class="AdwComboRow" id="library_combo">
+                                    <property name="title" translatable="yes">Library</property>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkButton" id="library_button">
+                                <property name="label">Launch Gelly</property>
+                                <property name="sensitive">false</property>
+                                <property name="halign">center</property>
+                                <style>
+                                  <class name="suggested-action"/>
+                                  <class name="pill"/>
+                                </style>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkButton" id="cancel_library_button">
+                                <property name="label">Cancel</property>
+                                <property name="halign">center</property>
+                                <style>
+                                  <class name="destructive-action"/>
+                                  <class name="flat"/>
+                                </style>
+                              </object>
+                            </child>
                           </object>
-                        </child>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkButton" id="library_button">
-                        <property name="label">Launch Gelly</property>
-                        <property name="sensitive">false</property>
-                        <style>
-                          <class name="suggested-action"/>
-                          <class name="pill"/>
-                        </style>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkButton" id="cancel_library_button">
-                        <property name="label">Cancel</property>
-                        <property name="halign">center</property>
-                        <style>
-                          <class name="destructive-action"/>
-                          <class name="flat"/>
-                        </style>
+                        </property>
                       </object>
                     </child>
                   </object>

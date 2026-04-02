@@ -5,7 +5,7 @@ use thiserror::Error;
 
 use crate::{
     async_utils::spawn_tokio,
-    jellyfin::{Jellyfin, JellyfinError},
+    backend::{Backend, BackendError},
 };
 
 #[derive(Error, Debug)]
@@ -14,7 +14,7 @@ pub enum StreamInfoError {
     Glib(#[from] glib::Error),
 
     #[error("Jellyfin error: {0}")]
-    Jellyfin(#[from] JellyfinError),
+    Jellyfin(#[from] BackendError),
 }
 
 #[derive(Default, Debug)]
@@ -42,7 +42,7 @@ pub struct StreamInfo {
 pub fn discover_stream_info(
     uri: &str,
     song_id: &str,
-    jellyfin: &Jellyfin,
+    jellyfin: &Backend,
     callback: impl FnOnce(StreamInfo) + 'static,
 ) {
     let uri = uri.to_string();

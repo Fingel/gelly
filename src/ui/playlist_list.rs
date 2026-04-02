@@ -1,8 +1,9 @@
 use crate::{
     application::Application,
     async_utils::spawn_tokio,
+    backend::BackendError,
     config,
-    jellyfin::{JellyfinError, api::MusicDto},
+    jellyfin::api::MusicDto,
     library_utils::songs_for_playlist,
     models::{
         PlaylistModel, SongModel,
@@ -54,7 +55,7 @@ impl TopPage for PlaylistList {
                 glib::clone!(
                     #[weak(rename_to=playlist_list)]
                     self,
-                    move |result: Result<Vec<MusicDto>, JellyfinError>| {
+                    move |result: Result<Vec<MusicDto>, BackendError>| {
                         match result {
                             Ok(music_data) => {
                                 let songs: Vec<SongModel> =

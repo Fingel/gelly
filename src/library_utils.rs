@@ -1,5 +1,5 @@
 use crate::application::Application;
-use crate::jellyfin::JellyfinError;
+use crate::backend::BackendError;
 use crate::jellyfin::api::MusicDto;
 use crate::models::{AlbumModel, ArtistModel, PlaylistModel, SongModel};
 use rand::prelude::*;
@@ -107,7 +107,7 @@ pub fn most_played_songs(library: &[MusicDto], num: u64) -> Vec<MusicDto> {
 pub fn songs_for_playlist(
     playlist_model: &PlaylistModel,
     app: &Application,
-    cb: impl Fn(Result<Vec<MusicDto>, JellyfinError>) + 'static,
+    cb: impl Fn(Result<Vec<MusicDto>, BackendError>) + 'static,
 ) {
     let library_data = app.library().borrow().clone();
     let jellyfin = app.jellyfin();
