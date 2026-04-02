@@ -2,7 +2,8 @@ use crate::{
     audio::{model::AudioModel, stream_info::discover_stream_info},
     library_utils::{album_for_item, artist_for_item},
     ui::{
-        album_art::AlbumArt, lyrics::Lyrics, stream_info_dialog, widget_ext::WidgetApplicationExt,
+        album_art::AlbumArt, album_art_background::draw_background, lyrics::Lyrics,
+        stream_info_dialog, widget_ext::WidgetApplicationExt,
     },
 };
 use adw::prelude::*;
@@ -45,6 +46,25 @@ where
     fn artist_label(&self) -> &gtk::Label;
     fn album_label(&self) -> &gtk::Label;
     fn album_art(&self) -> &AlbumArt;
+
+    fn snapshot_background(&self, snapshot: &gtk::Snapshot) {
+        let obj = self.obj();
+        let root = obj.get_root_window();
+        if let Some(p) = root.blurred_paintable() {
+            let root_w = root.width();
+            let root_h = root.height();
+            draw_background(
+                snapshot,
+                &p,
+                root_w as f64,
+                root_h as f64,
+                Some((
+                    (obj.width() - root_w) as f32,
+                    (obj.height() - root_h) as f32,
+                )),
+            );
+        }
+    }
 
     fn update_play_pause_button(&self, playing: bool) {
         let btn = self.play_pause_button();

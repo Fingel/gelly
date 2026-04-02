@@ -56,3 +56,11 @@ listview.boxed-list > row {
 listview.boxed-list > row:hover {
     background-color: alpha(currentColor, 0.05);
 }
+
+.album-art-background .sidebar-pane {
+    background: transparent;
+}
+
+.album-art-background listview.boxed-list {
+    background-color: color-mix(in oklab, @card_bg_color 60%, transparent 40%);
+}

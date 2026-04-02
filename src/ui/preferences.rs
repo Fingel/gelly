@@ -62,6 +62,13 @@ impl Preferences {
                 "active",
             )
             .build();
+        settings
+            .bind(
+                "album-art-window-background",
+                &*imp.album_art_background_row,
+                "active",
+            )
+            .build();
 
         // Transcoding Profile
         imp.transcoding_profile_row
@@ -112,6 +119,8 @@ mod imp {
         pub playlist_shuffle_enabled_switch: TemplateChild<gtk::Switch>,
         #[template_child]
         pub playlist_most_played_enabled_switch: TemplateChild<gtk::Switch>,
+        #[template_child]
+        pub album_art_background_row: TemplateChild<adw::SwitchRow>,
     }
 
     #[glib::object_subclass]

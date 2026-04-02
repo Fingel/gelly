@@ -20,6 +20,10 @@ glib::wrapper! {
 }
 
 impl Window {
+    pub fn blurred_paintable(&self) -> Option<gtk::gdk::Paintable> {
+        self.imp().blurred_paintable.borrow().clone()
+    }
+
     pub fn new(app: &Application) -> Self {
         let window: Self = Object::builder().property("application", app).build();
         if !app.setup_complete() {
@@ -233,6 +237,7 @@ impl Window {
 }
 
 mod imp {
+    use std::cell::RefCell;
     use std::sync::OnceLock;
 
     use adw::subclass::prelude::*;
@@ -246,6 +251,7 @@ mod imp {
     use log::{debug, warn};
 
     use crate::ui::{
+        album_art_background::{create_blur_paintable, draw_background},
         artist_detail::ArtistDetail,
         page_traits::TopPage,
         player_bar::{big_player::BigPlayer, mini_player::MiniPlayerBar},
@@ -316,6 +322,8 @@ mod imp {
         pub search_bar: TemplateChild<gtk::SearchBar>,
         #[template_child]
         pub search_entry: TemplateChild<gtk::SearchEntry>,
+
+        pub blurred_paintable: RefCell<Option<gtk::gdk::Paintable>>,
     }
 
     #[glib::object_subclass]
@@ -671,6 +679,25 @@ mod imp {
                 .connect_reveal_bottom_bar_notify(update_margin.clone());
             self.bottom_sheet
                 .connect_bottom_bar_height_notify(update_margin);
+
+            self.big_player.connect_album_art_paintable_notify(clone!(
+                #[weak(rename_to = this)]
+                self,
+                move |_| {
+                    this.update_blurred_paintable();
+                }
+            ));
+
+            config::settings().connect_changed(
+                Some("album-art-window-background"),
+                clone!(
+                    #[weak(rename_to = this)]
+                    self,
+                    move |_, _| {
+                        this.update_blurred_paintable();
+                    }
+                ),
+            );
         }
 
         fn signals() -> &'static [Signal] {
@@ -685,7 +712,40 @@ mod imp {
         }
     }
 
-    impl WidgetImpl for Window {}
+    impl Window {
+        fn update_blurred_paintable(&self) {
+            let blurred = if config::settings().boolean("album-art-window-background") {
+                self.big_player.album_art_paintable().and_then(|p| {
+                    let obj = self.obj();
+                    create_blur_paintable(
+                        obj.upcast_ref::<gtk::Widget>(),
+                        &p,
+                        obj.width(),
+                        obj.height(),
+                    )
+                })
+            } else {
+                None
+            };
+            if blurred.is_some() {
+                self.obj().add_css_class("album-art-background");
+            } else {
+                self.obj().remove_css_class("album-art-background");
+            }
+            *self.blurred_paintable.borrow_mut() = blurred;
+            self.obj().queue_draw();
+        }
+    }
+
+    impl WidgetImpl for Window {
+        fn snapshot(&self, snapshot: &gtk::Snapshot) {
+            if let Some(p) = self.blurred_paintable.borrow().as_ref() {
+                let obj = self.obj();
+                draw_background(snapshot, p, obj.width() as f64, obj.height() as f64, None);
+            }
+            self.parent_snapshot(snapshot);
+        }
+    }
 
     impl WindowImpl for Window {
         fn close_request(&self) -> glib::Propagation {

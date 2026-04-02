@@ -160,6 +160,9 @@ mod imp {
 
         #[property(get, set)]
         pub duration: RefCell<u32>,
+
+        #[property(nullable, get, set)]
+        pub album_art_paintable: RefCell<Option<gtk::gdk::Paintable>>,
     }
 
     #[glib::object_subclass]
@@ -184,11 +187,28 @@ mod imp {
             self.setup_common_signals();
             self.setup_clickable_labels();
             self.setup_volume_icons();
+
+            self.album_art.connect_closure(
+                "album-art-changed",
+                true,
+                glib::closure_local!(
+                    #[weak(rename_to = this)]
+                    self,
+                    move |_: AlbumArt, has_album_art: bool| {
+                        this.update_album_art_paintable(has_album_art);
+                    }
+                ),
+            );
         }
     }
 
     impl BoxImpl for BigPlayer {}
-    impl WidgetImpl for BigPlayer {}
+    impl WidgetImpl for BigPlayer {
+        fn snapshot(&self, snapshot: &gtk::Snapshot) {
+            self.snapshot_background(snapshot);
+            self.parent_snapshot(snapshot);
+        }
+    }
 
     impl PlayerImp for BigPlayer {
         fn audio_model(&self) -> &AudioModel {
@@ -250,6 +270,17 @@ mod imp {
         }
         fn album_art(&self) -> &AlbumArt {
             &self.album_art
+        }
+    }
+
+    impl BigPlayer {
+        pub fn update_album_art_paintable(&self, has_album_art: bool) {
+            let paintable = if has_album_art {
+                self.album_art.imp().album_image.paintable()
+            } else {
+                None
+            };
+            self.obj().set_album_art_paintable(paintable);
         }
     }
 }

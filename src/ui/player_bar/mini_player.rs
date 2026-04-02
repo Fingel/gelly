@@ -220,7 +220,12 @@ mod imp {
     }
 
     impl adw::subclass::prelude::BreakpointBinImpl for MiniPlayerBar {}
-    impl WidgetImpl for MiniPlayerBar {}
+    impl WidgetImpl for MiniPlayerBar {
+        fn snapshot(&self, snapshot: &gtk::Snapshot) {
+            self.snapshot_background(snapshot);
+            self.parent_snapshot(snapshot);
+        }
+    }
 
     impl PlayerImp for MiniPlayerBar {
         fn audio_model(&self) -> &AudioModel {
