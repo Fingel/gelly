@@ -62,5 +62,5 @@ listview.boxed-list > row:hover {
 }
 
 .album-art-background listview.boxed-list {
-	background-color: color-mix(in oklab, @card_bg_color 40%, transparent 60%);
+    background-color: color-mix(in oklab, @card_bg_color 60%, transparent 40%);
 }

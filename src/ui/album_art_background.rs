@@ -8,7 +8,7 @@ pub fn album_art_widget_snapshot(
     translate: Option<(f32, f32)>,
 ) {
     if let Some(texture) = paintable {
-        snapshot.push_opacity(0.25);
+        snapshot.push_opacity(0.15);
         snapshot.push_blur(80.0);
         if let Some((tx, ty)) = translate {
             snapshot.translate(&Point::new(tx, ty));
