@@ -132,11 +132,7 @@ mod imp {
 
     use crate::{
         audio::model::AudioModel,
-        config,
-        ui::{
-            album_art::AlbumArt, album_art_background::album_art_widget_snapshot,
-            playback_mode::PlaybackModeMenu, player_bar::common::PlayerImp,
-        },
+        ui::{album_art::AlbumArt, playback_mode::PlaybackModeMenu, player_bar::common::PlayerImp},
     };
     use adw::{prelude::*, subclass::prelude::*};
     use glib::{Properties, WeakRef, subclass::InitializingObject};
@@ -196,9 +192,6 @@ mod imp {
 
         #[property(get, set)]
         pub duration: RefCell<u32>,
-
-        #[property(get, set)]
-        pub use_album_art_background: RefCell<bool>,
     }
 
     #[glib::object_subclass]
@@ -223,38 +216,13 @@ mod imp {
             self.setup_common_signals();
             self.setup_clickable_labels();
             self.setup_volume_icons();
-
-            let settings = config::settings();
-            settings
-                .bind(
-                    "album-art-window-background",
-                    &*self.obj(),
-                    "use-album-art-background",
-                )
-                .build();
         }
     }
 
     impl adw::subclass::prelude::BreakpointBinImpl for MiniPlayerBar {}
     impl WidgetImpl for MiniPlayerBar {
         fn snapshot(&self, snapshot: &gtk::Snapshot) {
-            if *self.use_album_art_background.borrow() {
-                let obj = self.obj();
-                if let Some(root) = obj.root() {
-                    let root_w = root.width();
-                    let root_h = root.height();
-                    album_art_widget_snapshot(
-                        snapshot,
-                        self.album_art().imp().album_image.paintable().as_ref(),
-                        root_w as f64,
-                        root_h as f64,
-                        Some((
-                            (obj.width() - root_w) as f32,
-                            (obj.height() - root_h) as f32,
-                        )),
-                    );
-                }
-            }
+            self.snapshot_background(snapshot);
             self.parent_snapshot(snapshot);
         }
     }
