@@ -4,17 +4,17 @@
   <id>io.m51.Gelly</id>
   <name>Gelly</name>
   <launchable type="desktop-id">io.m51.Gelly.desktop</launchable>
-  <summary>Jellyfin client focused on music</summary>
+  <summary>Music player for Jellyfin and Subsonic</summary>
   <description>
     <p>
-      A native, lightweight Jellyfin client designed specifically for enjoying
-      your music library.
+      A native, lightweight music player for streaming from Jellyfin and Subsonic/Navidrome servers.
     </p>
     <ul>
-      <li>Browse your music collection by artist, album, song and playlist</li>
+      <li>Supports both Jellyfin and Subsonic/Navidrome backends</li>
       <li>Modern GTK/Adwaita interface with MPRIS support</li>
-      <li>Support for lyrics with timestamp tracking</li>
-      <li>Written in Rust</li>
+      <li>Lyrics with tracking</li>
+      <li>Replaygain</li>
+      <li>Built with Rust</li>
     </ul>
   </description>
   <content_rating type="oars-1.1"/>
@@ -37,6 +37,27 @@
     </screenshot>
   </screenshots>
   <releases>
+    <release version="1.1.0" date="2026-04-03">
+      <description>
+        <ul>
+          <li>
+            Gelly now supports Subsonic/Navidrome! To change backends, log out to restart the setup process.
+            Thank you @dstapp for the contribution!</li>
+          <li>
+            New blurred background effect using cover art, a real win for eye candy enthusiasts.
+            Can be disabled in preferences. Thank you @GabMus!
+          </li>
+          <li>Additional interface improvements and refinements, @GabMus continues to polish the UI.</li>
+          <li>
+            Lyrics improvements: better timestamp tracking and the ability to jump to a lyric
+            by clicking on it.
+          </li>
+          <li>
+            Volume can now be adjusted by scrolling the volume button. Middle click to mute.
+          </li>
+        </ul>
+      </description>
+    </release>
     <release version="1.0.1" date="2026-03-29">
       <description>
         <ul>
@@ -304,6 +325,8 @@
   </categories>
   <keywords>
     <keyword>Jellyfin</keyword>
+    <keyword>Subsonic</keyword>
+    <keyword>Navidrome</keyword>
   </keywords>
   <icon type="stock">io.m51.Gelly</icon>
   <branding>
