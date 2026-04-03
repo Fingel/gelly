@@ -12,6 +12,10 @@ glib::wrapper! {
         @implements gio::ActionMap, gio::ActionGroup, gtk::Accessible, gtk::Buildable, gtk::ConstraintTarget;
 }
 
+// Since we only have seconds precision on audio position, but lyrics are synced to ms,
+// we add a small fudge because being slightly early feels better than being slightly late.
+const LYRICS_FUDGE: u64 = 10_000_000;
+
 impl Lyrics {
     pub fn new() -> Self {
         Object::builder().build()
@@ -127,14 +131,14 @@ impl Lyrics {
     }
 
     fn update_lyrics_position(&self, position: u32) {
-        let ticks = u64::from(position) * 10_000_000; // Jellyfin ticks
+        let ticks = u64::from(position).saturating_mul(10_000_000); // Jellyfin ticks
         let lyrics = self.imp().lyrics.borrow();
         let labels = self.imp().lyrics_labels.borrow();
 
         // Find the index of the currently playing lyric (last lyric that has started)
-        let current_lyric_index = lyrics
-            .iter()
-            .rposition(|lyric| lyric.start.unwrap_or(u64::MAX) < ticks);
+        let current_lyric_index = lyrics.iter().rposition(|lyric| {
+            lyric.start.unwrap_or(u64::MAX) <= ticks.saturating_add(LYRICS_FUDGE)
+        });
 
         for (i, label) in labels.iter().enumerate() {
             let is_current = Some(i) == current_lyric_index;
