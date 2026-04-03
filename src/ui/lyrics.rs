@@ -1,5 +1,5 @@
 use glib::Object;
-use gtk::{gio, glib, prelude::*, subclass::prelude::*};
+use gtk::{gdk, gio, glib, prelude::*, subclass::prelude::*};
 use log::debug;
 
 use crate::{
@@ -121,6 +121,23 @@ impl Lyrics {
             label.set_justify(gtk::Justification::Center);
             label.set_valign(gtk::Align::Start);
             label.set_halign(gtk::Align::Center);
+
+            if let Some(ticks) = lyric.start {
+                label.set_cursor(gdk::Cursor::from_name("pointer", None).as_ref());
+
+                let gesture = gtk::GestureClick::new();
+                gesture.connect_pressed(glib::clone!(
+                    #[weak(rename_to = lyrics)]
+                    self,
+                    move |_, _, _, _| {
+                        let seconds = (ticks / 10_000_000) as u32;
+                        if let Some(audio_model) = lyrics.imp().audio_model.get() {
+                            audio_model.seek(seconds);
+                        }
+                    }
+                ));
+                label.add_controller(gesture);
+            }
 
             imp.lyrics_box.append(&label);
             labels.push(label);
