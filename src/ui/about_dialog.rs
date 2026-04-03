@@ -9,7 +9,7 @@ pub fn show(parent: &Window) {
         dialog.set_version("Devel");
     }
 
-    dialog.set_developers(&["Austin Riba <austin@m51.io>", "GabMus"]);
+    dialog.set_developers(&["Austin Riba <austin@m51.io>", "Gabriele Musco <gabmus@disroot.org>"]);
     dialog.set_artists(&["Jakub Steiner"]);
     dialog.add_link(
         "Hire me for your next project!",
