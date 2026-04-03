@@ -35,7 +35,7 @@
                         <property name="justify">center</property>
                         <property name="halign">center</property>
                         <style>
-                          <class name="title-3"/>
+                          <class name="title-1"/>
                         </style>
                       </object>
                     </child>
@@ -45,7 +45,7 @@
                         <property name="justify">center</property>
                         <property name="halign">center</property>
                         <style>
-                          <class name="dim-label"/>
+                          <class name="title-3"/>
                         </style>
                       </object>
                     </child>
