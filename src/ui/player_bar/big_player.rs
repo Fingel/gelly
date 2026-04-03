@@ -6,7 +6,7 @@ use log::debug;
 
 glib::wrapper! {
     pub struct BigPlayer(ObjectSubclass<imp::BigPlayer>)
-    @extends gtk::Widget, gtk::Box,
+    @extends gtk::Widget, adw::Bin,
         @implements gio::ActionMap, gio::ActionGroup, gtk::Accessible, gtk::Buildable, gtk::ConstraintTarget;
 }
 
@@ -169,7 +169,7 @@ mod imp {
     impl ObjectSubclass for BigPlayer {
         const NAME: &'static str = "GellyBigPlayer";
         type Type = super::BigPlayer;
-        type ParentType = gtk::Box;
+        type ParentType = adw::Bin;
 
         fn class_init(klass: &mut Self::Class) {
             klass.bind_template();
@@ -202,7 +202,7 @@ mod imp {
         }
     }
 
-    impl BoxImpl for BigPlayer {}
+    impl BinImpl for BigPlayer {}
     impl WidgetImpl for BigPlayer {
         fn snapshot(&self, snapshot: &gtk::Snapshot) {
             self.snapshot_background(snapshot);

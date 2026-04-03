@@ -1,31 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
   <requires lib="gtk" version="4.0"/>
-  <template class="GellyBigPlayer" parent="GtkBox">
-    <property name="orientation">vertical</property>
-    <property name="visible">true</property>
-    <property name="spacing">6</property>
-    <property name="margin-start">6</property>
-    <property name="margin-end">6</property>
-    <property name="margin-top">48</property>
-    <property name="margin-bottom">6</property>
-    <child>
-      <!-- Song info section -->
-      <object class="GtkBox">
-        <property name="halign">center</property>
-        <child>
-          <object class="GellyAlbumArt" id="album_art">
-            <property name="size">256</property>
-          </object>
-        </child>
-      </object>
-    </child>
+  <template class="GellyBigPlayer" parent="AdwBin">
     <child>
       <object class="GtkBox">
         <property name="orientation">vertical</property>
         <property name="spacing">6</property>
         <property name="valign">center</property>
         <property name="hexpand">true</property>
+        <property name="margin-top">48</property>
+        <property name="margin-start">6</property>
+        <property name="margin-end">6</property>
+        <property name="margin-bottom">6</property>
         <child>
           <object class="GtkBox">
             <property name="orientation">vertical</property>
@@ -33,10 +19,16 @@
             <property name="valign">center</property>
             <property name="hexpand">true</property>
             <child>
+              <object class="GellyAlbumArt" id="album_art">
+                <property name="size">256</property>
+              </object>
+            </child>
+            <child>
               <object class="GtkLabel" id="title_label">
                 <property name="halign">center</property>
                 <property name="ellipsize">end</property>
-                <property name="max-width-chars">30</property>
+                <property name="margin-start">12</property>
+                <property name="margin-end">12</property>
                 <style>
                   <class name="heading"/>
                 </style>
