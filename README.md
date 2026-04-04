@@ -6,7 +6,7 @@
     🦀🐧
 </p>
 
-<img width="920" height="675" alt="gelly-2026-02-12-2" src="https://github.com/user-attachments/assets/3e6d349c-6766-4409-99bb-bbba9cf909aa" />
+<img width="873" height="769" alt="Screenshot From 2026-04-03 21-02-02" src="https://github.com/user-attachments/assets/fa25aece-ebe7-4cfc-8882-610881b70cc3" />
 
 ## Features
 
