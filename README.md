@@ -86,3 +86,11 @@ See the recipes in the [justfile](justfile) for other useful commands.
 
 ## Contributing
 See [CONTRIBUTING.md](CONTRIBUTING.md)
+
+## Special Thanks
+@gabMus for all the great UI work and polish
+
+@dstapp for the Subsonic backend
+
+## Contact
+I hang out on [libera.chat](https://libera.chat/) in [#gelly](irc://irc.libera.chat:6667/%23gelly)
