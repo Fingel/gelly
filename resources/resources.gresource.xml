@@ -24,7 +24,11 @@
     <file compressed="true" preprocess="xml-stripblanks">ui/preferences.ui</file>
     <file compressed="true" preprocess="xml-stripblanks">ui/lyrics.ui</file>
     <file compressed="true" preprocess="xml-stripblanks">ui/playback_mode.ui</file>
+    <file compressed="true" preprocess="xml-stripblanks">icons/audio-x-generic-symbolic.svg</file>
+    <file compressed="true" preprocess="xml-stripblanks">icons/media-optical-cd-audio-symbolic.svg</file>
+    <file compressed="true" preprocess="xml-stripblanks">icons/org.gnome.Settings-users-symbolic.svg</file>
     <file compressed="true" preprocess="xml-stripblanks">icons/subtitles-symbolic.svg</file>
+    <file compressed="true" preprocess="xml-stripblanks">icons/text-editor-symbolic.svg</file>
     <file alias="metainfo.xml" compressed="true">io.m51.Gelly.metainfo.xml</file>
   </gresource>
 </gresources>
