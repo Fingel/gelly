@@ -487,6 +487,9 @@ impl Subsonic {
         let url = self.rest_url("getCoverArt");
         let mut params = self.auth_params();
         params.retain(|(k, _)| k != "f");
+        if !matches!(image_type, ImageType::Backdrop) {
+            params.push(("size".to_string(), "200".to_string()));
+        }
         params.push(("id".to_string(), item_id.to_string()));
 
         let response = self.client.get(url).query(&params).send().await?;
