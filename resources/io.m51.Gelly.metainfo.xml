@@ -37,6 +37,18 @@
     </screenshot>
   </screenshots>
   <releases>
+    <release version="1.1.1" date="2026-04-05">
+      <description>
+        <ul>
+          <li>
+            Fixed a bug in the subsonic backend causing full sized album art to be downloaded
+          </li>
+          <li>
+            Misc performance improvements
+          </li>
+        </ul>
+      </description>
+    </release>
     <release version="1.1.0" date="2026-04-03">
       <description>
         <ul>
