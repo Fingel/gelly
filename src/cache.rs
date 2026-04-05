@@ -1,14 +1,20 @@
-use std::{collections::HashSet, fs, os::unix, path::PathBuf, sync::Arc, time::Duration};
+use std::{
+    collections::HashSet, fs, num::NonZeroUsize, os::unix, path::PathBuf, sync::Arc, time::Duration,
+};
 
+use gtk::gdk;
 use log::{debug, warn};
+use lru::LruCache;
 use serde::{Deserialize, Serialize, de::DeserializeOwned};
 use thiserror::Error;
 use tokio::sync::{Mutex, Semaphore};
 
 use crate::{
+    async_utils::run_on_tokio,
     backend::{Backend, BackendError},
     config::APP_ID,
     jellyfin::api::{ImageType, MusicDto, MusicDtoList, PlaylistDto, PlaylistDtoList},
+    ui::image_utils::bytes_to_texture,
 };
 
 // Cache versions of the library structs that fail on deserialization errors instead of skipping.
@@ -72,6 +78,9 @@ pub enum CacheError {
 
     #[error("Deserialization error: {0}")]
     Deserialize(#[from] serde_json::Error),
+
+    #[error("Image decode error: {0}")]
+    Decode(String),
 }
 
 fn get_cache_directory(name: &str) -> Result<PathBuf, CacheError> {
@@ -128,10 +137,15 @@ impl LibraryCache {
     }
 }
 
+const MAX_TEXTURE_CACHE_ENTRIES: usize = 500;
+
+type TextureCache = LruCache<String, gdk::Texture>;
+
 #[derive(Debug, Clone)]
 pub struct ImageCache {
     pending_requests: Arc<Mutex<HashSet<String>>>,
     download_semaphore: Arc<Semaphore>,
+    texture_cache: Arc<std::sync::Mutex<TextureCache>>,
     cache_dir: PathBuf,
 }
 
@@ -144,13 +158,16 @@ impl ImageCache {
         Ok(Self {
             pending_requests: Arc::new(Mutex::new(HashSet::new())),
             download_semaphore: Arc::new(Semaphore::new(MAX_CONCURRENT_DOWNLOADS)),
+            texture_cache: Arc::new(std::sync::Mutex::new(LruCache::new(
+                NonZeroUsize::new(MAX_TEXTURE_CACHE_ENTRIES).unwrap(),
+            ))),
             cache_dir,
         })
     }
 
     /// Retrieve the main album art for an item.
     /// Fallback is an id (usually a parent item) that is more likely to have an image.
-    pub async fn get_primary_images(
+    async fn get_primary_images(
         &self,
         primary: &str,
         fallback: Option<&str>,
@@ -177,7 +194,7 @@ impl ImageCache {
         }
     }
 
-    pub async fn get_image(
+    async fn get_image(
         &self,
         item_id: &str,
         image_type: ImageType,
@@ -264,7 +281,75 @@ impl ImageCache {
         }
     }
 
+    fn cached_texture(&self, item_id: &str, image_type: ImageType) -> Option<gdk::Texture> {
+        let key = format!("{}:{}", image_type.as_str(), item_id);
+        self.texture_cache.lock().unwrap().get(&key).cloned()
+    }
+
+    /// Decode raw image bytes into a Texture using glycin, cache it, and return it.
+    async fn decode_and_cache_texture(
+        &self,
+        item_id: &str,
+        image_type: ImageType,
+        image_data: &[u8],
+    ) -> Result<gdk::Texture, CacheError> {
+        let texture = bytes_to_texture(image_data)
+            .await
+            .map_err(|e| CacheError::Decode(e.to_string()))?;
+        let key = format!("{}:{}", image_type.as_str(), item_id);
+        self.texture_cache.lock().unwrap().put(key, texture.clone());
+        Ok(texture)
+    }
+
+    /// Get or fetch a texture for a specific image type.
+    pub async fn get_texture(
+        &self,
+        item_id: &str,
+        image_type: ImageType,
+        jellyfin: &Backend,
+    ) -> Result<gdk::Texture, CacheError> {
+        if let Some(texture) = self.cached_texture(item_id, image_type) {
+            return Ok(texture);
+        }
+        let image_data = run_on_tokio({
+            let cache = self.clone();
+            let item_id = item_id.to_string();
+            let jellyfin = jellyfin.clone();
+            async move { cache.get_image(&item_id, image_type, &jellyfin).await }
+        })
+        .await?;
+        self.decode_and_cache_texture(item_id, image_type, &image_data)
+            .await
+    }
+
+    /// Get or fetch the primary texture for an item, with optional fallback id.
+    pub async fn get_primary_texture(
+        &self,
+        primary: &str,
+        fallback: Option<&str>,
+        jellyfin: &Backend,
+    ) -> Result<gdk::Texture, CacheError> {
+        if let Some(texture) = self.cached_texture(primary, ImageType::Primary) {
+            return Ok(texture);
+        }
+        let image_data = run_on_tokio({
+            let cache = self.clone();
+            let primary = primary.to_string();
+            let fallback = fallback.map(str::to_string);
+            let jellyfin = jellyfin.clone();
+            async move {
+                cache
+                    .get_primary_images(&primary, fallback.as_deref(), &jellyfin)
+                    .await
+            }
+        })
+        .await?;
+        self.decode_and_cache_texture(primary, ImageType::Primary, &image_data)
+            .await
+    }
+
     pub fn clear_cache(&self) {
+        self.texture_cache.lock().unwrap().clear();
         _ = fs::remove_dir_all(&self.cache_dir);
         _ = fs::create_dir_all(&self.cache_dir);
     }

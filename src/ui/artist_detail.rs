@@ -5,7 +5,6 @@ use crate::{
     models::{AlbumModel, ArtistModel},
     ui::{
         album_detail::AlbumDetail,
-        image_utils::bytes_to_texture,
         music_context_menu::{ContextActions, construct_menu, create_actiongroup},
         page_traits::DetailPage,
         widget_ext::WidgetApplicationExt,
@@ -64,7 +63,6 @@ impl ArtistDetail {
     }
 
     pub fn load_banner_image(&self) {
-        // clear existing image
         self.imp().banner_image.set_paintable(None::<&Texture>);
         let Some(image_cache) = self.get_application().image_cache() else {
             return;
@@ -74,46 +72,24 @@ impl ArtistDetail {
         };
         let jellyfin = self.get_application().jellyfin();
         let item_id = model.id();
-        spawn_tokio(
-            async move {
-                image_cache
-                    .get_image(&item_id, ImageType::Backdrop, &jellyfin)
-                    .await
-            },
-            glib::clone!(
-                #[weak(rename_to = artist_detail)]
-                self,
-                move |result| {
-                    match result {
-                        Ok(image_data) => {
-                            artist_detail.imp().banner_overlay.set_height_request(300);
-                            artist_detail.set_image(&image_data);
-                        }
-                        Err(err) => {
-                            artist_detail.imp().banner_overlay.set_height_request(75);
-                            warn!("Failed to load artist banner image: {}", err);
-                        }
-                    }
-                }
-            ),
-        );
-    }
-
-    pub fn set_image(&self, image_data: &[u8]) {
-        let image_data_copy = image_data.to_vec();
         glib::spawn_future_local(glib::clone!(
-            #[weak(rename_to=artist_detail)]
+            #[weak(rename_to = artist_detail)]
             self,
             async move {
-                match bytes_to_texture(&image_data_copy).await {
+                match image_cache
+                    .get_texture(&item_id, ImageType::Backdrop, &jellyfin)
+                    .await
+                {
                     Ok(texture) => {
+                        artist_detail.imp().banner_overlay.set_height_request(300);
                         artist_detail
                             .imp()
                             .banner_image
                             .set_paintable(Some(&texture));
                     }
                     Err(err) => {
-                        warn!("Failed to load album image: {}", err);
+                        artist_detail.imp().banner_overlay.set_height_request(75);
+                        warn!("Failed to load artist banner image: {}", err);
                     }
                 }
             }

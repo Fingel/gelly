@@ -1,7 +1,4 @@
-use crate::{
-    async_utils::spawn_tokio,
-    ui::{image_utils::bytes_to_texture, widget_ext::WidgetApplicationExt},
-};
+use crate::ui::widget_ext::WidgetApplicationExt;
 use glib::Object;
 use gtk::{
     gio,
@@ -9,7 +6,7 @@ use gtk::{
     prelude::WidgetExt,
     subclass::prelude::*,
 };
-use log::{debug, warn};
+use log::warn;
 
 glib::wrapper! {
     pub struct AlbumArt(ObjectSubclass<imp::AlbumArt>)
@@ -34,24 +31,6 @@ impl AlbumArt {
                 self.load_image();
             }
         }
-    }
-
-    pub fn set_image(&self, image_data: &[u8]) {
-        let image_data_copy = image_data.to_vec();
-        glib::spawn_future_local(glib::clone!(
-            #[weak(rename_to=album_art)]
-            self,
-            async move {
-                match bytes_to_texture(&image_data_copy).await {
-                    Ok(texture) => {
-                        album_art.imp().album_image.set_paintable(Some(&texture));
-                    }
-                    Err(err) => {
-                        warn!("Failed to load album image: {}", err);
-                    }
-                }
-            }
-        ));
     }
 
     pub fn set_loading(&self, loading: bool) {
@@ -91,42 +70,32 @@ impl AlbumArt {
         };
 
         let jellyfin = self.get_application().jellyfin();
-
         self.set_loading(true);
 
-        // Track item id in case widget is recycled before loading completes
-        let expected_item_id = item_id.clone();
-        spawn_tokio(
+        glib::spawn_future_local(glib::clone!(
+            #[weak(rename_to = album_art)]
+            self,
             async move {
-                image_cache
-                    .get_primary_images(&item_id, fallback_id.as_deref(), &jellyfin)
-                    .await
-            },
-            glib::clone!(
-                #[weak(rename_to = album_art)]
-                self,
-                move |result| {
-                    if *album_art.imp().item_id.borrow() != expected_item_id {
-                        debug!("album id doesn't match id in task, aborting album art loading");
-                        album_art.set_loading(false);
-                        return;
-                    }
-
-                    album_art.set_loading(false);
-                    match result {
-                        Ok(image_data) => {
+                let result = image_cache
+                    .get_primary_texture(&item_id, fallback_id.as_deref(), &jellyfin)
+                    .await;
+                album_art.set_loading(false);
+                match result {
+                    Ok(texture) => {
+                        // Check stale after await widget may have been recycled during fetch/decode
+                        if *album_art.imp().item_id.borrow() == item_id {
                             album_art.imp().is_loaded.set(true);
-                            album_art.set_image(&image_data);
+                            album_art.imp().album_image.set_paintable(Some(&texture));
                         }
-                        Err(err) => {
-                            warn!("Failed to load image {}", err);
-                            album_art.show_error();
-                            album_art.emit_by_name::<()>("album-art-changed", &[&false]);
-                        }
+                    }
+                    Err(err) => {
+                        warn!("Failed to load image {}", err);
+                        album_art.show_error();
+                        album_art.emit_by_name::<()>("album-art-changed", &[&false]);
                     }
                 }
-            ),
-        );
+            }
+        ));
     }
 }
 

@@ -69,12 +69,14 @@
         </child>
         <child>
           <object class="GtkLabel" id="primary_label">
+            <property name="width-request">200</property>
             <property name="ellipsize">3</property>
             <property name="justify">0</property>
           </object>
         </child>
         <child>
           <object class="GtkLabel" id="secondary_label">
+            <property name="width-request">200</property>
             <property name="visible">false</property>
             <property name="ellipsize">3</property>
             <property name="justify">0</property>
