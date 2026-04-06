@@ -1,11 +1,13 @@
 use dbus_secret_service::{EncryptionType, Error, SecretService};
 use gtk::gio;
 use gtk::gio::prelude::SettingsExt;
+use log::error;
 use std::{cell::RefCell, collections::HashMap};
 use uuid::Uuid;
 
 pub static APP_ID: &str = "io.m51.Gelly";
 pub static VERSION: &str = env!("CARGO_PKG_VERSION");
+const NO_SS_FOUND: &str = "No secret service found. Please install a keyring such as 'gnome-keyring' or 'kwallet'. Gelly will not store credentials unencrypted.";
 
 thread_local! {
     static SETTINGS: RefCell<Option<gio::Settings>> = const { RefCell::new(None) };
@@ -118,8 +120,9 @@ pub fn store_jellyfin_api_token(host: &str, user_id: &str, api_token: &str) -> R
 }
 
 pub fn retrieve_jellyfin_api_token(host: &str, user_id: &str) -> Option<String> {
-    let ss =
-        SecretService::connect(EncryptionType::Plain).expect("Could not connect to secret service");
+    let ss = SecretService::connect(EncryptionType::Plain)
+        .inspect_err(|err| error!("{}: {}", NO_SS_FOUND, err))
+        .ok()?;
 
     let search_items = ss
         .search_items(HashMap::from([("host", host), ("user-id", user_id)]))
@@ -145,8 +148,7 @@ pub fn retrieve_jellyfin_api_token(host: &str, user_id: &str) -> Option<String> 
 }
 
 pub fn clear_jellyfin_api_token(host: &str, user_id: &str) {
-    let ss =
-        SecretService::connect(EncryptionType::Plain).expect("Could not connect to secret service");
+    let ss = SecretService::connect(EncryptionType::Plain).expect(NO_SS_FOUND);
 
     let search_items = ss
         .search_items(HashMap::from([("host", host), ("user-id", user_id)]))
@@ -184,8 +186,9 @@ pub fn store_subsonic_password(host: &str, username: &str, password: &str) -> Re
 }
 
 pub fn retrieve_subsonic_password(host: &str, username: &str) -> Option<String> {
-    let ss =
-        SecretService::connect(EncryptionType::Plain).expect("Could not connect to secret service");
+    let ss = SecretService::connect(EncryptionType::Plain)
+        .inspect_err(|err| error!("{}: {}", NO_SS_FOUND, err))
+        .ok()?;
 
     let search_items = ss
         .search_items(HashMap::from([
