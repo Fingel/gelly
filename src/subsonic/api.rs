@@ -141,6 +141,7 @@ pub struct Song {
     pub bit_rate: Option<u64>,
     pub sampling_rate: Option<u64>,
     pub channel_count: Option<u32>,
+    pub replay_gain: Option<ReplayGain>,
 }
 
 #[derive(Debug, Clone, Deserialize)]
@@ -188,4 +189,12 @@ pub struct StructuredLyrics {
 pub struct LyricLine {
     pub value: String,
     pub start: Option<u64>,
+}
+
+#[derive(Debug, Clone, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ReplayGain {
+    pub track_gain: Option<f64>,
+    pub album_gain: Option<f64>,
+    pub base_gain: Option<f64>,
 }
