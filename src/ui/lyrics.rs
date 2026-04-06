@@ -164,6 +164,18 @@ impl Lyrics {
             if is_current {
                 label.add_css_class("current-lyric");
                 label.remove_css_class("dimmed");
+                if let Some(viewport) = self
+                    .imp()
+                    .scrolled_window
+                    .child()
+                    .and_then(|c| c.downcast::<gtk::Viewport>().ok())
+                {
+                    let next_label = (1..=5)
+                        .rev()
+                        .find_map(|o| labels.get(i + o))
+                        .unwrap_or(label);
+                    viewport.scroll_to(next_label, None::<gtk::ScrollInfo>);
+                }
             } else {
                 label.remove_css_class("current-lyric");
 
@@ -199,6 +211,8 @@ mod imp {
     pub struct Lyrics {
         #[template_child]
         pub toolbar_view: TemplateChild<adw::ToolbarView>,
+        #[template_child]
+        pub scrolled_window: TemplateChild<gtk::ScrolledWindow>,
         #[template_child]
         pub song_label: TemplateChild<gtk::Label>,
         #[template_child]
