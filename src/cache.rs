@@ -137,7 +137,7 @@ impl LibraryCache {
     }
 }
 
-const MAX_TEXTURE_CACHE_ENTRIES: usize = 500;
+const MAX_TEXTURE_CACHE_ENTRIES: usize = 10_000;
 
 type TextureCache = LruCache<String, gdk::Texture>;
 
