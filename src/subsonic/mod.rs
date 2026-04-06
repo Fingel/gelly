@@ -234,6 +234,10 @@ impl Subsonic {
         let date_created = song.created.or_else(|| fallback.created.clone());
         let production_year = song.year.or(fallback.year);
 
+        let normalization_gain = song
+            .replay_gain
+            .and_then(|rg| rg.track_gain.or(rg.album_gain).or(rg.base_gain));
+
         MusicDto {
             name: song.title,
             id: song.id,
@@ -245,7 +249,7 @@ impl Subsonic {
                 id: artist_id,
             }],
             album_id,
-            normalization_gain: None,
+            normalization_gain,
             production_year,
             index_number: song.track,
             parent_index_number: song.disc_number,

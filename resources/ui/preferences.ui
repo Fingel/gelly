@@ -37,7 +37,7 @@
             <child>
               <object class="AdwActionRow">
                 <property name="title" translatable="yes">Normalize Audio</property>
-                <property name="subtitle" translatable="yes">Not supported on Subsonic backends.</property>
+                <property name="subtitle" translatable="yes">May require backend plugins.</property>
                 <property name="use_underline">True</property>
                 <property name="activatable_widget">normalize_audio_switch</property>
                 <child>
