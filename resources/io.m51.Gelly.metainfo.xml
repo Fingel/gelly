@@ -37,6 +37,24 @@
     </screenshot>
   </screenshots>
   <releases>
+    <release version="1.1.2" date="2026-04-06">
+      <description>
+        <ul>
+          <li>
+            Lyrics window now automatically scrolls to follow along with the current lyric
+          </li>
+          <li>
+            More performance improvements
+          </li>
+          <li>
+            Fix missing icons on KDE and possibly other desktop environments
+          </li>
+          <li>
+            Enable audio normalization on the subsonic backend when available.
+          </li>
+        </ul>
+      </description>
+    </release>
     <release version="1.1.1" date="2026-04-05">
       <description>
         <ul>
