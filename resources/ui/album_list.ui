@@ -9,7 +9,7 @@
           <object class="GtkSearchBar" id="sort_bar">
             <property name="show-close-button">true</property>
             <property name="search-mode-enabled">false</property>
-            <child>
+            <property name="child">
               <object class="GtkBox">
                 <property name="orientation">horizontal</property>
                 <property name="spacing">6</property>
@@ -48,7 +48,7 @@
                   </object>
                 </child>
               </object>
-            </child>
+            </property>
           </object>
         </child>
         <property name="content">
@@ -69,7 +69,7 @@
                 <property name="propagate-natural-height">true</property>
                 <property name="has-frame">false</property>
                 <property name="vexpand">true</property>
-                <child>
+                <property name="child">
                   <object class="GtkGridView" id="grid_view">
                     <property name="orientation">vertical</property>
                     <property name="min-columns">1</property>
@@ -78,7 +78,7 @@
                     <property name="visible">false</property>
                     <property name="css-classes"></property>
                   </object>
-                </child>
+                </property>
               </object>
             </child>
           </object>

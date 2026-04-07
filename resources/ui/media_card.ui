@@ -14,10 +14,10 @@
         <property name="orientation">1</property>
         <child>
           <object class="GtkOverlay">
-            <child>
+            <property name="child">
               <object class="GtkEventControllerMotion" id="motion_controller">
               </object>
-            </child>
+            </property>
             <child type="overlay">
               <object class="GtkRevealer" id="play_revealer">
                 <property name="visible">false</property>
@@ -26,25 +26,25 @@
                 <property name="reveal-child">false</property>
                 <property name="transition-type">crossfade</property>
                 <property name="transition-duration">200</property>
-                <child>
+                <property name="child">
                   <object class="GtkButton" id="overlay_play">
                     <property name="width-request">50</property>
                     <property name="height-request">50</property>
-                    <child>
+                    <property name="child">
                       <object class="GtkImage">
                         <property name="icon-name">media-playback-start-symbolic</property>
                         <property name="icon-size">2</property>
                       </object>
-                    </child>
+                    </property>
                     <style>
                       <class name="circular"/>
                       <class name="suggested-action"/>
                     </style>
                   </object>
-                </child>
+                </property>
               </object>
             </child>
-            <child>
+            <property name="child">
               <object class="GtkBox">
                 <property name="orientation">vertical</property>
                 <child>
@@ -64,7 +64,7 @@
                   </object>
                 </child>
               </object>
-            </child>
+            </property>
           </object>
         </child>
         <child>

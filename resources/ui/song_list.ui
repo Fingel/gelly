@@ -9,7 +9,7 @@
           <object class="GtkSearchBar" id="sort_bar">
             <property name="show-close-button">true</property>
             <property name="search-mode-enabled">false</property>
-            <child>
+            <property name="child">
               <object class="GtkBox">
                 <property name="orientation">horizontal</property>
                 <property name="spacing">6</property>
@@ -46,7 +46,7 @@
                   </object>
                 </child>
               </object>
-            </child>
+            </property>
           </object>
         </child>
         <property name="content">
@@ -63,7 +63,7 @@
             <child>
               <object class="AdwClamp">
                 <property name="maximum-size">1000</property>
-                <child>
+                <property name="child">
                   <object class="GtkBox">
                     <property name="orientation">vertical</property>
                     <property name="spacing">12</property>
@@ -99,18 +99,18 @@
                         <property name="propagate-natural-height">true</property>
                         <property name="has-frame">false</property>
                         <property name="vexpand">true</property>
-                        <child>
-                        <object class="GtkListView" id="track_list">
+                        <property name="child">
+                          <object class="GtkListView" id="track_list">
                             <property name="width-request">300</property>
                             <style>
                               <class name="boxed-list" />
                             </style>
                           </object>
-                        </child>
+                        </property>
                       </object>
                     </child>
                   </object>
-                </child>
+                </property>
               </object>
             </child>
           </object>

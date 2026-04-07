@@ -14,10 +14,10 @@
     </style>
     <child>
       <object class="GtkOverlay">
-        <child>
+        <property name="child">
           <object class="GtkImage" id="album_image">
           </object>
-        </child>
+        </property>
         <child type="overlay">
           <object class="GtkSpinner" id="spinner">
             <property name="spinning">true</property>

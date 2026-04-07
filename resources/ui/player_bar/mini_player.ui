@@ -122,12 +122,12 @@
                                 <class name="dimmed"/>
                                 <class name="song-link"/>
                               </style>
-                              <child>
+                              <property name="child">
                                 <object class="GtkLabel" id="artist_label">
                                   <property name="ellipsize">end</property>
                                   <property name="max_width_chars">90</property>
                                 </object>
-                              </child>
+                              </property>
                             </object>
                           </child>
                           <child>
@@ -150,13 +150,13 @@
                                 <class name="dimmed"/>
                                 <class name="song-link"/>
                               </style>
-                              <child>
+                              <property name="child">
                                 <object class="GtkLabel" id="album_label">
                                   <property name="ellipsize">end</property>
                                   <property name="halign">start</property>
                                   <property name="max_width_chars">90</property>
                                 </object>
-                              </child>
+                              </property>
                             </object>
                           </child>
                         </object>
@@ -207,12 +207,12 @@
                     <child>
                       <object class="GtkButton" id="info_button">
                         <property name="margin-start">2</property>
-                        <child>
+                        <property name="child">
                           <object class="GtkImage" id="info_icon">
                             <property name="icon-name">help-about-symbolic</property>
                             <property name="icon-size">1</property>
                           </object>
-                        </child>
+                        </property>
                         <style>
                           <class name="flat"/>
                         </style>
