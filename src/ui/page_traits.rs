@@ -3,6 +3,31 @@ use log::warn;
 
 use crate::models::model_traits::ItemModel;
 
+#[derive(Debug, Clone, Copy)]
+pub enum SortType {
+    DateAdded,
+    Name,
+    Artist,
+    Year,
+    PlayCount,
+    NumSongs,
+    Album,
+}
+
+impl SortType {
+    pub fn as_str(&self) -> &str {
+        match self {
+            SortType::DateAdded => "Recently Added",
+            SortType::Name => "Name",
+            SortType::Artist => "Album Artist",
+            SortType::Year => "Year",
+            SortType::PlayCount => "Play Count",
+            SortType::NumSongs => "Num. Songs",
+            SortType::Album => "Album",
+        }
+    }
+}
+
 pub trait DetailPage {
     type Model: ItemModel;
 
@@ -27,7 +52,10 @@ pub trait TopPage {
         warn!("New not implemented for this type");
     }
     fn search_changed(&self, query: &str);
-    fn sort_bar(&self) -> gtk::SearchBar;
+    fn sort_options(&self) -> &[SortType];
+    fn current_sort_by(&self) -> u32;
+    fn current_sort_direction(&self) -> u32;
+    fn apply_sort(&self, sort_by: u32, direction: u32);
     fn setup_search_connection(&self, search_entry: &gtk::SearchEntry)
     where
         Self: gtk::prelude::ObjectType,
@@ -38,10 +66,5 @@ pub trait TopPage {
                 list_view.search_changed(&entry.text());
             }
         });
-    }
-    fn bind_sort_bar(&self, btn: &gtk::ToggleButton) {
-        btn.bind_property("active", &self.sort_bar(), "search-mode-enabled")
-            .bidirectional()
-            .build();
     }
 }
