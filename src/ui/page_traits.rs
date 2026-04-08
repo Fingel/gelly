@@ -1,5 +1,6 @@
 use gtk::{glib::prelude::*, prelude::*};
 use log::warn;
+use num_enum::{IntoPrimitive, TryFromPrimitive};
 
 use crate::models::model_traits::ItemModel;
 
@@ -12,6 +13,13 @@ pub enum SortType {
     PlayCount,
     NumSongs,
     Album,
+}
+
+#[derive(Debug, PartialEq, Eq, TryFromPrimitive, IntoPrimitive)]
+#[repr(u32)]
+pub enum SortDirection {
+    Ascending = 0,
+    Descending = 1,
 }
 
 impl SortType {

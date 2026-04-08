@@ -11,7 +11,7 @@ use crate::{
     },
     ui::{
         list_helpers::*,
-        page_traits::{SortType, TopPage},
+        page_traits::{SortDirection, SortType, TopPage},
         playlist::Playlist,
         playlist_dialogs,
         widget_ext::WidgetApplicationExt,

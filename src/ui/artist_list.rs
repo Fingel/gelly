@@ -6,7 +6,7 @@ use crate::{
     ui::{
         artist::Artist,
         list_helpers::*,
-        page_traits::{SortType, TopPage},
+        page_traits::{SortDirection, SortType, TopPage},
         widget_ext::WidgetApplicationExt,
     },
 };

@@ -11,8 +11,8 @@ use crate::{
     library_utils::all_songs,
     models::SongModel,
     ui::{
-        list_helpers::{SortDirection, create_string_filter},
-        page_traits::{SortType, TopPage},
+        list_helpers::create_string_filter,
+        page_traits::{SortDirection, SortType, TopPage},
         song::Song,
         song_utils,
         widget_ext::WidgetApplicationExt,
