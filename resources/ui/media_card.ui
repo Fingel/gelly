@@ -14,10 +14,10 @@
         <property name="orientation">1</property>
         <child>
           <object class="GtkOverlay">
-            <property name="child">
+            <child>
               <object class="GtkEventControllerMotion" id="motion_controller">
               </object>
-            </property>
+            </child>
             <child type="overlay">
               <object class="GtkRevealer" id="play_revealer">
                 <property name="visible">false</property>
