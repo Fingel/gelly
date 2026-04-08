@@ -11,28 +11,18 @@ use crate::{
     library_utils::all_songs,
     models::SongModel,
     ui::{
-        list_helpers::{SortDirection, create_string_filter},
-        page_traits::TopPage,
+        list_helpers::create_string_filter,
+        page_traits::{SortDirection, SortType, TopPage},
         song::Song,
         song_utils,
         widget_ext::WidgetApplicationExt,
     },
 };
-use num_enum::TryFromPrimitive;
 
 glib::wrapper! {
     pub struct SongList(ObjectSubclass<imp::SongList>)
     @extends gtk::Widget, gtk::Box,
         @implements gio::ActionMap, gio::ActionGroup, gtk::Accessible, gtk::Buildable, gtk::ConstraintTarget;
-}
-
-#[derive(Debug, TryFromPrimitive)]
-#[repr(u32)]
-pub enum SongSort {
-    DateAdded = 0,
-    Name = 1,
-    Artist = 2,
-    Album = 3,
 }
 
 impl TopPage for SongList {
@@ -54,7 +44,7 @@ impl TopPage for SongList {
         let sorter = if let Some(current_sorter) = imp.current_sorter.borrow().as_ref() {
             current_sorter.clone()
         } else {
-            let default_sorter = self.build_sorter(SongSort::DateAdded, SortDirection::Ascending);
+            let default_sorter = self.build_sorter(SortType::DateAdded, SortDirection::Ascending);
             imp.current_sorter.replace(Some(default_sorter.clone()));
             default_sorter
         };
@@ -88,8 +78,33 @@ impl TopPage for SongList {
         }
     }
 
-    fn sort_bar(&self) -> gtk::SearchBar {
-        self.imp().sort_bar.get()
+    fn sort_options(&self) -> &[SortType] {
+        &[SortType::DateAdded, SortType::Name, SortType::Artist]
+    }
+
+    // Saving a non-default sort order would cause an expensive sort on every app load
+    // so we only save it per session
+    fn current_sort_by(&self) -> u32 {
+        self.imp().sort_by.get()
+    }
+
+    fn current_sort_direction(&self) -> u32 {
+        self.imp().sort_direction.get()
+    }
+
+    fn apply_sort(&self, sort_by: u32, direction: u32) {
+        let imp = self.imp();
+        imp.sort_by.set(sort_by);
+        imp.sort_direction.set(direction);
+        let sort_option = self.sort_options()[sort_by as usize];
+        let sort_direction = SortDirection::try_from(direction).unwrap_or(SortDirection::Ascending);
+        let sorter = self.build_sorter(sort_option, sort_direction);
+        imp.current_sorter.replace(Some(sorter.clone()));
+        let store = imp.store.get().expect("Store should be initialized");
+        let sort_model = SortListModel::new(Some(store.clone()), Some(sorter));
+        self.bind_song_count(&sort_model);
+        let selection_model = gtk::SingleSelection::new(Some(sort_model));
+        imp.track_list.set_model(Some(&selection_model));
     }
 }
 
@@ -167,22 +182,7 @@ impl SongList {
         );
     }
 
-    fn apply_sorting(&self) {
-        let imp = self.imp();
-        let sort_option = SongSort::try_from_primitive(imp.sort_dropdown.selected())
-            .unwrap_or(SongSort::DateAdded);
-        let sort_direction = SortDirection::try_from_primitive(imp.sort_direction.active())
-            .unwrap_or(SortDirection::Ascending);
-        let sorter = self.build_sorter(sort_option, sort_direction);
-        imp.current_sorter.replace(Some(sorter.clone()));
-        let store = imp.store.get().expect("Store should be initialized");
-        let sort_model = SortListModel::new(Some(store.clone()), Some(sorter));
-        self.bind_song_count(&sort_model);
-        let selection_model = gtk::SingleSelection::new(Some(sort_model));
-        imp.track_list.set_model(Some(&selection_model));
-    }
-
-    fn build_sorter(&self, sort: SongSort, direction: SortDirection) -> CustomSorter {
+    fn build_sorter(&self, sort: SortType, direction: SortDirection) -> CustomSorter {
         gtk::CustomSorter::new(move |obj1, obj2| {
             let (obj1, obj2) = match direction {
                 SortDirection::Ascending => (obj1, obj2),
@@ -192,25 +192,21 @@ impl SongList {
             let song2 = obj2.downcast_ref::<SongModel>().unwrap();
 
             match sort {
-                SongSort::Name => song1
+                SortType::Name => song1
                     .title()
                     .to_lowercase()
                     .cmp(&song2.title().to_lowercase())
                     .into(),
-                SongSort::Artist => song1
+                SortType::Artist => song1
                     .artists_string()
                     .to_lowercase()
                     .cmp(&song2.artists_string().to_lowercase())
                     .into(),
-                SongSort::DateAdded => {
+                SortType::DateAdded => {
                     // Reverse order for newest first
                     song2.date_created().cmp(&song1.date_created()).into()
                 }
-                SongSort::Album => song1
-                    .album()
-                    .to_lowercase()
-                    .cmp(&song2.album().to_lowercase())
-                    .into(),
+                _ => std::cmp::Ordering::Equal.into(),
             }
         })
     }
@@ -336,7 +332,7 @@ impl Default for SongList {
 }
 
 mod imp {
-    use std::cell::{OnceCell, RefCell};
+    use std::cell::{Cell, OnceCell, RefCell};
 
     use adw::subclass::prelude::*;
     use gtk::{
@@ -353,18 +349,14 @@ mod imp {
         #[template_child]
         pub empty: TemplateChild<adw::StatusPage>,
         #[template_child]
-        pub sort_bar: TemplateChild<gtk::SearchBar>,
-        #[template_child]
-        pub sort_dropdown: TemplateChild<gtk::DropDown>,
-        #[template_child]
-        pub sort_direction: TemplateChild<adw::ToggleGroup>,
-        #[template_child]
         pub num_songs: TemplateChild<gtk::Label>,
 
         pub store: OnceCell<gio::ListStore>,
         pub name_filter: OnceCell<gtk::StringFilter>,
         pub artist_filter: OnceCell<gtk::StringFilter>,
         pub current_sorter: RefCell<Option<gtk::CustomSorter>>,
+        pub sort_direction: Cell<u32>,
+        pub sort_by: Cell<u32>,
     }
 
     #[glib::object_subclass]
@@ -398,22 +390,6 @@ mod imp {
                 self,
                 move |_, position| {
                     imp.obj().activate_song(position as usize);
-                }
-            ));
-
-            self.sort_dropdown.connect_selected_notify(glib::clone!(
-                #[weak(rename_to = song_list)]
-                self.obj(),
-                move |_| {
-                    song_list.apply_sorting();
-                }
-            ));
-
-            self.sort_direction.connect_active_notify(glib::clone!(
-                #[weak(rename_to = song_list)]
-                self.obj(),
-                move |_| {
-                    song_list.apply_sorting();
                 }
             ));
 

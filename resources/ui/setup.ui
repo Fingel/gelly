@@ -8,7 +8,7 @@
         <child>
           <object class="AdwNavigationPage" id="setup_servers">
             <property name="title" translatable="yes">Servers</property>
-            <child>
+            <property name="child">
               <object class="AdwToolbarView">
                 <child type="top">
                   <object class="AdwHeaderBar"/>
@@ -18,7 +18,7 @@
                     <property name="icon-name">network-server-symbolic</property>
                     <property name="title" translatable="yes">Connect to Server</property>
                     <property name="description" translatable="yes">Gelly supports Jellyfin and Subsonic/Navidrome. Enter the full server URL including protocol and port. For Jellyfin this is usually 8096, Navidrome uses 4533.</property>
-                    <child>
+                    <property name="child">
                       <object class="AdwClamp">
                         <property name="child">
                           <object class="GtkBox">
@@ -63,15 +63,15 @@
                           </object>
                         </property>
                       </object>
-                    </child>
+                    </property>
                   </object>
                 </property>
               </object>
-            </child>
+            </property>
           </object>
           <object class="AdwNavigationPage" id="setup_library">
             <property name="title">Choose Library</property>
-            <child>
+            <property name="child">
               <object class="AdwToolbarView">
                 <child type="top">
                   <object class="AdwHeaderBar"/>
@@ -81,7 +81,7 @@
                     <property name="icon-name">folder-new-symbolic</property>
                     <property name="title" translatable="yes">Select Library</property>
                     <property name="description" translatable="yes">Choose which library Gelly will use to load your music.</property>
-                    <child>
+                    <property name="child">
                       <object class="AdwClamp">
                         <property name="child">
                           <object class="GtkBox">
@@ -124,11 +124,11 @@
                           </object>
                         </property>
                       </object>
-                    </child>
+                    </property>
                   </object>
                 </property>
               </object>
-            </child>
+            </property>
           </object>
         </child>
       </object>

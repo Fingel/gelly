@@ -21,7 +21,7 @@
     </child>
     <property name="content">
       <object class="AdwToastOverlay" id="toaster">
-        <child>
+        <property name="child">
           <object class="GtkOverlay">
             <child type="overlay">
               <object class="GtkProgressBar" id="progress_bar">
@@ -32,7 +32,7 @@
                 </style>
               </object>
             </child>
-            <child>
+            <property name="child">
               <object class="AdwOverlaySplitView" id="split_view">
                 <property name="collapsed">false</property>
                 <property name="pin-sidebar">true</property>
@@ -57,7 +57,7 @@
                                 <child>
                                   <object class="AdwNavigationPage" id="album_detail_page">
                                     <property name="title" translatable="yes">Album Detail</property>
-                                    <child>
+                                    <property name="child">
                                       <object class="AdwToolbarView">
                                         <child type="top">
                                           <object class="AdwHeaderBar">
@@ -70,27 +70,27 @@
                                             <property name="propagate-natural-height">true</property>
                                             <property name="has-frame">false</property>
                                             <property name="vexpand">true</property>
-                                            <child>
+                                            <property name="child">
                                               <object class="AdwClamp">
                                                 <property name="margin-bottom">24</property>
                                                 <property name="margin-top">24</property>
                                                 <property name="maximum-size">1000</property>
-                                                <child>
+                                                <property name="child">
                                                   <object class="GellyAlbumDetail" id="album_detail">
                                                   </object>
-                                                </child>
+                                                </property>
                                               </object>
-                                            </child>
+                                            </property>
                                           </object>
                                         </property>
                                       </object>
-                                    </child>
+                                    </property>
                                   </object>
                                 </child>
                                 <child>
                                   <object class="AdwNavigationPage" id="artist_detail_page">
                                     <property name="title" translatable="yes">Artist Detail</property>
-                                    <child>
+                                    <property name="child">
                                       <object class="AdwToolbarView">
                                         <child type="top">
                                           <object class="AdwHeaderBar">
@@ -103,26 +103,26 @@
                                             <property name="propagate-natural-height">true</property>
                                             <property name="has-frame">false</property>
                                             <property name="vexpand">true</property>
-                                            <child>
+                                            <property name="child">
                                               <object class="AdwClamp">
                                                 <property name="margin-bottom">24</property>
                                                 <property name="maximum-size">1000</property>
-                                                <child>
+                                                <property name="child">
                                                   <object class="GellyArtistDetail" id="artist_detail">
                                                   </object>
-                                                </child>
+                                                </property>
                                               </object>
-                                            </child>
+                                            </property>
                                           </object>
                                         </property>
                                       </object>
-                                    </child>
+                                    </property>
                                   </object>
                                 </child>
                                 <child>
                                   <object class="AdwNavigationPage" id="playlist_detail_page">
                                     <property name="title" translatable="yes">Playlist Detail</property>
-                                    <child>
+                                    <property name="child">
                                       <object class="AdwToolbarView">
                                         <child type="top">
                                           <object class="AdwHeaderBar">
@@ -132,20 +132,20 @@
                                           <object class="AdwClamp">
                                             <property name="margin-top">24</property>
                                             <property name="maximum-size">1000</property>
-                                            <child>
+                                            <property name="child">
                                               <object class="GellyPlaylistDetail" id="playlist_detail">
                                               </object>
-                                            </child>
+                                            </property>
                                           </object>
                                         </property>
                                       </object>
-                                    </child>
+                                    </property>
                                   </object>
                                 </child>
                                 <child>
                                   <object class="AdwNavigationPage" id="main_window">
                                   <property name="title" translatable="yes">Main</property>
-                                    <child>
+                                    <property name="child">
                                       <object class="AdwToolbarView">
                                         <child type="top">
                                           <object class="AdwHeaderBar" id="header_bar">
@@ -196,11 +196,46 @@
                                           <object class="GtkSearchBar" id="search_bar">
                                             <property name="show-close-button">true</property>
                                             <property name="search-mode-enabled">false</property>
-                                            <child>
+                                            <property name="child">
                                               <object class="GtkSearchEntry" id="search_entry">
                                                 <property name="placeholder-text">Search...</property>
                                               </object>
-                                            </child>
+                                            </property>
+                                          </object>
+                                        </child>
+                                        <child type="top">
+                                          <object class="GtkSearchBar" id="sort_bar">
+                                            <property name="show-close-button">true</property>
+                                            <property name="search-mode-enabled">false</property>
+                                            <property name="child">
+                                              <object class="GtkBox">
+                                                <property name="orientation">horizontal</property>
+                                                <property name="spacing">6</property>
+                                                <child>
+                                                  <object class="GtkDropDown" id="sort_dropdown">
+                                                  </object>
+                                                </child>
+                                                <child>
+                                                  <object class="AdwToggleGroup" id="sort_direction">
+                                                    <property name="active-name">ascending</property>
+                                                    <child>
+                                                      <object class="AdwToggle">
+                                                        <property name="icon-name">view-sort-ascending-symbolic</property>
+                                                        <property name="tooltip" translatable="yes">Ascending</property>
+                                                        <property name="name">ascending</property>
+                                                      </object>
+                                                    </child>
+                                                    <child>
+                                                      <object class="AdwToggle">
+                                                        <property name="icon-name">view-sort-descending-symbolic</property>
+                                                        <property name="tooltip" translatable="yes">Descending</property>
+                                                        <property name="name">descending</property>
+                                                      </object>
+                                                    </child>
+                                                  </object>
+                                                </child>
+                                              </object>
+                                            </property>
                                           </object>
                                         </child>
                                         <property name="content">
@@ -262,7 +297,7 @@
                                           </object>
                                         </child>
                                       </object>
-                                    </child>
+                                    </property>
                                   </object>
                                 </child>
                               </object>
@@ -318,9 +353,9 @@
                   </object>
                 </property>
               </object>
-            </child>
+            </property>
           </object>
-        </child>
+        </property>
       </object>
     </property>
   </template>

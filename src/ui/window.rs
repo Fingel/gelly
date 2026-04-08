@@ -67,6 +67,9 @@ impl Window {
                 .bind_to_audio_model(&audio_model, &imp.bottom_sheet);
             imp.big_player.bind_to_audio_model(&audio_model);
         }
+
+        // Populate sort bar for the initially visible page
+        self.show_visible_page();
     }
 
     fn show_visible_page(&self) {
@@ -94,6 +97,18 @@ impl Window {
         let imp = self.imp();
         imp.main_navigation.replace(&[imp.main_window.get()]);
         imp.new_button.set_visible(page.can_new());
+        let sort_model = gtk::StringList::new(
+            &page
+                .sort_options()
+                .iter()
+                .map(|s| s.as_str())
+                .collect::<Vec<_>>(),
+        );
+        imp.sort_changing.set(true);
+        imp.sort_dropdown.set_model(Some(&sort_model));
+        imp.sort_dropdown.set_selected(page.current_sort_by());
+        imp.sort_direction.set_active(page.current_sort_direction());
+        imp.sort_changing.set(false);
     }
 
     pub fn show_detail_page<T: DetailPage>(
@@ -237,7 +252,7 @@ impl Window {
 }
 
 mod imp {
-    use std::cell::RefCell;
+    use std::cell::{Cell, RefCell};
     use std::sync::OnceLock;
 
     use adw::subclass::prelude::*;
@@ -321,9 +336,16 @@ mod imp {
         #[template_child]
         pub search_bar: TemplateChild<gtk::SearchBar>,
         #[template_child]
+        pub sort_bar: TemplateChild<gtk::SearchBar>,
+        #[template_child]
+        pub sort_dropdown: TemplateChild<gtk::DropDown>,
+        #[template_child]
+        pub sort_direction: TemplateChild<adw::ToggleGroup>,
+        #[template_child]
         pub search_entry: TemplateChild<gtk::SearchEntry>,
 
         pub blurred_paintable: RefCell<Option<gtk::gdk::Paintable>>,
+        pub sort_changing: Cell<bool>,
     }
 
     #[glib::object_subclass]
@@ -423,6 +445,11 @@ mod imp {
                 .bidirectional()
                 .build();
 
+            self.sort_button
+                .bind_property("active", &self.sort_bar.get(), "search-mode-enabled")
+                .bidirectional()
+                .build();
+
             self.search_button.connect_active_notify(glib::clone!(
                 #[weak(rename_to = sort_button)]
                 self.sort_button,
@@ -443,10 +470,36 @@ mod imp {
                 }
             ));
 
-            self.album_list.bind_sort_bar(&self.sort_button);
-            self.artist_list.bind_sort_bar(&self.sort_button);
-            self.playlist_list.bind_sort_bar(&self.sort_button);
-            self.song_list.bind_sort_bar(&self.sort_button);
+            self.sort_dropdown.connect_selected_notify(glib::clone!(
+                #[weak(rename_to = window)]
+                self,
+                move |_| {
+                    if !window.sort_changing.get() {
+                        window.obj().call_on_visible_page(|page| {
+                            page.apply_sort(
+                                window.sort_dropdown.selected(),
+                                window.sort_direction.active(),
+                            );
+                        });
+                    }
+                }
+            ));
+
+            self.sort_direction.connect_active_notify(glib::clone!(
+                #[weak(rename_to = window)]
+                self,
+                move |_| {
+                    if !window.sort_changing.get() {
+                        window.obj().call_on_visible_page(|page| {
+                            page.apply_sort(
+                                window.sort_dropdown.selected(),
+                                window.sort_direction.active(),
+                            );
+                        });
+                    }
+                }
+            ));
+
             self.album_list.setup_search_connection(&self.search_entry);
             self.artist_list.setup_search_connection(&self.search_entry);
             self.playlist_list

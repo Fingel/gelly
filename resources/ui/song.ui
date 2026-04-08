@@ -70,12 +70,12 @@
                       <class name="dimmed"/>
                       <class name="song-link"/>
                     </style>
-                    <child>
+                    <property name="child">
                       <object class="GtkLabel" id="artist_label">
                         <property name="ellipsize">end</property>
                         <property name="max_width_chars">90</property>
                       </object>
-                    </child>
+                    </property>
                   </object>
                 </child>
                 <child>
@@ -99,12 +99,12 @@
                       <class name="dimmed"/>
                       <class name="song-link"/>
                     </style>
-                    <child>
+                    <property name="child">
                       <object class="GtkLabel" id="album_label">
                         <property name="ellipsize">end</property>
                         <property name="max_width_chars">90</property>
                       </object>
-                    </child>
+                    </property>
                   </object>
                 </child>
               </object>
@@ -122,9 +122,7 @@
                 <property name="focusable">False</property>
                 <property name="halign">end</property>
                 <property name="single_line_mode">True</property>
-                <attributes>
-                  <attribute name="font-features" value="tnum=1"/>
-                </attributes>
+                <property name="attributes">0 -1 font-features "tnum=1"</property>
               </object>
             </child>
           </object>
