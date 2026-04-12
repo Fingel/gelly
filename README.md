@@ -13,7 +13,7 @@
 - [x] Supports both Jellyfin and Subsonic/Navidrome backends
 - [x] MPRIS
 - [x] Lyrics
-- [x] Replaygain (Jellyfin only)
+- [x] Replaygain
 - [x] Transcoding
 - [x] Search
 - [x] Playlist management
