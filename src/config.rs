@@ -84,8 +84,8 @@ pub fn set_backend_type(backend_type: BackendType) {
 }
 
 /// Sets jellyfin settings to blank values and clears the API token
-pub fn logout() {
-    clear_jellyfin_api_token(
+pub fn logout() -> Result<(), Error> {
+    let clear_res = clear_jellyfin_api_token(
         settings().string("hostname").as_str(),
         settings().string("user-id").as_str(),
     );
@@ -101,6 +101,8 @@ pub fn logout() {
     settings()
         .set_string("backend-type", BackendType::Jellyfin.as_str())
         .expect("Failed to reset backend-type");
+
+    clear_res
 }
 
 pub fn store_jellyfin_api_token(host: &str, user_id: &str, api_token: &str) -> Result<(), Error> {
@@ -147,26 +149,25 @@ pub fn retrieve_jellyfin_api_token(host: &str, user_id: &str) -> Option<String> 
     Some(String::from_utf8(secret).unwrap())
 }
 
-pub fn clear_jellyfin_api_token(host: &str, user_id: &str) {
-    let ss = SecretService::connect(EncryptionType::Plain).expect(NO_SS_FOUND);
+pub fn clear_jellyfin_api_token(host: &str, user_id: &str) -> Result<(), Error> {
+    let ss = SecretService::connect(EncryptionType::Plain)?;
 
-    let search_items = ss
-        .search_items(HashMap::from([("host", host), ("user-id", user_id)]))
-        .unwrap();
+    let search_items = ss.search_items(HashMap::from([("host", host), ("user-id", user_id)]))?;
 
     let item = match search_items.unlocked.first() {
         Some(item) => item,
         None => {
             // if there aren't any, try to unlock them
             if let Some(locked_item) = search_items.locked.first() {
-                locked_item.unlock().unwrap();
+                locked_item.unlock()?;
                 locked_item
             } else {
-                return;
+                return Ok(());
             }
         }
     };
-    item.delete().expect("Unable to remove secret from keyring");
+    item.delete()?;
+    Ok(())
 }
 
 pub fn store_subsonic_password(host: &str, username: &str, password: &str) -> Result<(), Error> {

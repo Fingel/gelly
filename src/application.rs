@@ -358,7 +358,7 @@ impl Application {
         self.imp().backend.replace(backend);
         self.imp().library.replace(Vec::new());
         self.imp().library_id.replace(String::new());
-        config::logout();
+        config::logout().unwrap_or_else(|e| warn!("Failed to clear config on logout: {}", e));
     }
 
     /// Emit signals when HTTP requests start, and when all are complete.
