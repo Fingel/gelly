@@ -23,9 +23,9 @@ glycin = { version = "3.0.4", features = ["gdk4"] }
 futures = "0.3.31"
 uuid = { version = "1.18.1", features = ["v4"] }
 rand = "0.10.0"
-md5 = "0.7.0"
+md5 = "0.8.0"
 num_enum = "0.7.5"
-lru = "0.16.3"
+lru = "0.17.0"
 
 [build-dependencies]
 glib-build-tools = "0.22.0"
