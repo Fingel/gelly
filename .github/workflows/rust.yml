@@ -12,7 +12,7 @@ env:
 jobs:
   build:
     runs-on: ubuntu-latest
-    container: fedora:43
+    container: fedora:44
 
     steps:
       - uses: actions/checkout@v4
