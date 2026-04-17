@@ -36,21 +36,17 @@ impl JellyfinReporter {
                 paused,
                 position,
                 ..
-            } => {
+            } if position > 0 => {
                 // these events fire off a few times at track transitions, we only want those
                 // that happen mid-listen here
-                if position > 0 {
-                    let item_id = self.last_song_id.borrow().clone().unwrap_or_default();
-                    let position_ticks = position * 10_000_000;
-                    if paused {
-                        let pause_report =
-                            self.new_report(item_id.clone(), true, true, position_ticks);
-                        self.report(pause_report, PlaybackReportStatus::InProgress);
-                    } else if playing {
-                        let play_report =
-                            self.new_report(item_id.clone(), true, false, position_ticks);
-                        self.report(play_report, PlaybackReportStatus::InProgress);
-                    }
+                let item_id = self.last_song_id.borrow().clone().unwrap_or_default();
+                let position_ticks = position * 10_000_000;
+                if paused {
+                    let pause_report = self.new_report(item_id.clone(), true, true, position_ticks);
+                    self.report(pause_report, PlaybackReportStatus::InProgress);
+                } else if playing {
+                    let play_report = self.new_report(item_id.clone(), true, false, position_ticks);
+                    self.report(play_report, PlaybackReportStatus::InProgress);
                 }
             }
             PlaybackEvent::TrackChanged {
@@ -71,13 +67,11 @@ impl JellyfinReporter {
                     self.report(start_report, PlaybackReportStatus::Started);
                 }
             }
-            PlaybackEvent::PositionChanged { position } => {
-                if position % 5 == 0 {
-                    let position_ticks = position * 10_000_000;
-                    let item_id = self.last_song_id.borrow().clone().unwrap_or_default();
-                    let report = self.new_report(item_id, true, false, position_ticks);
-                    self.report(report, PlaybackReportStatus::InProgress);
-                }
+            PlaybackEvent::PositionChanged { position } if position % 5 == 0 => {
+                let position_ticks = position * 10_000_000;
+                let item_id = self.last_song_id.borrow().clone().unwrap_or_default();
+                let report = self.new_report(item_id, true, false, position_ticks);
+                self.report(report, PlaybackReportStatus::InProgress);
             }
             _ => {}
         }
