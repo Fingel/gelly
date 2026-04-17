@@ -4,8 +4,8 @@ version = "1.1.2"
 edition = "2024"
 
 [dependencies]
-gtk = { version = "0.11.1", package = "gtk4", features = ["v4_20"] }
-adw = { version = "0.9.1", package = "libadwaita", features = ["v1_8"] }
+gtk = { version = "0.11.1", package = "gtk4", features = ["v4_22"] }
+adw = { version = "0.9.1", package = "libadwaita", features = ["v1_9"] }
 log = { version = "0.4.28", features = ["std"] }
 env_logger = { version = "0.11.8", features = ["color"] }
 tokio = { version = "1.47.1", features = ["rt-multi-thread", "sync"] }
