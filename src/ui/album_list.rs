@@ -1,7 +1,7 @@
 use crate::{
     application::Application,
     config,
-    library_utils::{albums_from_library, play_album},
+    library_utils::play_album,
     models::AlbumModel,
     ui::{
         album::Album,
@@ -101,8 +101,7 @@ impl AlbumList {
     }
 
     pub fn pull_albums(&self) {
-        let library = self.get_application().library().clone();
-        let albums = albums_from_library(&library.borrow());
+        let albums = self.get_application().library().albums_from_library();
         if albums.is_empty() {
             self.set_empty(true);
         } else {

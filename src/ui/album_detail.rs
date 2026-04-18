@@ -1,7 +1,6 @@
 use crate::{
     async_utils::spawn_tokio,
     jellyfin::utils::format_duration,
-    library_utils::songs_for_album,
     models::{AlbumModel, SongModel},
     ui::{
         music_context_menu::{ContextActions, construct_menu, create_actiongroup},
@@ -142,8 +141,7 @@ impl AlbumDetail {
 
     pub fn pull_tracks(&self) {
         self.setup_model(); // make sure store is initialized
-        let library = self.get_application().library().clone();
-        let songs = songs_for_album(&self.id(), &library.borrow());
+        let songs = self.get_application().library().songs_for_album(&self.id());
         let store = self.get_store();
         store.remove_all();
         store.extend_from_slice(&songs);

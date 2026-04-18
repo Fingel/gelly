@@ -53,7 +53,7 @@ impl Playlist {
         };
 
         let playlist_type = playlist_model.playlist_type();
-        let library_data = self.get_application().library().borrow().clone();
+        let library_data = self.get_application().library().songs.borrow().clone();
         let jellyfin = self.get_application().jellyfin();
 
         spawn_tokio(

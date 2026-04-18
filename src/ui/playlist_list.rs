@@ -166,7 +166,7 @@ impl PlaylistList {
 
     pub fn pull_playlists(&self) {
         let playlists = self.get_application().playlists().borrow().clone();
-        let library_cnt = self.get_application().library().borrow().len();
+        let library_cnt = self.get_application().library().songs.borrow().len();
         self.set_empty(false);
         let store = self
             .imp()

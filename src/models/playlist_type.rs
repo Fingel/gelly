@@ -1,8 +1,8 @@
 use crate::{
     backend::{Backend, BackendError},
     jellyfin::api::MusicDto,
-    library_utils::{most_played_songs, shuffle_songs},
 };
+use rand::prelude::IndexedRandom;
 
 pub const DEFAULT_SMART_COUNT: u64 = 100;
 
@@ -83,12 +83,18 @@ impl PlaylistType {
                 Ok(playlist_items.items)
             }
             PlaylistType::ShuffleLibrary { count } => {
-                let songs = shuffle_songs(library, *count);
-                Ok(songs)
+                let mut rng = rand::rng();
+                let chosen = library.sample(&mut rng, *count as usize);
+                Ok(chosen.into_iter().cloned().collect())
             }
             PlaylistType::MostPlayed { count } => {
-                let songs = most_played_songs(library, *count);
-                Ok(songs)
+                let mut songs: Vec<MusicDto> = library
+                    .iter()
+                    .filter(|dto| dto.user_data.play_count > 0)
+                    .cloned()
+                    .collect();
+                songs.sort_by_key(|dto| std::cmp::Reverse(dto.user_data.play_count));
+                Ok(songs.into_iter().take(*count as usize).collect())
             }
         }
     }

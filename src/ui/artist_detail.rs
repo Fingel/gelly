@@ -1,7 +1,7 @@
 use crate::{
     async_utils::spawn_tokio,
     jellyfin::api::ImageType,
-    library_utils::{albums_for_artist, play_artist, songs_for_artist},
+    library_utils::play_artist,
     models::{AlbumModel, ArtistModel},
     ui::{
         album_detail::AlbumDetail,
@@ -48,8 +48,10 @@ impl ArtistDetail {
     }
 
     pub fn pull_albums(&self) {
-        let library = self.get_application().library().clone();
-        let albums: Vec<AlbumModel> = albums_for_artist(&self.id(), &library.borrow());
+        let albums: Vec<AlbumModel> = self
+            .get_application()
+            .library()
+            .albums_for_artist(&self.id());
         self.imp().albums.replace(albums);
         while let Some(child) = self.imp().albums_box.first_child() {
             self.imp().albums_box.remove(&child);
@@ -160,9 +162,10 @@ impl ArtistDetail {
             let id = model.id();
             let app = self.get_application();
             let jellyfin = app.jellyfin();
-            let library = app.library().clone();
             let playlist_id = playlist_id.to_string();
-            let song_ids: Vec<String> = songs_for_artist(&id, &library.borrow())
+            let song_ids: Vec<String> = app
+                .library()
+                .songs_for_artist(&id)
                 .iter()
                 .map(|song| song.id().to_string())
                 .collect();
@@ -191,9 +194,8 @@ impl ArtistDetail {
     fn enqueue_artist(&self, to_end: bool) {
         if let Some(model) = self.get_model() {
             let app = self.get_application();
-            let library = app.library().clone();
             let id = model.id();
-            let songs = songs_for_artist(&id, &library.borrow());
+            let songs = app.library().songs_for_artist(&id);
             if let Some(audio_model) = self.get_application().audio_model() {
                 let song_cnt = songs.len();
                 if to_end {

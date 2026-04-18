@@ -259,6 +259,7 @@ impl Song {
         if let Some(audio_model) = app.audio_model()
             && let Some(song) = app
                 .library()
+                .songs
                 .borrow()
                 .iter()
                 .find(|song| song.id == song_id)
@@ -274,6 +275,7 @@ impl Song {
         if let Some(audio_model) = app.audio_model()
             && let Some(song) = app
                 .library()
+                .songs
                 .borrow()
                 .iter()
                 .find(|song| song.id == song_id)

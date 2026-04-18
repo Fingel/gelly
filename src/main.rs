@@ -14,6 +14,7 @@ mod backend;
 mod cache;
 mod config;
 mod jellyfin;
+mod library;
 mod library_utils;
 mod models;
 mod reporting;

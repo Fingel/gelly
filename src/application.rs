@@ -13,7 +13,8 @@ use crate::config::{
     self, BackendType, retrieve_jellyfin_api_token, retrieve_subsonic_password, settings,
 };
 use crate::jellyfin::Jellyfin;
-use crate::jellyfin::api::{MusicDto, MusicDtoList, PlaylistDto, PlaylistDtoList};
+use crate::jellyfin::api::{MusicDtoList, PlaylistDto, PlaylistDtoList};
+use crate::library::Library;
 use crate::subsonic::Subsonic;
 use log::{debug, error, warn};
 use std::cell::RefCell;
@@ -171,7 +172,7 @@ impl Application {
         self.imp().backend.borrow().clone()
     }
 
-    pub fn library(&self) -> Rc<RefCell<Vec<MusicDto>>> {
+    pub fn library(&self) -> Library {
         self.imp().library.clone()
     }
 
@@ -209,7 +210,7 @@ impl Application {
             match cache.load::<MusicDtoList>() {
                 Ok(library) => {
                     let library_cnt = library.items.len() as u64;
-                    self.imp().library.replace(library.items);
+                    self.imp().library.songs.replace(library.items);
                     self.emit_by_name::<()>("library-refreshed", &[&library_cnt]);
                     debug!("Loaded library from cache");
                     return;
@@ -235,7 +236,7 @@ impl Application {
                         Ok(library) => {
                             let library_cnt = library.items.len() as u64;
                             app.cache_library(&library);
-                            app.imp().library.replace(library.items);
+                            app.imp().library.songs.replace(library.items);
                             app.emit_by_name::<()>("library-refreshed", &[&library_cnt]);
                         }
                         Err(err) => app.handle_backend_error(err, "refresh_library"),
@@ -356,7 +357,7 @@ impl Application {
         let backend = Backend::default();
         self.clear_cache();
         self.imp().backend.replace(backend);
-        self.imp().library.replace(Vec::new());
+        self.imp().library.songs.replace(Vec::new());
         self.imp().library_id.replace(String::new());
         config::logout().unwrap_or_else(|e| warn!("Failed to clear config on logout: {}", e));
     }
@@ -419,12 +420,13 @@ mod imp {
     use crate::audio::model::AudioModel;
     use crate::backend::Backend;
     use crate::cache::{ImageCache, LibraryCache};
-    use crate::jellyfin::api::{MusicDto, PlaylistDto};
+    use crate::jellyfin::api::PlaylistDto;
+    use crate::library::Library;
 
     #[derive(Default)]
     pub struct Application {
         pub backend: RefCell<Backend>,
-        pub library: Rc<RefCell<Vec<MusicDto>>>,
+        pub library: Library,
         pub playlists: Rc<RefCell<Vec<PlaylistDto>>>,
         pub library_id: RefCell<String>,
         pub library_cache: RefCell<Option<LibraryCache>>, // TODO: remove these Option<> types

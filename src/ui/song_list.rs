@@ -8,7 +8,6 @@ use log::warn;
 
 use crate::{
     application::Application,
-    library_utils::all_songs,
     models::SongModel,
     ui::{
         list_helpers::create_string_filter,
@@ -125,8 +124,7 @@ impl SongList {
         // Ensure factory is set up (will only happen once, after widget is attached)
         self.setup_factory();
 
-        let library = self.get_application().library().clone();
-        let songs = all_songs(&library.borrow());
+        let songs = self.get_application().library().all_songs();
         if songs.is_empty() {
             self.set_empty(true);
         } else {

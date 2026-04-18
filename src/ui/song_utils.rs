@@ -1,6 +1,5 @@
 use crate::{
     audio::model::AudioModel,
-    library_utils::{album_for_item, artist_for_item},
     models::SongModel,
     ui::{song::Song, widget_ext::WidgetApplicationExt, window::Window},
 };
@@ -15,8 +14,9 @@ pub fn connect_song_navigation(song: &Song, window: &Window) -> Vec<glib::Signal
             #[weak]
             window,
             move |_song: Song, song_id: &str| {
-                let library = window.get_application().library().clone();
-                if let Some(artist_model) = artist_for_item(song_id, &library.borrow()) {
+                if let Some(artist_model) =
+                    window.get_application().library().artist_for_item(song_id)
+                {
                     window.show_artist_detail(&artist_model);
                 }
             }
@@ -30,8 +30,9 @@ pub fn connect_song_navigation(song: &Song, window: &Window) -> Vec<glib::Signal
             #[weak]
             window,
             move |_song: Song, song_id: &str| {
-                let library = window.get_application().library().clone();
-                if let Some(album_model) = album_for_item(song_id, &library.borrow()) {
+                if let Some(album_model) =
+                    window.get_application().library().album_for_item(song_id)
+                {
                     window.show_album_detail(&album_model);
                 }
             }

@@ -1,6 +1,5 @@
 use crate::{
     audio::{model::AudioModel, stream_info::discover_stream_info},
-    library_utils::{album_for_item, artist_for_item},
     ui::{
         album_art::AlbumArt, album_art_background::draw_background, lyrics::Lyrics,
         stream_info_dialog, widget_ext::WidgetApplicationExt,
@@ -168,8 +167,12 @@ where
     fn show_artist(&self) {
         let song_id = self.audio_model().current_song_id();
         let window = self.obj().get_root_window();
-        let library = self.obj().get_application().library().clone();
-        if let Some(artist_model) = artist_for_item(&song_id, &library.borrow()) {
+        if let Some(artist_model) = self
+            .obj()
+            .get_application()
+            .library()
+            .artist_for_item(&song_id)
+        {
             window.show_artist_detail(&artist_model);
         }
     }
@@ -177,8 +180,12 @@ where
     fn show_album(&self) {
         let song_id = self.audio_model().current_song_id();
         let window = self.obj().get_root_window();
-        let library = self.obj().get_application().library().clone();
-        if let Some(album_model) = album_for_item(&song_id, &library.borrow()) {
+        if let Some(album_model) = self
+            .obj()
+            .get_application()
+            .library()
+            .album_for_item(&song_id)
+        {
             window.show_album_detail(&album_model);
         }
     }
