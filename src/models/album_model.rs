@@ -64,8 +64,8 @@ impl From<&MusicDto> for AlbumModel {
             .collect();
         let date_created = dto.date_created.clone().unwrap_or("".to_string());
         AlbumModel::new(
-            &dto.album,
-            &dto.album_id,
+            dto.album.as_deref().unwrap_or("Unknown Album"),
+            &dto.effective_album_id(),
             artists,
             &date_created,
             &dto.production_year,

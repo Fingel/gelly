@@ -1,4 +1,4 @@
-use crate::ui::widget_ext::WidgetApplicationExt;
+use crate::{jellyfin::api::NO_ALBUM_ID, ui::widget_ext::WidgetApplicationExt};
 use glib::Object;
 use gtk::{
     gio,
@@ -19,6 +19,11 @@ impl AlbumArt {
     }
 
     pub fn set_item_id(&self, item_id: &str, fallback_id: Option<&str>) {
+        if item_id.starts_with(NO_ALBUM_ID) {
+            self.show_error();
+            return;
+        }
+        let fallback_id = fallback_id.filter(|id| !id.starts_with(NO_ALBUM_ID));
         if let Some(id) = fallback_id {
             self.imp().fallback_image.replace(Some(id.to_string()));
         }
@@ -50,13 +55,13 @@ impl AlbumArt {
     }
 
     pub fn load_image(&self) {
-        self.imp().error_icon.set_visible(false);
-        self.imp().album_image.set_opacity(1.0);
         let item_id = if self.imp().item_id.borrow().is_empty() {
             return;
         } else {
             self.imp().item_id.borrow().clone()
         };
+        self.imp().error_icon.set_visible(false);
+        self.imp().album_image.set_opacity(1.0);
 
         let fallback_id = self.imp().fallback_image.borrow().clone();
 

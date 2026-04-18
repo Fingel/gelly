@@ -66,9 +66,9 @@ pub struct MusicDto {
     pub id: String,
     pub date_created: Option<String>,
     pub run_time_ticks: u64,
-    pub album: String,
+    pub album: Option<String>,
     pub album_artists: Vec<ArtistItemsDto>,
-    pub album_id: String,
+    pub album_id: Option<String>,
     pub normalization_gain: Option<f64>,
     pub production_year: Option<u32>,
     pub index_number: Option<u32>,
@@ -199,6 +199,26 @@ pub struct LyricsResponse {
 pub struct Lyric {
     pub text: String,
     pub start: Option<u64>,
+}
+
+pub const NO_ALBUM_ID: &str = "__gelly_no_album__";
+
+impl MusicDto {
+    /// Returns the real album_id when present, or a per-artist sentinel so that
+    /// no-album songs from different artists don't collide in the album detail view
+    pub fn effective_album_id(&self) -> String {
+        match &self.album_id {
+            Some(id) => id.clone(),
+            None => {
+                let artist_id = self
+                    .album_artists
+                    .first()
+                    .map(|a| a.id.as_str())
+                    .unwrap_or("");
+                format!("{NO_ALBUM_ID}{artist_id}")
+            }
+        }
+    }
 }
 
 #[derive(Clone, Copy)]

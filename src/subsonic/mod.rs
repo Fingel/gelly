@@ -28,8 +28,8 @@ pub struct Subsonic {
 }
 
 struct AlbumFallback {
-    album_id: String,
-    album_name: String,
+    album_id: Option<String>,
+    album_name: Option<String>,
     artist_name: Option<String>,
     artist_id: Option<String>,
     year: Option<u32>,
@@ -197,8 +197,8 @@ impl Subsonic {
         })?;
 
         let fallback = AlbumFallback {
-            album_id: album.id.clone(),
-            album_name: album.name.clone(),
+            album_id: Some(album.id.clone()),
+            album_name: Some(album.name.clone()),
             artist_name: album.artist.clone(),
             artist_id: album.artist_id.clone(),
             year: album.year,
@@ -215,8 +215,8 @@ impl Subsonic {
     }
 
     fn song_to_music_dto(&self, song: Song, fallback: &AlbumFallback) -> MusicDto {
-        let album = song.album.unwrap_or_else(|| fallback.album_name.clone());
-        let album_id = song.album_id.unwrap_or_else(|| fallback.album_id.clone());
+        let album = song.album.or_else(|| fallback.album_name.clone());
+        let album_id = song.album_id.or_else(|| fallback.album_id.clone());
 
         let artist_name = song
             .album_artist
@@ -311,8 +311,8 @@ impl Subsonic {
         })?;
 
         let album_fallback = AlbumFallback {
-            album_id: String::new(),
-            album_name: "Unknown Album".to_string(),
+            album_id: None,
+            album_name: None,
             artist_name: None,
             artist_id: None,
             year: None,
