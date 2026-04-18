@@ -13,7 +13,10 @@ use crate::{
     async_utils::run_on_tokio,
     backend::{Backend, BackendError},
     config::APP_ID,
-    jellyfin::api::{ImageType, MusicDto, MusicDtoList, PlaylistDto, PlaylistDtoList},
+    jellyfin::api::{
+        FavoriteDto, FavoriteDtoList, ImageType, MusicDto, MusicDtoList, PlaylistDto,
+        PlaylistDtoList,
+    },
     ui::image_utils::bytes_to_texture,
 };
 
@@ -35,6 +38,12 @@ pub struct PlaylistDtoListCache {
     pub total_record_count: u64,
 }
 
+#[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(rename_all = "PascalCase")]
+pub struct FavoritesDtoListCache {
+    pub items: Vec<FavoriteDto>,
+}
+
 impl From<MusicDtoListCache> for MusicDtoList {
     fn from(cache: MusicDtoListCache) -> Self {
         Self {
@@ -53,6 +62,12 @@ impl From<PlaylistDtoListCache> for PlaylistDtoList {
     }
 }
 
+impl From<FavoritesDtoListCache> for FavoriteDtoList {
+    fn from(cache: FavoritesDtoListCache) -> Self {
+        Self { items: cache.items }
+    }
+}
+
 pub trait Cacheable: DeserializeOwned + Serialize {
     type Loader: DeserializeOwned + Into<Self>;
     const CACHE_FILE_NAME: &'static str;
@@ -66,6 +81,11 @@ impl Cacheable for MusicDtoList {
 impl Cacheable for PlaylistDtoList {
     type Loader = PlaylistDtoListCache;
     const CACHE_FILE_NAME: &'static str = "playlists.json";
+}
+
+impl Cacheable for FavoriteDtoList {
+    type Loader = FavoriteDtoList;
+    const CACHE_FILE_NAME: &'static str = "favorites.json";
 }
 
 #[derive(Error, Debug)]

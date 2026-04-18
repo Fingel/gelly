@@ -4,8 +4,8 @@ use thiserror::Error;
 use crate::jellyfin::{
     Jellyfin,
     api::{
-        ImageType, LibraryDtoList, LyricsResponse, MusicDtoList, PlaybackInfo, PlaybackReport,
-        PlaybackReportStatus, PlaylistDtoList, PlaylistItems,
+        FavoriteDtoList, ImageType, LibraryDtoList, LyricsResponse, MusicDtoList, PlaybackInfo,
+        PlaybackReport, PlaybackReportStatus, PlaylistDtoList, PlaylistItems,
     },
 };
 use crate::subsonic::Subsonic;
@@ -50,6 +50,13 @@ impl Backend {
         match self {
             Self::Jellyfin(jellyfin) => jellyfin.get_library(library_id).await,
             Self::Subsonic(subsonic) => subsonic.get_library(library_id).await,
+        }
+    }
+
+    pub async fn get_favorites(&self, library_id: &str) -> Result<FavoriteDtoList, BackendError> {
+        match self {
+            Self::Jellyfin(jellyfin) => jellyfin.get_favorites(library_id).await,
+            Self::Subsonic(_subsonic) => todo!(),
         }
     }
 

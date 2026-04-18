@@ -11,8 +11,9 @@ use tokio::time::Instant;
 use crate::backend::BackendError;
 use crate::config;
 use crate::jellyfin::api::{
-    ImageType, LibraryDtoList, LyricsResponse, MusicDtoList, NewPlaylist, NewPlaylistResponse,
-    PlaybackInfo, PlaybackReport, PlaybackReportStatus, PlaylistDtoList, PlaylistItems,
+    FavoriteDtoList, ImageType, LibraryDtoList, LyricsResponse, MusicDtoList, NewPlaylist,
+    NewPlaylistResponse, PlaybackInfo, PlaybackReport, PlaybackReportStatus, PlaylistDtoList,
+    PlaylistItems,
 };
 
 pub mod api;
@@ -186,6 +187,27 @@ impl Jellyfin {
         ];
         let response = self.get("Items", Some(&params)).await?;
         let body = self.handle_response(response).await?;
+        let final_result = serde_json::from_str(&body)?;
+
+        Ok(final_result)
+    }
+
+    pub async fn get_favorites(&self, library_id: &str) -> Result<FavoriteDtoList, BackendError> {
+        let params = vec![
+            ("parentId", library_id),
+            ("IncludeItemTypes", "Audio,MusicAlbum,MusicArtist"),
+            ("sortBy", "DateCreated"),
+            ("sortOrder", "Descending"),
+            ("recursive", "true"),
+            ("StartIndex", "0"),
+            ("enableTotalRecordCount", "false"),
+            ("enableImages", "false"),
+            ("Filters", "IsFavorite"),
+            ("Limit", "10000"), // TODO implement pagination if this is ever an issue
+        ];
+        let response = self.get("Items", Some(&params)).await?;
+        let body = self.handle_response(response).await?;
+        dbg!(&body);
         let final_result = serde_json::from_str(&body)?;
 
         Ok(final_result)

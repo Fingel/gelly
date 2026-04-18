@@ -7,21 +7,28 @@ use std::{
 use rand::prelude::*;
 
 use crate::{
-    jellyfin::api::MusicDto,
+    jellyfin::api::{FavoriteDto, ItemType, MusicDto},
     models::{AlbumModel, ArtistModel, SongModel},
 };
 
-#[derive(Clone)]
+#[derive(Debug, Clone, Default)]
+struct Favorites {
+    song_ids: HashSet<String>,
+    album_ids: HashSet<String>,
+    artist_ids: HashSet<String>,
+}
+
+#[derive(Debug, Clone, Default)]
 pub struct Library {
     pub songs: Rc<RefCell<Vec<MusicDto>>>,
-    pub favorites: Rc<RefCell<Vec<String>>>,
+    favorites: Rc<RefCell<Favorites>>,
 }
 
 impl Library {
     pub fn new() -> Self {
         Self {
             songs: Rc::new(RefCell::new(Vec::new())),
-            favorites: Rc::new(RefCell::new(Vec::new())),
+            favorites: Rc::new(RefCell::new(Favorites::default())),
         }
     }
 
@@ -160,11 +167,27 @@ impl Library {
             .find(|dto| dto.id == item_id)
             .map(|dto| dto.into())
     }
-}
 
-impl Default for Library {
-    fn default() -> Self {
-        Self::new()
+    pub fn update_favorites(&self, favorites_list: &[FavoriteDto]) {
+        let mut favorites = self.favorites.borrow_mut();
+        favorites.song_ids.clear();
+        favorites.album_ids.clear();
+        favorites.artist_ids.clear();
+        for favorite in favorites_list {
+            match favorite.item_type {
+                ItemType::Audio => {
+                    favorites.song_ids.insert(favorite.id.clone());
+                }
+                ItemType::MusicAlbum => {
+                    favorites.album_ids.insert(favorite.id.clone());
+                }
+                ItemType::MusicArtist => {
+                    favorites.artist_ids.insert(favorite.id.clone());
+                }
+                _ => log::warn!("Unknown favorite type: {:?}", favorite.item_type),
+            }
+        }
+        dbg!(favorites);
     }
 }
 
@@ -258,7 +281,7 @@ mod tests {
     fn make_library(songs: Vec<MusicDto>) -> Library {
         Library {
             songs: Rc::new(RefCell::new(songs)),
-            favorites: Rc::new(RefCell::new(Vec::new())),
+            favorites: Rc::new(RefCell::new(Favorites::default())),
         }
     }
 

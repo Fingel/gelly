@@ -8,12 +8,12 @@ use crate::async_utils::spawn_tokio;
 use crate::audio::model::AudioModel;
 use crate::backend::Backend;
 use crate::backend::BackendError;
-use crate::cache::{ImageCache, LibraryCache};
+use crate::cache::{Cacheable, ImageCache, LibraryCache};
 use crate::config::{
     self, BackendType, retrieve_jellyfin_api_token, retrieve_subsonic_password, settings,
 };
 use crate::jellyfin::Jellyfin;
-use crate::jellyfin::api::{MusicDtoList, PlaylistDto, PlaylistDtoList};
+use crate::jellyfin::api::{FavoriteDtoList, MusicDtoList, PlaylistDto, PlaylistDtoList};
 use crate::library::Library;
 use crate::subsonic::Subsonic;
 use log::{debug, error, warn};
@@ -235,7 +235,7 @@ impl Application {
                     match result {
                         Ok(library) => {
                             let library_cnt = library.items.len() as u64;
-                            app.cache_library(&library);
+                            app.cache_collection(&library);
                             app.imp().library.songs.replace(library.items);
                             app.emit_by_name::<()>("library-refreshed", &[&library_cnt]);
                         }
@@ -246,12 +246,46 @@ impl Application {
         );
     }
 
-    fn cache_library(&self, library: &MusicDtoList) {
-        if let Some(cache) = self.library_cache()
-            && let Err(e) = cache.save(library)
-        {
-            warn!("Failed to save library to cache: {}", e);
+    pub fn refresh_favorites(&self, refresh_cache: bool) {
+        if !refresh_cache && let Some(cache) = self.library_cache() {
+            match cache.load::<FavoriteDtoList>() {
+                Ok(favorites) => {
+                    self.imp().library.update_favorites(&favorites.items);
+                    self.emit_by_name::<()>("favorites-updated", &[]);
+                    debug!("Loaded favorites from cache");
+                    return;
+                }
+                Err(error) => {
+                    warn!(
+                        "Failed to load favorites from cache: {}. Refreshing.",
+                        error
+                    );
+                }
+            }
         }
+        let library_id = self.imp().library_id.borrow().clone();
+        let jellyfin = self.jellyfin();
+        if !jellyfin.is_authenticated() {
+            debug!("Not authenticated, skipping library refresh");
+            return;
+        }
+        self.http_with_loading(
+            async move { jellyfin.get_favorites(&library_id).await },
+            glib::clone!(
+                #[weak(rename_to=app)]
+                self,
+                move |result: Result<FavoriteDtoList, BackendError>| {
+                    match result {
+                        Ok(favorites) => {
+                            app.cache_collection(&favorites);
+                            app.imp().library.update_favorites(&favorites.items);
+                            app.emit_by_name::<()>("favorites-updated", &[]);
+                        }
+                        Err(err) => app.handle_backend_error(err, "refresh_library"),
+                    }
+                },
+            ),
+        );
     }
 
     pub fn refresh_playlists(&self, refresh_cache: bool) {
@@ -283,7 +317,7 @@ impl Application {
                     match result {
                         Ok(playlists) => {
                             let playlist_cnt = playlists.items.len() as u64;
-                            app.cache_playlists(&playlists);
+                            app.cache_collection(&playlists);
                             app.imp().playlists.replace(playlists.items);
                             app.emit_by_name::<()>("playlists-refreshed", &[&playlist_cnt]);
                         }
@@ -294,11 +328,11 @@ impl Application {
         )
     }
 
-    fn cache_playlists(&self, playlists: &PlaylistDtoList) {
+    fn cache_collection<T: Cacheable>(&self, collection: &T) {
         if let Some(cache) = self.library_cache()
-            && let Err(e) = cache.save(playlists)
+            && let Err(e) = cache.save(collection)
         {
-            warn!("Failed to save playlists to cache: {}", e);
+            warn!("Failed to save collection to cache: {}", e);
         }
     }
 
@@ -311,6 +345,7 @@ impl Application {
     }
 
     pub fn refresh_all(&self, refresh_cache: bool) {
+        self.refresh_favorites(refresh_cache); // important this goes first: pre-populate to reference
         self.refresh_library(refresh_cache);
         self.refresh_playlists(refresh_cache);
     }
@@ -454,6 +489,7 @@ mod imp {
                     Signal::builder("playlists-refreshed")
                         .param_types([u64::static_type()])
                         .build(),
+                    Signal::builder("favorites-updated").build(),
                     Signal::builder("library-rescan-requested").build(),
                     Signal::builder("force-logout").build(),
                     Signal::builder("global-error")
