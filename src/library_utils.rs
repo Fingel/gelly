@@ -9,17 +9,18 @@ pub fn albums_from_library(library: &[MusicDto]) -> Vec<AlbumModel> {
     // Collect playcounts in a separate loop to avoid too many getter/setters
     // on the model gobject
     let mut play_count_map = HashMap::<String, u64>::new();
-    for dto in library {
-        *play_count_map.entry(dto.album_id.clone()).or_insert(0) += dto.user_data.play_count;
+    for dto in library.iter().filter(|dto| dto.album.is_some()) {
+        *play_count_map.entry(dto.effective_album_id()).or_insert(0) += dto.user_data.play_count;
     }
 
-    let mut seen_album_ids = HashSet::new();
+    let mut seen_album_ids = HashSet::<String>::new();
     let mut albums: Vec<AlbumModel> = library
         .iter()
-        .filter(|dto| seen_album_ids.insert(&dto.album_id))
+        .filter(|dto| dto.album.is_some())
+        .filter(|dto| seen_album_ids.insert(dto.effective_album_id()))
         .map(|dto| {
             let album = AlbumModel::from(dto);
-            if let Some(&total_play_count) = play_count_map.get(&dto.album_id) {
+            if let Some(&total_play_count) = play_count_map.get(&dto.effective_album_id()) {
                 album.set_play_count(total_play_count);
             }
             album
@@ -62,7 +63,7 @@ pub fn all_songs(library: &[MusicDto]) -> Vec<SongModel> {
 }
 
 pub fn albums_for_artist(artist_id: &str, library: &[MusicDto]) -> Vec<AlbumModel> {
-    let mut seen_album_ids = HashSet::new();
+    let mut seen_album_ids = HashSet::<String>::new();
     let mut albums: Vec<AlbumModel> = library
         .iter()
         .filter(|dto| {
@@ -70,7 +71,7 @@ pub fn albums_for_artist(artist_id: &str, library: &[MusicDto]) -> Vec<AlbumMode
                 .iter()
                 .any(|artist| artist.id == artist_id)
         })
-        .filter(|dto| seen_album_ids.insert(&dto.album_id))
+        .filter(|dto| seen_album_ids.insert(dto.effective_album_id()))
         .map(AlbumModel::from)
         .collect();
     albums.sort_by_key(|album| std::cmp::Reverse(album.year()));
@@ -81,7 +82,7 @@ pub fn albums_for_artist(artist_id: &str, library: &[MusicDto]) -> Vec<AlbumMode
 pub fn songs_for_album(album_id: &str, library: &[MusicDto]) -> Vec<SongModel> {
     let mut tracks: Vec<SongModel> = library
         .iter()
-        .filter(|dto| dto.album_id == album_id)
+        .filter(|dto| dto.effective_album_id() == album_id)
         .map(SongModel::from)
         .collect();
     tracks.sort_by_key(|t| (t.parent_track_number(), t.track_number()));
@@ -179,8 +180,8 @@ mod tests {
         MusicDto {
             id: id.to_string(),
             name: name.to_string(),
-            album: album.to_string(),
-            album_id: album_id.to_string(),
+            album: Some(album.to_string()),
+            album_id: Some(album_id.to_string()),
             album_artists: vec![ArtistItemsDto {
                 name: artist_name.to_string(),
                 id: artist_id.to_string(),
@@ -214,8 +215,8 @@ mod tests {
         MusicDto {
             id: id.to_string(),
             name: name.to_string(),
-            album: album.to_string(),
-            album_id: album_id.to_string(),
+            album: Some(album.to_string()),
+            album_id: Some(album_id.to_string()),
             album_artists,
             date_created: Some("2025-01-01".to_string()),
             run_time_ticks: 2000000000,
@@ -233,8 +234,8 @@ mod tests {
             user_data: UserDataDto { play_count },
             id: format!("user-data-{}", play_count),
             name: format!("user-data-{}", play_count),
-            album: format!("user-data-{}", play_count),
-            album_id: format!("user-data-{}", play_count),
+            album: Some(format!("user-data-{}", play_count)),
+            album_id: Some(format!("user-data-{}", play_count)),
             album_artists: vec![ArtistItemsDto {
                 name: format!("user-data-{}", play_count),
                 id: format!("user-data-{}", play_count),
