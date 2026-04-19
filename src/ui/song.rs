@@ -263,7 +263,8 @@ impl Song {
                 .borrow()
                 .iter()
                 .find(|song| song.id == song_id)
-                .map(SongModel::from)
+                .map(|dto| SongModel::new(dto, false))
+        // TODO: get favorite status here
         {
             audio_model.prepend_to_queue(vec![song]);
         }
@@ -279,7 +280,8 @@ impl Song {
                 .borrow()
                 .iter()
                 .find(|song| song.id == song_id)
-                .map(SongModel::from)
+                .map(|dto| SongModel::new(dto, false))
+        // TODO: get favorite status here
         {
             audio_model.append_to_queue(vec![song]);
         }

@@ -210,7 +210,7 @@ impl Application {
             match cache.load::<MusicDtoList>() {
                 Ok(library) => {
                     let library_cnt = library.items.len() as u64;
-                    self.imp().library.songs.replace(library.items);
+                    self.imp().library.update_songs(library.items);
                     self.emit_by_name::<()>("library-refreshed", &[&library_cnt]);
                     debug!("Loaded library from cache");
                     return;
@@ -236,7 +236,7 @@ impl Application {
                         Ok(library) => {
                             let library_cnt = library.items.len() as u64;
                             app.cache_collection(&library);
-                            app.imp().library.songs.replace(library.items);
+                            app.imp().library.update_songs(library.items);
                             app.emit_by_name::<()>("library-refreshed", &[&library_cnt]);
                         }
                         Err(err) => app.handle_backend_error(err, "refresh_library"),
@@ -392,7 +392,7 @@ impl Application {
         let backend = Backend::default();
         self.clear_cache();
         self.imp().backend.replace(backend);
-        self.imp().library.songs.replace(Vec::new());
+        self.imp().library.update_songs(Vec::new());
         self.imp().library_id.replace(String::new());
         config::logout().unwrap_or_else(|e| warn!("Failed to clear config on logout: {}", e));
     }

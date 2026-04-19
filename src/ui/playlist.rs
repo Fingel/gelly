@@ -64,8 +64,10 @@ impl Playlist {
                 move |result: Result<Vec<MusicDto>, BackendError>| {
                     match result {
                         Ok(music_data) => {
-                            let songs: Vec<SongModel> =
-                                music_data.iter().map(SongModel::from).collect();
+                            let songs: Vec<SongModel> = music_data
+                                .iter()
+                                .map(|dto| SongModel::new(dto, false)) // TODO: get favorite status here
+                                .collect();
                             playlist.play_songs(songs);
                         }
                         Err(error) => {

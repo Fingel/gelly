@@ -18,10 +18,24 @@ struct Favorites {
     artist_ids: HashSet<String>,
 }
 
+impl Favorites {
+    fn contains_song(&self, id: &str) -> bool {
+        self.song_ids.contains(id)
+    }
+    fn contains_album(&self, id: &str) -> bool {
+        self.album_ids.contains(id)
+    }
+    fn contains_artist(&self, id: &str) -> bool {
+        self.artist_ids.contains(id)
+    }
+}
+
 #[derive(Debug, Clone, Default)]
 pub struct Library {
-    pub songs: Rc<RefCell<Vec<MusicDto>>>,
+    pub songs: Rc<RefCell<Vec<MusicDto>>>, // TODO make this private
     favorites: Rc<RefCell<Favorites>>,
+    album_play_counts: Rc<RefCell<HashMap<String, u64>>>,
+    artist_play_counts: Rc<RefCell<HashMap<String, u64>>>,
 }
 
 impl Library {
@@ -29,18 +43,30 @@ impl Library {
         Self {
             songs: Rc::new(RefCell::new(Vec::new())),
             favorites: Rc::new(RefCell::new(Favorites::default())),
+            album_play_counts: Rc::new(RefCell::new(HashMap::new())),
+            artist_play_counts: Rc::new(RefCell::new(HashMap::new())),
         }
     }
 
-    pub fn albums_from_library(&self) -> Vec<AlbumModel> {
-        // Collect playcounts in a separate loop to avoid too many getter/setters
-        // on the model gobject
-        let mut play_count_map = HashMap::<String, u64>::new();
-        for dto in self.songs.borrow().iter().filter(|dto| dto.album.is_some()) {
-            *play_count_map.entry(dto.effective_album_id()).or_insert(0) +=
-                dto.user_data.play_count;
+    pub fn update_songs(&self, songs: Vec<MusicDto>) {
+        let mut album_counts = HashMap::new();
+        let mut artist_counts = HashMap::new();
+        for dto in songs.iter().filter(|dto| dto.album.is_some()) {
+            *album_counts.entry(dto.effective_album_id()).or_insert(0) += dto.user_data.play_count;
         }
+        for dto in songs.iter() {
+            for artist in &dto.album_artists {
+                *artist_counts.entry(artist.id.clone()).or_insert(0) += dto.user_data.play_count;
+            }
+        }
+        self.album_play_counts.replace(album_counts);
+        self.artist_play_counts.replace(artist_counts);
+        self.songs.replace(songs);
+    }
 
+    pub fn albums_from_library(&self) -> Vec<AlbumModel> {
+        let play_counts = self.album_play_counts.borrow();
+        let favorites = self.favorites.borrow();
         let mut seen_album_ids = HashSet::<String>::new();
         let mut albums: Vec<AlbumModel> = self
             .songs
@@ -49,25 +75,21 @@ impl Library {
             .filter(|dto| dto.album.is_some())
             .filter(|dto| seen_album_ids.insert(dto.effective_album_id()))
             .map(|dto| {
-                let album = AlbumModel::from(dto);
-                if let Some(&total_play_count) = play_count_map.get(&dto.effective_album_id()) {
-                    album.set_play_count(total_play_count);
-                }
-                album
+                let id = dto.effective_album_id();
+                AlbumModel::new(
+                    dto,
+                    favorites.contains_album(&id),
+                    play_counts.get(&id).copied().unwrap_or(0),
+                )
             })
             .collect();
         albums.sort_by_key(|album| std::cmp::Reverse(album.date_created()));
-
         albums
     }
 
     pub fn artists_from_library(&self) -> Vec<ArtistModel> {
-        let mut play_count_map = HashMap::<String, u64>::new();
-        for dto in self.songs.borrow().iter() {
-            for artist in &dto.album_artists {
-                *play_count_map.entry(artist.id.clone()).or_insert(0) += dto.user_data.play_count;
-            }
-        }
+        let play_counts = self.artist_play_counts.borrow();
+        let favorites = self.favorites.borrow();
         let mut seen_artist_ids = HashSet::new();
         let mut artists: Vec<ArtistModel> = self
             .songs
@@ -76,25 +98,33 @@ impl Library {
             .flat_map(|dto| &dto.album_artists)
             .filter(|artist| seen_artist_ids.insert(&artist.id))
             .map(|dto| {
-                let artist = ArtistModel::from(dto);
-                if let Some(&total_play_count) = play_count_map.get(&dto.id) {
-                    artist.set_play_count(total_play_count);
-                }
-                artist
+                let play_count = play_counts.get(&dto.id).copied().unwrap_or(0);
+                let favorite = favorites.contains_artist(&dto.id);
+                ArtistModel::new(dto, favorite, play_count)
             })
             .collect();
         artists.sort_by_key(|artist| artist.name().to_lowercase());
-
         artists
     }
 
     pub fn all_songs(&self) -> Vec<SongModel> {
-        let mut songs: Vec<SongModel> = self.songs.borrow().iter().map(SongModel::from).collect();
+        let favorites = self.favorites.borrow();
+        let mut songs: Vec<SongModel> = self
+            .songs
+            .borrow()
+            .iter()
+            .map(|dto| {
+                let favorite = favorites.contains_song(&dto.id);
+                SongModel::new(dto, favorite)
+            })
+            .collect();
         songs.sort_by_key(|s| std::cmp::Reverse(s.date_created()));
         songs
     }
 
     pub fn albums_for_artist(&self, artist_id: &str) -> Vec<AlbumModel> {
+        let play_counts = self.album_play_counts.borrow();
+        let favorites = self.favorites.borrow();
         let mut seen_album_ids = HashSet::<String>::new();
         let mut albums: Vec<AlbumModel> = self
             .songs
@@ -106,20 +136,30 @@ impl Library {
                     .any(|artist| artist.id == artist_id)
             })
             .filter(|dto| seen_album_ids.insert(dto.effective_album_id()))
-            .map(AlbumModel::from)
+            .map(|dto| {
+                let id = dto.effective_album_id();
+                AlbumModel::new(
+                    dto,
+                    favorites.contains_album(&id),
+                    play_counts.get(&id).copied().unwrap_or(0),
+                )
+            })
             .collect();
         albums.sort_by_key(|album| std::cmp::Reverse(album.year()));
-
         albums
     }
 
     pub fn songs_for_album(&self, album_id: &str) -> Vec<SongModel> {
+        let favorites = self.favorites.borrow();
         let mut tracks: Vec<SongModel> = self
             .songs
             .borrow()
             .iter()
             .filter(|dto| dto.effective_album_id() == album_id)
-            .map(SongModel::from)
+            .map(|dto| {
+                let favorite = favorites.contains_song(&dto.id);
+                SongModel::new(dto, favorite)
+            })
             .collect();
         tracks.sort_by_key(|t| (t.parent_track_number(), t.track_number()));
         tracks
@@ -153,19 +193,36 @@ impl Library {
     }
 
     pub fn artist_for_item(&self, item_id: &str) -> Option<ArtistModel> {
+        let play_counts = self.artist_play_counts.borrow();
+        let favorites = self.favorites.borrow();
         self.songs
             .borrow()
             .iter()
             .find(|dto| dto.id == item_id)
-            .and_then(|dto| dto.album_artists.first().map(|artist| artist.into()))
+            .and_then(|dto| {
+                dto.album_artists.first().map(|artist| {
+                    let play_count = play_counts.get(&artist.id).copied().unwrap_or(0);
+                    let favorite = favorites.contains_artist(&artist.id);
+                    ArtistModel::new(artist, favorite, play_count)
+                })
+            })
     }
 
     pub fn album_for_item(&self, item_id: &str) -> Option<AlbumModel> {
+        let play_counts = self.album_play_counts.borrow();
+        let favorites = self.favorites.borrow();
         self.songs
             .borrow()
             .iter()
             .find(|dto| dto.id == item_id)
-            .map(|dto| dto.into())
+            .map(|dto| {
+                let id = dto.effective_album_id();
+                AlbumModel::new(
+                    dto,
+                    favorites.contains_album(&id),
+                    play_counts.get(&id).copied().unwrap_or(0),
+                )
+            })
     }
 
     pub fn update_favorites(&self, favorites_list: &[FavoriteDto]) {
@@ -187,7 +244,6 @@ impl Library {
                 _ => log::warn!("Unknown favorite type: {:?}", favorite.item_type),
             }
         }
-        dbg!(favorites);
     }
 }
 
@@ -279,10 +335,9 @@ mod tests {
     }
 
     fn make_library(songs: Vec<MusicDto>) -> Library {
-        Library {
-            songs: Rc::new(RefCell::new(songs)),
-            favorites: Rc::new(RefCell::new(Favorites::default())),
-        }
+        let lib = Library::new();
+        lib.update_songs(songs);
+        lib
     }
 
     #[test]
