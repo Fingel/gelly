@@ -97,6 +97,7 @@ pub enum ItemType {
     Audio,
     MusicAlbum,
     MusicArtist,
+    Playlist,
     #[serde(other)]
     Unknown,
 }

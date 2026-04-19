@@ -16,6 +16,7 @@ struct Favorites {
     song_ids: HashSet<String>,
     album_ids: HashSet<String>,
     artist_ids: HashSet<String>,
+    playlist_ids: HashSet<String>,
 }
 
 impl Favorites {
@@ -80,6 +81,9 @@ impl Library {
                 }
                 ItemType::MusicArtist => {
                     favorites.artist_ids.insert(favorite.id.clone());
+                }
+                ItemType::Playlist => {
+                    favorites.playlist_ids.insert(favorite.id.clone());
                 }
                 _ => log::warn!("Unknown favorite type: {:?}", favorite.item_type),
             }

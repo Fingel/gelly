@@ -53,9 +53,9 @@ impl Backend {
         }
     }
 
-    pub async fn get_favorites(&self, library_id: &str) -> Result<FavoriteDtoList, BackendError> {
+    pub async fn get_favorites(&self) -> Result<FavoriteDtoList, BackendError> {
         match self {
-            Self::Jellyfin(jellyfin) => jellyfin.get_favorites(library_id).await,
+            Self::Jellyfin(jellyfin) => jellyfin.get_favorites().await,
             Self::Subsonic(_subsonic) => todo!(),
         }
     }

@@ -263,14 +263,13 @@ impl Application {
                 }
             }
         }
-        let library_id = self.imp().library_id.borrow().clone();
         let jellyfin = self.jellyfin();
         if !jellyfin.is_authenticated() {
             debug!("Not authenticated, skipping library refresh");
             return;
         }
         self.http_with_loading(
-            async move { jellyfin.get_favorites(&library_id).await },
+            async move { jellyfin.get_favorites().await },
             glib::clone!(
                 #[weak(rename_to=app)]
                 self,

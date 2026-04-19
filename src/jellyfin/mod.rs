@@ -192,10 +192,9 @@ impl Jellyfin {
         Ok(final_result)
     }
 
-    pub async fn get_favorites(&self, library_id: &str) -> Result<FavoriteDtoList, BackendError> {
+    pub async fn get_favorites(&self) -> Result<FavoriteDtoList, BackendError> {
         let params = vec![
-            ("parentId", library_id),
-            ("IncludeItemTypes", "Audio,MusicAlbum,MusicArtist"),
+            ("IncludeItemTypes", "Playlist,Audio,MusicAlbum,MusicArtist"),
             ("sortBy", "DateCreated"),
             ("sortOrder", "Descending"),
             ("recursive", "true"),
