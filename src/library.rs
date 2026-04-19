@@ -51,10 +51,11 @@ impl Library {
     pub fn update_songs(&self, songs: Vec<MusicDto>) {
         let mut album_counts = HashMap::new();
         let mut artist_counts = HashMap::new();
-        for dto in songs.iter().filter(|dto| dto.album.is_some()) {
-            *album_counts.entry(dto.effective_album_id()).or_insert(0) += dto.user_data.play_count;
-        }
         for dto in songs.iter() {
+            if dto.album.is_some() {
+                *album_counts.entry(dto.effective_album_id()).or_insert(0) +=
+                    dto.user_data.play_count;
+            }
             for artist in &dto.album_artists {
                 *artist_counts.entry(artist.id.clone()).or_insert(0) += dto.user_data.play_count;
             }
@@ -62,6 +63,27 @@ impl Library {
         self.album_play_counts.replace(album_counts);
         self.artist_play_counts.replace(artist_counts);
         self.songs.replace(songs);
+    }
+
+    pub fn update_favorites(&self, favorites_list: &[FavoriteDto]) {
+        let mut favorites = self.favorites.borrow_mut();
+        favorites.song_ids.clear();
+        favorites.album_ids.clear();
+        favorites.artist_ids.clear();
+        for favorite in favorites_list {
+            match favorite.item_type {
+                ItemType::Audio => {
+                    favorites.song_ids.insert(favorite.id.clone());
+                }
+                ItemType::MusicAlbum => {
+                    favorites.album_ids.insert(favorite.id.clone());
+                }
+                ItemType::MusicArtist => {
+                    favorites.artist_ids.insert(favorite.id.clone());
+                }
+                _ => log::warn!("Unknown favorite type: {:?}", favorite.item_type),
+            }
+        }
     }
 
     pub fn albums_from_library(&self) -> Vec<AlbumModel> {
@@ -223,27 +245,6 @@ impl Library {
                     play_counts.get(&id).copied().unwrap_or(0),
                 )
             })
-    }
-
-    pub fn update_favorites(&self, favorites_list: &[FavoriteDto]) {
-        let mut favorites = self.favorites.borrow_mut();
-        favorites.song_ids.clear();
-        favorites.album_ids.clear();
-        favorites.artist_ids.clear();
-        for favorite in favorites_list {
-            match favorite.item_type {
-                ItemType::Audio => {
-                    favorites.song_ids.insert(favorite.id.clone());
-                }
-                ItemType::MusicAlbum => {
-                    favorites.album_ids.insert(favorite.id.clone());
-                }
-                ItemType::MusicArtist => {
-                    favorites.artist_ids.insert(favorite.id.clone());
-                }
-                _ => log::warn!("Unknown favorite type: {:?}", favorite.item_type),
-            }
-        }
     }
 }
 
