@@ -70,7 +70,7 @@ impl Library {
         favorites.song_ids.clear();
         favorites.album_ids.clear();
         favorites.artist_ids.clear();
-        for favorite in favorites_list {
+        for favorite in favorites_list.iter().filter(|f| f.user_data.is_favorite) {
             match favorite.item_type {
                 ItemType::Audio => {
                     favorites.song_ids.insert(favorite.id.clone());
@@ -251,7 +251,7 @@ impl Library {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::jellyfin::api::{ArtistItemsDto, UserDataDto};
+    use crate::jellyfin::api::{ArtistItemsDto, FavoriteUserDataDto, UserDataDto};
 
     #[allow(clippy::too_many_arguments)]
     fn create_test_music_dto(
@@ -792,5 +792,35 @@ mod tests {
         assert_eq!(most_played[0].id, "user-data-3");
         assert_eq!(most_played[1].id, "user-data-2");
         assert_eq!(most_played[2].id, "user-data-1");
+    }
+
+    #[test]
+    fn test_favorites() {
+        let lib = make_library(vec![
+            create_music_dto_user_data(1),
+            create_music_dto_user_data(2),
+        ]);
+        lib.update_favorites(&[
+            FavoriteDto {
+                id: lib.all_songs()[0].id().to_string(),
+                item_type: ItemType::Audio,
+                user_data: FavoriteUserDataDto { is_favorite: true },
+            },
+            FavoriteDto {
+                id: lib.all_songs()[1].id().to_string(),
+                item_type: ItemType::Audio,
+                user_data: FavoriteUserDataDto { is_favorite: false },
+            },
+        ]);
+        assert!(
+            lib.favorites
+                .borrow()
+                .contains_song(&lib.all_songs()[0].id())
+        );
+        assert!(
+            !lib.favorites
+                .borrow()
+                .contains_song(&lib.all_songs()[1].id())
+        );
     }
 }
