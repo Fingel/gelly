@@ -212,6 +212,12 @@
                                                 <property name="orientation">horizontal</property>
                                                 <property name="spacing">6</property>
                                                 <child>
+                                                  <object class="GtkToggleButton" id="favorite_button">
+                                                    <property name="icon-name">starred-symbolic</property>
+                                                    <property name="tooltip-text" translatable="yes">Favorites</property>
+                                                  </object>
+                                                </child>
+                                                <child>
                                                   <object class="GtkDropDown" id="sort_dropdown">
                                                   </object>
                                                 </child>

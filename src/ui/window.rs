@@ -343,6 +343,8 @@ mod imp {
         pub sort_direction: TemplateChild<adw::ToggleGroup>,
         #[template_child]
         pub search_entry: TemplateChild<gtk::SearchEntry>,
+        #[template_child]
+        pub favorite_button: TemplateChild<gtk::ToggleButton>,
 
         pub blurred_paintable: RefCell<Option<gtk::gdk::Paintable>>,
         pub sort_changing: Cell<bool>,
@@ -505,6 +507,15 @@ mod imp {
             self.playlist_list
                 .setup_search_connection(&self.search_entry);
             self.song_list.setup_search_connection(&self.search_entry);
+
+            self.album_list
+                .setup_favorite_connection(&self.favorite_button);
+            self.artist_list
+                .setup_favorite_connection(&self.favorite_button);
+            self.playlist_list
+                .setup_favorite_connection(&self.favorite_button);
+            self.song_list
+                .setup_favorite_connection(&self.favorite_button);
 
             let action_new = ActionEntry::builder("new")
                 .activate(glib::clone!(

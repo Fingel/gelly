@@ -5,14 +5,14 @@ use crate::{
     models::AlbumModel,
     ui::{
         album::Album,
-        list_helpers::*,
+        list_helpers::{create_string_filter, handle_grid_activation},
         page_traits::{SortDirection, SortType, TopPage},
         widget_ext::WidgetApplicationExt,
     },
 };
 use glib::Object;
 use gtk::{
-    CustomSorter, SortListModel, gio,
+    gio,
     glib::{self},
     prelude::*,
     subclass::prelude::*,
@@ -40,26 +40,10 @@ impl TopPage for AlbumList {
     }
 
     fn search_changed(&self, query: &str) {
+        let search = if query.is_empty() { None } else { Some(query) };
         let imp = self.imp();
-        let store = imp.store.get().expect("Store should be initialized");
-        let sorter = if let Some(current_sorter) = imp.current_sorter.borrow().as_ref() {
-            current_sorter.clone()
-        } else {
-            let default_sorter = self.build_sorter(SortType::DateAdded, SortDirection::Ascending);
-            imp.current_sorter.replace(Some(default_sorter.clone()));
-            default_sorter
-        };
-        let filters = vec![
-            imp.name_filter
-                .get()
-                .expect("Name filter should be initialized")
-                .clone(),
-            imp.artists_filter
-                .get()
-                .expect("Artists filter should be initialized")
-                .clone(),
-        ];
-        apply_multi_filter_search(query, sorter.upcast(), store, &filters, &imp.grid_view);
+        imp.name_filter.get().unwrap().set_search(search);
+        imp.artists_filter.get().unwrap().set_search(search);
     }
 
     fn sort_options(&self) -> &[SortType] {
@@ -81,17 +65,26 @@ impl TopPage for AlbumList {
     }
 
     fn apply_sort(&self, sort_by: u32, direction: u32) {
-        let imp = self.imp();
         config::set_albums_sort_by(sort_by);
         config::set_albums_sort_direction(direction);
-        let sort_option = self.sort_options()[sort_by as usize];
-        let sort_direction = SortDirection::try_from(direction).unwrap_or(SortDirection::Ascending);
-        let sorter = self.build_sorter(sort_option, sort_direction);
-        imp.current_sorter.replace(Some(sorter.clone()));
-        let store = imp.store.get().expect("Store should be initialized");
-        let sort_model = SortListModel::new(Some(store.clone()), Some(sorter));
-        let selection_model = gtk::SingleSelection::new(Some(sort_model));
-        imp.grid_view.set_model(Some(&selection_model));
+        self.imp().sort_state.set((sort_by, direction));
+        self.imp()
+            .sorter
+            .get()
+            .unwrap()
+            .changed(gtk::SorterChange::Different);
+    }
+
+    fn filter_favorites(&self, active: bool) {
+        let filter = self.imp().favorites_filter.get().unwrap();
+        if active {
+            filter.set_filter_func(|obj| {
+                obj.downcast_ref::<AlbumModel>()
+                    .is_some_and(|m| m.favorite())
+            });
+        } else {
+            filter.unset_filter_func();
+        }
     }
 }
 
@@ -139,81 +132,72 @@ impl AlbumList {
         );
     }
 
-    fn build_sorter(&self, sort: SortType, direction: SortDirection) -> CustomSorter {
-        gtk::CustomSorter::new(move |obj1, obj2| {
-            let (obj1, obj2) = match direction {
-                SortDirection::Ascending => (obj1, obj2),
-                SortDirection::Descending => (obj2, obj1),
+    fn build_sorter(&self) -> gtk::CustomSorter {
+        let sort_state = self.imp().sort_state.clone();
+        let options: Vec<SortType> = self.sort_options().to_vec();
+        gtk::CustomSorter::new(move |a, b| {
+            let (sort_by, direction_raw) = sort_state.get();
+            let direction =
+                SortDirection::try_from(direction_raw).unwrap_or(SortDirection::Ascending);
+            let (a, b) = match direction {
+                SortDirection::Ascending => (a, b),
+                SortDirection::Descending => (b, a),
             };
-            let album1 = obj1.downcast_ref::<AlbumModel>().unwrap();
-            let album2 = obj2.downcast_ref::<AlbumModel>().unwrap();
-
-            match sort {
-                SortType::Name => album1
-                    .name()
-                    .to_lowercase()
-                    .cmp(&album2.name().to_lowercase())
-                    .into(),
-                SortType::Artist => album1
+            let a = a.downcast_ref::<AlbumModel>().unwrap();
+            let b = b.downcast_ref::<AlbumModel>().unwrap();
+            match options[sort_by as usize] {
+                SortType::Name => a.name().to_lowercase().cmp(&b.name().to_lowercase()).into(),
+                SortType::Artist => a
                     .artists_string()
                     .to_lowercase()
-                    .cmp(&album2.artists_string().to_lowercase())
+                    .cmp(&b.artists_string().to_lowercase())
                     .into(),
-                SortType::DateAdded => {
-                    // Reverse order for newest first
-                    album2.date_created().cmp(&album1.date_created()).into()
-                }
-                SortType::Year => album1.year().cmp(&album2.year()).into(),
-                SortType::PlayCount => album1.play_count().cmp(&album2.play_count()).into(),
-                _ => std::cmp::Ordering::Equal.into(),
+                SortType::DateAdded => b.date_created().cmp(&a.date_created()).into(), // Reverse order for newest first
+                SortType::Year => a.year().cmp(&b.year()).into(),
+                SortType::PlayCount => a.play_count().cmp(&b.play_count()).into(),
+                _ => gtk::Ordering::Equal,
             }
         })
     }
 
     fn setup_model(&self) {
-        let imp = self.imp();
         let store = gio::ListStore::new::<AlbumModel>();
+
+        let favorites_filter = gtk::CustomFilter::new(|_| true);
+        let fav_model =
+            gtk::FilterListModel::new(Some(store.clone()), Some(favorites_filter.clone()));
+
         let name_filter = create_string_filter::<AlbumModel>("name");
         let artists_filter = create_string_filter::<AlbumModel>("artists-string");
-        imp.store
-            .set(store.clone())
-            .expect("Store should only be set once");
-        imp.name_filter
-            .set(name_filter)
-            .expect("Name filter should only be set once");
-        imp.artists_filter
-            .set(artists_filter)
-            .expect("Artists filter should only be set once");
+        let search_filter = gtk::AnyFilter::new();
+        search_filter.append(name_filter.clone());
+        search_filter.append(artists_filter.clone());
+        let search_model = gtk::FilterListModel::new(Some(fav_model), Some(search_filter));
 
-        let selection_model = gtk::SingleSelection::new(Some(store));
+        let sorter = self.build_sorter();
+        let sort_model = gtk::SortListModel::new(Some(search_model), Some(sorter.clone()));
+        let selection = gtk::SingleSelection::new(Some(sort_model));
+
         let factory = gtk::SignalListItemFactory::new();
-
         factory.connect_setup(move |_, list_item| {
-            let placeholder = Album::new();
-            let item = list_item
-                .downcast_ref::<gtk::ListItem>()
-                .expect("Needs to be a ListItem");
-            item.set_child(Some(&placeholder))
+            let item = list_item.downcast_ref::<gtk::ListItem>().unwrap();
+            item.set_child(Some(&Album::new()));
         });
-
         factory.connect_bind(move |_, list_item| {
-            let list_item = list_item
-                .downcast_ref::<gtk::ListItem>()
-                .expect("Needs to be a ListItem");
-            let album_model = list_item
-                .item()
-                .and_downcast::<AlbumModel>()
-                .expect("Item should be an AlbumData");
-            let album_widget = list_item
-                .child()
-                .and_downcast::<Album>()
-                .expect("Child has to be an Album");
-
+            let list_item = list_item.downcast_ref::<gtk::ListItem>().unwrap();
+            let album_model = list_item.item().and_downcast::<AlbumModel>().unwrap();
+            let album_widget = list_item.child().and_downcast::<Album>().unwrap();
             album_widget.set_album_model(&album_model);
         });
 
-        imp.grid_view.set_model(Some(&selection_model));
+        let imp = self.imp();
+        imp.grid_view.set_model(Some(&selection));
         imp.grid_view.set_factory(Some(&factory));
+        imp.store.set(store).unwrap();
+        imp.favorites_filter.set(favorites_filter).unwrap();
+        imp.name_filter.set(name_filter).unwrap();
+        imp.artists_filter.set(artists_filter).unwrap();
+        imp.sorter.set(sorter).unwrap();
     }
 
     fn set_empty(&self, empty: bool) {
@@ -229,8 +213,8 @@ impl Default for AlbumList {
 }
 
 mod imp {
-
-    use std::cell::{OnceCell, RefCell};
+    use std::cell::{Cell, OnceCell};
+    use std::rc::Rc;
 
     use adw::subclass::prelude::*;
     use glib::subclass::InitializingObject;
@@ -245,9 +229,11 @@ mod imp {
         pub empty: TemplateChild<adw::StatusPage>,
 
         pub store: OnceCell<gio::ListStore>,
+        pub favorites_filter: OnceCell<gtk::CustomFilter>,
         pub name_filter: OnceCell<gtk::StringFilter>,
         pub artists_filter: OnceCell<gtk::StringFilter>,
-        pub current_sorter: RefCell<Option<gtk::CustomSorter>>,
+        pub sorter: OnceCell<gtk::CustomSorter>,
+        pub sort_state: Rc<Cell<(u32, u32)>>,
     }
 
     #[glib::object_subclass]

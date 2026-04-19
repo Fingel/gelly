@@ -15,7 +15,7 @@ pub enum SortType {
     Album,
 }
 
-#[derive(Debug, PartialEq, Eq, TryFromPrimitive, IntoPrimitive)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, TryFromPrimitive, IntoPrimitive)]
 #[repr(u32)]
 pub enum SortDirection {
     Ascending = 0,
@@ -72,6 +72,18 @@ pub trait TopPage {
         search_entry.connect_search_changed(move |entry| {
             if let Some(list_view) = weak_self.upgrade() {
                 list_view.search_changed(&entry.text());
+            }
+        });
+    }
+    fn filter_favorites(&self, active: bool);
+    fn setup_favorite_connection(&self, favorite_button: &gtk::ToggleButton)
+    where
+        Self: gtk::prelude::ObjectType,
+    {
+        let weak_self = self.downgrade();
+        favorite_button.connect_toggled(move |button| {
+            if let Some(list_view) = weak_self.upgrade() {
+                list_view.filter_favorites(button.is_active());
             }
         });
     }
