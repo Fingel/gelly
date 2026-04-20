@@ -11,6 +11,12 @@
           <object class="AdwPreferencesGroup">
             <property name="title" translatable="yes">General</property>
             <child>
+              <object class="AdwSwitchRow" id="artists_show_only_album_artists_row">
+                <property name="title" translatable="yes">Show Album Artists Only</property>
+                <property name="subtitle" translatable="yes">Only show album artists in the Artists tab. Disable to also show track/featured artists. Requires a library refresh to take effect.</property>
+              </object>
+            </child>
+            <child>
               <object class="AdwActionRow">
                 <property name="title" translatable="yes">Refresh library on startup</property>
                 <property name="subtitle" translatable="yes">The library can be refreshed using ctrl+r or the menu.</property>

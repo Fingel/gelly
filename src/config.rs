@@ -331,3 +331,7 @@ pub fn set_playlists_sort_direction(direction: u32) {
         .set_uint("sort-playlists-direction", direction)
         .unwrap();
 }
+
+pub fn get_artists_show_only_album_artists() -> bool {
+    settings().boolean("artists-show-only-album-artists")
+}

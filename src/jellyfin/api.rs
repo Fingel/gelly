@@ -68,6 +68,12 @@ pub struct MusicDto {
     pub run_time_ticks: u64,
     pub album: Option<String>,
     pub album_artists: Vec<ArtistItemsDto>,
+    #[serde(
+        default,
+        rename = "ArtistItems",
+        deserialize_with = "deserialize_items_skip_errors"
+    )]
+    pub song_artists: Vec<ArtistItemsDto>,
     pub album_id: Option<String>,
     pub normalization_gain: Option<f64>,
     pub production_year: Option<u32>,

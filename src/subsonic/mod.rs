@@ -10,7 +10,7 @@ use crate::jellyfin::api::{
     MediaStream, MusicDto, MusicDtoList, PlaybackInfo, PlaybackReport, PlaybackReportStatus,
     PlaylistDtoList, PlaylistItems, UserDataDto,
 };
-use crate::subsonic::api::{Song, SubsonicEnvelope, SubsonicResponse};
+use crate::subsonic::api::{ArtistRef, Song, SubsonicEnvelope, SubsonicResponse};
 
 pub mod api;
 
@@ -32,6 +32,7 @@ struct AlbumFallback {
     album_name: Option<String>,
     artist_name: Option<String>,
     artist_id: Option<String>,
+    album_artists: Vec<ArtistRef>,
     year: Option<u32>,
     created: Option<String>,
 }
@@ -201,6 +202,7 @@ impl Subsonic {
             album_name: Some(album.name.clone()),
             artist_name: album.artist.clone(),
             artist_id: album.artist_id.clone(),
+            album_artists: album.album_artists,
             year: album.year,
             created: album.created.clone(),
         };
@@ -218,16 +220,59 @@ impl Subsonic {
         let album = song.album.or_else(|| fallback.album_name.clone());
         let album_id = song.album_id.or_else(|| fallback.album_id.clone());
 
-        let artist_name = song
-            .album_artist
-            .or(song.artist)
-            .or(fallback.artist_name.clone())
-            .unwrap_or_else(|| "Unknown Artist".to_string());
+        let album_artists: Vec<ArtistItemsDto> = if !song.album_artists.is_empty() {
+            song.album_artists
+                .into_iter()
+                .map(|a| ArtistItemsDto {
+                    name: a.name,
+                    id: a.id,
+                })
+                .collect()
+        } else if !fallback.album_artists.is_empty() {
+            fallback
+                .album_artists
+                .iter()
+                .map(|a| ArtistItemsDto {
+                    name: a.name.clone(),
+                    id: a.id.clone(),
+                })
+                .collect()
+        } else {
+            let artist_name = song
+                .album_artist
+                .as_deref()
+                .or(song.artist.as_deref())
+                .or(fallback.artist_name.as_deref())
+                .unwrap_or("Unknown Artist")
+                .to_string();
+            let artist_id = song
+                .artist_id
+                .clone()
+                .or(fallback.artist_id.clone())
+                .unwrap_or_default();
+            vec![ArtistItemsDto {
+                name: artist_name,
+                id: artist_id,
+            }]
+        };
 
-        let artist_id = song
-            .artist_id
-            .or(fallback.artist_id.clone())
-            .unwrap_or_default();
+        let song_artists: Vec<ArtistItemsDto> = if !song.artists.is_empty() {
+            song.artists
+                .into_iter()
+                .map(|a| ArtistItemsDto {
+                    name: a.name,
+                    id: a.id,
+                })
+                .collect()
+        } else if let Some(name) = song.artist {
+            let id = song
+                .artist_id
+                .or(fallback.artist_id.clone())
+                .unwrap_or_default();
+            vec![ArtistItemsDto { name, id }]
+        } else {
+            vec![]
+        };
 
         let duration_ticks = song.duration.unwrap_or(0).saturating_mul(10_000_000);
 
@@ -244,10 +289,8 @@ impl Subsonic {
             date_created,
             run_time_ticks: duration_ticks,
             album,
-            album_artists: vec![ArtistItemsDto {
-                name: artist_name,
-                id: artist_id,
-            }],
+            album_artists,
+            song_artists,
             album_id,
             normalization_gain,
             production_year,
@@ -315,6 +358,7 @@ impl Subsonic {
             album_name: None,
             artist_name: None,
             artist_id: None,
+            album_artists: vec![],
             year: None,
             created: None,
         };

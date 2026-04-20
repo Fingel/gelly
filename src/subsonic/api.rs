@@ -107,6 +107,14 @@ pub struct AlbumListEntry {
 
 #[derive(Debug, Clone, Deserialize)]
 #[serde(rename_all = "camelCase")]
+pub struct ArtistRef {
+    #[serde(deserialize_with = "deserialize_id_string")]
+    pub id: String,
+    pub name: String,
+}
+
+#[derive(Debug, Clone, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct Album {
     pub id: String,
     pub name: String,
@@ -114,6 +122,9 @@ pub struct Album {
     pub artist_id: Option<String>,
     pub created: Option<String>,
     pub year: Option<u32>,
+
+    #[serde(default, deserialize_with = "deserialize_items_skip_errors")]
+    pub album_artists: Vec<ArtistRef>,
 
     #[serde(default, deserialize_with = "deserialize_items_skip_errors")]
     pub song: Vec<Song>,
@@ -130,6 +141,10 @@ pub struct Song {
     pub artist: Option<String>,
     pub artist_id: Option<String>,
     pub album_artist: Option<String>,
+    #[serde(default, deserialize_with = "deserialize_items_skip_errors")]
+    pub album_artists: Vec<ArtistRef>,
+    #[serde(default, deserialize_with = "deserialize_items_skip_errors")]
+    pub artists: Vec<ArtistRef>,
     pub duration: Option<u64>,
     pub track: Option<u32>,
     pub disc_number: Option<u32>,

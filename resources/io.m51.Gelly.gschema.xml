@@ -81,6 +81,10 @@
       <default>0</default>
       <summary>Sort artists direction</summary>
     </key>
+    <key name="artists-show-only-album-artists" type="b">
+      <default>true</default>
+      <summary>Show only album artists in the Artists tab</summary>
+    </key>
     <key name="sort-playlists-by" type="u">
       <default>0</default>
       <summary>Sort playlists by</summary>

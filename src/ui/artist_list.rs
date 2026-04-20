@@ -90,7 +90,10 @@ impl ArtistList {
 
     pub fn pull_artists(&self) {
         let library = self.get_application().library().clone();
-        let artists = artists_from_library(&library.borrow());
+        let artists = artists_from_library(
+            &library.borrow(),
+            config::get_artists_show_only_album_artists(),
+        );
         if artists.is_empty() {
             self.set_empty(true);
         } else {

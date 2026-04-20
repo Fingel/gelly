@@ -1,6 +1,6 @@
 use crate::application::Application;
 use crate::backend::BackendError;
-use crate::jellyfin::api::MusicDto;
+use crate::jellyfin::api::{ArtistItemsDto, MusicDto};
 use crate::models::{AlbumModel, ArtistModel, PlaylistModel, SongModel};
 use rand::prelude::*;
 use std::collections::{HashMap, HashSet};
@@ -31,24 +31,42 @@ pub fn albums_from_library(library: &[MusicDto]) -> Vec<AlbumModel> {
     albums
 }
 
-pub fn artists_from_library(library: &[MusicDto]) -> Vec<ArtistModel> {
+pub fn artists_from_library(library: &[MusicDto], only_album_artists: bool) -> Vec<ArtistModel> {
     let mut play_count_map = HashMap::<String, u64>::new();
     for dto in library {
         for artist in &dto.album_artists {
             *play_count_map.entry(artist.id.clone()).or_insert(0) += dto.user_data.play_count;
         }
-    }
-    let mut seen_artist_ids = HashSet::new();
-    let mut artists: Vec<ArtistModel> = library
-        .iter()
-        .flat_map(|dto| &dto.album_artists)
-        .filter(|artist| seen_artist_ids.insert(&artist.id))
-        .map(|dto| {
-            let artist = ArtistModel::from(dto);
-            if let Some(&total_play_count) = play_count_map.get(&dto.id) {
-                artist.set_play_count(total_play_count);
+        if !only_album_artists {
+            for artist in &dto.song_artists {
+                *play_count_map.entry(artist.id.clone()).or_insert(0) += dto.user_data.play_count;
             }
-            artist
+        }
+    }
+
+    let all_artists: Vec<ArtistItemsDto> = library
+        .iter()
+        .flat_map(|dto| {
+            if only_album_artists {
+                dto.album_artists.to_vec()
+            } else {
+                let mut v = dto.album_artists.to_vec();
+                v.extend_from_slice(&dto.song_artists);
+                v
+            }
+        })
+        .collect();
+
+    let mut seen_artist_ids = HashSet::<String>::new();
+    let mut artists: Vec<ArtistModel> = all_artists
+        .iter()
+        .filter(|artist| seen_artist_ids.insert(artist.id.clone()))
+        .map(|artist| {
+            let model = ArtistModel::from(artist);
+            if let Some(&total_play_count) = play_count_map.get(&artist.id) {
+                model.set_play_count(total_play_count);
+            }
+            model
         })
         .collect();
     artists.sort_by_key(|artist| artist.name().to_lowercase());
@@ -186,6 +204,7 @@ mod tests {
                 name: artist_name.to_string(),
                 id: artist_id.to_string(),
             }],
+            song_artists: vec![],
             date_created: Some("2025-01-01".to_string()),
             run_time_ticks: 2000000000, // ~3 minutes
             normalization_gain: None,
@@ -218,6 +237,7 @@ mod tests {
             album: Some(album.to_string()),
             album_id: Some(album_id.to_string()),
             album_artists,
+            song_artists: vec![],
             date_created: Some("2025-01-01".to_string()),
             run_time_ticks: 2000000000,
             normalization_gain: None,
@@ -240,6 +260,7 @@ mod tests {
                 name: format!("user-data-{}", play_count),
                 id: format!("user-data-{}", play_count),
             }],
+            song_artists: vec![],
             date_created: Some("2025-01-01".to_string()),
             run_time_ticks: 2000000000,
             normalization_gain: None,
@@ -342,7 +363,7 @@ mod tests {
             ), // Duplicate artist
         ];
 
-        let artists = artists_from_library(&library);
+        let artists = artists_from_library(&library, true);
 
         assert_eq!(artists.len(), 2);
         assert_eq!(artists[0].name(), "Alpha Artist");
@@ -384,7 +405,7 @@ mod tests {
             ),
         ];
 
-        let artists = artists_from_library(&library);
+        let artists = artists_from_library(&library, true);
 
         assert_eq!(artists.len(), 3);
         assert_eq!(artists[0].name(), "Alpha");
@@ -414,7 +435,7 @@ mod tests {
             ),
         ];
 
-        let artists = artists_from_library(&library);
+        let artists = artists_from_library(&library, true);
 
         assert_eq!(artists.len(), 2);
         assert_eq!(artists[0].name(), "Artist A");

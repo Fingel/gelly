@@ -70,6 +70,14 @@ impl Preferences {
             )
             .build();
 
+        settings
+            .bind(
+                "artists-show-only-album-artists",
+                &*imp.artists_show_only_album_artists_row,
+                "active",
+            )
+            .build();
+
         // Transcoding Profile
         imp.transcoding_profile_row
             .set_model(Some(&TranscodingProfile::as_string_list()));
@@ -121,6 +129,8 @@ mod imp {
         pub playlist_most_played_enabled_switch: TemplateChild<gtk::Switch>,
         #[template_child]
         pub album_art_background_row: TemplateChild<adw::SwitchRow>,
+        #[template_child]
+        pub artists_show_only_album_artists_row: TemplateChild<adw::SwitchRow>,
     }
 
     #[glib::object_subclass]
