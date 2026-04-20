@@ -60,17 +60,31 @@ impl TopPage for SongList {
 
     fn apply_sort(&self, sort_by: u32, direction: u32) {
         self.imp().sort_state.set((sort_by, direction));
-        self.imp().sorter.get().unwrap().changed(gtk::SorterChange::Different);
+        self.imp()
+            .sorter
+            .get()
+            .unwrap()
+            .changed(gtk::SorterChange::Different);
+        self.reset_position();
     }
 
     fn filter_favorites(&self, active: bool) {
         let filter = self.imp().favorites_filter.get().unwrap();
         if active {
             filter.set_filter_func(|obj| {
-                obj.downcast_ref::<SongModel>().is_some_and(|m| m.favorite())
+                obj.downcast_ref::<SongModel>()
+                    .is_some_and(|m| m.favorite())
             });
         } else {
             filter.unset_filter_func();
+        }
+    }
+
+    fn reset_position(&self) {
+        let imp = self.imp();
+        if imp.track_list.model().is_some_and(|m| m.n_items() > 0) {
+            imp.track_list
+                .scroll_to(0, gtk::ListScrollFlags::NONE, None::<gtk::ScrollInfo>);
         }
     }
 }
@@ -159,7 +173,11 @@ impl SongList {
             let a = a.downcast_ref::<SongModel>().unwrap();
             let b = b.downcast_ref::<SongModel>().unwrap();
             match options[sort_by as usize] {
-                SortType::Name => a.title().to_lowercase().cmp(&b.title().to_lowercase()).into(),
+                SortType::Name => a
+                    .title()
+                    .to_lowercase()
+                    .cmp(&b.title().to_lowercase())
+                    .into(),
                 SortType::Artist => a
                     .artists_string()
                     .to_lowercase()

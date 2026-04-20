@@ -73,6 +73,7 @@ impl TopPage for AlbumList {
             .get()
             .unwrap()
             .changed(gtk::SorterChange::Different);
+        self.reset_position();
     }
 
     fn filter_favorites(&self, active: bool) {
@@ -84,6 +85,14 @@ impl TopPage for AlbumList {
             });
         } else {
             filter.unset_filter_func();
+        }
+    }
+
+    fn reset_position(&self) {
+        let imp = self.imp();
+        if imp.grid_view.model().is_some_and(|m| m.n_items() > 0) {
+            imp.grid_view
+                .scroll_to(0, gtk::ListScrollFlags::NONE, None::<gtk::ScrollInfo>);
         }
     }
 }

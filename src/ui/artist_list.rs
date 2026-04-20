@@ -60,17 +60,31 @@ impl TopPage for ArtistList {
         config::set_artists_sort_by(sort_by);
         config::set_artists_sort_direction(direction);
         self.imp().sort_state.set((sort_by, direction));
-        self.imp().sorter.get().unwrap().changed(gtk::SorterChange::Different);
+        self.imp()
+            .sorter
+            .get()
+            .unwrap()
+            .changed(gtk::SorterChange::Different);
+        self.reset_position();
     }
 
     fn filter_favorites(&self, active: bool) {
         let filter = self.imp().favorites_filter.get().unwrap();
         if active {
             filter.set_filter_func(|obj| {
-                obj.downcast_ref::<ArtistModel>().is_some_and(|m| m.favorite())
+                obj.downcast_ref::<ArtistModel>()
+                    .is_some_and(|m| m.favorite())
             });
         } else {
             filter.unset_filter_func();
+        }
+    }
+
+    fn reset_position(&self) {
+        let imp = self.imp();
+        if imp.grid_view.model().is_some_and(|m| m.n_items() > 0) {
+            imp.grid_view
+                .scroll_to(0, gtk::ListScrollFlags::NONE, None::<gtk::ScrollInfo>);
         }
     }
 }
@@ -148,8 +162,7 @@ impl ArtistList {
             gtk::FilterListModel::new(Some(store.clone()), Some(favorites_filter.clone()));
 
         let name_filter = create_string_filter::<ArtistModel>("name");
-        let search_model =
-            gtk::FilterListModel::new(Some(fav_model), Some(name_filter.clone()));
+        let search_model = gtk::FilterListModel::new(Some(fav_model), Some(name_filter.clone()));
 
         let sorter = self.build_sorter();
         let sort_model = gtk::SortListModel::new(Some(search_model), Some(sorter.clone()));

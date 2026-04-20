@@ -72,6 +72,7 @@ pub trait TopPage {
         search_entry.connect_search_changed(move |entry| {
             if let Some(list_view) = weak_self.upgrade() {
                 list_view.search_changed(&entry.text());
+                list_view.reset_position();
             }
         });
     }
@@ -84,7 +85,9 @@ pub trait TopPage {
         favorite_button.connect_toggled(move |button| {
             if let Some(list_view) = weak_self.upgrade() {
                 list_view.filter_favorites(button.is_active());
+                list_view.reset_position();
             }
         });
     }
+    fn reset_position(&self);
 }

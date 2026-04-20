@@ -113,11 +113,24 @@ impl TopPage for PlaylistList {
         config::set_playlists_sort_by(sort_by);
         config::set_playlists_sort_direction(direction);
         self.imp().sort_state.set((sort_by, direction));
-        self.imp().sorter.get().unwrap().changed(gtk::SorterChange::Different);
+        self.imp()
+            .sorter
+            .get()
+            .unwrap()
+            .changed(gtk::SorterChange::Different);
+        self.reset_position();
     }
 
     fn filter_favorites(&self, _active: bool) {
-        // Playlists do not have a favorites concept
+        // TODO: playlists do not have have favorite implemented yet
+    }
+
+    fn reset_position(&self) {
+        let imp = self.imp();
+        if imp.grid_view.model().is_some_and(|m| m.n_items() > 0) {
+            imp.grid_view
+                .scroll_to(0, gtk::ListScrollFlags::NONE, None::<gtk::ScrollInfo>);
+        }
     }
 }
 
