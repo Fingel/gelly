@@ -64,7 +64,7 @@ pub trait TopPage {
     fn current_sort_by(&self) -> u32;
     fn current_sort_direction(&self) -> u32;
     fn apply_sort(&self, sort_by: u32, direction: u32);
-    fn setup_search_connection(&self, search_entry: &gtk::SearchEntry)
+    fn connect_search(&self, search_entry: &gtk::SearchEntry)
     where
         Self: gtk::prelude::ObjectType,
     {
@@ -80,7 +80,7 @@ pub trait TopPage {
         true
     }
     fn filter_favorites(&self, active: bool);
-    fn setup_favorite_connection(&self, favorite_button: &gtk::ToggleButton)
+    fn connect_favorite(&self, favorite_button: &gtk::ToggleButton)
     where
         Self: gtk::prelude::ObjectType,
     {

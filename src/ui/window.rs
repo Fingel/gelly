@@ -503,20 +503,15 @@ mod imp {
                 }
             ));
 
-            self.album_list.setup_search_connection(&self.search_entry);
-            self.artist_list.setup_search_connection(&self.search_entry);
-            self.playlist_list
-                .setup_search_connection(&self.search_entry);
-            self.song_list.setup_search_connection(&self.search_entry);
+            self.album_list.connect_search(&self.search_entry);
+            self.artist_list.connect_search(&self.search_entry);
+            self.playlist_list.connect_search(&self.search_entry);
+            self.song_list.connect_search(&self.search_entry);
 
-            self.album_list
-                .setup_favorite_connection(&self.favorite_button);
-            self.artist_list
-                .setup_favorite_connection(&self.favorite_button);
-            self.playlist_list
-                .setup_favorite_connection(&self.favorite_button);
-            self.song_list
-                .setup_favorite_connection(&self.favorite_button);
+            self.album_list.connect_favorite(&self.favorite_button);
+            self.artist_list.connect_favorite(&self.favorite_button);
+            self.playlist_list.connect_favorite(&self.favorite_button);
+            self.song_list.connect_favorite(&self.favorite_button);
 
             let action_new = ActionEntry::builder("new")
                 .activate(glib::clone!(
