@@ -59,6 +59,7 @@ pub struct SubsonicResponse {
     pub playlist: Option<Playlist>,
     pub song: Option<Song>,
     pub lyrics_list: Option<LyricsList>,
+    pub starred2: Option<Starred2Payload>,
 }
 
 impl SubsonicResponse {
@@ -90,6 +91,23 @@ pub struct MusicFolder {
     #[serde(deserialize_with = "deserialize_id_string")]
     pub id: String,
     pub name: String,
+}
+
+#[derive(Debug, Clone, Deserialize)]
+pub struct Starred2Payload {
+    #[serde(default, deserialize_with = "deserialize_items_skip_errors")]
+    pub artist: Vec<StarredItem>,
+    #[serde(default, deserialize_with = "deserialize_items_skip_errors")]
+    pub album: Vec<StarredItem>,
+    #[serde(default, deserialize_with = "deserialize_items_skip_errors")]
+    pub song: Vec<StarredItem>,
+}
+
+#[derive(Debug, Clone, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct StarredItem {
+    #[serde(deserialize_with = "deserialize_id_string")]
+    pub id: String,
 }
 
 #[derive(Debug, Clone, Deserialize)]

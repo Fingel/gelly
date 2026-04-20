@@ -108,6 +108,7 @@ impl Window {
         imp.sort_dropdown.set_model(Some(&sort_model));
         imp.sort_dropdown.set_selected(page.current_sort_by());
         imp.sort_direction.set_active(page.current_sort_direction());
+        imp.favorite_button.set_visible(page.supports_favorites());
         imp.sort_changing.set(false);
     }
 

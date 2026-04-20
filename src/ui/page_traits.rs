@@ -76,6 +76,9 @@ pub trait TopPage {
             }
         });
     }
+    fn supports_favorites(&self) -> bool {
+        true
+    }
     fn filter_favorites(&self, active: bool);
     fn setup_favorite_connection(&self, favorite_button: &gtk::ToggleButton)
     where

@@ -6,9 +6,10 @@ use serde::de::DeserializeOwned;
 use crate::backend::BackendError;
 use crate::config;
 use crate::jellyfin::api::{
-    ArtistItemsDto, ImageType, LibraryDto, LibraryDtoList, LyricsResponse, MediaSource,
-    MediaStream, MusicDto, MusicDtoList, PlaybackInfo, PlaybackReport, PlaybackReportStatus,
-    PlaylistDtoList, PlaylistItems, UserDataDto,
+    ArtistItemsDto, FavoriteDto, FavoriteDtoList, FavoriteUserDataDto, ImageType, ItemType,
+    LibraryDto, LibraryDtoList, LyricsResponse, MediaSource, MediaStream, MusicDto, MusicDtoList,
+    PlaybackInfo, PlaybackReport, PlaybackReportStatus, PlaylistDtoList, PlaylistItems,
+    UserDataDto,
 };
 use crate::subsonic::api::{Song, SubsonicEnvelope, SubsonicResponse};
 
@@ -130,6 +131,39 @@ impl Subsonic {
             total_record_count: items.len() as u64,
             items,
         })
+    }
+
+    // https://opensubsonic.netlify.app/docs/endpoints/getstarred2/
+    pub async fn get_favorites(&self) -> Result<FavoriteDtoList, BackendError> {
+        let response = self.get_subsonic("getStarred2", &[]).await?;
+        self.ensure_ok_response(&response)?;
+
+        let mut items = Vec::new();
+        if let Some(starred) = response.starred2 {
+            for i in starred.song {
+                items.push(FavoriteDto {
+                    id: i.id,
+                    item_type: ItemType::Audio,
+                    user_data: FavoriteUserDataDto { is_favorite: true },
+                });
+            }
+            for i in starred.album {
+                items.push(FavoriteDto {
+                    id: i.id,
+                    item_type: ItemType::MusicAlbum,
+                    user_data: FavoriteUserDataDto { is_favorite: true },
+                });
+            }
+            for i in starred.artist {
+                items.push(FavoriteDto {
+                    id: i.id,
+                    item_type: ItemType::MusicArtist,
+                    user_data: FavoriteUserDataDto { is_favorite: true },
+                });
+            }
+        }
+
+        Ok(FavoriteDtoList { items })
     }
 
     // https://github.com/opensubsonic/open-subsonic-api/blob/main/content/en/docs/Endpoints/getalbumlist2.md

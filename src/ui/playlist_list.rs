@@ -121,6 +121,10 @@ impl TopPage for PlaylistList {
         self.reset_position();
     }
 
+    fn supports_favorites(&self) -> bool {
+        config::get_backend_type() == config::BackendType::Jellyfin
+    }
+
     fn filter_favorites(&self, active: bool) {
         let filter = self.imp().favorites_filter.get().unwrap();
         if active {
