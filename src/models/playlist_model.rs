@@ -1,7 +1,4 @@
-use crate::{
-    jellyfin::api::PlaylistDto,
-    models::{PlaylistType, model_traits::ItemModel},
-};
+use crate::models::{PlaylistType, model_traits::ItemModel};
 use glib::Object;
 use gtk::glib;
 
@@ -25,6 +22,7 @@ impl PlaylistModel {
             .property("id", playlist_type.to_id())
             .property("name", playlist_type.display_name())
             .property("child_count", playlist_type.estimated_count())
+            .property("favorite", playlist_type.favorite())
             .build()
     }
 
@@ -41,15 +39,7 @@ impl PlaylistModel {
         }
 
         // For regular playlists, reconstruct from the model's properties
-        PlaylistType::new_regular(self.id(), self.name(), self.child_count())
-    }
-}
-
-impl From<&PlaylistDto> for PlaylistModel {
-    fn from(dto: &PlaylistDto) -> Self {
-        let playlist_type =
-            PlaylistType::new_regular(dto.id.clone(), dto.name.clone(), dto.child_count);
-        Self::new(playlist_type)
+        PlaylistType::new_regular(self.id(), self.name(), self.child_count(), self.favorite())
     }
 }
 
@@ -67,6 +57,8 @@ mod imp {
         name: RefCell<String>,
         #[property(get, set)]
         child_count: Cell<u64>,
+        #[property(get, set)]
+        favorite: Cell<bool>,
     }
 
     #[glib::object_subclass]

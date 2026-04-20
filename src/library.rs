@@ -29,6 +29,9 @@ impl Favorites {
     fn contains_artist(&self, id: &str) -> bool {
         self.artist_ids.contains(id)
     }
+    fn contains_playlist(&self, id: &str) -> bool {
+        self.playlist_ids.contains(id)
+    }
 }
 
 #[derive(Debug, Clone, Default)]
@@ -249,6 +252,15 @@ impl Library {
                     play_counts.get(&id).copied().unwrap_or(0),
                 )
             })
+    }
+
+    pub fn playlist_is_favorite(&self, id: &str) -> bool {
+        // Playlists are weird so we handle this in the list view instead
+        self.favorites.borrow().contains_playlist(id)
+    }
+
+    pub fn library_size(&self) -> usize {
+        self.songs.borrow().len()
     }
 }
 

@@ -12,6 +12,7 @@ pub enum PlaylistType {
         id: String,
         name: String,
         child_count: u64,
+        favorite: bool,
     },
     ShuffleLibrary {
         count: u64,
@@ -22,7 +23,7 @@ pub enum PlaylistType {
 }
 
 impl PlaylistType {
-    pub fn new_regular(id: String, name: String, child_count: u64) -> Self {
+    pub fn new_regular(id: String, name: String, child_count: u64, favorite: bool) -> Self {
         if id.is_empty() {
             log::warn!("Creating regular playlist with empty ID");
         }
@@ -30,6 +31,7 @@ impl PlaylistType {
             id,
             name,
             child_count,
+            favorite,
         }
     }
     pub fn to_id(&self) -> String {
@@ -118,6 +120,13 @@ impl PlaylistType {
     pub fn is_smart(&self) -> bool {
         !matches!(self, PlaylistType::Regular { .. })
     }
+
+    pub fn favorite(&self) -> bool {
+        match self {
+            PlaylistType::Regular { favorite, .. } => *favorite,
+            _ => false,
+        }
+    }
 }
 
 #[cfg(test)]
@@ -125,7 +134,7 @@ mod tests {
     use super::*;
 
     fn create_test_regular(id: &str, name: &str, count: u64) -> PlaylistType {
-        PlaylistType::new_regular(id.to_string(), name.to_string(), count)
+        PlaylistType::new_regular(id.to_string(), name.to_string(), count, false)
     }
 
     #[test]
@@ -136,6 +145,7 @@ mod tests {
                 id,
                 name,
                 child_count,
+                ..
             } => {
                 assert_eq!(id, "jellyfin-123");
                 assert_eq!(name, "My Playlist");

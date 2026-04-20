@@ -121,8 +121,16 @@ impl TopPage for PlaylistList {
         self.reset_position();
     }
 
-    fn filter_favorites(&self, _active: bool) {
-        // TODO: playlists do not have have favorite implemented yet
+    fn filter_favorites(&self, active: bool) {
+        let filter = self.imp().favorites_filter.get().unwrap();
+        if active {
+            filter.set_filter_func(|obj| {
+                obj.downcast_ref::<PlaylistModel>()
+                    .is_some_and(|m| m.favorite())
+            });
+        } else {
+            filter.unset_filter_func();
+        }
     }
 
     fn reset_position(&self) {
@@ -166,7 +174,7 @@ impl PlaylistList {
 
     pub fn pull_playlists(&self) {
         let playlists = self.get_application().playlists().borrow().clone();
-        let library_cnt = self.get_application().library().songs.borrow().len();
+        let library = self.get_application().library();
         self.set_empty(false);
         let store = self
             .imp()
@@ -177,7 +185,7 @@ impl PlaylistList {
 
         if config::get_playlist_shuffle_enabled() {
             let shuffle_type = PlaylistType::ShuffleLibrary {
-                count: library_cnt as u64,
+                count: library.library_size() as u64,
             };
             store.append(&PlaylistModel::new(shuffle_type));
         }
@@ -193,6 +201,7 @@ impl PlaylistList {
                 playlist.id.clone(),
                 playlist.name.clone(),
                 playlist.child_count,
+                library.playlist_is_favorite(&playlist.id),
             );
             store.append(&PlaylistModel::new(playlist_type));
         }
@@ -257,9 +266,12 @@ impl PlaylistList {
     fn setup_model(&self) {
         let store = gio::ListStore::new::<PlaylistModel>();
 
+        let favorites_filter = gtk::CustomFilter::new(|_| true);
+        let fav_model =
+            gtk::FilterListModel::new(Some(store.clone()), Some(favorites_filter.clone()));
+
         let name_filter = create_string_filter::<PlaylistModel>("name");
-        let search_model =
-            gtk::FilterListModel::new(Some(store.clone()), Some(name_filter.clone()));
+        let search_model = gtk::FilterListModel::new(Some(fav_model), Some(name_filter.clone()));
 
         let sorter = self.build_sorter();
         let sort_model = gtk::SortListModel::new(Some(search_model), Some(sorter.clone()));
@@ -281,6 +293,7 @@ impl PlaylistList {
         imp.grid_view.set_model(Some(&selection));
         imp.grid_view.set_factory(Some(&factory));
         imp.store.set(store).unwrap();
+        imp.favorites_filter.set(favorites_filter).unwrap();
         imp.name_filter.set(name_filter).unwrap();
         imp.sorter.set(sorter).unwrap();
     }
@@ -315,6 +328,7 @@ mod imp {
         pub empty: TemplateChild<adw::StatusPage>,
 
         pub store: OnceCell<gio::ListStore>,
+        pub favorites_filter: OnceCell<gtk::CustomFilter>,
         pub name_filter: OnceCell<gtk::StringFilter>,
         pub sorter: OnceCell<gtk::CustomSorter>,
         pub sort_state: Rc<Cell<(u32, u32)>>,
