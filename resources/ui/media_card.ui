@@ -44,6 +44,34 @@
                 </property>
               </object>
             </child>
+            <child type="overlay">
+              <object class="GtkRevealer" id="star_revealer">
+                <property name="visible">false</property>
+                <property name="halign">end</property>
+                <property name="valign">end</property>
+                <property name="margin-end">8</property>
+                <property name="margin-bottom">8</property>
+                <property name="reveal-child">false</property>
+                <property name="transition-type">crossfade</property>
+                <property name="transition-duration">200</property>
+                <property name="child">
+                  <object class="GtkToggleButton" id="overlay_star">
+                    <property name="width-request">36</property>
+                    <property name="height-request">36</property>
+                    <property name="child">
+                      <object class="GtkImage" id="star_icon">
+                        <property name="icon-name">non-starred-symbolic</property>
+                        <property name="icon-size">1</property>
+                      </object>
+                    </property>
+                    <style>
+                      <class name="osd"/>
+                      <class name="circular"/>
+                    </style>
+                  </object>
+                </property>
+              </object>
+            </child>
             <property name="child">
               <object class="GtkBox">
                 <property name="orientation">vertical</property>

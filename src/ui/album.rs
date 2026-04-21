@@ -1,6 +1,10 @@
-use crate::{library_utils::play_album, models::AlbumModel, ui::widget_ext::WidgetApplicationExt};
+use crate::{
+    async_utils::spawn_tokio, library_utils::play_album, models::AlbumModel,
+    ui::widget_ext::WidgetApplicationExt,
+};
 use glib::Object;
-use gtk::{self, gio, glib, subclass::prelude::*};
+use gtk::{self, gio, glib, prelude::*, subclass::prelude::*};
+use log::warn;
 
 glib::wrapper! {
     pub struct Album(ObjectSubclass<imp::Album>)
@@ -13,15 +17,60 @@ impl Album {
     }
 
     pub fn set_album_model(&self, album_model: &AlbumModel) {
-        let card = &self.imp().media_card;
+        let imp = self.imp();
+        let card = &imp.media_card;
         card.set_primary_text(&album_model.name());
         card.set_secondary_text(&album_model.artists_string());
         card.set_image_id(&album_model.id());
-        self.imp().album_id.replace(album_model.id().to_string());
+        imp.album_model.replace(Some(album_model.clone()));
+
+        card.set_favorite(album_model.favorite());
+        let binding = album_model
+            .bind_property("favorite", &card.get(), "favorite")
+            .build();
+        imp.favorite_binding.replace(Some(binding));
     }
 
     pub fn play(&self) {
-        play_album(&self.imp().album_id.borrow(), &self.get_application());
+        if let Some(album_model) = self.imp().album_model.borrow().as_ref() {
+            play_album(&album_model.id(), &self.get_application());
+        }
+    }
+
+    pub fn toggle_favorite(&self, is_favorite: bool) {
+        let item_id = if let Some(album_model) = self.imp().album_model.borrow().as_ref() {
+            album_model.set_favorite(is_favorite);
+            album_model.id()
+        } else {
+            return;
+        };
+        let app = self.get_application();
+        let backend = app.jellyfin();
+        spawn_tokio(
+            async move {
+                backend
+                    .set_favorite(
+                        &item_id,
+                        &crate::jellyfin::api::ItemType::MusicAlbum,
+                        is_favorite,
+                    )
+                    .await
+            },
+            glib::clone!(
+                #[weak(rename_to = album)]
+                self,
+                move |result| {
+                    if let Err(err) = result {
+                        warn!("Failed to set favorite: {err}");
+                        if let Some(model) = album.imp().album_model.borrow().as_ref() {
+                            model.set_favorite(!is_favorite);
+                        }
+                    } else if let Some(model) = album.imp().album_model.borrow().as_ref() {
+                        model.set_favorite(is_favorite);
+                    }
+                }
+            ),
+        );
     }
 }
 
@@ -32,7 +81,7 @@ impl Default for Album {
 }
 
 mod imp {
-    use crate::ui::media_card::MediaCard;
+    use crate::{models::AlbumModel, ui::media_card::MediaCard};
     use adw::subclass::prelude::*;
     use glib::subclass::InitializingObject;
     use gtk::{
@@ -47,7 +96,8 @@ mod imp {
         #[template_child]
         pub media_card: TemplateChild<MediaCard>,
 
-        pub album_id: RefCell<String>,
+        pub album_model: RefCell<Option<AlbumModel>>,
+        pub favorite_binding: RefCell<Option<glib::Binding>>,
     }
 
     #[glib::object_subclass]
@@ -73,6 +123,13 @@ mod imp {
                 self.obj(),
                 move || {
                     album.play();
+                }
+            ));
+            self.media_card.connect_star_toggled(glib::clone!(
+                #[weak(rename_to = album)]
+                self.obj(),
+                move |is_favorite| {
+                    album.toggle_favorite(is_favorite);
                 }
             ));
         }
