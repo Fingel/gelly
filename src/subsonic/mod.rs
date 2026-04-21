@@ -166,6 +166,26 @@ impl Subsonic {
         Ok(FavoriteDtoList { items })
     }
 
+    // https://opensubsonic.netlify.app/docs/endpoints/star/
+    pub async fn set_favorite(
+        &self,
+        item_id: &str,
+        item_type: &ItemType,
+        is_favorite: bool,
+    ) -> Result<(), BackendError> {
+        debug!("Subsonic::set_favorite(item_id={item_id}, is_favorite={is_favorite})");
+        let endpoint = if is_favorite { "star" } else { "unstar" };
+        let param_name = match item_type {
+            ItemType::MusicArtist => "artistId",
+            ItemType::MusicAlbum => "albumId",
+            _ => "id",
+        };
+        let params = vec![(param_name.to_string(), item_id.to_string())];
+        let response = self.get_subsonic(endpoint, &params).await?;
+        self.ensure_ok_response(&response)?;
+        Ok(())
+    }
+
     // https://github.com/opensubsonic/open-subsonic-api/blob/main/content/en/docs/Endpoints/getalbumlist2.md
     async fn get_album_ids(&self, library_id: &str) -> Result<Vec<String>, BackendError> {
         let mut album_ids = Vec::new();

@@ -206,7 +206,6 @@ impl Jellyfin {
         ];
         let response = self.get("Items", Some(&params)).await?;
         let body = self.handle_response(response).await?;
-        dbg!(&body);
         let final_result = serde_json::from_str(&body)?;
 
         Ok(final_result)
@@ -284,6 +283,13 @@ impl Jellyfin {
     pub async fn delete_item(&self, item_id: &str) -> Result<(), BackendError> {
         let path = format!("Items/{}", item_id);
         self.delete(&path, None).await?;
+        Ok(())
+    }
+
+    pub async fn set_favorite(&self, item_id: &str, is_favorite: bool) -> Result<(), BackendError> {
+        let path = format!("UserItems/{item_id}/UserData");
+        let body = json!({ "IsFavorite": is_favorite });
+        self.post_json(&path, &body).await?;
         Ok(())
     }
 
