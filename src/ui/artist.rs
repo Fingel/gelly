@@ -1,8 +1,10 @@
 use crate::{
-    library_utils::play_artist, models::ArtistModel, ui::widget_ext::WidgetApplicationExt,
+    async_utils::spawn_tokio, library_utils::play_artist, models::ArtistModel,
+    ui::widget_ext::WidgetApplicationExt,
 };
 use glib::Object;
-use gtk::{gio, glib, subclass::prelude::*};
+use gtk::{gio, glib, prelude::*, subclass::prelude::*};
+use log::warn;
 
 glib::wrapper! {
     pub struct Artist(ObjectSubclass<imp::Artist>)
@@ -15,14 +17,58 @@ impl Artist {
     }
 
     pub fn set_artist_model(&self, artist_model: &ArtistModel) {
-        let card = &self.imp().media_card;
+        let imp = self.imp();
+        let card = &imp.media_card;
         card.set_primary_text(&artist_model.name());
         card.set_image_id(&artist_model.id());
-        self.imp().artist_id.replace(artist_model.id().to_string());
+        card.set_favorite(artist_model.favorite());
+        imp.artist_model.replace(Some(artist_model.clone()));
+        let binding = artist_model
+            .bind_property("favorite", &card.get(), "favorite")
+            .build();
+        imp.favorite_binding.replace(Some(binding));
     }
 
     pub fn play(&self) {
-        play_artist(&self.imp().artist_id.borrow(), &self.get_application());
+        if let Some(artist_model) = self.imp().artist_model.borrow().as_ref() {
+            play_artist(&artist_model.id(), &self.get_application());
+        }
+    }
+
+    pub fn toggle_favorite(&self, is_favorite: bool) {
+        let item_id = if let Some(artist_model) = self.imp().artist_model.borrow().as_ref() {
+            artist_model.set_favorite(is_favorite);
+            artist_model.id()
+        } else {
+            return;
+        };
+        let app = self.get_application();
+        let backend = app.jellyfin();
+        spawn_tokio(
+            async move {
+                backend
+                    .set_favorite(
+                        &item_id,
+                        &crate::jellyfin::api::ItemType::MusicArtist,
+                        is_favorite,
+                    )
+                    .await
+            },
+            glib::clone!(
+                #[weak(rename_to = artist)]
+                self,
+                move |result| {
+                    if let Err(err) = result {
+                        warn!("Failed to set favorite: {err}");
+                        if let Some(model) = artist.imp().artist_model.borrow().as_ref() {
+                            model.set_favorite(!is_favorite);
+                        }
+                    } else if let Some(model) = artist.imp().artist_model.borrow().as_ref() {
+                        model.set_favorite(is_favorite);
+                    }
+                }
+            ),
+        );
     }
 }
 
@@ -34,7 +80,7 @@ impl Default for Artist {
 mod imp {
     use std::cell::RefCell;
 
-    use crate::ui::media_card::MediaCard;
+    use crate::{models::ArtistModel, ui::media_card::MediaCard};
     use adw::subclass::prelude::*;
     use glib::subclass::InitializingObject;
     use gtk::{
@@ -48,7 +94,8 @@ mod imp {
         #[template_child]
         pub media_card: TemplateChild<MediaCard>,
 
-        pub artist_id: RefCell<String>,
+        pub artist_model: RefCell<Option<ArtistModel>>,
+        pub favorite_binding: RefCell<Option<glib::Binding>>,
     }
 
     #[glib::object_subclass]
@@ -74,6 +121,13 @@ mod imp {
                 self.obj(),
                 move || {
                     artist.play();
+                }
+            ));
+            self.media_card.connect_star_toggled(glib::clone!(
+                #[weak(rename_to = artist)]
+                self.obj(),
+                move |is_favorite| {
+                    artist.toggle_favorite(is_favorite);
                 }
             ));
         }
