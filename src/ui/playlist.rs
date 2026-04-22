@@ -1,12 +1,13 @@
 use crate::{
     async_utils::spawn_tokio,
     backend::BackendError,
+    config::{self, BackendType},
     jellyfin::api::MusicDto,
     models::{PlaylistModel, SongModel},
     ui::widget_ext::WidgetApplicationExt,
 };
 use glib::Object;
-use gtk::{self, gio, glib, subclass::prelude::*};
+use gtk::{self, gio, glib, prelude::*, subclass::prelude::*};
 use log::warn;
 
 glib::wrapper! {
@@ -20,17 +21,26 @@ impl Playlist {
     }
 
     pub fn set_playlist_model(&self, playlist_model: &PlaylistModel) {
-        let card = &self.imp().media_card;
+        let imp = self.imp();
+        let card = &imp.media_card;
         card.set_primary_text(&playlist_model.name());
         card.set_secondary_text(&format!("{} songs", playlist_model.child_count()));
         card.set_image_id(&playlist_model.id());
+        card.set_has_star_button(config::get_backend_type() == BackendType::Jellyfin);
         if playlist_model.is_smart() {
             card.set_static_icon(playlist_model.playlist_type().icon_name());
             card.display_icon();
+            card.set_has_star_button(false);
         }
         self.imp()
             .playlist_model
             .replace(Some(playlist_model.clone()));
+
+        card.set_favorite(playlist_model.favorite());
+        let binding = playlist_model
+            .bind_property("favorite", &card.get(), "favorite")
+            .build();
+        imp.favorite_binding.replace(Some(binding));
     }
 
     fn get_playlist_model(&self) -> Option<PlaylistModel> {
@@ -79,6 +89,42 @@ impl Playlist {
             ),
         );
     }
+
+    pub fn toggle_favorite(&self, is_favorite: bool) {
+        let item_id = if let Some(playlist_model) = self.imp().playlist_model.borrow().as_ref() {
+            playlist_model.set_favorite(is_favorite);
+            playlist_model.id()
+        } else {
+            return;
+        };
+        let app = self.get_application();
+        let backend = app.jellyfin();
+        spawn_tokio(
+            async move {
+                backend
+                    .set_favorite(
+                        &item_id,
+                        &crate::jellyfin::api::ItemType::Playlist,
+                        is_favorite,
+                    )
+                    .await
+            },
+            glib::clone!(
+                #[weak(rename_to = playlist)]
+                self,
+                move |result| {
+                    if let Err(err) = result {
+                        warn!("Failed to set favorite: {err}");
+                        if let Some(model) = playlist.imp().playlist_model.borrow().as_ref() {
+                            model.set_favorite(!is_favorite);
+                        }
+                    } else if let Some(model) = playlist.imp().playlist_model.borrow().as_ref() {
+                        model.set_favorite(is_favorite);
+                    }
+                }
+            ),
+        );
+    }
 }
 
 impl Default for Playlist {
@@ -103,6 +149,7 @@ mod imp {
         pub media_card: TemplateChild<MediaCard>,
 
         pub playlist_model: RefCell<Option<PlaylistModel>>,
+        pub favorite_binding: RefCell<Option<glib::Binding>>,
     }
 
     #[glib::object_subclass]
@@ -127,6 +174,14 @@ mod imp {
                 self.obj(),
                 move || {
                     playlist.play();
+                }
+            ));
+
+            self.media_card.connect_star_toggled(glib::clone!(
+                #[weak(rename_to = playlist)]
+                self.obj(),
+                move |is_favorite| {
+                    playlist.toggle_favorite(is_favorite);
                 }
             ));
         }
