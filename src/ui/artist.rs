@@ -63,8 +63,11 @@ impl Artist {
                         if let Some(model) = artist.imp().artist_model.borrow().as_ref() {
                             model.set_favorite(!is_favorite);
                         }
-                    } else if let Some(model) = artist.imp().artist_model.borrow().as_ref() {
-                        model.set_favorite(is_favorite);
+                    } else {
+                        if let Some(model) = artist.imp().artist_model.borrow().as_ref() {
+                            model.set_favorite(is_favorite);
+                        }
+                        artist.get_application().refresh_favorites(true);
                     }
                 }
             ),

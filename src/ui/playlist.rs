@@ -118,8 +118,11 @@ impl Playlist {
                         if let Some(model) = playlist.imp().playlist_model.borrow().as_ref() {
                             model.set_favorite(!is_favorite);
                         }
-                    } else if let Some(model) = playlist.imp().playlist_model.borrow().as_ref() {
-                        model.set_favorite(is_favorite);
+                    } else {
+                        if let Some(model) = playlist.imp().playlist_model.borrow().as_ref() {
+                            model.set_favorite(is_favorite);
+                        }
+                        playlist.get_application().refresh_favorites(true);
                     }
                 }
             ),

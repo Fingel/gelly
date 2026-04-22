@@ -65,8 +65,11 @@ impl Album {
                         if let Some(model) = album.imp().album_model.borrow().as_ref() {
                             model.set_favorite(!is_favorite);
                         }
-                    } else if let Some(model) = album.imp().album_model.borrow().as_ref() {
-                        model.set_favorite(is_favorite);
+                    } else {
+                        if let Some(model) = album.imp().album_model.borrow().as_ref() {
+                            model.set_favorite(is_favorite);
+                        }
+                        album.get_application().refresh_favorites(true);
                     }
                 }
             ),
