@@ -287,9 +287,12 @@ impl Jellyfin {
     }
 
     pub async fn set_favorite(&self, item_id: &str, is_favorite: bool) -> Result<(), BackendError> {
-        let path = format!("UserItems/{item_id}/UserData");
-        let body = json!({ "IsFavorite": is_favorite });
-        self.post_json(&path, &body).await?;
+        let path = format!("UserFavoriteItems/{item_id}");
+        if is_favorite {
+            self.post(&path, None, None).await?;
+        } else {
+            self.delete(&path, None).await?;
+        }
         Ok(())
     }
 
