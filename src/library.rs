@@ -74,6 +74,7 @@ impl Library {
         favorites.song_ids.clear();
         favorites.album_ids.clear();
         favorites.artist_ids.clear();
+        favorites.playlist_ids.clear();
         for favorite in favorites_list.iter().filter(|f| f.user_data.is_favorite) {
             match favorite.item_type {
                 ItemType::Audio => {
