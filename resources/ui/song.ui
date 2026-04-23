@@ -114,7 +114,6 @@
         <child>
           <object class="GtkBox" id="album_duration_box">
             <property name="focusable">False</property>
-            <property name="width_request">60</property>
             <property name="spacing">6</property>
             <property name="visible" bind-source="GellySong" bind-property="in-queue" bind-flags="invert-boolean"/>
             <child>
@@ -128,8 +127,23 @@
           </object>
         </child>
         <child>
+          <object class="GtkToggleButton" id="song_star">
+            <property name="width-request">36</property>
+            <property name="height-request">36</property>
+            <property name="child">
+              <object class="GtkImage" id="star_icon">
+                <property name="icon-name">non-starred-symbolic</property>
+                <property name="icon-size">1</property>
+              </object>
+            </property>
+            <style>
+              <class name="flat"/>
+              <class name="opaque"/>
+            </style>
+          </object>
+        </child>
+        <child>
           <object class="GtkBox" id="song_actions_box">
-            <property name="margin-start">6</property>
             <child>
               <object class="GtkMenuButton" id="song_menu">
                 <property name="icon-name">view-more-symbolic</property>
