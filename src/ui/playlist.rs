@@ -1,5 +1,4 @@
 use crate::{
-    async_utils::spawn_tokio,
     backend::BackendError,
     config::{self, BackendType},
     library_utils::songs_for_playlist,
@@ -88,34 +87,9 @@ impl Playlist {
         let Some(playlist_model) = self.imp().playlist_model.borrow().clone() else {
             return;
         };
-        let item_id = playlist_model.id();
-        playlist_model.set_favorite(is_favorite);
         let app = self.get_application();
-        let backend = app.jellyfin();
-        spawn_tokio(
-            async move {
-                backend
-                    .set_favorite(
-                        &item_id,
-                        &crate::jellyfin::api::ItemType::Playlist,
-                        is_favorite,
-                    )
-                    .await
-            },
-            glib::clone!(
-                #[weak(rename_to = playlist)]
-                self,
-                #[weak]
-                playlist_model,
-                move |result| {
-                    if let Err(err) = result {
-                        warn!("Failed to set favorite: {err}");
-                        playlist_model.set_favorite(!is_favorite);
-                        playlist.get_application().refresh_favorites(true);
-                    }
-                }
-            ),
-        );
+        playlist_model.toggle_favorite(is_favorite, &app);
+        app.refresh_favorites(true);
     }
 }
 

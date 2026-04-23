@@ -1,6 +1,11 @@
-use crate::models::{PlaylistType, model_traits::ItemModel};
+use crate::{
+    application::Application,
+    async_utils::spawn_tokio,
+    models::{PlaylistType, model_traits::ItemModel},
+};
 use glib::Object;
 use gtk::glib;
+use log::warn;
 
 glib::wrapper! {
     pub struct PlaylistModel(ObjectSubclass<imp::PlaylistModel>);
@@ -40,6 +45,33 @@ impl PlaylistModel {
 
         // For regular playlists, reconstruct from the model's properties
         PlaylistType::new_regular(self.id(), self.name(), self.child_count(), self.favorite())
+    }
+
+    pub fn toggle_favorite(&self, is_favorite: bool, app: &Application) {
+        self.set_favorite(is_favorite);
+        let backend = app.jellyfin();
+        let item_id = self.id();
+        spawn_tokio(
+            async move {
+                backend
+                    .set_favorite(
+                        &item_id,
+                        &crate::jellyfin::api::ItemType::Playlist,
+                        is_favorite,
+                    )
+                    .await
+            },
+            glib::clone!(
+                #[weak(rename_to = playlist)]
+                self,
+                move |result| {
+                    if let Err(err) = result {
+                        warn!("Failed to set favorite: {err}");
+                        playlist.set_favorite(!is_favorite);
+                    }
+                }
+            ),
+        );
     }
 }
 

@@ -39,6 +39,11 @@ impl DetailPage for AlbumDetail {
             imp.year_label.set_text("N/A");
         }
         imp.album_image.set_item_id(&model.id(), None);
+        let binding = model
+            .bind_property("favorite", self, "favorite")
+            .sync_create()
+            .build();
+        self.imp().favorite_binding.replace(Some(binding));
         self.pull_tracks();
     }
 
@@ -285,6 +290,15 @@ impl AlbumDetail {
             ),
         );
     }
+
+    pub fn toggle_favorite(&self, is_favorite: bool) {
+        let Some(model) = self.get_model() else {
+            return;
+        };
+        let app = self.get_application();
+        model.toggle_favorite(is_favorite, &app);
+        app.refresh_favorites(true);
+    }
 }
 
 impl Default for AlbumDetail {
@@ -294,13 +308,13 @@ impl Default for AlbumDetail {
 }
 
 mod imp {
-    use std::cell::{OnceCell, RefCell};
+    use std::cell::{Cell, OnceCell, RefCell};
 
     use adw::subclass::prelude::*;
     use glib::subclass::InitializingObject;
     use gtk::{
         CompositeTemplate, gio,
-        glib::{self},
+        glib::{self, Properties},
         prelude::*,
     };
 
@@ -309,8 +323,9 @@ mod imp {
         ui::album_art::AlbumArt,
     };
 
-    #[derive(CompositeTemplate, Default)]
+    #[derive(CompositeTemplate, Default, Properties)]
     #[template(resource = "/io/m51/Gelly/ui/album_detail.ui")]
+    #[properties(wrapper_type = super::AlbumDetail)]
     pub struct AlbumDetail {
         #[template_child]
         pub album_image: TemplateChild<AlbumArt>,
@@ -330,10 +345,17 @@ mod imp {
         pub play_all: TemplateChild<gtk::Button>,
         #[template_child]
         pub action_menu: TemplateChild<gtk::MenuButton>,
+        #[template_child]
+        pub favorite_button: TemplateChild<gtk::ToggleButton>,
+        #[template_child]
+        pub star_icon: TemplateChild<gtk::Image>,
 
         pub model: RefCell<Option<AlbumModel>>,
         pub songs: RefCell<Vec<SongModel>>,
         pub store: OnceCell<gio::ListStore>,
+        pub favorite_binding: RefCell<Option<glib::Binding>>,
+        #[property(get, set = Self::set_favorite)]
+        favorite: Cell<bool>,
     }
 
     #[glib::object_subclass]
@@ -351,6 +373,8 @@ mod imp {
         }
     }
     impl BoxImpl for AlbumDetail {}
+
+    #[glib::derived_properties]
     impl ObjectImpl for AlbumDetail {
         fn constructed(&self) {
             self.parent_constructed();
@@ -377,6 +401,24 @@ mod imp {
                     imp.obj().play_album();
                 }
             ));
+
+            self.favorite_button.connect_clicked(glib::clone!(
+                #[weak(rename_to=imp)]
+                self,
+                move |button| {
+                    imp.obj().toggle_favorite(button.is_active());
+                }
+            ));
+        }
+
+        fn set_favorite(&self, val: bool) {
+            self.favorite.set(val);
+            self.favorite_button.set_active(val);
+            self.star_icon.set_icon_name(Some(if val {
+                "starred-symbolic"
+            } else {
+                "non-starred-symbolic"
+            }));
         }
     }
 }

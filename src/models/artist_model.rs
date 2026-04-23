@@ -1,7 +1,11 @@
 use glib::Object;
 use gtk::{glib, subclass::prelude::*};
+use log::warn;
 
-use crate::{jellyfin::api::ArtistItemsDto, models::model_traits::ItemModel};
+use crate::{
+    application::Application, async_utils::spawn_tokio, jellyfin::api::ArtistItemsDto,
+    models::model_traits::ItemModel,
+};
 
 glib::wrapper! {
     pub struct ArtistModel(ObjectSubclass<imp::ArtistModel>);
@@ -33,6 +37,33 @@ impl ArtistModel {
 
     pub fn image_data(&self) -> Vec<u8> {
         self.imp().image_data.borrow().clone()
+    }
+
+    pub fn toggle_favorite(&self, is_favorite: bool, app: &Application) {
+        self.set_favorite(is_favorite);
+        let backend = app.jellyfin();
+        let item_id = self.id();
+        spawn_tokio(
+            async move {
+                backend
+                    .set_favorite(
+                        &item_id,
+                        &crate::jellyfin::api::ItemType::MusicArtist,
+                        is_favorite,
+                    )
+                    .await
+            },
+            glib::clone!(
+                #[weak(rename_to = artist)]
+                self,
+                move |result| {
+                    if let Err(err) = result {
+                        warn!("Failed to set favorite: {err}");
+                        artist.set_favorite(!is_favorite);
+                    }
+                }
+            ),
+        );
     }
 }
 

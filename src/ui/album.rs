@@ -1,10 +1,6 @@
-use crate::{
-    async_utils::spawn_tokio, library_utils::play_album, models::AlbumModel,
-    ui::widget_ext::WidgetApplicationExt,
-};
+use crate::{library_utils::play_album, models::AlbumModel, ui::widget_ext::WidgetApplicationExt};
 use glib::Object;
 use gtk::{self, gio, glib, prelude::*, subclass::prelude::*};
-use log::warn;
 
 glib::wrapper! {
     pub struct Album(ObjectSubclass<imp::Album>)
@@ -41,34 +37,9 @@ impl Album {
         let Some(album_model) = self.imp().album_model.borrow().clone() else {
             return;
         };
-        let item_id = album_model.id();
-        album_model.set_favorite(is_favorite);
         let app = self.get_application();
-        let backend = app.jellyfin();
-        spawn_tokio(
-            async move {
-                backend
-                    .set_favorite(
-                        &item_id,
-                        &crate::jellyfin::api::ItemType::MusicAlbum,
-                        is_favorite,
-                    )
-                    .await
-            },
-            glib::clone!(
-                #[weak(rename_to = album)]
-                self,
-                #[weak]
-                album_model,
-                move |result| {
-                    if let Err(err) = result {
-                        warn!("Failed to set favorite: {err}");
-                        album_model.set_favorite(!is_favorite);
-                        album.get_application().refresh_favorites(true);
-                    }
-                }
-            ),
-        );
+        album_model.toggle_favorite(is_favorite, &app);
+        app.refresh_favorites(true);
     }
 }
 

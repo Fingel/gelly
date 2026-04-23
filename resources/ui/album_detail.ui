@@ -123,6 +123,21 @@
                   </object>
                 </child>
                 <child>
+                  <object class="GtkToggleButton" id="favorite_button">
+                    <property name="width-request">36</property>
+                    <property name="height-request">36</property>
+                    <property name="child">
+                      <object class="GtkImage" id="star_icon">
+                        <property name="icon-name">non-starred-symbolic</property>
+                        <property name="icon-size">1</property>
+                      </object>
+                    </property>
+                    <style>
+                      <class name="circular"/>
+                    </style>
+                  </object>
+                </child>
+                <child>
                   <object class="GtkMenuButton" id="action_menu">
                     <property
                       name="icon-name"
