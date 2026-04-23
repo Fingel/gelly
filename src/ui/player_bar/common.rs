@@ -123,21 +123,24 @@ where
         let app = self.obj().get_application();
         let backend = app.jellyfin();
         let weak = self.obj().downgrade();
+        let song_weak = song.downgrade();
         spawn_tokio(
-            async move { backend.set_favorite(&item_id, &ItemType::Audio, is_favorite).await },
+            async move {
+                backend
+                    .set_favorite(&item_id, &ItemType::Audio, is_favorite)
+                    .await
+            },
             move |result| {
                 let Some(obj) = weak.upgrade() else { return };
-                let imp = obj.imp();
-                if let Err(err) = result {
-                    warn!("Failed to set favorite: {err}");
-                    if let Some(song) = imp.audio_model().current_song() {
-                        song.set_favorite(!is_favorite);
+                match result {
+                    Ok(()) => obj.get_application().refresh_favorites(true),
+                    Err(err) => {
+                        warn!("Failed to set favorite: {err}");
+                        if let Some(song) = song_weak.upgrade() {
+                            song.set_favorite(!is_favorite);
+                        }
+                        obj.get_application().refresh_favorites(true);
                     }
-                } else {
-                    if let Some(song) = imp.audio_model().current_song() {
-                        song.set_favorite(is_favorite);
-                    }
-                    obj.get_application().refresh_favorites(true);
                 }
             },
         );
@@ -368,16 +371,14 @@ where
             }
         });
 
-        self.favorite_button().connect_notify_local(
-            Some("active"),
-            move |btn, _| {
+        self.favorite_button()
+            .connect_notify_local(Some("active"), move |btn, _| {
                 btn.set_icon_name(if btn.is_active() {
                     "starred-symbolic"
                 } else {
                     "non-starred-symbolic"
                 });
-            },
-        );
+            });
 
         self.favorite_button().connect_clicked({
             let weak = weak.clone();

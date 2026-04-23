@@ -53,17 +53,22 @@ impl Song {
 
     pub fn set_song_data(&self, song: &SongModel) {
         let imp = self.imp();
-        let binding = song
-            .bind_property("favorite", &imp.song_star.get(), "active")
-            .sync_create()
-            .build();
-        imp.favorite_binding.replace(Some(binding));
         imp.song_model.replace(Some(song.clone()));
         imp.title_label.set_label(&song.title());
         imp.album_label.set_label(&song.album());
         imp.artist_label.set_label(&song.artists_string());
         imp.duration_label
             .set_label(&format_duration(song.duration()));
+    }
+
+    pub fn set_starred(&self, is_favorite: bool) {
+        let imp = self.imp();
+        imp.song_star.set_active(is_favorite);
+        imp.star_icon.set_icon_name(Some(if is_favorite {
+            "starred-symbolic"
+        } else {
+            "non-starred-symbolic"
+        }));
     }
 
     fn song_id(&self) -> String {
@@ -76,12 +81,11 @@ impl Song {
     }
 
     fn toggle_favorite(&self, is_favorite: bool) {
-        let item_id = if let Some(model) = self.imp().song_model.borrow().as_ref() {
-            model.set_favorite(is_favorite);
-            model.id()
-        } else {
+        let Some(song_model) = self.imp().song_model.borrow().clone() else {
             return;
         };
+        song_model.set_favorite(is_favorite);
+        let item_id = song_model.id();
         let app = self.get_application();
         let backend = app.jellyfin();
         spawn_tokio(
@@ -93,17 +97,16 @@ impl Song {
             glib::clone!(
                 #[weak(rename_to = song)]
                 self,
+                #[weak]
+                song_model,
                 move |result| {
-                    if let Err(err) = result {
-                        warn!("Failed to set favorite: {err}");
-                        if let Some(model) = song.imp().song_model.borrow().as_ref() {
-                            model.set_favorite(!is_favorite);
+                    match result {
+                        Ok(()) => song.get_application().refresh_favorites(true),
+                        Err(err) => {
+                            warn!("Failed to set favorite: {err}");
+                            song_model.set_favorite(!is_favorite);
+                            song.get_application().refresh_favorites(true);
                         }
-                    } else {
-                        if let Some(model) = song.imp().song_model.borrow().as_ref() {
-                            model.set_favorite(is_favorite);
-                        }
-                        song.get_application().refresh_favorites(true);
                     }
                 }
             ),
@@ -333,7 +336,9 @@ mod imp {
     };
 
     use adw::subclass::prelude::*;
-    use glib::subclass::InitializingObject;
+    use glib::{WeakRef, subclass::InitializingObject};
+
+    use crate::Application;
     use gtk::{
         CompositeTemplate,
         glib::{self, Properties, subclass::Signal},
@@ -376,7 +381,8 @@ mod imp {
         #[property(get, set)]
         pub position: Cell<i32>,
         pub song_model: RefCell<Option<SongModel>>,
-        pub favorite_binding: RefCell<Option<glib::Binding>>,
+        pub favorite_indicator_handler:
+            RefCell<Option<(glib::SignalHandlerId, WeakRef<Application>)>>,
         #[property(get, construct_only, name = "in-playlist", default = false)]
         pub in_playlist: Cell<bool>,
         #[property(get, construct_only, name = "in-queue", default = false)]
@@ -450,21 +456,6 @@ mod imp {
                         song.imp()
                             .number_label
                             .set_label(&(position + 1).to_string());
-                    }
-                ),
-            );
-
-            self.song_star.connect_notify_local(
-                Some("active"),
-                glib::clone!(
-                    #[weak(rename_to = imp)]
-                    self,
-                    move |btn, _| {
-                        imp.star_icon.set_icon_name(Some(if btn.is_active() {
-                            "starred-symbolic"
-                        } else {
-                            "non-starred-symbolic"
-                        }));
                     }
                 ),
             );

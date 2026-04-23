@@ -260,7 +260,6 @@ impl Library {
     }
 
     pub fn playlist_is_favorite(&self, id: &str) -> bool {
-        // Playlists are weird so we handle this in the list view instead
         self.favorites.borrow().contains_playlist(id)
     }
 

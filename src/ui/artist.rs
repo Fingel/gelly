@@ -36,12 +36,11 @@ impl Artist {
     }
 
     pub fn toggle_favorite(&self, is_favorite: bool) {
-        let item_id = if let Some(artist_model) = self.imp().artist_model.borrow().as_ref() {
-            artist_model.set_favorite(is_favorite);
-            artist_model.id()
-        } else {
+        let Some(artist_model) = self.imp().artist_model.borrow().clone() else {
             return;
         };
+        let item_id = artist_model.id();
+        artist_model.set_favorite(is_favorite);
         let app = self.get_application();
         let backend = app.jellyfin();
         spawn_tokio(
@@ -57,16 +56,12 @@ impl Artist {
             glib::clone!(
                 #[weak(rename_to = artist)]
                 self,
+                #[weak]
+                artist_model,
                 move |result| {
                     if let Err(err) = result {
                         warn!("Failed to set favorite: {err}");
-                        if let Some(model) = artist.imp().artist_model.borrow().as_ref() {
-                            model.set_favorite(!is_favorite);
-                        }
-                    } else {
-                        if let Some(model) = artist.imp().artist_model.borrow().as_ref() {
-                            model.set_favorite(is_favorite);
-                        }
+                        artist_model.set_favorite(!is_favorite);
                         artist.get_application().refresh_favorites(true);
                     }
                 }

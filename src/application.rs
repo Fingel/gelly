@@ -253,19 +253,13 @@ impl Application {
                     self.imp().library.update_favorites(&favorites.items);
                     self.emit_by_name::<()>("favorites-updated", &[]);
                     debug!("Loaded favorites from cache");
-                    return;
                 }
-                Err(error) => {
-                    warn!(
-                        "Failed to load favorites from cache: {}. Refreshing.",
-                        error
-                    );
-                }
+                Err(error) => warn!("Failed to load favorites cache: {}. Refreshing.", error),
             }
         }
         let jellyfin = self.jellyfin();
         if !jellyfin.is_authenticated() {
-            debug!("Not authenticated, skipping library refresh");
+            debug!("Not authenticated, skipping favorites refresh");
             return;
         }
         self.http_with_loading(
@@ -280,7 +274,7 @@ impl Application {
                             app.imp().library.update_favorites(&favorites.items);
                             app.emit_by_name::<()>("favorites-updated", &[]);
                         }
-                        Err(err) => app.handle_backend_error(err, "refresh_library"),
+                        Err(err) => app.handle_backend_error(err, "refresh_favorites"),
                     }
                 },
             ),
@@ -344,7 +338,7 @@ impl Application {
     }
 
     pub fn refresh_all(&self, refresh_cache: bool) {
-        self.refresh_favorites(refresh_cache); // important this goes first: pre-populate to reference
+        self.refresh_favorites(refresh_cache);
         self.refresh_library(refresh_cache);
         self.refresh_playlists(refresh_cache);
     }

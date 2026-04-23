@@ -1,4 +1,5 @@
 use crate::{
+    Application,
     audio::model::AudioModel,
     models::SongModel,
     ui::{song::Song, widget_ext::WidgetApplicationExt, window::Window},
@@ -74,6 +75,39 @@ pub fn connect_playing_indicator(
 pub fn disconnect_playing_indicator(song_widget: &Song, audio_model: &AudioModel) {
     if let Some(handler_id) = song_widget.imp().playing_indicator_handler.take() {
         audio_model.disconnect(handler_id);
+    }
+}
+
+pub fn connect_favorite_indicator(song_widget: &Song, song_model: &SongModel, app: &Application) {
+    song_widget.set_starred(song_model.favorite());
+
+    let handler_id = app.connect_closure(
+        "favorites-updated",
+        false,
+        glib::closure_local!(
+            #[weak]
+            song_widget,
+            #[weak]
+            song_model,
+            move |app: Application| {
+                let is_fav = app.library().song_is_favorite(&song_model.id());
+                song_model.set_favorite(is_fav);
+                song_widget.set_starred(is_fav);
+            }
+        ),
+    );
+
+    song_widget
+        .imp()
+        .favorite_indicator_handler
+        .replace(Some((handler_id, app.downgrade())));
+}
+
+pub fn disconnect_favorite_indicator(song_widget: &Song) {
+    if let Some((handler_id, app_weak)) = song_widget.imp().favorite_indicator_handler.take()
+        && let Some(app) = app_weak.upgrade()
+    {
+        app.disconnect(handler_id);
     }
 }
 

@@ -110,6 +110,11 @@ impl AlbumDetail {
                 song_widget.set_song_data(&song_model);
 
                 song_utils::connect_playing_indicator(&song_widget, &song_model, &audio_model);
+                song_utils::connect_favorite_indicator(
+                    &song_widget,
+                    &song_model,
+                    &album_detail.get_application(),
+                );
 
                 let nav_handlers =
                     connect_song_navigation(&song_widget, &album_detail.get_root_window());
@@ -130,6 +135,7 @@ impl AlbumDetail {
                     .expect("Child has to be Song");
 
                 song_utils::disconnect_playing_indicator(&song_widget, &audio_model);
+                song_utils::disconnect_favorite_indicator(&song_widget);
                 song_utils::disconnect_signal_handlers(&song_widget);
             }
         ));
@@ -299,9 +305,8 @@ mod imp {
     };
 
     use crate::{
-        Application,
         models::{AlbumModel, SongModel},
-        ui::{album_art::AlbumArt, widget_ext::WidgetApplicationExt},
+        ui::album_art::AlbumArt,
     };
 
     #[derive(CompositeTemplate, Default)]
@@ -351,26 +356,6 @@ mod imp {
             self.parent_constructed();
             self.obj().setup_menu();
             self.setup_signals();
-            self.obj().connect_realize(glib::clone!(
-                #[weak(rename_to = detail)]
-                self.obj(),
-                move |_| {
-                    detail.get_application().connect_closure(
-                        "favorites-updated",
-                        false,
-                        glib::closure_local!(
-                            #[weak]
-                            detail,
-                            move |_: Application| {
-                                let library = detail.get_application().library();
-                                for song in detail.imp().songs.borrow().iter() {
-                                    song.set_favorite(library.song_is_favorite(&song.id()));
-                                }
-                            }
-                        ),
-                    );
-                }
-            ));
         }
     }
     impl WidgetImpl for AlbumDetail {}

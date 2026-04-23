@@ -85,12 +85,11 @@ impl Playlist {
     }
 
     pub fn toggle_favorite(&self, is_favorite: bool) {
-        let item_id = if let Some(playlist_model) = self.imp().playlist_model.borrow().as_ref() {
-            playlist_model.set_favorite(is_favorite);
-            playlist_model.id()
-        } else {
+        let Some(playlist_model) = self.imp().playlist_model.borrow().clone() else {
             return;
         };
+        let item_id = playlist_model.id();
+        playlist_model.set_favorite(is_favorite);
         let app = self.get_application();
         let backend = app.jellyfin();
         spawn_tokio(
@@ -106,16 +105,12 @@ impl Playlist {
             glib::clone!(
                 #[weak(rename_to = playlist)]
                 self,
+                #[weak]
+                playlist_model,
                 move |result| {
                     if let Err(err) = result {
                         warn!("Failed to set favorite: {err}");
-                        if let Some(model) = playlist.imp().playlist_model.borrow().as_ref() {
-                            model.set_favorite(!is_favorite);
-                        }
-                    } else {
-                        if let Some(model) = playlist.imp().playlist_model.borrow().as_ref() {
-                            model.set_favorite(is_favorite);
-                        }
+                        playlist_model.set_favorite(!is_favorite);
                         playlist.get_application().refresh_favorites(true);
                     }
                 }

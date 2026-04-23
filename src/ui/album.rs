@@ -38,12 +38,11 @@ impl Album {
     }
 
     pub fn toggle_favorite(&self, is_favorite: bool) {
-        let item_id = if let Some(album_model) = self.imp().album_model.borrow().as_ref() {
-            album_model.set_favorite(is_favorite);
-            album_model.id()
-        } else {
+        let Some(album_model) = self.imp().album_model.borrow().clone() else {
             return;
         };
+        let item_id = album_model.id();
+        album_model.set_favorite(is_favorite);
         let app = self.get_application();
         let backend = app.jellyfin();
         spawn_tokio(
@@ -59,16 +58,12 @@ impl Album {
             glib::clone!(
                 #[weak(rename_to = album)]
                 self,
+                #[weak]
+                album_model,
                 move |result| {
                     if let Err(err) = result {
                         warn!("Failed to set favorite: {err}");
-                        if let Some(model) = album.imp().album_model.borrow().as_ref() {
-                            model.set_favorite(!is_favorite);
-                        }
-                    } else {
-                        if let Some(model) = album.imp().album_model.borrow().as_ref() {
-                            model.set_favorite(is_favorite);
-                        }
+                        album_model.set_favorite(!is_favorite);
                         album.get_application().refresh_favorites(true);
                     }
                 }
