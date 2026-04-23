@@ -84,7 +84,7 @@ impl Cacheable for PlaylistDtoList {
 }
 
 impl Cacheable for FavoriteDtoList {
-    type Loader = FavoriteDtoList;
+    type Loader = FavoritesDtoListCache;
     const CACHE_FILE_NAME: &'static str = "favorites.json";
 }
 
