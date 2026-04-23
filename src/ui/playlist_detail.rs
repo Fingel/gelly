@@ -582,8 +582,9 @@ mod imp {
     };
 
     use crate::{
+        Application,
         models::{PlaylistModel, SongModel},
-        ui::album_art::AlbumArt,
+        ui::{album_art::AlbumArt, widget_ext::WidgetApplicationExt},
     };
 
     #[derive(CompositeTemplate, Default)]
@@ -633,6 +634,26 @@ mod imp {
             self.parent_constructed();
             self.obj().setup_menu();
             self.setup_signals();
+            self.obj().connect_realize(glib::clone!(
+                #[weak(rename_to = detail)]
+                self.obj(),
+                move |_| {
+                    detail.get_application().connect_closure(
+                        "favorites-updated",
+                        false,
+                        glib::closure_local!(
+                            #[weak]
+                            detail,
+                            move |_: Application| {
+                                let library = detail.get_application().library();
+                                for song in detail.imp().songs.borrow().iter() {
+                                    song.set_favorite(library.song_is_favorite(&song.id()));
+                                }
+                            }
+                        ),
+                    );
+                }
+            ));
         }
     }
     impl WidgetImpl for PlaylistDetail {}

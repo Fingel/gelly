@@ -329,6 +329,8 @@ mod imp {
         prelude::*,
     };
 
+    use crate::{Application, models::SongModel, ui::widget_ext::WidgetApplicationExt};
+
     #[derive(CompositeTemplate, Default)]
     #[template(resource = "/io/m51/Gelly/ui/song_list.ui")]
     pub struct SongList {
@@ -367,6 +369,31 @@ mod imp {
             self.parent_constructed();
             self.obj().setup_model();
             self.setup_signals();
+            self.obj().connect_realize(glib::clone!(
+                #[weak(rename_to = song_list)]
+                self.obj(),
+                move |_| {
+                    song_list.get_application().connect_closure(
+                        "favorites-updated",
+                        false,
+                        glib::closure_local!(
+                            #[weak]
+                            song_list,
+                            move |_: Application| {
+                                let Some(store) = song_list.imp().store.get() else {
+                                    return;
+                                };
+                                let library = song_list.get_application().library();
+                                for i in 0..store.n_items() {
+                                    if let Some(song) = store.item(i).and_downcast::<SongModel>() {
+                                        song.set_favorite(library.song_is_favorite(&song.id()));
+                                    }
+                                }
+                            }
+                        ),
+                    );
+                }
+            ));
         }
     }
     impl WidgetImpl for SongList {}
