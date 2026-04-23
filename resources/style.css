@@ -60,3 +60,8 @@ listview.boxed-list > row:hover {
 .album-art-background listview.boxed-list {
     background-color: color-mix(in oklab, @card_bg_color 60%, transparent 40%);
 }
+
+.star-button:checked:not(:hover):not(:active) {
+    background: none;
+    box-shadow: none;
+}

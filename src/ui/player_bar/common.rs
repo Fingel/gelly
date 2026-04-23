@@ -1,5 +1,7 @@
 use crate::{
+    async_utils::spawn_tokio,
     audio::{model::AudioModel, stream_info::discover_stream_info},
+    jellyfin::api::ItemType,
     ui::{
         album_art::AlbumArt, album_art_background::draw_background, lyrics::Lyrics,
         stream_info_dialog, widget_ext::WidgetApplicationExt,
@@ -28,6 +30,7 @@ where
     fn seek_debounce_id(&self) -> &RefCell<Option<glib::SourceId>>;
     fn position_storage(&self) -> &RefCell<u32>;
     fn duration_storage(&self) -> &RefCell<u32>;
+    fn favorite_binding(&self) -> &RefCell<Option<glib::Binding>>;
 
     // widgets
     fn play_pause_button(&self) -> &gtk::Button;
@@ -45,6 +48,7 @@ where
     fn artist_label(&self) -> &gtk::Label;
     fn album_label(&self) -> &gtk::Label;
     fn album_art(&self) -> &AlbumArt;
+    fn favorite_button(&self) -> &gtk::ToggleButton;
 
     fn snapshot_background(&self, snapshot: &gtk::Snapshot) {
         let obj = self.obj();
@@ -93,6 +97,50 @@ where
             self.toggle_lyrics(song.has_lyrics());
             self.load_album_art(&song.album_id(), &song.id());
         }
+        self.update_favorite_binding();
+    }
+
+    fn update_favorite_binding(&self) {
+        if let Some(song) = self.audio_model().current_song() {
+            let binding = song
+                .bind_property("favorite", self.favorite_button(), "active")
+                .sync_create()
+                .build();
+            self.favorite_binding().replace(Some(binding));
+        } else {
+            self.favorite_binding().replace(None);
+            self.favorite_button().set_active(false);
+            self.favorite_button().set_icon_name("non-starred-symbolic");
+        }
+    }
+
+    fn toggle_favorite(&self, is_favorite: bool) {
+        let Some(song) = self.audio_model().current_song() else {
+            return;
+        };
+        song.set_favorite(is_favorite);
+        let item_id = song.id();
+        let app = self.obj().get_application();
+        let backend = app.jellyfin();
+        let weak = self.obj().downgrade();
+        spawn_tokio(
+            async move { backend.set_favorite(&item_id, &ItemType::Audio, is_favorite).await },
+            move |result| {
+                let Some(obj) = weak.upgrade() else { return };
+                let imp = obj.imp();
+                if let Err(err) = result {
+                    warn!("Failed to set favorite: {err}");
+                    if let Some(song) = imp.audio_model().current_song() {
+                        song.set_favorite(!is_favorite);
+                    }
+                } else {
+                    if let Some(song) = imp.audio_model().current_song() {
+                        song.set_favorite(is_favorite);
+                    }
+                    obj.get_application().refresh_favorites(true);
+                }
+            },
+        );
     }
 
     fn toggle_lyrics(&self, has_lyrics: bool) {
@@ -316,6 +364,26 @@ where
             move |_| {
                 if let Some(obj) = weak.upgrade() {
                     obj.imp().show_lyrics();
+                }
+            }
+        });
+
+        self.favorite_button().connect_notify_local(
+            Some("active"),
+            move |btn, _| {
+                btn.set_icon_name(if btn.is_active() {
+                    "starred-symbolic"
+                } else {
+                    "non-starred-symbolic"
+                });
+            },
+        );
+
+        self.favorite_button().connect_clicked({
+            let weak = weak.clone();
+            move |btn| {
+                if let Some(obj) = weak.upgrade() {
+                    obj.imp().toggle_favorite(btn.is_active());
                 }
             }
         });

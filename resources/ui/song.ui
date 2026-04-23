@@ -138,7 +138,7 @@
             </property>
             <style>
               <class name="flat"/>
-              <class name="opaque"/>
+              <class name="star-button"/>
             </style>
           </object>
         </child>
