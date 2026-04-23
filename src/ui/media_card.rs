@@ -128,17 +128,13 @@ mod imp {
     impl ObjectImpl for MediaCard {
         fn constructed(&self) {
             self.parent_constructed();
+            self.setup_revealer_signals();
             self.obj().connect_map(|widget| {
                 let imp = widget.imp();
-
                 imp.secondary_label
                     .set_visible(widget.has_secondary_label());
                 imp.play_revealer.set_visible(widget.has_play_button());
                 imp.star_revealer.set_visible(widget.has_star_button());
-
-                if widget.has_play_button() || widget.has_star_button() {
-                    imp.setup_revealer_signals();
-                }
             });
         }
     }
