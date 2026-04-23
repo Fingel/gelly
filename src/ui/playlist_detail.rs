@@ -1,7 +1,7 @@
 use crate::{
     async_utils::spawn_tokio,
     backend::BackendError,
-    jellyfin::{api::MusicDto, utils::format_duration},
+    jellyfin::utils::format_duration,
     library_utils::songs_for_playlist,
     models::{PlaylistModel, SongModel},
     ui::{
@@ -227,13 +227,9 @@ impl PlaylistDetail {
             glib::clone!(
                 #[weak(rename_to=playlist_detail)]
                 self,
-                move |result: Result<Vec<MusicDto>, BackendError>| {
+                move |result: Result<Vec<SongModel>, BackendError>| {
                     match result {
-                        Ok(music_data) => {
-                            let songs: Vec<SongModel> = music_data
-                                .iter()
-                                .map(|dto| SongModel::new(dto, false)) // TODO: get favorite status here
-                                .collect();
+                        Ok(songs) => {
                             playlist_detail.populate_tracks_with_songs(songs);
                         }
                         Err(error) => {

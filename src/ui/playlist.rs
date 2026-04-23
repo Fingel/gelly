@@ -2,7 +2,7 @@ use crate::{
     async_utils::spawn_tokio,
     backend::BackendError,
     config::{self, BackendType},
-    jellyfin::api::MusicDto,
+    library_utils::songs_for_playlist,
     models::{PlaylistModel, SongModel},
     ui::widget_ext::WidgetApplicationExt,
 };
@@ -62,23 +62,16 @@ impl Playlist {
             return;
         };
 
-        let playlist_type = playlist_model.playlist_type();
-        let library = self.get_application().library();
-        let all_songs = library.songs.borrow().clone();
-        let jellyfin = self.get_application().jellyfin();
-
-        spawn_tokio(
-            async move { playlist_type.load_song_data(&jellyfin, &all_songs).await },
+        let app = self.get_application();
+        songs_for_playlist(
+            &playlist_model,
+            &app,
             glib::clone!(
                 #[weak(rename_to=playlist)]
                 self,
-                move |result: Result<Vec<MusicDto>, BackendError>| {
+                move |result: Result<Vec<SongModel>, BackendError>| {
                     match result {
-                        Ok(music_data) => {
-                            let songs: Vec<SongModel> = music_data
-                                .iter()
-                                .map(|dto| SongModel::new(dto, library.song_is_favorite(&dto.id)))
-                                .collect();
+                        Ok(songs) => {
                             playlist.play_songs(songs);
                         }
                         Err(error) => {
