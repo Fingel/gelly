@@ -255,9 +255,17 @@ impl Library {
             })
     }
 
+    pub fn songs(&self) -> Vec<SongModel> {
+        self.all_songs()
+    }
+
     pub fn playlist_is_favorite(&self, id: &str) -> bool {
         // Playlists are weird so we handle this in the list view instead
         self.favorites.borrow().contains_playlist(id)
+    }
+
+    pub fn song_is_favorite(&self, id: &str) -> bool {
+        self.favorites.borrow().contains_song(id)
     }
 
     pub fn library_size(&self) -> usize {

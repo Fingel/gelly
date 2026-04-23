@@ -63,11 +63,12 @@ impl Playlist {
         };
 
         let playlist_type = playlist_model.playlist_type();
-        let library_data = self.get_application().library().songs.borrow().clone();
+        let library = self.get_application().library();
+        let all_songs = library.songs.borrow().clone();
         let jellyfin = self.get_application().jellyfin();
 
         spawn_tokio(
-            async move { playlist_type.load_song_data(&jellyfin, &library_data).await },
+            async move { playlist_type.load_song_data(&jellyfin, &all_songs).await },
             glib::clone!(
                 #[weak(rename_to=playlist)]
                 self,
@@ -76,7 +77,7 @@ impl Playlist {
                         Ok(music_data) => {
                             let songs: Vec<SongModel> = music_data
                                 .iter()
-                                .map(|dto| SongModel::new(dto, false)) // TODO: get favorite status here
+                                .map(|dto| SongModel::new(dto, library.song_is_favorite(&dto.id)))
                                 .collect();
                             playlist.play_songs(songs);
                         }
