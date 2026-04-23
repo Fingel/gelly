@@ -255,10 +255,6 @@ impl Library {
             })
     }
 
-    pub fn songs(&self) -> Vec<SongModel> {
-        self.all_songs()
-    }
-
     pub fn playlist_is_favorite(&self, id: &str) -> bool {
         self.favorites.borrow().contains_playlist(id)
     }
