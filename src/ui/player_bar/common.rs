@@ -139,7 +139,6 @@ where
                         if let Some(song) = song_weak.upgrade() {
                             song.set_favorite(!is_favorite);
                         }
-                        obj.get_application().refresh_favorites(true);
                     }
                 }
             },

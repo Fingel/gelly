@@ -39,7 +39,6 @@ impl Album {
         };
         let app = self.get_application();
         album_model.toggle_favorite(is_favorite, &app);
-        app.refresh_favorites(true);
     }
 }
 

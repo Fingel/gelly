@@ -297,7 +297,6 @@ impl AlbumDetail {
         };
         let app = self.get_application();
         model.toggle_favorite(is_favorite, &app);
-        app.refresh_favorites(true);
     }
 }
 

@@ -89,7 +89,6 @@ impl Playlist {
         };
         let app = self.get_application();
         playlist_model.toggle_favorite(is_favorite, &app);
-        app.refresh_favorites(true);
     }
 }
 

@@ -105,7 +105,6 @@ impl Song {
                         Err(err) => {
                             warn!("Failed to set favorite: {err}");
                             song_model.set_favorite(!is_favorite);
-                            song.get_application().refresh_favorites(true);
                         }
                     }
                 }
