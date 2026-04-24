@@ -95,7 +95,7 @@ impl PlaylistType {
     pub fn icon_name(&self) -> &str {
         match self {
             PlaylistType::ShuffleLibrary { .. } => "media-playlist-shuffle-symbolic",
-            PlaylistType::MostPlayed { .. } => "view-wrapped",
+            PlaylistType::MostPlayed { .. } => "heart-filled-symbolic",
             PlaylistType::Favorites => "starred-symbolic",
             _ => "audio-x-generic-symbolic",
         }
