@@ -1,8 +1,4 @@
-use crate::{
-    backend::{Backend, BackendError},
-    jellyfin::api::MusicDto,
-};
-use rand::prelude::IndexedRandom;
+use crate::{library::Library, models::SongModel};
 
 pub const DEFAULT_SMART_COUNT: u64 = 100;
 
@@ -20,6 +16,7 @@ pub enum PlaylistType {
     MostPlayed {
         count: u64,
     },
+    Favorites,
 }
 
 impl PlaylistType {
@@ -39,6 +36,7 @@ impl PlaylistType {
             PlaylistType::Regular { id, .. } => id.clone(),
             PlaylistType::ShuffleLibrary { count } => format!("smart:shuffle:{count}"),
             PlaylistType::MostPlayed { count } => format!("smart:most-played:{count}"),
+            PlaylistType::Favorites => "smart:favorites:0".to_string(),
         }
     }
 
@@ -62,6 +60,7 @@ impl PlaylistType {
                     .unwrap_or(DEFAULT_SMART_COUNT);
                 Some(Self::MostPlayed { count })
             }
+            Some(&"favorites") => Some(Self::Favorites),
             _ => None,
         }
     }
@@ -71,33 +70,16 @@ impl PlaylistType {
             PlaylistType::Regular { name, .. } => name.clone(),
             PlaylistType::ShuffleLibrary { .. } => "Shuffled Songs".to_string(),
             PlaylistType::MostPlayed { count } => format!("Top {} Played Songs", count),
+            PlaylistType::Favorites => "Favorite Mix".to_string(),
         }
     }
 
-    pub async fn load_song_data(
-        &self,
-        backend: &Backend,
-        library: &[MusicDto],
-    ) -> Result<Vec<MusicDto>, BackendError> {
+    pub fn smart_songs(&self, library: &Library) -> Vec<SongModel> {
         match self {
-            PlaylistType::Regular { id, .. } => {
-                let playlist_items = backend.get_playlist_items(id).await?;
-                Ok(playlist_items.items)
-            }
-            PlaylistType::ShuffleLibrary { count } => {
-                let mut rng = rand::rng();
-                let chosen = library.sample(&mut rng, *count as usize);
-                Ok(chosen.into_iter().cloned().collect())
-            }
-            PlaylistType::MostPlayed { count } => {
-                let mut songs: Vec<MusicDto> = library
-                    .iter()
-                    .filter(|dto| dto.user_data.play_count > 0)
-                    .cloned()
-                    .collect();
-                songs.sort_by_key(|dto| std::cmp::Reverse(dto.user_data.play_count));
-                Ok(songs.into_iter().take(*count as usize).collect())
-            }
+            PlaylistType::ShuffleLibrary { count } => library.shuffle_songs(*count),
+            PlaylistType::MostPlayed { count } => library.most_played_songs(*count),
+            PlaylistType::Favorites => library.all_favorites(),
+            PlaylistType::Regular { .. } => vec![],
         }
     }
 
@@ -106,13 +88,15 @@ impl PlaylistType {
             PlaylistType::Regular { child_count, .. } => *child_count,
             PlaylistType::ShuffleLibrary { count } => *count,
             PlaylistType::MostPlayed { count } => *count,
+            PlaylistType::Favorites => 0,
         }
     }
 
     pub fn icon_name(&self) -> &str {
         match self {
-            PlaylistType::ShuffleLibrary { count: _ } => "media-playlist-shuffle-symbolic",
-            PlaylistType::MostPlayed { count: _ } => "starred-symbolic",
+            PlaylistType::ShuffleLibrary { .. } => "media-playlist-shuffle-symbolic",
+            PlaylistType::MostPlayed { .. } => "view-wrapped",
+            PlaylistType::Favorites => "starred-symbolic",
             _ => "audio-x-generic-symbolic",
         }
     }

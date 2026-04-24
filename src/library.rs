@@ -195,14 +195,19 @@ impl Library {
         tracks
     }
 
-    pub fn shuffle_songs(&self, num: u64) -> Vec<MusicDto> {
+    pub fn shuffle_songs(&self, num: u64) -> Vec<SongModel> {
+        let favorites = self.favorites.borrow();
         let mut rng = rand::rng();
         let songs = self.songs.borrow();
         let chosen = songs.sample(&mut rng, num as usize);
-        chosen.into_iter().cloned().collect()
+        chosen
+            .into_iter()
+            .map(|dto| SongModel::new(dto, favorites.contains_song(&dto.id)))
+            .collect()
     }
 
-    pub fn most_played_songs(&self, num: u64) -> Vec<MusicDto> {
+    pub fn most_played_songs(&self, num: u64) -> Vec<SongModel> {
+        let favorites = self.favorites.borrow();
         let mut songs: Vec<MusicDto> = self
             .songs
             .borrow()
@@ -211,7 +216,38 @@ impl Library {
             .cloned()
             .collect();
         songs.sort_by_key(|dto| std::cmp::Reverse(dto.user_data.play_count));
-        songs.into_iter().take(num as usize).collect()
+        songs
+            .into_iter()
+            .take(num as usize)
+            .map(|dto| SongModel::new(&dto, favorites.contains_song(&dto.id)))
+            .collect()
+    }
+
+    pub fn all_favorites(&self) -> Vec<SongModel> {
+        let favorites = self.favorites.borrow();
+        let mut rng = rand::rng();
+        let songs: Vec<MusicDto> = self
+            .songs
+            .borrow()
+            .iter()
+            .filter(|dto| {
+                self.song_is_favorite(&dto.id)
+                    || dto
+                        .album_id
+                        .as_ref()
+                        .is_some_and(|album_id| self.album_is_favorite(album_id))
+                    || dto
+                        .album_artists
+                        .iter()
+                        .any(|artist| self.artist_is_favorite(&artist.id))
+            })
+            .cloned()
+            .collect();
+        let chosen = songs.sample(&mut rng, songs.len());
+        chosen
+            .into_iter()
+            .map(|dto| SongModel::new(dto, favorites.contains_song(&dto.id)))
+            .collect()
     }
 
     pub fn songs_for_artist(&self, id: &str) -> Vec<SongModel> {
@@ -261,6 +297,14 @@ impl Library {
 
     pub fn song_is_favorite(&self, id: &str) -> bool {
         self.favorites.borrow().contains_song(id)
+    }
+
+    pub fn artist_is_favorite(&self, id: &str) -> bool {
+        self.favorites.borrow().contains_artist(id)
+    }
+
+    pub fn album_is_favorite(&self, id: &str) -> bool {
+        self.favorites.borrow().contains_album(id)
     }
 
     pub fn library_size(&self) -> usize {
@@ -809,9 +853,9 @@ mod tests {
         ]);
         let most_played = lib.most_played_songs(100);
         assert_eq!(most_played.len(), 3);
-        assert_eq!(most_played[0].id, "user-data-3");
-        assert_eq!(most_played[1].id, "user-data-2");
-        assert_eq!(most_played[2].id, "user-data-1");
+        assert_eq!(most_played[0].id(), "user-data-3");
+        assert_eq!(most_played[1].id(), "user-data-2");
+        assert_eq!(most_played[2].id(), "user-data-1");
     }
 
     #[test]

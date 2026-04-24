@@ -199,6 +199,10 @@ impl PlaylistList {
             store.append(&PlaylistModel::new(most_played_type));
         }
 
+        if config::get_playlist_favorites_enabled() {
+            store.append(&PlaylistModel::new(PlaylistType::Favorites {}));
+        }
+
         for playlist in playlists {
             let playlist_type = PlaylistType::new_regular(
                 playlist.id.clone(),
@@ -378,6 +382,17 @@ mod imp {
 
             settings().connect_changed(
                 Some("playlist-most-played-enabled"),
+                glib::clone!(
+                    #[weak(rename_to = playlist_list)]
+                    self.obj(),
+                    move |_settings, _key| {
+                        playlist_list.pull_playlists();
+                    }
+                ),
+            );
+
+            settings().connect_changed(
+                Some("playlist-favorites-enabled"),
                 glib::clone!(
                     #[weak(rename_to = playlist_list)]
                     self.obj(),

@@ -50,6 +50,13 @@ impl Preferences {
         // Smart Playlists
         settings
             .bind(
+                "playlist-favorites-enabled",
+                &*imp.playlist_favorites_enabled_switch,
+                "active",
+            )
+            .build();
+        settings
+            .bind(
                 "playlist-shuffle-enabled",
                 &*imp.playlist_shuffle_enabled_switch,
                 "active",
@@ -115,6 +122,8 @@ mod imp {
         pub normalize_audio_switch: TemplateChild<gtk::Switch>,
         #[template_child]
         pub inhibit_suspend_switch: TemplateChild<gtk::Switch>,
+        #[template_child]
+        pub playlist_favorites_enabled_switch: TemplateChild<gtk::Switch>,
         #[template_child]
         pub playlist_shuffle_enabled_switch: TemplateChild<gtk::Switch>,
         #[template_child]

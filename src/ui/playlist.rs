@@ -22,8 +22,15 @@ impl Playlist {
     pub fn set_playlist_model(&self, playlist_model: &PlaylistModel) {
         let imp = self.imp();
         let card = &imp.media_card;
+        let secondary_text = if playlist_model.child_count() > 0 {
+            &format!("{} songs", playlist_model.child_count())
+        } else if playlist_model.is_smart() {
+            "Smart playlist"
+        } else {
+            "Empty playlist"
+        };
         card.set_primary_text(&playlist_model.name());
-        card.set_secondary_text(&format!("{} songs", playlist_model.child_count()));
+        card.set_secondary_text(secondary_text);
         card.set_image_id(&playlist_model.id());
         card.set_has_star_button(config::get_backend_type() == BackendType::Jellyfin);
         if playlist_model.is_smart() {
