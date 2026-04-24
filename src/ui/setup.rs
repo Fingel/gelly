@@ -102,20 +102,31 @@ impl Setup {
         let username = username.to_string();
         let password = password.to_string();
         self.imp().connect_button.set_sensitive(false);
+        let hosts = if host.starts_with("http://") || host.starts_with("https://") {
+            vec![host]
+        } else {
+            vec![format!("https://{host}"), format!("http://{host}")]
+        };
         app.http_with_loading(
             async move {
-                match Jellyfin::new_authenticate(&host, &username, &password).await {
-                    Ok(jellyfin) => Ok(Backend::Jellyfin(jellyfin)),
-                    Err(jellyfin_err) => {
-                        match Subsonic::new_authenticate(&host, &username, &password).await {
-                            Ok(subsonic) => Ok(Backend::Subsonic(subsonic)),
-                            Err(subsonic_err) => Err(ConnectionAttemptError::Both {
-                                jellyfin: jellyfin_err,
-                                subsonic: subsonic_err,
-                            }),
+                let mut last_err = None;
+                for host in &hosts {
+                    match Jellyfin::new_authenticate(host, &username, &password).await {
+                        Ok(jellyfin) => return Ok(Backend::Jellyfin(jellyfin)),
+                        Err(jellyfin_err) => {
+                            match Subsonic::new_authenticate(host, &username, &password).await {
+                                Ok(subsonic) => return Ok(Backend::Subsonic(subsonic)),
+                                Err(subsonic_err) => {
+                                    last_err = Some(ConnectionAttemptError::Both {
+                                        jellyfin: jellyfin_err,
+                                        subsonic: subsonic_err,
+                                    });
+                                }
+                            }
                         }
                     }
                 }
+                Err(last_err.unwrap())
             },
             glib::clone!(
                 #[weak(rename_to=setup)]
