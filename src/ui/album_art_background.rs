@@ -89,17 +89,28 @@ impl BlurBackground {
         height: f64,
         translate: Option<(f32, f32)>,
     ) {
+        let paint = |snapshot: &gtk::Snapshot, p: &gtk::gdk::Paintable| {
+            if let Some((tx, ty)) = translate {
+                snapshot.save();
+                snapshot.translate(&graphene::Point::new(tx, ty));
+                p.snapshot(snapshot, width, height);
+                snapshot.restore();
+            } else {
+                p.snapshot(snapshot, width, height);
+            }
+        };
+
         let alpha = self.fade_alpha.get();
         if alpha < 1.0
             && let Some(p) = self.prev_paintable.borrow().as_ref()
         {
             snapshot.push_opacity(1.0 - alpha);
-            draw_background(snapshot, p, width, height, translate);
+            paint(snapshot, p);
             snapshot.pop();
         }
         if let Some(p) = self.paintable.borrow().as_ref() {
             snapshot.push_opacity(alpha);
-            draw_background(snapshot, p, width, height, translate);
+            paint(snapshot, p);
             snapshot.pop();
         }
     }
@@ -126,21 +137,4 @@ pub fn create_blur_paintable(
         .renderer()?
         .render_texture(&node, Some(&rect));
     Some(texture.upcast())
-}
-
-pub fn draw_background(
-    snapshot: &gtk::Snapshot,
-    paintable: &gtk::gdk::Paintable,
-    width: f64,
-    height: f64,
-    translate: Option<(f32, f32)>,
-) {
-    if let Some((tx, ty)) = translate {
-        snapshot.save();
-        snapshot.translate(&graphene::Point::new(tx, ty));
-        paintable.snapshot(snapshot, width, height);
-        snapshot.restore();
-    } else {
-        paintable.snapshot(snapshot, width, height);
-    }
 }

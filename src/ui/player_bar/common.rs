@@ -3,8 +3,7 @@ use crate::{
     audio::{model::AudioModel, stream_info::discover_stream_info},
     jellyfin::api::ItemType,
     ui::{
-        album_art::AlbumArt, lyrics::Lyrics,
-        stream_info_dialog, widget_ext::WidgetApplicationExt,
+        album_art::AlbumArt, lyrics::Lyrics, stream_info_dialog, widget_ext::WidgetApplicationExt,
     },
 };
 use adw::prelude::*;
