@@ -35,7 +35,8 @@ impl DetailPage for PlaylistDetail {
         let imp = self.imp();
         imp.model.replace(Some(model.clone()));
         imp.name_label.set_text(&model.name());
-        imp.delete.set_sensitive(!model.is_smart());
+        imp.delete.set_visible(!model.is_smart());
+        imp.favorite_button.set_visible(!model.is_smart());
         if model.is_smart() {
             self.use_static_icon(model.playlist_type().icon_name());
         } else {
@@ -45,7 +46,7 @@ impl DetailPage for PlaylistDetail {
             .bind_property("favorite", self, "favorite")
             .sync_create()
             .build();
-        self.imp().favorite_binding.replace(Some(binding));
+        imp.favorite_binding.replace(Some(binding));
         self.pull_tracks();
     }
 
