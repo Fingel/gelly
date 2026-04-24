@@ -11,8 +11,9 @@ use tokio::time::Instant;
 use crate::backend::BackendError;
 use crate::config;
 use crate::jellyfin::api::{
-    ImageType, LibraryDtoList, LyricsResponse, MusicDtoList, NewPlaylist, NewPlaylistResponse,
-    PlaybackInfo, PlaybackReport, PlaybackReportStatus, PlaylistDtoList, PlaylistItems,
+    FavoriteDtoList, ImageType, LibraryDtoList, LyricsResponse, MusicDtoList, NewPlaylist,
+    NewPlaylistResponse, PlaybackInfo, PlaybackReport, PlaybackReportStatus, PlaylistDtoList,
+    PlaylistItems,
 };
 
 pub mod api;
@@ -191,6 +192,25 @@ impl Jellyfin {
         Ok(final_result)
     }
 
+    pub async fn get_favorites(&self) -> Result<FavoriteDtoList, BackendError> {
+        let params = vec![
+            ("IncludeItemTypes", "Playlist,Audio,MusicAlbum,MusicArtist"),
+            ("sortBy", "DateCreated"),
+            ("sortOrder", "Descending"),
+            ("recursive", "true"),
+            ("StartIndex", "0"),
+            ("enableTotalRecordCount", "false"),
+            ("enableImages", "false"),
+            ("Filters", "IsFavorite"),
+            ("Limit", "10000"), // TODO implement pagination if this is ever an issue
+        ];
+        let response = self.get("Items", Some(&params)).await?;
+        let body = self.handle_response(response).await?;
+        let final_result = serde_json::from_str(&body)?;
+
+        Ok(final_result)
+    }
+
     pub async fn get_playlist_items(
         &self,
         playlist_id: &str,
@@ -263,6 +283,16 @@ impl Jellyfin {
     pub async fn delete_item(&self, item_id: &str) -> Result<(), BackendError> {
         let path = format!("Items/{}", item_id);
         self.delete(&path, None).await?;
+        Ok(())
+    }
+
+    pub async fn set_favorite(&self, item_id: &str, is_favorite: bool) -> Result<(), BackendError> {
+        let path = format!("UserFavoriteItems/{item_id}");
+        if is_favorite {
+            self.post(&path, None, None).await?;
+        } else {
+            self.delete(&path, None).await?;
+        }
         Ok(())
     }
 

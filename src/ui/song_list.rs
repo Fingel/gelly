@@ -1,5 +1,5 @@
 use gtk::{
-    CustomSorter, FilterListModel, SortListModel, gio,
+    gio,
     glib::{self, Object},
     prelude::*,
     subclass::prelude::*,
@@ -8,7 +8,6 @@ use log::warn;
 
 use crate::{
     application::Application,
-    library_utils::all_songs,
     models::SongModel,
     ui::{
         list_helpers::create_string_filter,
@@ -39,43 +38,10 @@ impl TopPage for SongList {
     }
 
     fn search_changed(&self, query: &str) {
+        let search = if query.is_empty() { None } else { Some(query) };
         let imp = self.imp();
-        let store = imp.store.get().expect("Store should be initialized");
-        let sorter = if let Some(current_sorter) = imp.current_sorter.borrow().as_ref() {
-            current_sorter.clone()
-        } else {
-            let default_sorter = self.build_sorter(SortType::DateAdded, SortDirection::Ascending);
-            imp.current_sorter.replace(Some(default_sorter.clone()));
-            default_sorter
-        };
-        let filters = vec![
-            imp.name_filter
-                .get()
-                .expect("Name filter should be initialized")
-                .clone(),
-            imp.artist_filter
-                .get()
-                .expect("Artist filter should be initialized")
-                .clone(),
-        ];
-        if query.is_empty() {
-            let sort_model = SortListModel::new(Some(store.clone()), Some(sorter));
-            self.bind_song_count(&sort_model);
-            let selection_model = gtk::SingleSelection::new(Some(sort_model));
-            imp.track_list.set_model(Some(&selection_model));
-        } else {
-            let any_filter = gtk::AnyFilter::new();
-            for filter in filters {
-                filter.set_search(Some(query));
-                any_filter.append(filter.clone());
-            }
-
-            let filter_model = FilterListModel::new(Some(store.clone()), Some(any_filter));
-            let sort_model = SortListModel::new(Some(filter_model), Some(sorter));
-            self.bind_song_count(&sort_model);
-            let selection_model = gtk::SingleSelection::new(Some(sort_model));
-            imp.track_list.set_model(Some(&selection_model));
-        }
+        imp.name_filter.get().unwrap().set_search(search);
+        imp.artist_filter.get().unwrap().set_search(search);
     }
 
     fn sort_options(&self) -> &[SortType] {
@@ -85,26 +51,41 @@ impl TopPage for SongList {
     // Saving a non-default sort order would cause an expensive sort on every app load
     // so we only save it per session
     fn current_sort_by(&self) -> u32 {
-        self.imp().sort_by.get()
+        self.imp().sort_state.get().0
     }
 
     fn current_sort_direction(&self) -> u32 {
-        self.imp().sort_direction.get()
+        self.imp().sort_state.get().1
     }
 
     fn apply_sort(&self, sort_by: u32, direction: u32) {
+        self.imp().sort_state.set((sort_by, direction));
+        self.imp()
+            .sorter
+            .get()
+            .unwrap()
+            .changed(gtk::SorterChange::Different);
+        self.reset_position();
+    }
+
+    fn filter_favorites(&self, active: bool) {
+        let filter = self.imp().favorites_filter.get().unwrap();
+        if active {
+            filter.set_filter_func(|obj| {
+                obj.downcast_ref::<SongModel>()
+                    .is_some_and(|m| m.favorite())
+            });
+        } else {
+            filter.unset_filter_func();
+        }
+    }
+
+    fn reset_position(&self) {
         let imp = self.imp();
-        imp.sort_by.set(sort_by);
-        imp.sort_direction.set(direction);
-        let sort_option = self.sort_options()[sort_by as usize];
-        let sort_direction = SortDirection::try_from(direction).unwrap_or(SortDirection::Ascending);
-        let sorter = self.build_sorter(sort_option, sort_direction);
-        imp.current_sorter.replace(Some(sorter.clone()));
-        let store = imp.store.get().expect("Store should be initialized");
-        let sort_model = SortListModel::new(Some(store.clone()), Some(sorter));
-        self.bind_song_count(&sort_model);
-        let selection_model = gtk::SingleSelection::new(Some(sort_model));
-        imp.track_list.set_model(Some(&selection_model));
+        if imp.track_list.model().is_some_and(|m| m.n_items() > 0) {
+            imp.track_list
+                .scroll_to(0, gtk::ListScrollFlags::NONE, None::<gtk::ScrollInfo>);
+        }
     }
 }
 
@@ -122,11 +103,9 @@ impl SongList {
     }
 
     pub fn pull_songs(&self) {
-        // Ensure factory is set up (will only happen once, after widget is attached)
         self.setup_factory();
 
-        let library = self.get_application().library().clone();
-        let songs = all_songs(&library.borrow());
+        let songs = self.get_application().library().all_songs();
         if songs.is_empty() {
             self.set_empty(true);
         } else {
@@ -138,7 +117,6 @@ impl SongList {
                 .expect("SongList store should be initialized");
             store.remove_all();
             store.extend_from_slice(&songs);
-            self.bind_song_count(store);
         }
     }
 
@@ -173,7 +151,6 @@ impl SongList {
                 #[weak(rename_to = song_list)]
                 self,
                 move |_app: Application, _total_record_count: u64| {
-                    // Only refresh if songs have already been loaded once to prevent lag on startup
                     if song_list.is_loaded() {
                         song_list.pull_songs();
                     }
@@ -182,31 +159,32 @@ impl SongList {
         );
     }
 
-    fn build_sorter(&self, sort: SortType, direction: SortDirection) -> CustomSorter {
-        gtk::CustomSorter::new(move |obj1, obj2| {
-            let (obj1, obj2) = match direction {
-                SortDirection::Ascending => (obj1, obj2),
-                SortDirection::Descending => (obj2, obj1),
+    fn build_sorter(&self) -> gtk::CustomSorter {
+        let sort_state = self.imp().sort_state.clone();
+        let options: Vec<SortType> = self.sort_options().to_vec();
+        gtk::CustomSorter::new(move |a, b| {
+            let (sort_by, direction_raw) = sort_state.get();
+            let direction =
+                SortDirection::try_from(direction_raw).unwrap_or(SortDirection::Ascending);
+            let (a, b) = match direction {
+                SortDirection::Ascending => (a, b),
+                SortDirection::Descending => (b, a),
             };
-            let song1 = obj1.downcast_ref::<SongModel>().unwrap();
-            let song2 = obj2.downcast_ref::<SongModel>().unwrap();
-
-            match sort {
-                SortType::Name => song1
+            let a = a.downcast_ref::<SongModel>().unwrap();
+            let b = b.downcast_ref::<SongModel>().unwrap();
+            match options[sort_by as usize] {
+                SortType::Name => a
                     .title()
                     .to_lowercase()
-                    .cmp(&song2.title().to_lowercase())
+                    .cmp(&b.title().to_lowercase())
                     .into(),
-                SortType::Artist => song1
+                SortType::Artist => a
                     .artists_string()
                     .to_lowercase()
-                    .cmp(&song2.artists_string().to_lowercase())
+                    .cmp(&b.artists_string().to_lowercase())
                     .into(),
-                SortType::DateAdded => {
-                    // Reverse order for newest first
-                    song2.date_created().cmp(&song1.date_created()).into()
-                }
-                _ => std::cmp::Ordering::Equal.into(),
+                SortType::DateAdded => b.date_created().cmp(&a.date_created()).into(),
+                _ => gtk::Ordering::Equal,
             }
         })
     }
@@ -223,18 +201,34 @@ impl SongList {
     fn setup_model(&self) {
         let imp = self.imp();
         if imp.store.get().is_some() {
-            // Store is already set up with a model.
             return;
         }
-        imp.store.get_or_init(gio::ListStore::new::<SongModel>);
+
+        let store = gio::ListStore::new::<SongModel>();
+
+        let favorites_filter = gtk::CustomFilter::new(|_| true);
+        let fav_model =
+            gtk::FilterListModel::new(Some(store.clone()), Some(favorites_filter.clone()));
+
         let name_filter = create_string_filter::<SongModel>("title");
-        imp.name_filter
-            .set(name_filter)
-            .expect("Name filter should only be set once");
         let artist_filter = create_string_filter::<SongModel>("artists-string");
-        imp.artist_filter
-            .set(artist_filter)
-            .expect("Artist filter should only be set once");
+        let search_filter = gtk::AnyFilter::new();
+        search_filter.append(name_filter.clone());
+        search_filter.append(artist_filter.clone());
+        let search_model = gtk::FilterListModel::new(Some(fav_model), Some(search_filter));
+
+        let sorter = self.build_sorter();
+        let sort_model = gtk::SortListModel::new(Some(search_model), Some(sorter.clone()));
+        self.bind_song_count(&sort_model);
+        let selection = gtk::SingleSelection::new(Some(sort_model));
+
+        imp.track_list.set_single_click_activate(true);
+        imp.track_list.set_model(Some(&selection));
+        imp.store.set(store).unwrap();
+        imp.favorites_filter.set(favorites_filter).unwrap();
+        imp.name_filter.set(name_filter).unwrap();
+        imp.artist_filter.set(artist_filter).unwrap();
+        imp.sorter.set(sorter).unwrap();
     }
 
     fn setup_factory(&self) {
@@ -249,8 +243,6 @@ impl SongList {
             return;
         };
 
-        let store = imp.store.get().expect("Store should be initialized");
-        let selection_model = gtk::SingleSelection::new(Some(store.clone()));
         let factory = gtk::SignalListItemFactory::new();
 
         factory.connect_setup(move |_, list_item| {
@@ -287,6 +279,11 @@ impl SongList {
                 song_widget.set_song_data(&song_model);
 
                 song_utils::connect_playing_indicator(&song_widget, &song_model, &audio_model);
+                song_utils::connect_favorite_indicator(
+                    &song_widget,
+                    &song_model,
+                    &song_list.get_application(),
+                );
 
                 let nav_handlers =
                     song_utils::connect_song_navigation(&song_widget, &song_list.get_root_window());
@@ -306,16 +303,12 @@ impl SongList {
                     .and_downcast::<Song>()
                     .expect("Child has to be Song");
 
-                // disconnect song-changed handler, it's connected to audio_model
                 song_utils::disconnect_playing_indicator(&song_widget, &audio_model);
-
-                // disconnect other handlers connected to song
+                song_utils::disconnect_favorite_indicator(&song_widget);
                 song_utils::disconnect_signal_handlers(&song_widget);
             }
         ));
 
-        imp.track_list.set_single_click_activate(true);
-        imp.track_list.set_model(Some(&selection_model));
         imp.track_list.set_factory(Some(&factory));
     }
 
@@ -332,7 +325,8 @@ impl Default for SongList {
 }
 
 mod imp {
-    use std::cell::{Cell, OnceCell, RefCell};
+    use std::cell::{Cell, OnceCell};
+    use std::rc::Rc;
 
     use adw::subclass::prelude::*;
     use gtk::{
@@ -352,11 +346,11 @@ mod imp {
         pub num_songs: TemplateChild<gtk::Label>,
 
         pub store: OnceCell<gio::ListStore>,
+        pub favorites_filter: OnceCell<gtk::CustomFilter>,
         pub name_filter: OnceCell<gtk::StringFilter>,
         pub artist_filter: OnceCell<gtk::StringFilter>,
-        pub current_sorter: RefCell<Option<gtk::CustomSorter>>,
-        pub sort_direction: Cell<u32>,
-        pub sort_by: Cell<u32>,
+        pub sorter: OnceCell<gtk::CustomSorter>,
+        pub sort_state: Rc<Cell<(u32, u32)>>,
     }
 
     #[glib::object_subclass]

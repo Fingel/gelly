@@ -7,63 +7,33 @@ glib::wrapper! {
 }
 
 impl SongModel {
-    #[allow(clippy::too_many_arguments)]
-    pub fn new(
-        id: &str,
-        title: &str,
-        artists: Vec<String>,
-        album: &str,
-        album_id: &str,
-        track_number: u32,
-        parent_track_number: u32,
-        duration: u64,
-        has_lyrics: bool,
-        normalization_gain: f64,
-        date_created: &str,
-    ) -> Self {
+    pub fn new(dto: &MusicDto, favorite: bool) -> Self {
+        let artists: Vec<String> = dto
+            .album_artists
+            .iter()
+            .map(|artist| artist.name.clone())
+            .collect();
         let artists_string = artists.join(", ");
+        let date_created = dto.date_created.clone().unwrap_or("".to_string());
         Object::builder()
-            .property("id", id)
-            .property("title", title)
+            .property("id", &dto.id)
+            .property("title", &dto.name)
             .property("artists", artists)
             .property("artists-string", artists_string)
-            .property("album", album)
-            .property("album-id", album_id)
-            .property("track-number", track_number)
-            .property("parent-track-number", parent_track_number)
-            .property("duration", duration)
-            .property("has-lyrics", has_lyrics)
-            .property("normalization-gain", normalization_gain)
+            .property("album", dto.album.as_deref().unwrap_or("Unknown Album"))
+            .property("album-id", dto.effective_album_id())
+            .property("track-number", dto.index_number.unwrap_or(0))
+            .property("parent-track-number", dto.parent_index_number.unwrap_or(0))
+            .property("duration", dto.run_time_ticks)
+            .property("has-lyrics", dto.has_lyrics)
+            .property("normalization-gain", dto.normalization_gain.unwrap_or(0.0))
             .property("date-created", date_created)
+            .property("favorite", favorite)
             .build()
     }
 
     pub fn duration_seconds(&self) -> u64 {
         self.duration() / 10_000_000 // Jellyfin ticks
-    }
-}
-
-impl From<&MusicDto> for SongModel {
-    fn from(dto: &MusicDto) -> Self {
-        let artists = dto
-            .album_artists
-            .iter()
-            .map(|artist| artist.name.clone())
-            .collect();
-        let date_created = dto.date_created.clone().unwrap_or("".to_string());
-        SongModel::new(
-            &dto.id,
-            &dto.name,
-            artists,
-            dto.album.as_deref().unwrap_or("Unknown Album"),
-            &dto.effective_album_id(),
-            dto.index_number.unwrap_or(0),
-            dto.parent_index_number.unwrap_or(0),
-            dto.run_time_ticks,
-            dto.has_lyrics,
-            dto.normalization_gain.unwrap_or(0.0),
-            &date_created,
-        )
     }
 }
 
@@ -110,6 +80,9 @@ mod imp {
 
         #[property(get, set, name = "date-created")]
         pub date_created: RefCell<String>,
+
+        #[property(get, set)]
+        pub favorite: Cell<bool>,
     }
 
     #[glib::object_subclass]

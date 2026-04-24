@@ -85,6 +85,40 @@ pub struct UserDataDto {
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "PascalCase")]
+pub struct FavoriteDtoList {
+    // Update the Cache version of this struct in cache.rs if changes are needed
+    #[serde(deserialize_with = "deserialize_items_skip_errors")]
+    pub items: Vec<FavoriteDto>,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+#[serde(rename_all = "PascalCase")]
+pub enum ItemType {
+    Audio,
+    MusicAlbum,
+    MusicArtist,
+    Playlist,
+    #[serde(other)]
+    Unknown,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(rename_all = "PascalCase")]
+pub struct FavoriteDto {
+    pub id: String,
+    #[serde(rename = "Type")]
+    pub item_type: ItemType,
+    pub user_data: FavoriteUserDataDto,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(rename_all = "PascalCase")]
+pub struct FavoriteUserDataDto {
+    pub is_favorite: bool,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(rename_all = "PascalCase")]
 pub struct PlaylistDtoList {
     // Update the Cache version of this struct in cache.rs if changes are needed
     #[serde(deserialize_with = "deserialize_items_skip_errors")]

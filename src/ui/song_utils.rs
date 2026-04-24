@@ -1,6 +1,6 @@
 use crate::{
+    Application,
     audio::model::AudioModel,
-    library_utils::{album_for_item, artist_for_item},
     models::SongModel,
     ui::{song::Song, widget_ext::WidgetApplicationExt, window::Window},
 };
@@ -15,8 +15,9 @@ pub fn connect_song_navigation(song: &Song, window: &Window) -> Vec<glib::Signal
             #[weak]
             window,
             move |_song: Song, song_id: &str| {
-                let library = window.get_application().library().clone();
-                if let Some(artist_model) = artist_for_item(song_id, &library.borrow()) {
+                if let Some(artist_model) =
+                    window.get_application().library().artist_for_item(song_id)
+                {
                     window.show_artist_detail(&artist_model);
                 }
             }
@@ -30,8 +31,9 @@ pub fn connect_song_navigation(song: &Song, window: &Window) -> Vec<glib::Signal
             #[weak]
             window,
             move |_song: Song, song_id: &str| {
-                let library = window.get_application().library().clone();
-                if let Some(album_model) = album_for_item(song_id, &library.borrow()) {
+                if let Some(album_model) =
+                    window.get_application().library().album_for_item(song_id)
+                {
                     window.show_album_detail(&album_model);
                 }
             }
@@ -73,6 +75,39 @@ pub fn connect_playing_indicator(
 pub fn disconnect_playing_indicator(song_widget: &Song, audio_model: &AudioModel) {
     if let Some(handler_id) = song_widget.imp().playing_indicator_handler.take() {
         audio_model.disconnect(handler_id);
+    }
+}
+
+pub fn connect_favorite_indicator(song_widget: &Song, song_model: &SongModel, app: &Application) {
+    song_widget.set_starred(song_model.favorite());
+
+    let handler_id = app.connect_closure(
+        "favorites-updated",
+        false,
+        glib::closure_local!(
+            #[weak]
+            song_widget,
+            #[weak]
+            song_model,
+            move |app: Application| {
+                let is_fav = app.library().song_is_favorite(&song_model.id());
+                song_model.set_favorite(is_fav);
+                song_widget.set_starred(is_fav);
+            }
+        ),
+    );
+
+    song_widget
+        .imp()
+        .favorite_indicator_handler
+        .replace(Some((handler_id, app.downgrade())));
+}
+
+pub fn disconnect_favorite_indicator(song_widget: &Song) {
+    if let Some((handler_id, app_weak)) = song_widget.imp().favorite_indicator_handler.take()
+        && let Some(app) = app_weak.upgrade()
+    {
+        app.disconnect(handler_id);
     }
 }
 

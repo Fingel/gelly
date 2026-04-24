@@ -1,7 +1,11 @@
 use glib::Object;
 use gtk::{glib, subclass::prelude::*};
+use log::warn;
 
-use crate::{jellyfin::api::ArtistItemsDto, models::model_traits::ItemModel};
+use crate::{
+    application::Application, async_utils::spawn_tokio, jellyfin::api::ArtistItemsDto,
+    models::model_traits::ItemModel,
+};
 
 glib::wrapper! {
     pub struct ArtistModel(ObjectSubclass<imp::ArtistModel>);
@@ -18,11 +22,12 @@ impl ItemModel for ArtistModel {
 }
 
 impl ArtistModel {
-    pub fn new(name: &str, id: &str) -> Self {
+    pub fn new(dto: &ArtistItemsDto, favorite: bool, play_count: u64) -> Self {
         Object::builder()
-            .property("name", name)
-            .property("id", id)
-            .property("play-count", 0u64)
+            .property("name", &dto.name)
+            .property("id", &dto.id)
+            .property("play-count", play_count)
+            .property("favorite", favorite)
             .build()
     }
 
@@ -33,11 +38,38 @@ impl ArtistModel {
     pub fn image_data(&self) -> Vec<u8> {
         self.imp().image_data.borrow().clone()
     }
-}
 
-impl From<&ArtistItemsDto> for ArtistModel {
-    fn from(dto: &ArtistItemsDto) -> Self {
-        ArtistModel::new(&dto.name, &dto.id)
+    pub fn toggle_favorite(&self, is_favorite: bool, app: &Application) {
+        self.set_favorite(is_favorite);
+        let backend = app.jellyfin();
+        let item_id = self.id();
+        let app = app.clone();
+        spawn_tokio(
+            async move {
+                backend
+                    .set_favorite(
+                        &item_id,
+                        &crate::jellyfin::api::ItemType::MusicArtist,
+                        is_favorite,
+                    )
+                    .await
+            },
+            glib::clone!(
+                #[weak(rename_to = artist)]
+                self,
+                #[weak]
+                app,
+                move |result| {
+                    match result {
+                        Ok(()) => app.refresh_favorites(true),
+                        Err(err) => {
+                            warn!("Failed to set favorite: {err}");
+                            artist.set_favorite(!is_favorite);
+                        }
+                    }
+                }
+            ),
+        );
     }
 }
 
@@ -59,6 +91,8 @@ mod imp {
         pub image_loaded: Cell<bool>,
         #[property(get, set)]
         pub play_count: Cell<u64>,
+        #[property(get, set)]
+        pub favorite: Cell<bool>,
         pub image_data: RefCell<Vec<u8>>,
     }
 

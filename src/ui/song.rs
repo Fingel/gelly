@@ -11,7 +11,7 @@ use log::warn;
 
 use crate::{
     async_utils::spawn_tokio,
-    jellyfin::utils::format_duration,
+    jellyfin::{api::ItemType, utils::format_duration},
     models::SongModel,
     ui::{
         music_context_menu::{ContextActions, construct_menu, create_actiongroup},
@@ -53,12 +53,63 @@ impl Song {
 
     pub fn set_song_data(&self, song: &SongModel) {
         let imp = self.imp();
-        imp.item_id.replace(song.id());
+        imp.song_model.replace(Some(song.clone()));
         imp.title_label.set_label(&song.title());
         imp.album_label.set_label(&song.album());
         imp.artist_label.set_label(&song.artists_string());
         imp.duration_label
             .set_label(&format_duration(song.duration()));
+    }
+
+    pub fn set_starred(&self, is_favorite: bool) {
+        let imp = self.imp();
+        imp.song_star.set_active(is_favorite);
+        imp.star_icon.set_icon_name(Some(if is_favorite {
+            "starred-symbolic"
+        } else {
+            "non-starred-symbolic"
+        }));
+    }
+
+    fn song_id(&self) -> String {
+        self.imp()
+            .song_model
+            .borrow()
+            .as_ref()
+            .map(|m| m.id())
+            .unwrap_or_default()
+    }
+
+    fn toggle_favorite(&self, is_favorite: bool) {
+        let Some(song_model) = self.imp().song_model.borrow().clone() else {
+            return;
+        };
+        song_model.set_favorite(is_favorite);
+        let item_id = song_model.id();
+        let app = self.get_application();
+        let backend = app.jellyfin();
+        spawn_tokio(
+            async move {
+                backend
+                    .set_favorite(&item_id, &ItemType::Audio, is_favorite)
+                    .await
+            },
+            glib::clone!(
+                #[weak(rename_to = song)]
+                self,
+                #[weak]
+                song_model,
+                move |result| {
+                    match result {
+                        Ok(()) => song.get_application().refresh_favorites(true),
+                        Err(err) => {
+                            warn!("Failed to set favorite: {err}");
+                            song_model.set_favorite(!is_favorite);
+                        }
+                    }
+                }
+            ),
+        );
     }
 
     pub fn set_playing(&self, playing: bool) {
@@ -209,7 +260,7 @@ impl Song {
             #[weak(rename_to = song)]
             self,
             move |_| {
-                song.emit_by_name::<()>("artist-clicked", &[&song.imp().item_id.borrow().clone()]);
+                song.emit_by_name::<()>("artist-clicked", &[&song.song_id()]);
             }
         ));
 
@@ -217,13 +268,13 @@ impl Song {
             #[weak(rename_to = song)]
             self,
             move |_| {
-                song.emit_by_name::<()>("album-clicked", &[&song.imp().item_id.borrow().clone()]);
+                song.emit_by_name::<()>("album-clicked", &[&song.song_id()]);
             }
         ));
     }
 
     fn on_add_to_playlist(&self, playlist_id: String) {
-        let song_id = self.imp().item_id.borrow().clone();
+        let song_id = self.song_id();
         let app = self.get_application();
         let jellyfin = app.jellyfin();
         let playlist_id = playlist_id.to_string();
@@ -249,37 +300,24 @@ impl Song {
     }
 
     fn on_remove_from_playlist(&self) {
-        let song_id = self.imp().item_id.borrow().clone();
-        self.emit_by_name::<()>("remove-from-playlist", &[&song_id]);
+        self.emit_by_name::<()>("remove-from-playlist", &[&self.song_id()]);
     }
 
     fn on_queue_next(&self) {
-        let song_id = self.imp().item_id.borrow().clone();
         let app = self.get_application();
         if let Some(audio_model) = app.audio_model()
-            && let Some(song) = app
-                .library()
-                .borrow()
-                .iter()
-                .find(|song| song.id == song_id)
-                .map(SongModel::from)
+            && let Some(song_model) = self.imp().song_model.borrow().clone()
         {
-            audio_model.prepend_to_queue(vec![song]);
+            audio_model.prepend_to_queue(vec![song_model]);
         }
     }
 
     fn on_queue_last(&self) {
-        let song_id = self.imp().item_id.borrow().clone();
         let app = self.get_application();
         if let Some(audio_model) = app.audio_model()
-            && let Some(song) = app
-                .library()
-                .borrow()
-                .iter()
-                .find(|song| song.id == song_id)
-                .map(SongModel::from)
+            && let Some(song_model) = self.imp().song_model.borrow().clone()
         {
-            audio_model.append_to_queue(vec![song]);
+            audio_model.append_to_queue(vec![song_model]);
         }
     }
 }
@@ -297,12 +335,16 @@ mod imp {
     };
 
     use adw::subclass::prelude::*;
-    use glib::subclass::InitializingObject;
+    use glib::{WeakRef, subclass::InitializingObject};
+
+    use crate::Application;
     use gtk::{
         CompositeTemplate,
         glib::{self, Properties, subclass::Signal},
         prelude::*,
     };
+
+    use crate::models::SongModel;
 
     #[derive(CompositeTemplate, Default, Properties)]
     #[template(resource = "/io/m51/Gelly/ui/song.ui")]
@@ -330,10 +372,16 @@ mod imp {
         pub drag_handle: TemplateChild<gtk::Image>,
         #[template_child]
         pub song_menu: TemplateChild<gtk::MenuButton>,
+        #[template_child]
+        pub song_star: TemplateChild<gtk::ToggleButton>,
+        #[template_child]
+        pub star_icon: TemplateChild<gtk::Image>,
 
         #[property(get, set)]
         pub position: Cell<i32>,
-        pub item_id: RefCell<String>,
+        pub song_model: RefCell<Option<SongModel>>,
+        pub favorite_indicator_handler:
+            RefCell<Option<(glib::SignalHandlerId, WeakRef<Application>)>>,
         #[property(get, construct_only, name = "in-playlist", default = false)]
         pub in_playlist: Cell<bool>,
         #[property(get, construct_only, name = "in-queue", default = false)]
@@ -410,6 +458,14 @@ mod imp {
                     }
                 ),
             );
+
+            self.song_star.connect_clicked(glib::clone!(
+                #[weak(rename_to = song)]
+                self.obj(),
+                move |btn| {
+                    song.toggle_favorite(btn.is_active());
+                }
+            ));
         }
     }
     impl BoxImpl for Song {}

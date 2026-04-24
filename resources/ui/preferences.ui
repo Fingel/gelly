@@ -108,6 +108,18 @@
             <property name="title" translatable="yes">Smart Playlists</property>
             <child>
               <object class="AdwActionRow">
+                <property name="title" translatable="yes">Favorite Mix Playlist</property>
+                <property name="use_underline">True</property>
+                <property name="activatable_widget">playlist_favorites_enabled_switch</property>
+                <child>
+                  <object class="GtkSwitch" id="playlist_favorites_enabled_switch">
+                    <property name="valign">center</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="AdwActionRow">
                 <property name="title" translatable="yes">Shuffled Playlist</property>
                 <property name="use_underline">True</property>
                 <property name="activatable_widget">playlist_shuffle_enabled_switch</property>

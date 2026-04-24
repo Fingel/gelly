@@ -30,6 +30,7 @@
     <file compressed="true" preprocess="xml-stripblanks">icons/org.gnome.Settings-users-symbolic.svg</file>
     <file compressed="true" preprocess="xml-stripblanks">icons/subtitles-symbolic.svg</file>
     <file compressed="true" preprocess="xml-stripblanks">icons/text-editor-symbolic.svg</file>
+    <file compressed="true" preprocess="xml-stripblanks">icons/heart-filled-symbolic.svg</file>
     <file alias="metainfo.xml" compressed="true">io.m51.Gelly.metainfo.xml</file>
   </gresource>
 </gresources>

@@ -1,6 +1,10 @@
-use crate::{jellyfin::api::MusicDto, models::model_traits::ItemModel};
+use crate::{
+    application::Application, async_utils::spawn_tokio, jellyfin::api::MusicDto,
+    models::model_traits::ItemModel,
+};
 use glib::Object;
 use gtk::{glib, subclass::prelude::*};
+use log::warn;
 
 glib::wrapper! {
     pub struct AlbumModel(ObjectSubclass<imp::AlbumData>);
@@ -18,25 +22,27 @@ impl ItemModel for AlbumModel {
 
 /// Simple GObject to provide album data, and to convert from the API response from jellyfin.
 impl AlbumModel {
-    pub fn new(
-        name: &str,
-        id: &str,
-        artists: Vec<String>,
-        date_created: &str,
-        year: &Option<u32>,
-    ) -> Self {
+    pub fn new(dto: &MusicDto, favorite: bool, play_count: u64) -> Self {
+        let artists: Vec<String> = dto
+            .album_artists
+            .iter()
+            .map(|artist| artist.name.clone())
+            .collect();
         let artists_string = artists.join(", ");
 
+        let date_created = dto.date_created.clone().unwrap_or("".to_string());
+
         Object::builder()
-            .property("name", name)
-            .property("id", id)
+            .property("name", dto.album.as_deref().unwrap_or("Unknown Album"))
+            .property("id", dto.effective_album_id())
             .property("artists", artists)
             .property("date-created", date_created)
             .property("image-loading", false)
             .property("image-loaded", false)
-            .property("year", year.unwrap_or(0))
+            .property("year", dto.production_year.unwrap_or(0))
             .property("artists-string", artists_string)
-            .property("play-count", 0u64)
+            .property("play-count", play_count)
+            .property("favorite", favorite)
             .build()
     }
 
@@ -53,23 +59,38 @@ impl AlbumModel {
     pub fn image_data(&self) -> Vec<u8> {
         self.imp().image_data.borrow().clone()
     }
-}
 
-impl From<&MusicDto> for AlbumModel {
-    fn from(dto: &MusicDto) -> Self {
-        let artists = dto
-            .album_artists
-            .iter()
-            .map(|artist| artist.name.clone())
-            .collect();
-        let date_created = dto.date_created.clone().unwrap_or("".to_string());
-        AlbumModel::new(
-            dto.album.as_deref().unwrap_or("Unknown Album"),
-            &dto.effective_album_id(),
-            artists,
-            &date_created,
-            &dto.production_year,
-        )
+    pub fn toggle_favorite(&self, is_favorite: bool, app: &Application) {
+        self.set_favorite(is_favorite);
+        let backend = app.jellyfin();
+        let item_id = self.id();
+        let app = app.clone();
+        spawn_tokio(
+            async move {
+                backend
+                    .set_favorite(
+                        &item_id,
+                        &crate::jellyfin::api::ItemType::MusicAlbum,
+                        is_favorite,
+                    )
+                    .await
+            },
+            glib::clone!(
+                #[weak(rename_to = album)]
+                self,
+                #[weak]
+                app,
+                move |result| {
+                    match result {
+                        Ok(()) => app.refresh_favorites(true),
+                        Err(err) => {
+                            warn!("Failed to set favorite: {err}");
+                            album.set_favorite(!is_favorite);
+                        }
+                    }
+                }
+            ),
+        );
     }
 }
 
@@ -107,6 +128,9 @@ mod imp {
 
         #[property(get, set)]
         pub play_count: Cell<u64>,
+
+        #[property(get, set)]
+        pub favorite: Cell<bool>,
 
         pub image_data: RefCell<Vec<u8>>,
     }

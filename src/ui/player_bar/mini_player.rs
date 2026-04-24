@@ -180,12 +180,15 @@ mod imp {
         #[template_child]
         pub lyrics_button: TemplateChild<gtk::Button>,
         #[template_child]
+        pub favorite_button: TemplateChild<gtk::ToggleButton>,
+        #[template_child]
         pub playback_mode_menu: TemplateChild<PlaybackModeMenu>,
 
         pub audio_model: OnceCell<AudioModel>,
         pub bottom_sheet: OnceCell<adw::BottomSheet>,
         pub lyrics_window: RefCell<Option<WeakRef<adw::Window>>>,
         pub seek_debounce_id: RefCell<Option<glib::SourceId>>,
+        pub favorite_binding: RefCell<Option<glib::Binding>>,
 
         #[property(get, set)]
         pub position: RefCell<u32>,
@@ -269,6 +272,12 @@ mod imp {
         }
         fn lyrics_button(&self) -> &gtk::Button {
             &self.lyrics_button
+        }
+        fn favorite_button(&self) -> &gtk::ToggleButton {
+            &self.favorite_button
+        }
+        fn favorite_binding(&self) -> &RefCell<Option<glib::Binding>> {
+            &self.favorite_binding
         }
         fn artist_button(&self) -> &gtk::Button {
             &self.artist_button

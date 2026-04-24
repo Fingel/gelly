@@ -1,12 +1,12 @@
 use crate::{
-    async_utils::spawn_tokio,
     backend::BackendError,
-    jellyfin::api::MusicDto,
+    config::{self, BackendType},
+    library_utils::songs_for_playlist,
     models::{PlaylistModel, SongModel},
     ui::widget_ext::WidgetApplicationExt,
 };
 use glib::Object;
-use gtk::{self, gio, glib, subclass::prelude::*};
+use gtk::{self, gio, glib, prelude::*, subclass::prelude::*};
 use log::warn;
 
 glib::wrapper! {
@@ -20,17 +20,33 @@ impl Playlist {
     }
 
     pub fn set_playlist_model(&self, playlist_model: &PlaylistModel) {
-        let card = &self.imp().media_card;
+        let imp = self.imp();
+        let card = &imp.media_card;
+        let secondary_text = if playlist_model.child_count() > 0 {
+            &format!("{} songs", playlist_model.child_count())
+        } else if playlist_model.is_smart() {
+            "Smart playlist"
+        } else {
+            "Empty playlist"
+        };
         card.set_primary_text(&playlist_model.name());
-        card.set_secondary_text(&format!("{} songs", playlist_model.child_count()));
+        card.set_secondary_text(secondary_text);
         card.set_image_id(&playlist_model.id());
+        card.set_has_star_button(config::get_backend_type() == BackendType::Jellyfin);
         if playlist_model.is_smart() {
             card.set_static_icon(playlist_model.playlist_type().icon_name());
             card.display_icon();
+            card.set_has_star_button(false);
         }
         self.imp()
             .playlist_model
             .replace(Some(playlist_model.clone()));
+
+        card.set_favorite(playlist_model.favorite());
+        let binding = playlist_model
+            .bind_property("favorite", &card.get(), "favorite")
+            .build();
+        imp.favorite_binding.replace(Some(binding));
     }
 
     fn get_playlist_model(&self) -> Option<PlaylistModel> {
@@ -52,20 +68,16 @@ impl Playlist {
             return;
         };
 
-        let playlist_type = playlist_model.playlist_type();
-        let library_data = self.get_application().library().borrow().clone();
-        let jellyfin = self.get_application().jellyfin();
-
-        spawn_tokio(
-            async move { playlist_type.load_song_data(&jellyfin, &library_data).await },
+        let app = self.get_application();
+        songs_for_playlist(
+            &playlist_model,
+            &app,
             glib::clone!(
                 #[weak(rename_to=playlist)]
                 self,
-                move |result: Result<Vec<MusicDto>, BackendError>| {
+                move |result: Result<Vec<SongModel>, BackendError>| {
                     match result {
-                        Ok(music_data) => {
-                            let songs: Vec<SongModel> =
-                                music_data.iter().map(SongModel::from).collect();
+                        Ok(songs) => {
                             playlist.play_songs(songs);
                         }
                         Err(error) => {
@@ -76,6 +88,14 @@ impl Playlist {
                 }
             ),
         );
+    }
+
+    pub fn toggle_favorite(&self, is_favorite: bool) {
+        let Some(playlist_model) = self.imp().playlist_model.borrow().clone() else {
+            return;
+        };
+        let app = self.get_application();
+        playlist_model.toggle_favorite(is_favorite, &app);
     }
 }
 
@@ -101,6 +121,7 @@ mod imp {
         pub media_card: TemplateChild<MediaCard>,
 
         pub playlist_model: RefCell<Option<PlaylistModel>>,
+        pub favorite_binding: RefCell<Option<glib::Binding>>,
     }
 
     #[glib::object_subclass]
@@ -125,6 +146,14 @@ mod imp {
                 self.obj(),
                 move || {
                     playlist.play();
+                }
+            ));
+
+            self.media_card.connect_star_toggled(glib::clone!(
+                #[weak(rename_to = playlist)]
+                self.obj(),
+                move |is_favorite| {
+                    playlist.toggle_favorite(is_favorite);
                 }
             ));
         }

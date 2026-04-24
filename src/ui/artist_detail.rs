@@ -1,7 +1,7 @@
 use crate::{
     async_utils::spawn_tokio,
     jellyfin::api::ImageType,
-    library_utils::{albums_for_artist, play_artist, songs_for_artist},
+    library_utils::play_artist,
     models::{AlbumModel, ArtistModel},
     ui::{
         album_detail::AlbumDetail,
@@ -34,6 +34,11 @@ impl DetailPage for ArtistDetail {
         imp.model.replace(Some(model.clone()));
         imp.artist_name.set_text(&model.name());
         self.load_banner_image();
+        let binding = model
+            .bind_property("favorite", self, "favorite")
+            .sync_create()
+            .build();
+        self.imp().favorite_binding.replace(Some(binding));
         self.pull_albums();
     }
 
@@ -48,8 +53,10 @@ impl ArtistDetail {
     }
 
     pub fn pull_albums(&self) {
-        let library = self.get_application().library().clone();
-        let albums: Vec<AlbumModel> = albums_for_artist(&self.id(), &library.borrow());
+        let albums: Vec<AlbumModel> = self
+            .get_application()
+            .library()
+            .albums_for_artist(&self.id());
         self.imp().albums.replace(albums);
         while let Some(child) = self.imp().albums_box.first_child() {
             self.imp().albums_box.remove(&child);
@@ -160,9 +167,10 @@ impl ArtistDetail {
             let id = model.id();
             let app = self.get_application();
             let jellyfin = app.jellyfin();
-            let library = app.library().clone();
             let playlist_id = playlist_id.to_string();
-            let song_ids: Vec<String> = songs_for_artist(&id, &library.borrow())
+            let song_ids: Vec<String> = app
+                .library()
+                .songs_for_artist(&id)
                 .iter()
                 .map(|song| song.id().to_string())
                 .collect();
@@ -191,9 +199,8 @@ impl ArtistDetail {
     fn enqueue_artist(&self, to_end: bool) {
         if let Some(model) = self.get_model() {
             let app = self.get_application();
-            let library = app.library().clone();
             let id = model.id();
-            let songs = songs_for_artist(&id, &library.borrow());
+            let songs = app.library().songs_for_artist(&id);
             if let Some(audio_model) = self.get_application().audio_model() {
                 let song_cnt = songs.len();
                 if to_end {
@@ -208,6 +215,14 @@ impl ArtistDetail {
             }
         }
     }
+
+    pub fn toggle_favorite(&self, is_favorite: bool) {
+        let Some(model) = self.get_model() else {
+            return;
+        };
+        let app = self.get_application();
+        model.toggle_favorite(is_favorite, &app);
+    }
 }
 
 impl Default for ArtistDetail {
@@ -217,20 +232,21 @@ impl Default for ArtistDetail {
 }
 
 mod imp {
-    use std::cell::RefCell;
+    use std::cell::{Cell, RefCell};
 
     use adw::subclass::prelude::*;
     use glib::subclass::InitializingObject;
     use gtk::{
         CompositeTemplate,
-        glib::{self},
+        glib::{self, Properties},
         prelude::*,
     };
 
     use crate::models::{AlbumModel, ArtistModel};
 
-    #[derive(CompositeTemplate, Default)]
+    #[derive(CompositeTemplate, Default, Properties)]
     #[template(resource = "/io/m51/Gelly/ui/artist_detail.ui")]
+    #[properties(wrapper_type = super::ArtistDetail)]
     pub struct ArtistDetail {
         #[template_child]
         pub banner_overlay: TemplateChild<gtk::Overlay>,
@@ -244,9 +260,16 @@ mod imp {
         pub play_all: TemplateChild<gtk::Button>,
         #[template_child]
         pub action_menu: TemplateChild<gtk::MenuButton>,
+        #[template_child]
+        pub favorite_button: TemplateChild<gtk::ToggleButton>,
+        #[template_child]
+        pub star_icon: TemplateChild<gtk::Image>,
 
         pub model: RefCell<Option<ArtistModel>>,
         pub albums: RefCell<Vec<AlbumModel>>,
+        pub favorite_binding: RefCell<Option<glib::Binding>>,
+        #[property(get, set = Self::set_favorite)]
+        favorite: Cell<bool>,
     }
 
     #[glib::object_subclass]
@@ -265,6 +288,8 @@ mod imp {
     }
 
     impl BoxImpl for ArtistDetail {}
+
+    #[glib::derived_properties]
     impl ObjectImpl for ArtistDetail {
         fn constructed(&self) {
             self.parent_constructed();
@@ -282,6 +307,24 @@ mod imp {
                     imp.obj().play_artist();
                 }
             ));
+
+            self.favorite_button.connect_clicked(glib::clone!(
+                #[weak(rename_to=imp)]
+                self,
+                move |button| {
+                    imp.obj().toggle_favorite(button.is_active());
+                }
+            ));
+        }
+
+        fn set_favorite(&self, val: bool) {
+            self.favorite.set(val);
+            self.favorite_button.set_active(val);
+            self.star_icon.set_icon_name(Some(if val {
+                "starred-symbolic"
+            } else {
+                "non-starred-symbolic"
+            }));
         }
     }
 }

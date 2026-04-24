@@ -186,6 +186,11 @@ impl Queue {
                 song_widget.set_song_data(&song_model);
 
                 song_utils::connect_playing_indicator(&song_widget, &song_model, &audio_model);
+                song_utils::connect_favorite_indicator(
+                    &song_widget,
+                    &song_model,
+                    &queue.get_application(),
+                );
 
                 let mut handlers = Vec::new();
                 let nav_handlers =
@@ -219,10 +224,8 @@ impl Queue {
                     .and_downcast::<Song>()
                     .expect("Child has to be Song");
 
-                // disconnect song-changed handler, it's connected to audio_model
                 song_utils::disconnect_playing_indicator(&song_widget, &audio_model);
-
-                // disconnect other handlers connected to song
+                song_utils::disconnect_favorite_indicator(&song_widget);
                 song_utils::disconnect_signal_handlers(&song_widget);
             }
         ));

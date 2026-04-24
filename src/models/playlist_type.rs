@@ -1,8 +1,4 @@
-use crate::{
-    backend::{Backend, BackendError},
-    jellyfin::api::MusicDto,
-    library_utils::{most_played_songs, shuffle_songs},
-};
+use crate::{library::Library, models::SongModel};
 
 pub const DEFAULT_SMART_COUNT: u64 = 100;
 
@@ -12,6 +8,7 @@ pub enum PlaylistType {
         id: String,
         name: String,
         child_count: u64,
+        favorite: bool,
     },
     ShuffleLibrary {
         count: u64,
@@ -19,10 +16,11 @@ pub enum PlaylistType {
     MostPlayed {
         count: u64,
     },
+    Favorites,
 }
 
 impl PlaylistType {
-    pub fn new_regular(id: String, name: String, child_count: u64) -> Self {
+    pub fn new_regular(id: String, name: String, child_count: u64, favorite: bool) -> Self {
         if id.is_empty() {
             log::warn!("Creating regular playlist with empty ID");
         }
@@ -30,6 +28,7 @@ impl PlaylistType {
             id,
             name,
             child_count,
+            favorite,
         }
     }
     pub fn to_id(&self) -> String {
@@ -37,6 +36,7 @@ impl PlaylistType {
             PlaylistType::Regular { id, .. } => id.clone(),
             PlaylistType::ShuffleLibrary { count } => format!("smart:shuffle:{count}"),
             PlaylistType::MostPlayed { count } => format!("smart:most-played:{count}"),
+            PlaylistType::Favorites => "smart:favorites:0".to_string(),
         }
     }
 
@@ -60,6 +60,7 @@ impl PlaylistType {
                     .unwrap_or(DEFAULT_SMART_COUNT);
                 Some(Self::MostPlayed { count })
             }
+            Some(&"favorites") => Some(Self::Favorites),
             _ => None,
         }
     }
@@ -69,27 +70,16 @@ impl PlaylistType {
             PlaylistType::Regular { name, .. } => name.clone(),
             PlaylistType::ShuffleLibrary { .. } => "Shuffled Songs".to_string(),
             PlaylistType::MostPlayed { count } => format!("Top {} Played Songs", count),
+            PlaylistType::Favorites => "Favorite Mix".to_string(),
         }
     }
 
-    pub async fn load_song_data(
-        &self,
-        backend: &Backend,
-        library: &[MusicDto],
-    ) -> Result<Vec<MusicDto>, BackendError> {
+    pub fn smart_songs(&self, library: &Library) -> Vec<SongModel> {
         match self {
-            PlaylistType::Regular { id, .. } => {
-                let playlist_items = backend.get_playlist_items(id).await?;
-                Ok(playlist_items.items)
-            }
-            PlaylistType::ShuffleLibrary { count } => {
-                let songs = shuffle_songs(library, *count);
-                Ok(songs)
-            }
-            PlaylistType::MostPlayed { count } => {
-                let songs = most_played_songs(library, *count);
-                Ok(songs)
-            }
+            PlaylistType::ShuffleLibrary { count } => library.shuffle_songs(*count),
+            PlaylistType::MostPlayed { count } => library.most_played_songs(*count),
+            PlaylistType::Favorites => library.all_favorites(),
+            PlaylistType::Regular { .. } => vec![],
         }
     }
 
@@ -98,19 +88,28 @@ impl PlaylistType {
             PlaylistType::Regular { child_count, .. } => *child_count,
             PlaylistType::ShuffleLibrary { count } => *count,
             PlaylistType::MostPlayed { count } => *count,
+            PlaylistType::Favorites => 0,
         }
     }
 
     pub fn icon_name(&self) -> &str {
         match self {
-            PlaylistType::ShuffleLibrary { count: _ } => "media-playlist-shuffle-symbolic",
-            PlaylistType::MostPlayed { count: _ } => "starred-symbolic",
+            PlaylistType::ShuffleLibrary { .. } => "media-playlist-shuffle-symbolic",
+            PlaylistType::MostPlayed { .. } => "heart-filled-symbolic",
+            PlaylistType::Favorites => "starred-symbolic",
             _ => "audio-x-generic-symbolic",
         }
     }
 
     pub fn is_smart(&self) -> bool {
         !matches!(self, PlaylistType::Regular { .. })
+    }
+
+    pub fn favorite(&self) -> bool {
+        match self {
+            PlaylistType::Regular { favorite, .. } => *favorite,
+            _ => false,
+        }
     }
 }
 
@@ -119,7 +118,7 @@ mod tests {
     use super::*;
 
     fn create_test_regular(id: &str, name: &str, count: u64) -> PlaylistType {
-        PlaylistType::new_regular(id.to_string(), name.to_string(), count)
+        PlaylistType::new_regular(id.to_string(), name.to_string(), count, false)
     }
 
     #[test]
@@ -130,6 +129,7 @@ mod tests {
                 id,
                 name,
                 child_count,
+                ..
             } => {
                 assert_eq!(id, "jellyfin-123");
                 assert_eq!(name, "My Playlist");

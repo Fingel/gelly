@@ -108,6 +108,7 @@ impl Window {
         imp.sort_dropdown.set_model(Some(&sort_model));
         imp.sort_dropdown.set_selected(page.current_sort_by());
         imp.sort_direction.set_active(page.current_sort_direction());
+        imp.favorite_button.set_visible(page.supports_favorites());
         imp.sort_changing.set(false);
     }
 
@@ -343,6 +344,8 @@ mod imp {
         pub sort_direction: TemplateChild<adw::ToggleGroup>,
         #[template_child]
         pub search_entry: TemplateChild<gtk::SearchEntry>,
+        #[template_child]
+        pub favorite_button: TemplateChild<gtk::ToggleButton>,
 
         pub blurred_paintable: RefCell<Option<gtk::gdk::Paintable>>,
         pub sort_changing: Cell<bool>,
@@ -440,6 +443,19 @@ mod imp {
                 ))
                 .build();
 
+            let action_favorites = ActionEntry::builder("favorites")
+                .activate(glib::clone!(
+                    #[weak(rename_to=window)]
+                    self,
+                    move |_, _, _| {
+                        window.sort_bar.set_search_mode(true);
+                        window
+                            .favorite_button
+                            .set_active(!window.favorite_button.is_active());
+                    }
+                ))
+                .build();
+
             self.search_button
                 .bind_property("active", &self.search_bar.get(), "search-mode-enabled")
                 .bidirectional()
@@ -500,11 +516,15 @@ mod imp {
                 }
             ));
 
-            self.album_list.setup_search_connection(&self.search_entry);
-            self.artist_list.setup_search_connection(&self.search_entry);
-            self.playlist_list
-                .setup_search_connection(&self.search_entry);
-            self.song_list.setup_search_connection(&self.search_entry);
+            self.album_list.connect_search(&self.search_entry);
+            self.artist_list.connect_search(&self.search_entry);
+            self.playlist_list.connect_search(&self.search_entry);
+            self.song_list.connect_search(&self.search_entry);
+
+            self.album_list.connect_favorite(&self.favorite_button);
+            self.artist_list.connect_favorite(&self.favorite_button);
+            self.playlist_list.connect_favorite(&self.favorite_button);
+            self.song_list.connect_favorite(&self.favorite_button);
 
             let action_new = ActionEntry::builder("new")
                 .activate(glib::clone!(
@@ -606,6 +626,7 @@ mod imp {
                 action_refresh_library,
                 action_request_library_rescan,
                 action_search,
+                action_favorites,
                 action_new,
                 action_play_selected,
                 action_about,

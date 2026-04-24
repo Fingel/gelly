@@ -3,14 +3,13 @@ use crate::{
     async_utils::spawn_tokio,
     backend::BackendError,
     config,
-    jellyfin::api::MusicDto,
     library_utils::songs_for_playlist,
     models::{
         PlaylistModel, SongModel,
         playlist_type::{DEFAULT_SMART_COUNT, PlaylistType},
     },
     ui::{
-        list_helpers::*,
+        list_helpers::{create_string_filter, handle_grid_activation},
         page_traits::{SortDirection, SortType, TopPage},
         playlist::Playlist,
         playlist_dialogs,
@@ -19,7 +18,7 @@ use crate::{
 };
 use glib::Object;
 use gtk::{
-    CustomSorter, SingleSelection, SortListModel, gio,
+    gio,
     glib::{self},
     prelude::*,
     subclass::prelude::*,
@@ -50,11 +49,9 @@ impl TopPage for PlaylistList {
                 glib::clone!(
                     #[weak(rename_to=playlist_list)]
                     self,
-                    move |result: Result<Vec<MusicDto>, BackendError>| {
+                    move |result: Result<Vec<SongModel>, BackendError>| {
                         match result {
-                            Ok(music_data) => {
-                                let songs: Vec<SongModel> =
-                                    music_data.iter().map(SongModel::from).collect();
+                            Ok(songs) => {
                                 if let Some(audio_model) =
                                     playlist_list.get_application().audio_model()
                                 {
@@ -78,20 +75,8 @@ impl TopPage for PlaylistList {
     }
 
     fn search_changed(&self, query: &str) {
-        let imp = self.imp();
-        let store = imp.store.get().expect("Store should be initialized");
-        let name_filter = imp
-            .name_filter
-            .get()
-            .expect("Name filter should be initialized");
-        let sorter = if let Some(current_sorter) = imp.current_sorter.borrow().as_ref() {
-            current_sorter.clone()
-        } else {
-            let default_sorter = self.build_sorter(SortType::Name, SortDirection::Ascending);
-            imp.current_sorter.replace(Some(default_sorter.clone()));
-            default_sorter
-        };
-        apply_single_filter_search(query, sorter.upcast(), store, name_filter, &imp.grid_view);
+        let search = if query.is_empty() { None } else { Some(query) };
+        self.imp().name_filter.get().unwrap().set_search(search);
     }
 
     fn create_new(&self) {
@@ -120,17 +105,43 @@ impl TopPage for PlaylistList {
     }
 
     fn apply_sort(&self, sort_by: u32, direction: u32) {
-        let imp = self.imp();
-        let sort_option = self.sort_options()[sort_by as usize];
-        let sort_direction = SortDirection::try_from(direction).unwrap_or(SortDirection::Ascending);
         config::set_playlists_sort_by(sort_by);
         config::set_playlists_sort_direction(direction);
-        let sorter = self.build_sorter(sort_option, sort_direction);
-        imp.current_sorter.replace(Some(sorter.clone()));
-        let store = imp.store.get().expect("Store should be initialized");
-        let sort_model = SortListModel::new(Some(store.clone()), Some(sorter));
-        let selection_model = SingleSelection::new(Some(sort_model));
-        imp.grid_view.set_model(Some(&selection_model));
+        self.imp().sort_state.set((sort_by, direction));
+        self.imp()
+            .sorter
+            .get()
+            .unwrap()
+            .changed(gtk::SorterChange::Different);
+        self.reset_position();
+    }
+
+    fn supports_favorites(&self) -> bool {
+        config::get_backend_type() == config::BackendType::Jellyfin
+    }
+
+    fn filter_favorites(&self, active: bool) {
+        if !self.supports_favorites() {
+            // So subsonic doesn't get trapped
+            return;
+        }
+        let filter = self.imp().favorites_filter.get().unwrap();
+        if active {
+            filter.set_filter_func(|obj| {
+                obj.downcast_ref::<PlaylistModel>()
+                    .is_some_and(|m| m.favorite())
+            });
+        } else {
+            filter.unset_filter_func();
+        }
+    }
+
+    fn reset_position(&self) {
+        let imp = self.imp();
+        if imp.grid_view.model().is_some_and(|m| m.n_items() > 0) {
+            imp.grid_view
+                .scroll_to(0, gtk::ListScrollFlags::NONE, None::<gtk::ScrollInfo>);
+        }
     }
 }
 
@@ -166,7 +177,7 @@ impl PlaylistList {
 
     pub fn pull_playlists(&self) {
         let playlists = self.get_application().playlists().borrow().clone();
-        let library_cnt = self.get_application().library().borrow().len();
+        let library = self.get_application().library();
         self.set_empty(false);
         let store = self
             .imp()
@@ -177,17 +188,19 @@ impl PlaylistList {
 
         if config::get_playlist_shuffle_enabled() {
             let shuffle_type = PlaylistType::ShuffleLibrary {
-                count: library_cnt as u64,
+                count: library.library_size() as u64,
             };
-            let shuffle_playlist = PlaylistModel::new(shuffle_type);
-            store.append(&shuffle_playlist);
+            store.append(&PlaylistModel::new(shuffle_type));
         }
         if config::get_playlist_most_played_enabled() {
             let most_played_type = PlaylistType::MostPlayed {
                 count: DEFAULT_SMART_COUNT,
             };
-            let most_played_playlist = PlaylistModel::new(most_played_type);
-            store.append(&most_played_playlist);
+            store.append(&PlaylistModel::new(most_played_type));
+        }
+
+        if config::get_playlist_favorites_enabled() {
+            store.append(&PlaylistModel::new(PlaylistType::Favorites {}));
         }
 
         for playlist in playlists {
@@ -195,9 +208,9 @@ impl PlaylistList {
                 playlist.id.clone(),
                 playlist.name.clone(),
                 playlist.child_count,
+                library.playlist_is_favorite(&playlist.id),
             );
-            let playlist_obj = PlaylistModel::new(playlist_type);
-            store.append(&playlist_obj);
+            store.append(&PlaylistModel::new(playlist_type));
         }
         self.apply_sort(self.current_sort_by(), self.current_sort_direction());
     }
@@ -228,75 +241,68 @@ impl PlaylistList {
         );
     }
 
-    fn build_sorter(&self, sort: SortType, direction: SortDirection) -> CustomSorter {
-        CustomSorter::new(move |obj1, obj2| {
-            let (obj1, obj2) = match direction {
-                SortDirection::Ascending => (obj1, obj2),
-                SortDirection::Descending => (obj2, obj1),
+    fn build_sorter(&self) -> gtk::CustomSorter {
+        let sort_state = self.imp().sort_state.clone();
+        let options: Vec<SortType> = self.sort_options().to_vec();
+        gtk::CustomSorter::new(move |a, b| {
+            let (sort_by, direction_raw) = sort_state.get();
+            let direction =
+                SortDirection::try_from(direction_raw).unwrap_or(SortDirection::Ascending);
+            let (a, b) = match direction {
+                SortDirection::Ascending => (a, b),
+                SortDirection::Descending => (b, a),
             };
-            let playlist1 = obj1.downcast_ref::<PlaylistModel>().unwrap();
-            let playlist2 = obj2.downcast_ref::<PlaylistModel>().unwrap();
-
-            match sort {
-                SortType::Name => playlist2
+            let a = a.downcast_ref::<PlaylistModel>().unwrap();
+            let b = b.downcast_ref::<PlaylistModel>().unwrap();
+            match options[sort_by as usize] {
+                SortType::Name => b
                     .is_smart()
-                    .cmp(&playlist1.is_smart())
-                    .then(
-                        playlist1
-                            .name()
-                            .to_lowercase()
-                            .cmp(&playlist2.name().to_lowercase()),
-                    )
+                    .cmp(&a.is_smart())
+                    .then(a.name().to_lowercase().cmp(&b.name().to_lowercase()))
                     .into(),
-                SortType::NumSongs => playlist2
+                SortType::NumSongs => b
                     .is_smart()
-                    .cmp(&playlist1.is_smart())
-                    .then(playlist1.child_count().cmp(&playlist2.child_count()))
+                    .cmp(&a.is_smart())
+                    .then(a.child_count().cmp(&b.child_count()))
                     .into(),
-                _ => std::cmp::Ordering::Equal.into(),
+                _ => gtk::Ordering::Equal,
             }
         })
     }
 
     fn setup_model(&self) {
-        let imp = self.imp();
         let store = gio::ListStore::new::<PlaylistModel>();
+
+        let favorites_filter = gtk::CustomFilter::new(|_| true);
+        let fav_model =
+            gtk::FilterListModel::new(Some(store.clone()), Some(favorites_filter.clone()));
+
         let name_filter = create_string_filter::<PlaylistModel>("name");
-        imp.store
-            .set(store.clone())
-            .expect("PlaylistList store should only be set once");
-        imp.name_filter
-            .set(name_filter)
-            .expect("PlaylistList name filter should only be set once");
+        let search_model = gtk::FilterListModel::new(Some(fav_model), Some(name_filter.clone()));
 
-        let selection_model = gtk::SingleSelection::new(Some(store));
+        let sorter = self.build_sorter();
+        let sort_model = gtk::SortListModel::new(Some(search_model), Some(sorter.clone()));
+        let selection = gtk::SingleSelection::new(Some(sort_model));
+
         let factory = gtk::SignalListItemFactory::new();
-
         factory.connect_setup(move |_, list_item| {
-            let placeholder = Playlist::new();
-            let item = list_item
-                .downcast_ref::<gtk::ListItem>()
-                .expect("Needs to be a ListItem");
-            item.set_child(Some(&placeholder));
+            let item = list_item.downcast_ref::<gtk::ListItem>().unwrap();
+            item.set_child(Some(&Playlist::new()));
         });
-
         factory.connect_bind(move |_, list_item| {
-            let list_item = list_item
-                .downcast_ref::<gtk::ListItem>()
-                .expect("Needs to be a ListItem");
-            let playlist_model = list_item
-                .item()
-                .and_downcast::<PlaylistModel>()
-                .expect("Item should be a PlaylistModel");
-            let playlist_widget = list_item
-                .child()
-                .and_downcast::<Playlist>()
-                .expect("child should be a Playlist");
+            let list_item = list_item.downcast_ref::<gtk::ListItem>().unwrap();
+            let playlist_model = list_item.item().and_downcast::<PlaylistModel>().unwrap();
+            let playlist_widget = list_item.child().and_downcast::<Playlist>().unwrap();
             playlist_widget.set_playlist_model(&playlist_model);
         });
 
-        imp.grid_view.set_model(Some(&selection_model));
+        let imp = self.imp();
+        imp.grid_view.set_model(Some(&selection));
         imp.grid_view.set_factory(Some(&factory));
+        imp.store.set(store).unwrap();
+        imp.favorites_filter.set(favorites_filter).unwrap();
+        imp.name_filter.set(name_filter).unwrap();
+        imp.sorter.set(sorter).unwrap();
     }
 
     fn set_empty(&self, empty: bool) {
@@ -312,7 +318,8 @@ impl Default for PlaylistList {
 }
 
 mod imp {
-    use std::cell::{OnceCell, RefCell};
+    use std::cell::{Cell, OnceCell};
+    use std::rc::Rc;
 
     use crate::config::settings;
     use adw::subclass::prelude::*;
@@ -328,8 +335,10 @@ mod imp {
         pub empty: TemplateChild<adw::StatusPage>,
 
         pub store: OnceCell<gio::ListStore>,
+        pub favorites_filter: OnceCell<gtk::CustomFilter>,
         pub name_filter: OnceCell<gtk::StringFilter>,
-        pub current_sorter: RefCell<Option<gtk::CustomSorter>>,
+        pub sorter: OnceCell<gtk::CustomSorter>,
+        pub sort_state: Rc<Cell<(u32, u32)>>,
     }
 
     #[glib::object_subclass]
@@ -373,6 +382,17 @@ mod imp {
 
             settings().connect_changed(
                 Some("playlist-most-played-enabled"),
+                glib::clone!(
+                    #[weak(rename_to = playlist_list)]
+                    self.obj(),
+                    move |_settings, _key| {
+                        playlist_list.pull_playlists();
+                    }
+                ),
+            );
+
+            settings().connect_changed(
+                Some("playlist-favorites-enabled"),
                 glib::clone!(
                     #[weak(rename_to = playlist_list)]
                     self.obj(),

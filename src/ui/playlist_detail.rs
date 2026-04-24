@@ -1,7 +1,7 @@
 use crate::{
     async_utils::spawn_tokio,
     backend::BackendError,
-    jellyfin::{api::MusicDto, utils::format_duration},
+    jellyfin::utils::format_duration,
     library_utils::songs_for_playlist,
     models::{PlaylistModel, SongModel},
     ui::{
@@ -35,12 +35,18 @@ impl DetailPage for PlaylistDetail {
         let imp = self.imp();
         imp.model.replace(Some(model.clone()));
         imp.name_label.set_text(&model.name());
-        imp.delete.set_sensitive(!model.is_smart());
+        imp.delete.set_visible(!model.is_smart());
+        imp.favorite_button.set_visible(!model.is_smart());
         if model.is_smart() {
             self.use_static_icon(model.playlist_type().icon_name());
         } else {
             self.use_playlist_icon(&model.id());
         }
+        let binding = model
+            .bind_property("favorite", self, "favorite")
+            .sync_create()
+            .build();
+        imp.favorite_binding.replace(Some(binding));
         self.pull_tracks();
     }
 
@@ -130,6 +136,11 @@ impl PlaylistDetail {
                 song_widget.set_song_data(&song_model);
 
                 song_utils::connect_playing_indicator(&song_widget, &song_model, &audio_model);
+                song_utils::connect_favorite_indicator(
+                    &song_widget,
+                    &song_model,
+                    &playlist_detail.get_application(),
+                );
 
                 let mut handlers = Vec::new();
                 let nav_handlers =
@@ -187,10 +198,8 @@ impl PlaylistDetail {
                     .and_downcast::<Song>()
                     .expect("Child has to be Song");
 
-                // disconnect song-changed handler, it's connected to audio_model
                 song_utils::disconnect_playing_indicator(&song_widget, &audio_model);
-
-                // disconnect other handlers connected to song
+                song_utils::disconnect_favorite_indicator(&song_widget);
                 song_utils::disconnect_signal_handlers(&song_widget);
             }
         ));
@@ -227,11 +236,9 @@ impl PlaylistDetail {
             glib::clone!(
                 #[weak(rename_to=playlist_detail)]
                 self,
-                move |result: Result<Vec<MusicDto>, BackendError>| {
+                move |result: Result<Vec<SongModel>, BackendError>| {
                     match result {
-                        Ok(music_data) => {
-                            let songs: Vec<SongModel> =
-                                music_data.iter().map(SongModel::from).collect();
+                        Ok(songs) => {
                             playlist_detail.populate_tracks_with_songs(songs);
                         }
                         Err(error) => {
@@ -564,6 +571,14 @@ impl PlaylistDetail {
             ),
         );
     }
+
+    pub fn toggle_favorite(&self, is_favorite: bool) {
+        let Some(model) = self.get_model() else {
+            return;
+        };
+        let app = self.get_application();
+        model.toggle_favorite(is_favorite, &app);
+    }
 }
 
 impl Default for PlaylistDetail {
@@ -573,13 +588,13 @@ impl Default for PlaylistDetail {
 }
 
 mod imp {
-    use std::cell::{OnceCell, RefCell};
+    use std::cell::{Cell, OnceCell, RefCell};
 
     use adw::subclass::prelude::*;
     use glib::subclass::InitializingObject;
     use gtk::{
         CompositeTemplate, gio,
-        glib::{self},
+        glib::{self, Properties},
         prelude::*,
     };
 
@@ -588,8 +603,9 @@ mod imp {
         ui::album_art::AlbumArt,
     };
 
-    #[derive(CompositeTemplate, Default)]
+    #[derive(CompositeTemplate, Default, Properties)]
     #[template(resource = "/io/m51/Gelly/ui/playlist_detail.ui")]
+    #[properties(wrapper_type = super::PlaylistDetail)]
     pub struct PlaylistDetail {
         #[template_child]
         pub album_image: TemplateChild<AlbumArt>,
@@ -608,11 +624,18 @@ mod imp {
         #[template_child]
         pub action_menu: TemplateChild<gtk::MenuButton>,
         #[template_child]
+        pub favorite_button: TemplateChild<gtk::ToggleButton>,
+        #[template_child]
+        pub star_icon: TemplateChild<gtk::Image>,
+        #[template_child]
         pub delete: TemplateChild<gtk::Button>,
 
         pub model: RefCell<Option<PlaylistModel>>,
         pub songs: RefCell<Vec<SongModel>>,
         pub store: OnceCell<gio::ListStore>,
+        pub favorite_binding: RefCell<Option<glib::Binding>>,
+        #[property(get, set = Self::set_favorite)]
+        favorite: Cell<bool>,
     }
 
     #[glib::object_subclass]
@@ -630,6 +653,8 @@ mod imp {
         }
     }
     impl BoxImpl for PlaylistDetail {}
+
+    #[glib::derived_properties]
     impl ObjectImpl for PlaylistDetail {
         fn constructed(&self) {
             self.parent_constructed();
@@ -664,6 +689,24 @@ mod imp {
                     imp.obj().confirm_delete();
                 }
             ));
+
+            self.favorite_button.connect_clicked(glib::clone!(
+                #[weak(rename_to=imp)]
+                self,
+                move |button| {
+                    imp.obj().toggle_favorite(button.is_active());
+                }
+            ));
+        }
+
+        fn set_favorite(&self, val: bool) {
+            self.favorite.set(val);
+            self.favorite_button.set_active(val);
+            self.star_icon.set_icon_name(Some(if val {
+                "starred-symbolic"
+            } else {
+                "non-starred-symbolic"
+            }));
         }
     }
 }

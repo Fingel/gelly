@@ -204,20 +204,7 @@
                         </style>
                       </object>
                     </child>
-                    <child>
-                      <object class="GtkButton" id="info_button">
-                        <property name="margin-start">2</property>
-                        <property name="child">
-                          <object class="GtkImage" id="info_icon">
-                            <property name="icon-name">help-about-symbolic</property>
-                            <property name="icon-size">1</property>
-                          </object>
-                        </property>
-                        <style>
-                          <class name="flat"/>
-                        </style>
-                      </object>
-                    </child>
+
                   </object>
                 </child>
               </object>
@@ -247,6 +234,22 @@
                   </object>
                 </child>
                 <child>
+                  <object class="GtkToggleButton" id="favorite_button">
+                    <property name="width-request">36</property>
+                    <property name="height-request">36</property>
+                    <property name="child">
+                      <object class="GtkImage" id="star_icon">
+                        <property name="icon-name">non-starred-symbolic</property>
+                        <property name="icon-size">1</property>
+                      </object>
+                    </property>
+                    <style>
+                      <class name="flat"/>
+                      <class name="star-button"/>
+                    </style>
+                  </object>
+                </child>
+                <child>
                   <object class="GellyPlaybackModeMenu" id="playback_mode_menu">
                   </object>
                 </child>
@@ -272,6 +275,20 @@
                 <property name="halign">end</property>
                 <property name="valign">center</property>
                 <property name="spacing">3</property>
+                <child>
+                  <object class="GtkButton" id="info_button">
+                    <property name="margin-start">2</property>
+                    <property name="child">
+                      <object class="GtkImage" id="info_icon">
+                        <property name="icon-name">help-about-symbolic</property>
+                        <property name="icon-size">1</property>
+                      </object>
+                    </property>
+                    <style>
+                      <class name="flat"/>
+                    </style>
+                  </object>
+                </child>
                 <child>
                   <object class="GtkButton" id="prev_button">
                     <property name="icon-name">media-skip-backward-symbolic</property>
