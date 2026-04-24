@@ -443,6 +443,19 @@ mod imp {
                 ))
                 .build();
 
+            let action_favorites = ActionEntry::builder("favorites")
+                .activate(glib::clone!(
+                    #[weak(rename_to=window)]
+                    self,
+                    move |_, _, _| {
+                        window.sort_bar.set_search_mode(true);
+                        window
+                            .favorite_button
+                            .set_active(!window.favorite_button.is_active());
+                    }
+                ))
+                .build();
+
             self.search_button
                 .bind_property("active", &self.search_bar.get(), "search-mode-enabled")
                 .bidirectional()
@@ -613,6 +626,7 @@ mod imp {
                 action_refresh_library,
                 action_request_library_rescan,
                 action_search,
+                action_favorites,
                 action_new,
                 action_play_selected,
                 action_about,

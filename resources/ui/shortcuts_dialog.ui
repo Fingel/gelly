@@ -26,6 +26,12 @@
         </child>
         <child>
           <object class="AdwShortcutsItem">
+            <property name="title">Show Favorites</property>
+            <property name="action-name">win.favorites</property>
+          </object>
+        </child>
+        <child>
+          <object class="AdwShortcutsItem">
             <property name="title">Preferences</property>
             <property name="action-name">win.preferences</property>
           </object>
