@@ -20,8 +20,16 @@ glib::wrapper! {
 }
 
 impl Window {
-    pub fn blurred_paintable(&self) -> Option<gtk::gdk::Paintable> {
-        self.imp().blurred_paintable.borrow().clone()
+    pub fn snapshot_blur_background(
+        &self,
+        snapshot: &gtk::Snapshot,
+        width: f64,
+        height: f64,
+        translate: Option<(f32, f32)>,
+    ) {
+        self.imp()
+            .blur_background
+            .snapshot(snapshot, width, height, translate);
     }
 
     pub fn new(app: &Application) -> Self {
@@ -253,7 +261,7 @@ impl Window {
 }
 
 mod imp {
-    use std::cell::{Cell, RefCell};
+    use std::cell::Cell;
     use std::sync::OnceLock;
 
     use adw::subclass::prelude::*;
@@ -267,7 +275,7 @@ mod imp {
     use log::{debug, warn};
 
     use crate::ui::{
-        album_art_background::{create_blur_paintable, draw_background},
+        album_art_background::{BlurBackground, create_blur_paintable},
         artist_detail::ArtistDetail,
         page_traits::TopPage,
         player_bar::{big_player::BigPlayer, mini_player::MiniPlayerBar},
@@ -347,7 +355,7 @@ mod imp {
         #[template_child]
         pub favorite_button: TemplateChild<gtk::ToggleButton>,
 
-        pub blurred_paintable: RefCell<Option<gtk::gdk::Paintable>>,
+        pub blur_background: BlurBackground,
         pub sort_changing: Cell<bool>,
     }
 
@@ -371,6 +379,8 @@ mod imp {
         fn constructed(&self) {
             self.parent_constructed();
             self.obj().load_window_size();
+            self.blur_background.add_draw_target(&*self.player_bar);
+            self.blur_background.add_draw_target(&*self.big_player);
 
             let action_logout = ActionEntry::builder("logout")
                 .activate(glib::clone!(
@@ -806,17 +816,16 @@ mod imp {
             } else {
                 self.obj().remove_css_class("album-art-background");
             }
-            *self.blurred_paintable.borrow_mut() = blurred;
-            self.obj().queue_draw();
+            self.blur_background
+                .update(self.obj().upcast_ref::<gtk::Widget>(), blurred);
         }
     }
 
     impl WidgetImpl for Window {
         fn snapshot(&self, snapshot: &gtk::Snapshot) {
-            if let Some(p) = self.blurred_paintable.borrow().as_ref() {
-                let obj = self.obj();
-                draw_background(snapshot, p, obj.width() as f64, obj.height() as f64, None);
-            }
+            let obj = self.obj();
+            self.blur_background
+                .snapshot(snapshot, obj.width() as f64, obj.height() as f64, None);
             self.parent_snapshot(snapshot);
         }
     }
