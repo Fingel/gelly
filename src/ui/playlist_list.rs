@@ -121,6 +121,10 @@ impl TopPage for PlaylistList {
     }
 
     fn filter_favorites(&self, active: bool) {
+        if !self.supports_favorites() {
+            // So subsonic doesn't get trapped
+            return;
+        }
         let filter = self.imp().favorites_filter.get().unwrap();
         if active {
             filter.set_filter_func(|obj| {
