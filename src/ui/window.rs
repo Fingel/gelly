@@ -379,6 +379,7 @@ mod imp {
         fn constructed(&self) {
             self.parent_constructed();
             self.obj().load_window_size();
+            self.blur_background.add_draw_target(&*self.obj());
             self.blur_background.add_draw_target(&*self.player_bar);
             self.blur_background.add_draw_target(&*self.big_player);
 
@@ -798,26 +799,29 @@ mod imp {
 
     impl Window {
         fn update_blurred_paintable(&self) {
-            let blurred = if config::settings().boolean("album-art-window-background") {
-                self.big_player.album_art_paintable().and_then(|p| {
-                    let obj = self.obj();
-                    create_blur_paintable(
-                        obj.upcast_ref::<gtk::Widget>(),
-                        &p,
-                        obj.width(),
-                        obj.height(),
-                    )
-                })
-            } else {
-                None
-            };
+            if !config::settings().boolean("album-art-window-background") {
+                self.obj().remove_css_class("album-art-background");
+                if self.blur_background.has_content() {
+                    self.blur_background.update(None);
+                }
+                return;
+            }
+
+            let blurred = self.big_player.album_art_paintable().and_then(|p| {
+                let obj = self.obj();
+                create_blur_paintable(
+                    obj.upcast_ref::<gtk::Widget>(),
+                    &p,
+                    obj.width(),
+                    obj.height(),
+                )
+            });
             if blurred.is_some() {
                 self.obj().add_css_class("album-art-background");
             } else {
                 self.obj().remove_css_class("album-art-background");
             }
-            self.blur_background
-                .update(self.obj().upcast_ref::<gtk::Widget>(), blurred);
+            self.blur_background.update(blurred);
         }
     }
 

@@ -8,7 +8,7 @@ pub struct BlurBackground {
     prev_paintable: Rc<RefCell<Option<gtk::gdk::Paintable>>>,
     fade_alpha: Rc<Cell<f64>>,
     animation: RefCell<Option<adw::TimedAnimation>>,
-    extra_targets: Rc<RefCell<Vec<WeakRef<gtk::Widget>>>>,
+    targets: Rc<RefCell<Vec<WeakRef<gtk::Widget>>>>,
 }
 
 impl Default for BlurBackground {
@@ -18,42 +18,45 @@ impl Default for BlurBackground {
             prev_paintable: Rc::new(RefCell::new(None)),
             fade_alpha: Rc::new(Cell::new(1.0)),
             animation: RefCell::new(None),
-            extra_targets: Rc::new(RefCell::new(Vec::new())),
+            targets: Rc::new(RefCell::new(Vec::new())),
         }
     }
 }
 
 impl BlurBackground {
+    pub fn has_content(&self) -> bool {
+        self.paintable.borrow().is_some()
+    }
+
     pub fn add_draw_target(&self, widget: &impl IsA<gtk::Widget>) {
-        self.extra_targets
+        self.targets
             .borrow_mut()
             .push(widget.upcast_ref::<gtk::Widget>().downgrade());
     }
 
-    pub fn update(&self, widget: &gtk::Widget, new_paintable: Option<gtk::gdk::Paintable>) {
+    pub fn update(&self, new_paintable: Option<gtk::gdk::Paintable>) {
         let prev = self.paintable.borrow().clone();
         *self.prev_paintable.borrow_mut() = prev;
         *self.paintable.borrow_mut() = new_paintable;
-        self.start_fade(widget);
+        self.start_fade();
     }
 
-    fn start_fade(&self, widget: &gtk::Widget) {
+    fn start_fade(&self) {
+        let Some(widget) = self.targets.borrow().iter().find_map(|w| w.upgrade()) else {
+            return;
+        };
+
         self.fade_alpha.set(0.0);
 
         let fade_alpha = self.fade_alpha.clone();
-        let widget_weak = widget.downgrade();
-        let extra_targets = self.extra_targets.clone();
+        let targets = self.targets.clone();
 
         let target = adw::CallbackAnimationTarget::new({
             let fade_alpha = fade_alpha.clone();
-            let widget_weak = widget_weak.clone();
-            let extra_targets = extra_targets.clone();
+            let targets = targets.clone();
             move |value| {
                 fade_alpha.set(value);
-                if let Some(w) = widget_weak.upgrade() {
-                    w.queue_draw();
-                }
-                for weak in extra_targets.borrow().iter() {
+                for weak in targets.borrow().iter() {
                     if let Some(w) = weak.upgrade() {
                         w.queue_draw();
                     }
@@ -61,17 +64,14 @@ impl BlurBackground {
             }
         });
 
-        let animation = adw::TimedAnimation::new(widget, 0.0, 1.0, 500, target);
+        let animation = adw::TimedAnimation::new(&widget, 0.0, 1.0, 500, target);
         animation.set_easing(adw::Easing::EaseOut);
 
         let prev_paintable = self.prev_paintable.clone();
         animation.connect_done(move |_| {
             fade_alpha.set(1.0);
             *prev_paintable.borrow_mut() = None;
-            if let Some(w) = widget_weak.upgrade() {
-                w.queue_draw();
-            }
-            for weak in extra_targets.borrow().iter() {
+            for weak in targets.borrow().iter() {
                 if let Some(w) = weak.upgrade() {
                     w.queue_draw();
                 }
