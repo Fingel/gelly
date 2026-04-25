@@ -13,8 +13,6 @@
         <setter object="artist_album_separator_label" property="visible">false</setter>
         <setter object="volume_control" property="visible">false</setter>
         <setter object="playback_mode_menu" property="visible">false</setter>
-        <setter object="scale_position_label" property="visible">false</setter>
-        <setter object="scale_duration_label" property="visible">false</setter>
         <setter object="position_scale" property="visible">false</setter>
         <setter object="info_button" property="visible">false</setter>
         <!-- Show small-mode elements -->
@@ -34,169 +32,170 @@
       </object>
     </child>
     <property name="child">
-      <object class="GtkBox" id="root_box">
-        <property name="orientation">horizontal</property>
-        <property name="visible">true</property>
-        <property name="spacing">6</property>
-        <property name="margin-start">6</property>
-        <property name="margin-end">6</property>
-        <property name="margin-top">6</property>
-        <property name="margin-bottom">6</property>
-        <child>
-          <!-- Song info section -->
-          <object class="GtkBox">
-            <property name="orientation">horizontal</property>
-            <property name="spacing">12</property>
+      <object class="GtkOverlay">
+        <!-- Position scale overlaid at the top, rendered above root_box -->
+        <child type="overlay">
+          <object class="GtkScale" id="position_scale">
             <property name="hexpand">true</property>
-            <child>
-              <object class="GellyAlbumArt" id="album_art">
-                <property name="size">84</property>
+            <property name="valign">start</property>
+            <property name="draw-value">false</property>
+            <property name="width-request">64</property>
+            <style>
+              <class name="top-border-scale"/>
+            </style>
+            <property name="adjustment">
+              <object class="GtkAdjustment">
+                <property name="lower">0</property>
+                <property name="upper">100</property>
+                <property name="step-increment">1</property>
+                <property name="page-increment">10</property>
               </object>
-            </child>
+            </property>
+          </object>
+        </child>
+        <property name="child">
+          <object class="GtkBox" id="root_box">
+            <property name="orientation">horizontal</property>
+            <property name="visible">true</property>
+            <property name="spacing">6</property>
+            <property name="margin-start">6</property>
+            <property name="margin-end">6</property>
+            <property name="margin-top">15</property>
+            <property name="margin-bottom">6</property>
             <child>
-              <object class="GtkBox" id="song_info_box">
-                <property name="orientation">vertical</property>
-                <property name="spacing">6</property>
+              <!-- Song info section -->
+              <object class="GtkBox">
+                <property name="orientation">horizontal</property>
+                <property name="spacing">12</property>
                 <property name="hexpand">true</property>
-                <property name="valign">center</property>
-                <!-- song info -->
-                  <child>
-                    <object class="GtkBox">
-                      <property name="orientation">vertical</property>
-                      <property name="halign">center</property>
-                      <property name="valign">center</property>
-                      <property name="hexpand">true</property>
-                      <child>
-                        <object class="GtkLabel" id="title_label">
-                          <property name="ellipsize">end</property>
-                          <property name="max-width-chars">30</property>
-                          <property name="halign">center</property>
-                          <style>
-                            <class name="heading"/>
-                          </style>
-                        </object>
-                      </child>
-                      <child>
-                        <object class="GtkBox" id="subtitle_box">
-                          <property name="halign">center</property>
-                          <child>
-                            <object class="GtkLabel" id="position_label">
-                              <property name="ellipsize">end</property>
-                              <property name="max_width_chars">90</property>
-                              <property name="halign">end</property>
-                              <property name="xalign">1.0</property>
-                              <property name="visible">false</property>
-                              <style>
-                                <class name="dimmed"/>
-                              </style>
-                            </object>
-                          </child>
-                          <child>
-                            <object class="GtkLabel" id="duration_separator_label">
-                              <property name="label">/</property>
-                              <property name="visible">false</property>
-                              <style>
-                                <class name="dimmed"/>
-                              </style>
-                            </object>
-                          </child>
-                          <child>
-                            <object class="GtkLabel" id="duration_label">
-                              <property name="ellipsize">end</property>
-                              <property name="max_width_chars">90</property>
-                              <property name="halign">start</property>
-                              <property name="xalign">0.0</property>
-                              <property name="visible">false</property>
-                              <style>
-                                <class name="dimmed"/>
-                              </style>
-                            </object>
-                          </child>
-                          <child>
-                            <object class="GtkButton" id="artist_button">
-                              <property name="focusable">True</property>
-                              <property name="halign">end</property>
-                              <property name="has-frame">False</property>
-                              <style>
-                                <class name="flat"/>
-                                <class name="dimmed"/>
-                                <class name="song-link"/>
-                              </style>
-                              <property name="child">
-                                <object class="GtkLabel" id="artist_label">
-                                  <property name="ellipsize">end</property>
-                                  <property name="max_width_chars">90</property>
-                                </object>
-                              </property>
-                            </object>
-                          </child>
-                          <child>
-                            <object class="GtkLabel" id="artist_album_separator_label">
-                              <property name="focusable">False</property>
-                              <property name="label"> - </property>
-                              <property name="halign">center</property>
-                              <style>
-                                <class name="dimmed"/>
-                              </style>
-                            </object>
-                          </child>
-                          <child>
-                            <object class="GtkButton" id="album_button">
-                              <property name="focusable">True</property>
-                              <property name="has-frame">False</property>
-                              <property name="halign">start</property>
-                              <style>
-                                <class name="flat"/>
-                                <class name="dimmed"/>
-                                <class name="song-link"/>
-                              </style>
-                              <property name="child">
-                                <object class="GtkLabel" id="album_label">
-                                  <property name="ellipsize">end</property>
-                                  <property name="halign">start</property>
-                                  <property name="max_width_chars">90</property>
-                                </object>
-                              </property>
-                            </object>
-                          </child>
-                        </object>
-                      </child>
+                <child>
+                  <object class="GellyAlbumArt" id="album_art">
+                    <property name="size">84</property>
                   </object>
                 </child>
-                <!-- seek bar -->
                 <child>
-                  <object class="GtkBox">
-                    <property name="orientation">horizontal</property>
-                    <property name="halign">fill</property>
+                  <object class="GtkBox" id="song_info_box">
+                    <property name="orientation">vertical</property>
+                    <property name="spacing">6</property>
                     <property name="hexpand">true</property>
                     <property name="valign">center</property>
-                    <property name="spacing">3</property>
+                    <child>
+                      <object class="GtkBox">
+                        <property name="orientation">vertical</property>
+                        <property name="halign">center</property>
+                        <property name="valign">center</property>
+                        <property name="hexpand">true</property>
+                        <child>
+                          <object class="GtkLabel" id="title_label">
+                            <property name="ellipsize">end</property>
+                            <property name="max-width-chars">30</property>
+                            <property name="halign">center</property>
+                            <style>
+                              <class name="heading"/>
+                            </style>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkBox" id="subtitle_box">
+                            <property name="halign">center</property>
+                            <child>
+                              <object class="GtkLabel" id="position_label">
+                                <property name="ellipsize">end</property>
+                                <property name="max_width_chars">90</property>
+                                <property name="halign">end</property>
+                                <property name="xalign">1.0</property>
+                                <property name="visible">false</property>
+                                <style>
+                                  <class name="dimmed"/>
+                                </style>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkLabel" id="duration_separator_label">
+                                <property name="label">/</property>
+                                <property name="visible">false</property>
+                                <style>
+                                  <class name="dimmed"/>
+                                </style>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkLabel" id="duration_label">
+                                <property name="ellipsize">end</property>
+                                <property name="max_width_chars">90</property>
+                                <property name="halign">start</property>
+                                <property name="xalign">0.0</property>
+                                <property name="visible">false</property>
+                                <style>
+                                  <class name="dimmed"/>
+                                </style>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkButton" id="artist_button">
+                                <property name="focusable">True</property>
+                                <property name="halign">end</property>
+                                <property name="has-frame">False</property>
+                                <style>
+                                  <class name="flat"/>
+                                  <class name="dimmed"/>
+                                  <class name="song-link"/>
+                                </style>
+                                <property name="child">
+                                  <object class="GtkLabel" id="artist_label">
+                                    <property name="ellipsize">end</property>
+                                    <property name="max_width_chars">90</property>
+                                  </object>
+                                </property>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkLabel" id="artist_album_separator_label">
+                                <property name="focusable">False</property>
+                                <property name="label"> - </property>
+                                <property name="halign">center</property>
+                                <style>
+                                  <class name="dimmed"/>
+                                </style>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkButton" id="album_button">
+                                <property name="focusable">True</property>
+                                <property name="has-frame">False</property>
+                                <property name="halign">start</property>
+                                <style>
+                                  <class name="flat"/>
+                                  <class name="dimmed"/>
+                                  <class name="song-link"/>
+                                </style>
+                                <property name="child">
+                                  <object class="GtkLabel" id="album_label">
+                                    <property name="ellipsize">end</property>
+                                    <property name="halign">start</property>
+                                    <property name="max_width_chars">90</property>
+                                  </object>
+                                </property>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                    <!-- Hidden time label stubs kept for template bindings -->
                     <child>
                       <object class="GtkLabel" id="scale_position_label">
+                        <property name="visible">false</property>
                         <property name="label">0:00</property>
                         <property name="width-chars">4</property>
                         <style>
                           <class name="caption"/>
                         </style>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkScale" id="position_scale">
-                        <property name="hexpand">true</property>
-                        <property name="draw-value">false</property>
-                        <property name="width-request">64</property>
-                        <property name="adjustment">
-                          <object class="GtkAdjustment">
-                            <property name="lower">0</property>
-                            <property name="upper">100</property>
-                            <property name="step-increment">1</property>
-                            <property name="page-increment">10</property>
-                          </object>
-                        </property>
                       </object>
                     </child>
                     <child>
                       <object class="GtkLabel" id="scale_duration_label">
+                        <property name="visible">false</property>
                         <property name="label">0:00</property>
                         <property name="width-chars">4</property>
                         <style>
@@ -204,125 +203,124 @@
                         </style>
                       </object>
                     </child>
-
                   </object>
                 </child>
               </object>
             </child>
-          </object>
-        </child>
-        <child>
-          <object class="GtkBox" id="all_buttons_box">
-            <property name="orientation">vertical</property>
-            <property name="spacing">6</property>
-            <property name="halign">end</property>
-            <property name="valign">center</property>
             <child>
-              <object class="GtkBox">
-                <property name="orientation">horizontal</property>
+              <object class="GtkBox" id="all_buttons_box">
+                <property name="orientation">vertical</property>
+                <property name="spacing">6</property>
                 <property name="halign">end</property>
                 <property name="valign">center</property>
-                <property name="spacing">3</property>
                 <child>
-                  <object class="GtkButton" id="lyrics_button">
-                    <property name="icon-name">subtitles-symbolic</property>
-                    <property name="visible">false</property>
-                    <property name="tooltip-text">Lyrics</property>
-                    <style>
-                      <class name="flat" />
-                    </style>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkToggleButton" id="favorite_button">
-                    <property name="width-request">36</property>
-                    <property name="height-request">36</property>
-                    <property name="child">
-                      <object class="GtkImage" id="star_icon">
-                        <property name="icon-name">non-starred-symbolic</property>
-                        <property name="icon-size">1</property>
-                      </object>
-                    </property>
-                    <style>
-                      <class name="flat"/>
-                      <class name="star-button"/>
-                    </style>
-                  </object>
-                </child>
-                <child>
-                  <object class="GellyPlaybackModeMenu" id="playback_mode_menu">
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkScaleButton" id="volume_control">
+                  <object class="GtkBox">
                     <property name="orientation">horizontal</property>
-                    <property name="adjustment">
-                      <object class="GtkAdjustment">
-                        <property name="lower">0</property>
-                        <property name="upper">1</property>
-                        <property name="step-increment">0.05</property>
-                        <property name="page-increment">0.1</property>
-                        <property name="value">1.0</property>
+                    <property name="halign">end</property>
+                    <property name="valign">center</property>
+                    <property name="spacing">3</property>
+                    <child>
+                      <object class="GtkButton" id="lyrics_button">
+                        <property name="icon-name">subtitles-symbolic</property>
+                        <property name="visible">false</property>
+                        <property name="tooltip-text">Lyrics</property>
+                        <style>
+                          <class name="flat" />
+                        </style>
                       </object>
-                    </property>
-                  </object>
-                </child>
-              </object>
-            </child>
-            <child>
-              <object class="GtkBox">
-                <property name="orientation">horizontal</property>
-                <property name="halign">end</property>
-                <property name="valign">center</property>
-                <property name="spacing">3</property>
-                <child>
-                  <object class="GtkButton" id="info_button">
-                    <property name="margin-start">2</property>
-                    <property name="child">
-                      <object class="GtkImage" id="info_icon">
-                        <property name="icon-name">help-about-symbolic</property>
-                        <property name="icon-size">1</property>
+                    </child>
+                    <child>
+                      <object class="GtkToggleButton" id="favorite_button">
+                        <property name="width-request">36</property>
+                        <property name="height-request">36</property>
+                        <property name="child">
+                          <object class="GtkImage" id="star_icon">
+                            <property name="icon-name">non-starred-symbolic</property>
+                            <property name="icon-size">1</property>
+                          </object>
+                        </property>
+                        <style>
+                          <class name="flat"/>
+                          <class name="star-button"/>
+                        </style>
                       </object>
-                    </property>
-                    <style>
-                      <class name="flat"/>
-                    </style>
+                    </child>
+                    <child>
+                      <object class="GellyPlaybackModeMenu" id="playback_mode_menu">
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkScaleButton" id="volume_control">
+                        <property name="orientation">horizontal</property>
+                        <property name="adjustment">
+                          <object class="GtkAdjustment">
+                            <property name="lower">0</property>
+                            <property name="upper">1</property>
+                            <property name="step-increment">0.05</property>
+                            <property name="page-increment">0.1</property>
+                            <property name="value">1.0</property>
+                          </object>
+                        </property>
+                      </object>
+                    </child>
                   </object>
                 </child>
                 <child>
-                  <object class="GtkButton" id="prev_button">
-                    <property name="icon-name">media-skip-backward-symbolic</property>
-                    <property name="tooltip-text">Previous</property>
-                    <style>
-                      <class name="circular"/>
-                      <class name="flat"/>
-                    </style>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkButton" id="play_pause_button">
-                    <property name="icon-name">media-playback-start-symbolic</property>
-                    <property name="tooltip-text">Play</property>
-                    <style>
-                      <class name="circular"/>
-                      <class name="flat"/>
-                    </style>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkButton" id="next_button">
-                    <property name="icon-name">media-skip-forward-symbolic</property>
-                    <property name="tooltip-text">Next</property>
-                    <style>
-                      <class name="circular"/>
-                      <class name="flat"/>
-                    </style>
+                  <object class="GtkBox">
+                    <property name="orientation">horizontal</property>
+                    <property name="halign">end</property>
+                    <property name="valign">center</property>
+                    <property name="spacing">3</property>
+                    <child>
+                      <object class="GtkButton" id="info_button">
+                        <property name="margin-start">2</property>
+                        <property name="child">
+                          <object class="GtkImage" id="info_icon">
+                            <property name="icon-name">help-about-symbolic</property>
+                            <property name="icon-size">1</property>
+                          </object>
+                        </property>
+                        <style>
+                          <class name="flat"/>
+                        </style>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkButton" id="prev_button">
+                        <property name="icon-name">media-skip-backward-symbolic</property>
+                        <property name="tooltip-text">Previous</property>
+                        <style>
+                          <class name="circular"/>
+                          <class name="flat"/>
+                        </style>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkButton" id="play_pause_button">
+                        <property name="icon-name">media-playback-start-symbolic</property>
+                        <property name="tooltip-text">Play</property>
+                        <style>
+                          <class name="circular"/>
+                          <class name="flat"/>
+                        </style>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkButton" id="next_button">
+                        <property name="icon-name">media-skip-forward-symbolic</property>
+                        <property name="tooltip-text">Next</property>
+                        <style>
+                          <class name="circular"/>
+                          <class name="flat"/>
+                        </style>
+                      </object>
+                    </child>
                   </object>
                 </child>
               </object>
             </child>
           </object>
-        </child>
+        </property>
       </object>
     </property>
   </template>
