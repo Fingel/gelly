@@ -62,7 +62,7 @@
                             <property name="halign">center</property>
                             <property name="margin-bottom">6</property>
                             <style>
-                              <class name="title-4"/>
+                              <class name="heading"/>
                             </style>
                           </object>
                         </child>
