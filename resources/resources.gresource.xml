@@ -10,6 +10,8 @@
     <file compressed="true" preprocess="xml-stripblanks">ui/album_art.ui</file>
     <file compressed="true" preprocess="xml-stripblanks">ui/song.ui</file>
     <file compressed="true" preprocess="xml-stripblanks">ui/player_bar/big_player.ui</file>
+    <file compressed="true" preprocess="xml-stripblanks">ui/player_bar/compact_player_bar.ui</file>
+    <file compressed="true" preprocess="xml-stripblanks">ui/player_bar/full_player_bar.ui</file>
     <file compressed="true" preprocess="xml-stripblanks">ui/player_bar/mini_player.ui</file>
     <file compressed="true" preprocess="xml-stripblanks">ui/artist_list.ui</file>
     <file compressed="true" preprocess="xml-stripblanks">ui/artist.ui</file>

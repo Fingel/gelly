@@ -181,7 +181,6 @@
             <child>
               <object class="GtkButton" id="lyrics_button">
                 <property name="icon-name">subtitles-symbolic</property>
-                <property name="visible">false</property>
                 <property name="tooltip-text">Lyrics</property>
                 <style>
                   <class name="flat" />
