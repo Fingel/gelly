@@ -37,6 +37,38 @@
     </screenshot>
   </screenshots>
   <releases>
+    <release version="1.2.0" date="2026-04-25">
+      <description>
+        <p>This is a substantial release with some long requested features and improvements under the hood.</p>
+        <ul>
+          <li>
+            The long requested favorites feature is finally here. You can mark songs, albums, artists
+            and playlists as favorites and filter by them in the library. There is also a new "Favorites Mix"
+            smart playlist which combines all favorited songs, plus all songs from all favorited albums and
+            artists. There is also a new keyboard shortcut: ctrl+s to toggle filtering by favorite. Enjoy!
+          </li>
+          <li>
+            The blurred background art effect will now transition smoothy when changing songs. This was
+            difficult to figure out but it turned out well. Thank you G4Music for the code inspiration.
+          </li>
+          <li>
+            Gelly will now be more forgiving of missing metadata - specifically missing album information. A
+            win for the lazy.
+          </li>
+          <li>
+            The player bar has been re-arranged, again. The new "favorite" button was the straw that broke
+            the camel's back with the old design, the new one should feel less cluttered.
+          </li>
+          <li>
+            Updated to the GNOME 50 runtime.
+          </li>
+          <li>
+            List views have been refactored to do searching/sorting in a more idiomatic way. This should
+            improve performance for those with massive libraries and/or slower computers.
+          </li>
+        </ul>
+      </description>
+    </release>
     <release version="1.1.2" date="2026-04-06">
       <description>
         <ul>
