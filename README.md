@@ -6,7 +6,8 @@
     🦀🐧
 </p>
 
-<img width="873" height="769" alt="Screenshot From 2026-04-03 21-02-02" src="https://github.com/user-attachments/assets/fa25aece-ebe7-4cfc-8882-610881b70cc3" />
+<img width="807" height="769" alt="Screenshot from 2026-04-25 10-11-15" src="https://github.com/user-attachments/assets/bb7338ca-bc47-41e5-ada2-3bb370060ace" />
+
 
 ## Features
 
@@ -17,6 +18,7 @@
 - [x] Transcoding
 - [x] Search
 - [x] Playlist management
+- [x] Favorites 
 - [x] Smart Playlists 
 
 ## Installation
