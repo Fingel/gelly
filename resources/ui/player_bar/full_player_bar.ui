@@ -40,7 +40,7 @@
                 <property name="hexpand">true</property>
                 <child>
                   <object class="GellyAlbumArt" id="album_art">
-                    <property name="size">84</property>
+                    <property name="size">86</property>
                   </object>
                 </child>
                 <child>
