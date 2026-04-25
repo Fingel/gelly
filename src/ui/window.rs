@@ -380,7 +380,10 @@ mod imp {
             self.parent_constructed();
             self.obj().load_window_size();
             self.blur_background.add_draw_target(&*self.obj());
-            self.blur_background.add_draw_target(&*self.player_bar);
+            self.blur_background
+                .add_draw_target(&self.player_bar.full_bar());
+            self.blur_background
+                .add_draw_target(&self.player_bar.compact_bar());
             self.blur_background.add_draw_target(&*self.big_player);
 
             let action_logout = ActionEntry::builder("logout")

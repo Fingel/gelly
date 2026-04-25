@@ -65,3 +65,41 @@ listview.boxed-list > row:hover {
     background: none;
     box-shadow: none;
 }
+
+scale.top-border-scale {
+    margin: 0;
+    padding: 0;
+    min-height: 15px;
+    transition: min-height 150ms ease;
+}
+
+scale.top-border-scale:hover {
+    min-height: 15px;
+}
+
+scale.top-border-scale trough {
+    min-height: 5px;
+    padding-bottom: 10px;
+    background-clip: content-box;
+    border-radius: 0;
+    transition:
+        min-height 150ms ease,
+        padding-bottom 150ms ease;
+}
+
+scale.top-border-scale:hover trough {
+    min-height: 15px;
+    padding-bottom: 0;
+}
+
+scale.top-border-scale trough highlight {
+    border-radius: 0;
+}
+
+scale.top-border-scale slider {
+    min-width: 0;
+    min-height: 0;
+    padding: 0;
+    margin: 0;
+    opacity: 0;
+}

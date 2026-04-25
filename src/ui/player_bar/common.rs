@@ -142,7 +142,7 @@ where
     }
 
     fn toggle_lyrics(&self, has_lyrics: bool) {
-        self.lyrics_button().set_visible(has_lyrics);
+        self.lyrics_button().set_sensitive(has_lyrics);
     }
 
     fn load_album_art(&self, album_id: &str, song_id: &str) {
