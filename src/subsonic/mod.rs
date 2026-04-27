@@ -11,7 +11,7 @@ use crate::jellyfin::api::{
     PlaybackInfo, PlaybackReport, PlaybackReportStatus, PlaylistDtoList, PlaylistItems,
     UserDataDto,
 };
-use crate::subsonic::api::{Song, SubsonicEnvelope, SubsonicResponse};
+use crate::subsonic::api::{ArtistRef, Song, SubsonicEnvelope, SubsonicResponse};
 
 pub mod api;
 
@@ -31,6 +31,7 @@ pub struct Subsonic {
 struct AlbumFallback {
     album_id: Option<String>,
     album_name: Option<String>,
+    album_artists: Vec<ArtistRef>,
     artist_name: Option<String>,
     artist_id: Option<String>,
     year: Option<u32>,
@@ -253,6 +254,7 @@ impl Subsonic {
         let fallback = AlbumFallback {
             album_id: Some(album.id.clone()),
             album_name: Some(album.name.clone()),
+            album_artists: album.album_artists.clone(),
             artist_name: album.artist.clone(),
             artist_id: album.artist_id.clone(),
             year: album.year,
@@ -272,14 +274,29 @@ impl Subsonic {
         let album = song.album.or_else(|| fallback.album_name.clone());
         let album_id = song.album_id.or_else(|| fallback.album_id.clone());
 
+        // The opensubsonic API is disgusting
         let artist_name = song
-            .album_artist
+            .album_artists
+            .first()
+            .map(|artist| artist.name.clone())
+            .or(fallback
+                .album_artists
+                .first()
+                .map(|artist| artist.name.clone()))
+            .or(song.album_artist)
             .or(song.artist)
             .or(fallback.artist_name.clone())
             .unwrap_or_else(|| "Unknown Artist".to_string());
 
         let artist_id = song
-            .artist_id
+            .album_artists
+            .first()
+            .map(|artist| artist.id.clone())
+            .or(fallback
+                .album_artists
+                .first()
+                .map(|artist| artist.id.clone()))
+            .or(song.artist_id)
             .or(fallback.artist_id.clone())
             .unwrap_or_default();
 
@@ -365,6 +382,7 @@ impl Subsonic {
         })?;
 
         let album_fallback = AlbumFallback {
+            album_artists: vec![],
             album_id: None,
             album_name: None,
             artist_name: None,
