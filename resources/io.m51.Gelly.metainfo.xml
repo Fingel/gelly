@@ -26,16 +26,49 @@
   <url type="homepage">https://github.com/Fingel/gelly</url>
   <url type="vcs-browser">https://github.com/Fingel/gelly</url>
   <url type="bugtracker">https://github.com/Fingel/gelly/issues</url>
+  <supports>
+    <control>keyboard</control>
+    <control>pointing</control>
+    <control>touch</control>
+  </supports>
+  <requires>
+    <display_length compare="ge">360</display_length>
+  </requires>
   <screenshots>
     <screenshot type="default">
-      <image>https://m51.io/misc/gellyimg/gelly-2026-02-12-2.png</image>
+      <image>https://m51.io/misc/gellyimg/april26/gelly-1.png</image>
       <caption>Main window showing music library</caption>
+    </screenshot>
+    <screenshot>
+      <image>https://m51.io/misc/gellyimg/april26/gelly-2.png</image>
+      <caption>Main window showing music library in dark mode</caption>
+    </screenshot>
+    <screenshot>
+      <image>https://m51.io/misc/gellyimg/april26/gelly-4.png</image>
+      <caption>Compact view showing favorites playlist</caption>
     </screenshot>
     <screenshot>
       <image>https://m51.io/misc/gellyimg/gellyxmaslyrics.png</image>
       <caption>Window showing lyrics with tracking</caption>
     </screenshot>
   </screenshots>
+  <provides>
+    <binary>gelly</binary>
+  </provides>
+  <categories>
+    <category>Audio</category>
+    <category>Music</category>
+  </categories>
+  <keywords>
+    <keyword>Jellyfin</keyword>
+    <keyword>Subsonic</keyword>
+    <keyword>Navidrome</keyword>
+  </keywords>
+  <icon type="stock">io.m51.Gelly</icon>
+  <branding>
+    <color type="primary" scheme_preference="light">#78d6b3</color>
+    <color type="primary" scheme_preference="dark">#325a4a</color>
+  </branding>
   <releases>
     <release version="1.2.0" date="2026-04-25">
       <description>
@@ -378,21 +411,4 @@
       </description>
     </release>
   </releases>
-  <provides>
-    <binary>gelly</binary>
-  </provides>
-  <categories>
-    <category>Audio</category>
-    <category>Music</category>
-  </categories>
-  <keywords>
-    <keyword>Jellyfin</keyword>
-    <keyword>Subsonic</keyword>
-    <keyword>Navidrome</keyword>
-  </keywords>
-  <icon type="stock">io.m51.Gelly</icon>
-  <branding>
-    <color type="primary" scheme_preference="light">#78d6b3</color>
-    <color type="primary" scheme_preference="dark">#325a4a</color>
-  </branding>
 </component>
