@@ -26,6 +26,21 @@ They can be found under the admin dashboard -> Logs.
 Pull requests follow the [standard Github PR flow](https://docs.github.com/en/get-started/using-github/github-flow). 
 Please [submit PRs](https://github.com/Fingel/gelly/pulls) against the main branch.
 
+## LLM Contributions
+
+I will not accept any obvious LLM generated code into Gelly. If you have experience with
+software development with these tools, you should know what "obviously LLM generated"
+looks like.
+
+Contributions co-authored by an agent or similar will be outright rejected. If you can't
+be bothered to write a commit I can't be bothered to read your PR.
+
+That said, there's no way I can enforce a ban on use of any LLM tooling. A well written
+PR from someone who understands the code and the changes and avoids the obvious pitfalls
+of LLM generated code will likely go unscrutinized. That's just the way it is now.
+
+Please, write code to the best of your ability and don't be lazy.
+
 ## Development Environment
 
 See the [Development](https://github.com/Fingel/gelly?tab=readme-ov-file#development) section
