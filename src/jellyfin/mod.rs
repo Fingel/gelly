@@ -288,12 +288,12 @@ impl Jellyfin {
 
     pub async fn set_favorite(&self, item_id: &str, is_favorite: bool) -> Result<(), BackendError> {
         let path = format!("UserFavoriteItems/{item_id}");
-        if is_favorite {
-            self.post(&path, None, None).await?;
+        let response = if is_favorite {
+            self.post(&path, None, None).await?
         } else {
-            self.delete(&path, None).await?;
-        }
-        Ok(())
+            self.delete(&path, None).await?
+        };
+        self.handle_response(response).await.map(drop)
     }
 
     pub async fn request_library_rescan(&self, library_id: &str) -> Result<(), BackendError> {

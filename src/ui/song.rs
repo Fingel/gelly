@@ -85,6 +85,7 @@ impl Song {
             return;
         };
         song_model.set_favorite(is_favorite);
+        self.set_starred(is_favorite);
         let item_id = song_model.id();
         let app = self.get_application();
         let backend = app.jellyfin();
@@ -105,6 +106,7 @@ impl Song {
                         Err(err) => {
                             warn!("Failed to set favorite: {err}");
                             song_model.set_favorite(!is_favorite);
+                            song.set_starred(!is_favorite);
                         }
                     }
                 }
@@ -336,15 +338,13 @@ mod imp {
 
     use adw::subclass::prelude::*;
     use glib::{WeakRef, subclass::InitializingObject};
-
-    use crate::Application;
     use gtk::{
         CompositeTemplate,
         glib::{self, Properties, subclass::Signal},
         prelude::*,
     };
 
-    use crate::models::SongModel;
+    use crate::{Application, models::SongModel};
 
     #[derive(CompositeTemplate, Default, Properties)]
     #[template(resource = "/io/m51/Gelly/ui/song.ui")]
