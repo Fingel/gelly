@@ -70,6 +70,18 @@
     <color type="primary" scheme_preference="dark">#325a4a</color>
   </branding>
   <releases>
+    <release version="1.2.1" date="2026-04-28">
+      <description>
+        <ul>
+          <li>
+            The Subsonic backend now prioritizes album-artist over artist for the servers that provide it.
+          </li>
+          <li>
+            Fixed favoriting responsiveness in certain cases where the Jellyfin backend is slow.
+          </li>
+        </ul>
+      </description>
+    </release>
     <release version="1.2.0" date="2026-04-25">
       <description>
         <p>This is a substantial release with some long requested features and improvements under the hood.</p>
