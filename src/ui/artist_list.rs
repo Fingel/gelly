@@ -96,19 +96,14 @@ impl ArtistList {
 
     pub fn pull_artists(&self) {
         let artists = self.get_application().library().artists_from_library();
-        if artists.is_empty() {
-            self.set_empty(true);
-        } else {
-            self.set_empty(false);
-            let store = self
-                .imp()
-                .store
-                .get()
-                .expect("ArtistList store should be initialized.");
-            store.remove_all();
-            store.extend_from_slice(&artists);
-            self.apply_sort(self.current_sort_by(), self.current_sort_direction());
-        }
+        let store = self
+            .imp()
+            .store
+            .get()
+            .expect("ArtistList store should be initialized.");
+        store.remove_all();
+        store.extend_from_slice(&artists);
+        self.apply_sort(self.current_sort_by(), self.current_sort_direction());
     }
 
     pub fn activate_artist(&self, index: u32) {
@@ -167,6 +162,14 @@ impl ArtistList {
         let sorter = self.build_sorter();
         let sort_model = gtk::SortListModel::new(Some(search_model), Some(sorter.clone()));
         let selection = gtk::SingleSelection::new(Some(sort_model));
+
+        selection.connect_items_changed(glib::clone!(
+            #[weak(rename_to = artist_list)]
+            self,
+            move |sel, _, _, _| {
+                artist_list.set_empty(sel.n_items() == 0);
+            }
+        ));
 
         let factory = gtk::SignalListItemFactory::new();
         factory.connect_setup(move |_, list_item| {

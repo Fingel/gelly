@@ -104,19 +104,14 @@ impl AlbumList {
 
     pub fn pull_albums(&self) {
         let albums = self.get_application().library().albums_from_library();
-        if albums.is_empty() {
-            self.set_empty(true);
-        } else {
-            self.set_empty(false);
-            let store = self
-                .imp()
-                .store
-                .get()
-                .expect("AlbumList store should be initialized.");
-            store.remove_all();
-            store.extend_from_slice(&albums);
-            self.apply_sort(self.current_sort_by(), self.current_sort_direction());
-        }
+        let store = self
+            .imp()
+            .store
+            .get()
+            .expect("AlbumList store should be initialized.");
+        store.remove_all();
+        store.extend_from_slice(&albums);
+        self.apply_sort(self.current_sort_by(), self.current_sort_direction());
     }
 
     pub fn activate_album(&self, index: u32) {
@@ -186,6 +181,14 @@ impl AlbumList {
         let sorter = self.build_sorter();
         let sort_model = gtk::SortListModel::new(Some(search_model), Some(sorter.clone()));
         let selection = gtk::SingleSelection::new(Some(sort_model));
+
+        selection.connect_items_changed(glib::clone!(
+            #[weak(rename_to = album_list)]
+            self,
+            move |sel, _, _, _| {
+                album_list.set_empty(sel.n_items() == 0);
+            }
+        ));
 
         let factory = gtk::SignalListItemFactory::new();
         factory.connect_setup(move |_, list_item| {

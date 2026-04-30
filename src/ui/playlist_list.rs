@@ -178,7 +178,6 @@ impl PlaylistList {
     pub fn pull_playlists(&self) {
         let playlists = self.get_application().playlists().borrow().clone();
         let library = self.get_application().library();
-        self.set_empty(false);
         let store = self
             .imp()
             .store
@@ -283,6 +282,14 @@ impl PlaylistList {
         let sorter = self.build_sorter();
         let sort_model = gtk::SortListModel::new(Some(search_model), Some(sorter.clone()));
         let selection = gtk::SingleSelection::new(Some(sort_model));
+
+        selection.connect_items_changed(glib::clone!(
+            #[weak(rename_to = playlist_list)]
+            self,
+            move |sel, _, _, _| {
+                playlist_list.set_empty(sel.n_items() == 0);
+            }
+        ));
 
         let factory = gtk::SignalListItemFactory::new();
         factory.connect_setup(move |_, list_item| {
