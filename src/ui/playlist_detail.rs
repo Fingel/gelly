@@ -84,6 +84,14 @@ impl PlaylistDetail {
         let selection_model = gtk::NoSelection::new(Some(store));
         let factory = gtk::SignalListItemFactory::new();
 
+        selection_model.connect_items_changed(glib::clone!(
+            #[weak(rename_to = playlist_detail)]
+            self,
+            move |sel, _, _, _| {
+                playlist_detail.set_empty(sel.n_items() == 0);
+            }
+        ));
+
         factory.connect_setup(glib::clone!(
             #[weak(rename_to = playlist_detail)]
             self,
@@ -207,6 +215,11 @@ impl PlaylistDetail {
         imp.track_list.set_single_click_activate(true);
         imp.track_list.set_model(Some(&selection_model));
         imp.track_list.set_factory(Some(&factory));
+    }
+
+    fn set_empty(&self, empty: bool) {
+        self.imp().track_list.set_visible(!empty);
+        self.imp().empty.set_visible(empty);
     }
 
     fn use_static_icon(&self, name: &str) {
@@ -642,6 +655,8 @@ mod imp {
         pub star_icon: TemplateChild<gtk::Image>,
         #[template_child]
         pub delete: TemplateChild<gtk::Button>,
+        #[template_child]
+        pub empty: TemplateChild<adw::StatusPage>,
 
         pub model: RefCell<Option<PlaylistModel>>,
         pub songs: RefCell<Vec<SongModel>>,

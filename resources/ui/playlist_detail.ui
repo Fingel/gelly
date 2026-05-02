@@ -148,6 +148,13 @@
       </object>
     </child>
     <child>
+      <object class="AdwStatusPage" id="empty">
+        <property name="title">Playlist is Empty</property>
+        <property name="icon-name">audio-x-generic-symbolic</property>
+        <property name="visible">false</property>
+      </object>
+    </child>
+    <child>
       <object class="GellyAutoScrollWindow">
         <property name="vexpand">false</property>
         <property name="margin-top">24</property>
