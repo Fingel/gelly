@@ -154,11 +154,22 @@ impl ArtistDetail {
             }
         );
 
+        let on_copy_id = glib::clone!(
+            #[weak(rename_to = artist)]
+            self,
+            move || {
+                let id = artist.id();
+                artist.clipboard().set_text(&id);
+                artist.toast("Artist ID copied to clipboard", None);
+            }
+        );
+
         create_actiongroup(
             Some(on_add_to_playlist),
             None::<fn()>,
             Some(on_queue_next),
             Some(on_queue_last),
+            Some(on_copy_id),
         )
     }
 
