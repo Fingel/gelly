@@ -67,6 +67,13 @@ fn create_menu_model(config: &ContextActions, playlists: &[PlaylistDto]) -> gio:
     }
     menu.append_section(None, &playlist_section);
 
+    let other_section = gio::Menu::new();
+    other_section.append(
+        Some("Copy ID"),
+        Some(&format!("{}.copy_id", config.action_prefix)),
+    );
+    menu.append_section(None, &other_section);
+
     menu
 }
 
@@ -75,6 +82,7 @@ pub fn create_actiongroup(
     on_remove_from_playlist: Option<impl Fn() + 'static>,
     on_queue_next: Option<impl Fn() + 'static>,
     on_queue_last: Option<impl Fn() + 'static>,
+    on_copy_id: Option<impl Fn() + 'static>,
 ) -> gio::SimpleActionGroup {
     let action_group = gio::SimpleActionGroup::new();
 
@@ -111,6 +119,14 @@ pub fn create_actiongroup(
             on_queue_last();
         }));
         action_group.add_action(&queue_last_action);
+    }
+
+    if let Some(on_copy_id) = on_copy_id {
+        let copy_id_action = gio::SimpleAction::new("copy_id", None);
+        copy_id_action.connect_activate(move |_, _| {
+            on_copy_id();
+        });
+        action_group.add_action(&copy_id_action);
     }
 
     action_group

@@ -309,11 +309,24 @@ impl PlaylistDetail {
             }
         );
 
+        let on_copy_id = glib::clone!(
+            #[weak(rename_to = playlist)]
+            self,
+            move || {
+                if let Some(model) = playlist.get_model() {
+                    let id = model.id();
+                    playlist.clipboard().set_text(&id);
+                    playlist.toast("Playlist ID copied to clipboard", None);
+                }
+            }
+        );
+
         create_actiongroup(
             Some(on_add_to_playlist),
             None::<fn()>,
             Some(on_queue_next),
             Some(on_queue_last),
+            Some(on_copy_id),
         )
     }
 

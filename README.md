@@ -44,6 +44,23 @@ Gelly is available on the [aur](https://aur.archlinux.org/packages/gelly):
 
     nix-shell -p gelly
 
+## Command line interface
+
+Gelly has a few basic command line options that can be sent to the running
+instance. This is useful for light scripting or if you don't want to deal with
+the MPRIS interface. Note that most context menus have a "Copy ID" option which
+can be used as an argument to the `--play-x` options.
+
+```
+-n, --next                  Skip to the next track
+-p, --prev                  Go to the previous track
+-t, --play-pause            Toggle play/pause
+-s, --stop                  Stop playback
+--play-album=ALBUM_ID       Play an album by ID
+--play-artist=ARTIST_ID     Play all songs by an artist ID
+--play-song=SONG_ID         Play a specific song by ID
+```
+
 ## Connecting with TLS using self signed certificates
 
 There is currently [an issue with Flatpak](https://gitlab.com/freedesktop-sdk/freedesktop-sdk/-/issues/1905) 

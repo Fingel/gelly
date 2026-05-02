@@ -250,11 +250,22 @@ impl AlbumDetail {
             }
         );
 
+        let on_copy_id = glib::clone!(
+            #[weak(rename_to = album)]
+            self,
+            move || {
+                let id = album.id();
+                album.clipboard().set_text(&id);
+                album.toast("Album ID copied to clipboard", None);
+            }
+        );
+
         create_actiongroup(
             Some(on_add_to_playlist),
             None::<fn()>,
             Some(on_queue_next),
             Some(on_queue_last),
+            Some(on_copy_id),
         )
     }
 

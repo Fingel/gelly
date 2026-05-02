@@ -244,11 +244,22 @@ impl Song {
             }
         );
 
+        let on_copy_id = glib::clone!(
+            #[weak(rename_to = song)]
+            self,
+            move || {
+                let id = song.song_id();
+                song.clipboard().set_text(&id);
+                song.toast("Song ID copied to clipboard", None);
+            }
+        );
+
         create_actiongroup(
             Some(on_add_to_playlist),
             Some(on_remove_from_playlist),
             Some(on_queue_next),
             Some(on_queue_last),
+            Some(on_copy_id),
         )
     }
 

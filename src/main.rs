@@ -12,6 +12,7 @@ mod async_utils;
 mod audio;
 mod backend;
 mod cache;
+mod cli;
 mod config;
 mod jellyfin;
 mod library;
