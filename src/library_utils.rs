@@ -50,3 +50,15 @@ pub fn play_artist(id: &str, app: &Application) {
         log::warn!("No audio model found");
     }
 }
+
+pub fn play_song(id: &str, app: &Application) {
+    let songs = app.library().all_songs();
+    let song = songs.iter().find(|s| s.id() == id);
+    if let Some(audio_model) = app.audio_model() {
+        if let Some(song) = song {
+            audio_model.set_queue(vec![song.clone()], 0, true);
+        }
+    } else {
+        log::warn!("No audio model found");
+    }
+}

@@ -9,6 +9,7 @@ use crate::audio::model::AudioModel;
 use crate::backend::Backend;
 use crate::backend::BackendError;
 use crate::cache::{Cacheable, ImageCache, LibraryCache};
+use crate::cli::add_cli_options;
 use crate::config::{
     self, BackendType, retrieve_jellyfin_api_token, retrieve_subsonic_password, settings,
 };
@@ -31,13 +32,14 @@ impl Application {
     pub fn new() -> Self {
         let app: Self = Object::builder()
             .property("application-id", config::APP_ID)
-            .property("flags", gio::ApplicationFlags::FLAGS_NONE)
+            .property("flags", gio::ApplicationFlags::HANDLES_COMMAND_LINE)
             .build();
         app.load_settings();
         app.initialize_backend();
         app.initialize_library_cache();
         app.initialize_image_cache();
         app.initialize_audio_model();
+        app.initialize_cli();
         app
     }
 
@@ -96,6 +98,10 @@ impl Application {
                 error!("Failed to initialize image cache: {}", err);
             }
         }
+    }
+
+    pub fn initialize_cli(&self) {
+        add_cli_options(self);
     }
 
     pub fn initialize_audio_model(&self) {
