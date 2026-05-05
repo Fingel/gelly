@@ -65,6 +65,14 @@ pub fn add_cli_options(app: &Application) {
         "Play a specific song by ID",
         Some("SONG_ID"),
     );
+    app.add_main_option(
+        "big-player",
+        Char::from(b'\0'),
+        glib::OptionFlags::NONE,
+        glib::OptionArg::None,
+        "Open the big player",
+        None,
+    );
 
     app.connect_command_line(|app, command_line| {
         let options = command_line.options_dict();
@@ -107,8 +115,10 @@ pub fn add_cli_options(app: &Application) {
         } else if let Some(artist_id) = lookup_value("play-artist") {
             play_artist(&artist_id, app);
         }
-        // We want to show the big player for album art purposes here
-        app.emit_by_name::<()>("big-player-requested", &[]);
+
+        if lookup_bool("big-player") {
+            app.emit_by_name::<()>("big-player-requested", &[]);
+        }
 
         glib::ExitCode::SUCCESS
     });
