@@ -70,6 +70,20 @@
     <color type="primary" scheme_preference="dark">#325a4a</color>
   </branding>
   <releases>
+    <release version="1.2.2" date="2026-05-05">
+      <description>
+        <ul>
+          <li>
+            Add a few command line options for simple scripting of Gelly. See the README for
+            details.
+          </li>
+          <li>
+             List views should now properly show an empty placeholder when filters/search
+             yield no results.
+          </li>
+        </ul>
+      </description>
+    </release>
     <release version="1.2.1" date="2026-04-28">
       <description>
         <ul>
