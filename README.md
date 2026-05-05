@@ -59,6 +59,7 @@ can be used as an argument to the `--play-x` options.
 --play-album=ALBUM_ID       Play an album by ID
 --play-artist=ARTIST_ID     Play all songs by an artist ID
 --play-song=SONG_ID         Play a specific song by ID
+--big-player                Open the big player
 ```
 
 ## Connecting with TLS using self signed certificates
