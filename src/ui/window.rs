@@ -258,6 +258,10 @@ impl Window {
             }
         }
     }
+
+    fn show_big_player(&self) {
+        self.imp().bottom_sheet.set_open(true);
+    }
 }
 
 mod imp {
@@ -744,6 +748,14 @@ mod imp {
                         window,
                         move |_app: Application| {
                             window.loading_visible(false);
+                        }
+                    ));
+
+                    app.connect_closure("big-player-requested", false, glib::closure_local!(
+                        #[weak]
+                        window,
+                        move |_app: Application| {
+                            window.show_big_player();
                         }
                     ));
 

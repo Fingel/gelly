@@ -496,6 +496,7 @@ mod imp {
                         .build(),
                     Signal::builder("http-request-start").build(),
                     Signal::builder("http-request-end").build(),
+                    Signal::builder("big-player-requested").build(),
                 ]
             })
         }
