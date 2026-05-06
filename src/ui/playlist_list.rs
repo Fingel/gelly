@@ -238,6 +238,18 @@ impl PlaylistList {
                 }
             ),
         );
+
+        app.connect_closure(
+            "library-refreshed",
+            false,
+            glib::closure_local!(
+                #[weak(rename_to = playlist_list)]
+                self,
+                move |_app: Application, _total_record_count: u64| {
+                    playlist_list.pull_playlists();
+                }
+            ),
+        );
     }
 
     fn build_sorter(&self) -> gtk::CustomSorter {
