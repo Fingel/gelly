@@ -25,7 +25,7 @@ uuid = { version = "1.18.1", features = ["v4"] }
 rand = "0.10.0"
 md5 = "0.8.0"
 num_enum = "0.7.5"
-lru = "0.17.0"
+lru = "0.18.0"
 
 [build-dependencies]
 glib-build-tools = "0.22.0"
