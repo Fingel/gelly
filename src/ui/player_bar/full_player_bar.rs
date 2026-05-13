@@ -24,8 +24,8 @@ impl FullPlayerBar {
 
         imp.playback_mode_menu.bind_to_audio_model(audio_model);
 
-        imp.volume_control
-            .bind_property("value", audio_model, "volume")
+        audio_model
+            .bind_property("volume", &*imp.volume_control, "value")
             .bidirectional()
             .sync_create()
             .build();

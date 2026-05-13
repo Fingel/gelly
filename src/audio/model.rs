@@ -26,8 +26,8 @@ impl AudioModel {
         let obj: Self = Object::builder().build();
         obj.initialize_player();
         obj.set_queue_index(-1);
-        // TODO set these from settings
-        obj.set_volume(1.0);
+        obj.set_volume(config::get_volume());
+        obj.set_playback_mode(config::get_playback_mode());
         obj.set_muted(false);
         obj
     }
@@ -498,7 +498,7 @@ mod imp {
         #[property(get, set)]
         pub muted: Cell<bool>,
 
-        #[property(get, set)]
+        #[property(get, set = Self::set_playback_mode)]
         pub playback_mode: Cell<u32>,
 
         pub player: OnceCell<AudioPlayer>,
@@ -573,19 +573,17 @@ mod imp {
 
     impl AudioModel {
         pub fn set_shuffle_enabled(&self, enabled: bool) {
-            self.playback_mode.set(if enabled {
+            self.set_playback_mode(if enabled {
                 PlaybackMode::Shuffle as u32
             } else {
                 PlaybackMode::Normal as u32
             });
-            if enabled {
-                self.obj().new_shuffle_cycle();
-            }
         }
 
         pub fn set_volume(&self, volume: f64) {
             let clamped_volume = volume.clamp(0.0, 1.0);
             self.volume.set(clamped_volume);
+            config::set_volume(clamped_volume);
 
             // Replaygain and normalization
             self.obj().apply_volume();
@@ -599,6 +597,14 @@ mod imp {
 
             if let Some(player) = self.player.get() {
                 player.set_mute(muted);
+            }
+        }
+
+        pub fn set_playback_mode(&self, mode: u32) {
+            self.playback_mode.set(mode);
+            config::set_playback_mode(mode);
+            if mode == PlaybackMode::Shuffle as u32 {
+                self.obj().new_shuffle_cycle();
             }
         }
     }

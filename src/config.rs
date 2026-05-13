@@ -335,3 +335,19 @@ pub fn set_playlists_sort_direction(direction: u32) {
         .set_uint("sort-playlists-direction", direction)
         .unwrap();
 }
+
+pub fn get_volume() -> f64 {
+    settings().double("volume")
+}
+
+pub fn set_volume(volume: f64) {
+    settings().set_double("volume", volume).unwrap();
+}
+
+pub fn get_playback_mode() -> u32 {
+    settings().uint("playback-mode")
+}
+
+pub fn set_playback_mode(mode: u32) {
+    settings().set_uint("playback-mode", mode).unwrap();
+}
