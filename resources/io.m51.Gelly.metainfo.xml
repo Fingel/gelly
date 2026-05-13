@@ -70,6 +70,21 @@
     <color type="primary" scheme_preference="dark">#325a4a</color>
   </branding>
   <releases>
+    <release version="1.3.0" date="2026-05-12">
+      <description>
+        <ul>
+          <li>
+            Volume and playback mode will now persist between restarts.
+          </li>
+          <li>
+            Added the -r/--refresh-library CLI option.
+          </li>
+          <li>
+            Fixed a bug where the shuffled songs playlist would be empty on first launch.
+          </li>
+        </ul>
+      </description>
+    </release>
     <release version="1.2.2" date="2026-05-05">
       <description>
         <ul>
