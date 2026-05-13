@@ -389,8 +389,8 @@ where
             move |_, _| {
                 if let Some(obj) = weak.upgrade() {
                     let imp = obj.imp();
-                    let position = *imp.position_storage().borrow();
-                    let duration = *imp.duration_storage().borrow();
+                    let position: u32 = *imp.position_storage().borrow();
+                    let duration: u32 = *imp.duration_storage().borrow();
                     imp.position_label().set_text(&format_time(position));
                     imp.extra_position_update(position);
                     if duration > 0 {
@@ -405,7 +405,7 @@ where
             move |_, _| {
                 if let Some(obj) = weak.upgrade() {
                     let imp = obj.imp();
-                    let duration = *imp.duration_storage().borrow();
+                    let duration: u32 = *imp.duration_storage().borrow();
                     imp.duration_label().set_text(&format_time(duration));
                     imp.extra_duration_update(duration);
                     if duration > 0 {
