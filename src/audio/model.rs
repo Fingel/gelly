@@ -26,8 +26,7 @@ impl AudioModel {
         let obj: Self = Object::builder().build();
         obj.initialize_player();
         obj.set_queue_index(-1);
-        // TODO set these from settings
-        obj.set_volume(1.0);
+        obj.set_volume(config::get_volume());
         obj.set_muted(false);
         obj
     }
@@ -586,6 +585,7 @@ mod imp {
         pub fn set_volume(&self, volume: f64) {
             let clamped_volume = volume.clamp(0.0, 1.0);
             self.volume.set(clamped_volume);
+            config::set_volume(clamped_volume);
 
             // Replaygain and normalization
             self.obj().apply_volume();

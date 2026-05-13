@@ -97,5 +97,9 @@
       <default>true</default>
       <summary>Show current song blurred album art as window background</summary>
     </key>
+    <key name="volume" type="d">
+      <default>1.0</default>
+      <summary>Volume level</summary>
+    </key>
   </schema>
 </schemalist>
