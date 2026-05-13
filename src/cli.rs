@@ -42,6 +42,14 @@ pub fn add_cli_options(app: &Application) {
         None,
     );
     app.add_main_option(
+        "refresh-library",
+        Char::from(b'r'),
+        glib::OptionFlags::NONE,
+        glib::OptionArg::None,
+        "Refresh the library",
+        None,
+    );
+    app.add_main_option(
         "play-album",
         Char::from(b'\0'),
         glib::OptionFlags::NONE,
@@ -106,6 +114,8 @@ pub fn add_cli_options(app: &Application) {
             audio_model.toggle_play_pause();
         } else if lookup_bool("stop") {
             audio_model.stop();
+        } else if lookup_bool("refresh-library") {
+            app.refresh_all(true);
         }
 
         if let Some(song_id) = lookup_value("play-song") {

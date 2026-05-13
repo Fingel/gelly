@@ -56,6 +56,7 @@ can be used as an argument to the `--play-x` options.
 -p, --prev                  Go to the previous track
 -t, --play-pause            Toggle play/pause
 -s, --stop                  Stop playback
+-r, --refresh-library       Refresh the library
 --play-album=ALBUM_ID       Play an album by ID
 --play-artist=ARTIST_ID     Play all songs by an artist ID
 --play-song=SONG_ID         Play a specific song by ID
