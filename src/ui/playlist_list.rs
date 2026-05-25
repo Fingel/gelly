@@ -380,8 +380,16 @@ mod imp {
         pub sorter: OnceCell<gtk::CustomSorter>,
         pub sort_state: Rc<Cell<(u32, u32)>>,
 
-        #[property(get, set, default = 200_u32)]
+        #[property(get, set = Self::set_card_size, default = 200_u32)]
         pub card_size: Cell<u32>,
+    }
+
+    impl PlaylistList {
+        fn set_card_size(&self, val: u32) {
+            self.card_size.set(val);
+            self.grid_view
+                .set_max_columns(if val < 200 { 3 } else { 10 });
+        }
     }
 
     #[glib::object_subclass]

@@ -5,14 +5,9 @@
     <property name="title">Gelly</property>
     <property name="height-request">500</property>
     <child>
-      <object class="AdwBreakpoint" id="sidebar_breakpoint">
-        <condition>max-width: 800sp</condition>
-        <setter object="split_view" property="collapsed">True</setter>
-      </object>
-    </child>
-    <child>
       <object class="AdwBreakpoint" id="breakpoint">
-        <condition>max-width: 600sp</condition>
+        <condition>max-width: 725sp</condition>
+        <setter object="split_view" property="collapsed">True</setter>
         <setter object="header_bar" property="title-widget"></setter>
         <setter object="switcher_bar" property="reveal">true</setter>
         <setter object="header_bar" property="show-title">false</setter>
