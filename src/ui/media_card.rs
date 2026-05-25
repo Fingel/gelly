@@ -107,6 +107,8 @@ mod imp {
         has_secondary_label: Cell<bool>,
         #[property(get, set = Self::set_favorite)]
         favorite: Cell<bool>,
+        #[property(get, set = Self::set_card_size, default = 200_u32)]
+        card_size: Cell<u32>,
     }
 
     #[glib::object_subclass]
@@ -128,6 +130,7 @@ mod imp {
     impl ObjectImpl for MediaCard {
         fn constructed(&self) {
             self.parent_constructed();
+            self.card_size.set(200);
             self.setup_revealer_signals();
             self.obj().connect_map(|widget| {
                 let imp = widget.imp();
@@ -140,6 +143,13 @@ mod imp {
     }
 
     impl MediaCard {
+        fn set_card_size(&self, val: u32) {
+            self.card_size.set(val);
+            self.image.set_size(val);
+            self.static_icon.set_width_request(val as i32);
+            self.static_icon.set_height_request(val as i32);
+        }
+
         fn set_favorite(&self, val: bool) {
             self.favorite.set(val);
             self.overlay_star.set_active(val);

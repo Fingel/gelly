@@ -66,6 +66,7 @@ mod imp {
 
         pub artist_model: RefCell<Option<ArtistModel>>,
         pub favorite_binding: RefCell<Option<glib::Binding>>,
+        pub card_size_binding: RefCell<Option<glib::Binding>>,
     }
 
     #[glib::object_subclass]

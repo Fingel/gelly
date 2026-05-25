@@ -122,6 +122,7 @@ mod imp {
 
         pub playlist_model: RefCell<Option<PlaylistModel>>,
         pub favorite_binding: RefCell<Option<glib::Binding>>,
+        pub card_size_binding: RefCell<Option<glib::Binding>>,
     }
 
     #[glib::object_subclass]

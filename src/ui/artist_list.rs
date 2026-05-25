@@ -172,15 +172,31 @@ impl ArtistList {
         ));
 
         let factory = gtk::SignalListItemFactory::new();
-        factory.connect_setup(move |_, list_item| {
-            let item = list_item.downcast_ref::<gtk::ListItem>().unwrap();
-            item.set_child(Some(&Artist::new()));
-        });
+        factory.connect_setup(glib::clone!(
+            #[weak(rename_to = artist_list)]
+            self,
+            move |_, list_item| {
+                let item = list_item.downcast_ref::<gtk::ListItem>().unwrap();
+                let widget = Artist::new();
+                let binding = artist_list
+                    .bind_property("card-size", &widget.imp().media_card.get(), "card-size")
+                    .sync_create()
+                    .build();
+                widget.imp().card_size_binding.replace(Some(binding));
+                item.set_child(Some(&widget));
+            }
+        ));
         factory.connect_bind(move |_, list_item| {
             let list_item = list_item.downcast_ref::<gtk::ListItem>().unwrap();
             let artist_model = list_item.item().and_downcast::<ArtistModel>().unwrap();
             let artist_widget = list_item.child().and_downcast::<Artist>().unwrap();
             artist_widget.set_artist_model(&artist_model);
+        });
+        factory.connect_teardown(move |_, list_item| {
+            let list_item = list_item.downcast_ref::<gtk::ListItem>().unwrap();
+            if let Some(w) = list_item.child().and_downcast::<Artist>() {
+                w.imp().card_size_binding.replace(None);
+            }
         });
 
         let imp = self.imp();
@@ -210,10 +226,15 @@ mod imp {
 
     use adw::subclass::prelude::*;
     use glib::subclass::InitializingObject;
-    use gtk::{CompositeTemplate, gio, glib};
+    use gtk::{
+        CompositeTemplate, gio,
+        glib::{self, Properties},
+        prelude::*,
+    };
 
-    #[derive(CompositeTemplate, Default)]
+    #[derive(CompositeTemplate, Default, Properties)]
     #[template(resource = "/io/m51/Gelly/ui/artist_list.ui")]
+    #[properties(wrapper_type = super::ArtistList)]
     pub struct ArtistList {
         #[template_child]
         pub grid_view: TemplateChild<gtk::GridView>,
@@ -225,6 +246,9 @@ mod imp {
         pub name_filter: OnceCell<gtk::StringFilter>,
         pub sorter: OnceCell<gtk::CustomSorter>,
         pub sort_state: Rc<Cell<(u32, u32)>>,
+
+        #[property(get, set, default = 200_u32)]
+        pub card_size: Cell<u32>,
     }
 
     #[glib::object_subclass]
@@ -242,9 +266,11 @@ mod imp {
         }
     }
 
+    #[glib::derived_properties]
     impl ObjectImpl for ArtistList {
         fn constructed(&self) {
             self.parent_constructed();
+            self.card_size.set(200);
             self.obj().setup_model();
 
             self.grid_view.connect_activate(glib::clone!(
