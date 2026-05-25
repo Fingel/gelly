@@ -129,41 +129,56 @@
           </object>
         </child>
         <child>
+          <object class="AdwClamp">
+            <property name="maximum-size">600</property>
+            <property name="tightening-threshold">400</property>
+            <child>
+              <object class="GtkBox">
+                <property name="orientation">horizontal</property>
+                <property name="spacing">6</property>
+                <property name="margin-start">12</property>
+                <property name="margin-end">12</property>
+                <child>
+                  <object class="GtkLabel" id="position_label">
+                    <property name="label">0:00</property>
+                    <property name="width-chars">4</property>
+                    <style>
+                      <class name="caption"/>
+                    </style>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkScale" id="position_scale">
+                    <property name="hexpand">true</property>
+                    <property name="draw-value">false</property>
+                    <property name="adjustment">
+                      <object class="GtkAdjustment">
+                        <property name="lower">0</property>
+                        <property name="upper">100</property>
+                        <property name="step-increment">1</property>
+                        <property name="page-increment">10</property>
+                      </object>
+                    </property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="duration_label">
+                    <property name="label">0:00</property>
+                    <property name="width-chars">4</property>
+                    <style>
+                      <class name="caption"/>
+                    </style>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
           <object class="GtkBox">
             <property name="orientation">horizontal</property>
+            <property name="halign">center</property>
             <property name="spacing">6</property>
-            <child>
-              <object class="GtkLabel" id="position_label">
-                <property name="label">0:00</property>
-                <property name="width-chars">4</property>
-                <style>
-                  <class name="caption"/>
-                </style>
-              </object>
-            </child>
-            <child>
-              <object class="GtkScale" id="position_scale">
-                <property name="hexpand">true</property>
-                <property name="draw-value">false</property>
-                <property name="adjustment">
-                  <object class="GtkAdjustment">
-                    <property name="lower">0</property>
-                    <property name="upper">100</property>
-                    <property name="step-increment">1</property>
-                    <property name="page-increment">10</property>
-                  </object>
-                </property>
-              </object>
-            </child>
-            <child>
-              <object class="GtkLabel" id="duration_label">
-                <property name="label">0:00</property>
-                <property name="width-chars">4</property>
-                <style>
-                  <class name="caption"/>
-                </style>
-              </object>
-            </child>
             <child>
               <object class="GtkButton" id="info_button">
                 <property name="margin-start">2</property>
