@@ -70,6 +70,18 @@
     <color type="primary" scheme_preference="dark">#325a4a</color>
   </branding>
   <releases>
+    <release version="1.4.0" date="2026-05-25">
+      <description>
+        <ul>
+          <li>
+            Album art will now shrink in smaller viewports, making a narrow window more usable.
+          </li>
+          <li>
+            Improved layout of the big player.
+          </li>
+        </ul>
+      </description>
+    </release>
     <release version="1.3.0" date="2026-05-12">
       <description>
         <ul>
