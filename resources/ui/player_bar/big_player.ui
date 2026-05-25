@@ -91,44 +91,6 @@
           </object>
         </child>
         <child>
-          <!-- playback controls -->
-          <object class="GtkBox">
-            <property name="orientation">horizontal</property>
-            <property name="halign">center</property>
-            <property name="valign">center</property>
-            <property name="spacing">12</property>
-            <child>
-              <object class="GtkButton" id="prev_button">
-                <property name="icon-name">media-skip-backward-symbolic</property>
-                <property name="tooltip-text">Previous</property>
-                <property name="valign">center</property>
-                <style>
-                  <class name="circular"/>
-                </style>
-              </object>
-            </child>
-            <child>
-              <object class="GtkButton" id="play_pause_button">
-                <property name="icon-name">media-playback-start-symbolic</property>
-                <property name="tooltip-text">Play</property>
-                <style>
-                  <class name="pill"/>
-                </style>
-              </object>
-            </child>
-            <child>
-              <object class="GtkButton" id="next_button">
-                <property name="icon-name">media-skip-forward-symbolic</property>
-                <property name="tooltip-text">Next</property>
-                <property name="valign">center</property>
-                <style>
-                  <class name="circular"/>
-                </style>
-              </object>
-            </child>
-          </object>
-        </child>
-        <child>
           <object class="AdwClamp">
             <property name="maximum-size">600</property>
             <property name="tightening-threshold">400</property>
@@ -170,6 +132,44 @@
                     </style>
                   </object>
                 </child>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <!-- playback controls -->
+          <object class="GtkBox">
+            <property name="orientation">horizontal</property>
+            <property name="halign">center</property>
+            <property name="valign">center</property>
+            <property name="spacing">12</property>
+            <child>
+              <object class="GtkButton" id="prev_button">
+                <property name="icon-name">media-skip-backward-symbolic</property>
+                <property name="tooltip-text">Previous</property>
+                <property name="valign">center</property>
+                <style>
+                  <class name="circular"/>
+                </style>
+              </object>
+            </child>
+            <child>
+              <object class="GtkButton" id="play_pause_button">
+                <property name="icon-name">media-playback-start-symbolic</property>
+                <property name="tooltip-text">Play</property>
+                <style>
+                  <class name="pill"/>
+                </style>
+              </object>
+            </child>
+            <child>
+              <object class="GtkButton" id="next_button">
+                <property name="icon-name">media-skip-forward-symbolic</property>
+                <property name="tooltip-text">Next</property>
+                <property name="valign">center</property>
+                <style>
+                  <class name="circular"/>
+                </style>
               </object>
             </child>
           </object>
