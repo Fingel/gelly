@@ -17,9 +17,11 @@
 - [x] Replaygain
 - [x] Transcoding
 - [x] Search
+- [x] [CLI](#command-line-interface) 
 - [x] Playlist management
 - [x] Favorites 
 - [x] Smart Playlists 
+- [x] [NFC tag support](#nfc-tag-support)
 
 ## Installation
 
@@ -62,6 +64,17 @@ can be used as an argument to the `--play-x` options.
 --play-song=SONG_ID         Play a specific song by ID
 --big-player                Open the big player
 ```
+
+## NFC Tag Support
+
+Gelly doesn't directly support reading or writing NFC card but the project 
+[Gelly-NFC](https://github.com/Fingel/gelly-nfc) does. It's a simple Python
+script that can be used to control Gelly via NFC cards using the 
+[command line interface](#command-line-interface). Perfect for making a home
+Jukebox!
+
+See [this blog post](https://www.pedaldrivenprogramming.com/2026/05/self-hosted-jukebox-with-nfc-cards/)
+for more details.
 
 ## Connecting with TLS using self signed certificates
 
