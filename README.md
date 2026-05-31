@@ -89,6 +89,13 @@ set the `SSL_CERT_FILE` env var to point to it. This can be done using a tool li
 
 The other alternative is to use a non flatpak installation method.
 
+  ## Translations
+
+  Gelly needs help with translations! See the 
+  [Weblate project page](https://hosted.weblate.org/engage/gelly/) to submit translations via Weblate.
+
+  [![Translation status](https://hosted.weblate.org/widgets/gelly/-/gelly/svg-badge.svg)](https://hosted.weblate.org/engage/gelly/)
+
 ## Development
 
 Make sure you have the development libraries for the following installed:
