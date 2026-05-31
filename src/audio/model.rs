@@ -86,22 +86,13 @@ impl AudioModel {
                                 .item(next_index as u32)
                                 .and_downcast::<SongModel>()
                         {
-                            obj.imp().uri.replace(obj.imp().prefetched_next_uri.take());
                             obj.emit_by_name::<()>("song-finished", &[]);
-                            obj.set_queue_index(next_index);
-                            obj.set_property("position", 0u32);
-                            obj.set_property("duration", 0u32);
-                            obj.emit_by_name::<()>("song-changed", &[&song.id()]);
-                            let queue_len = obj.queue_len();
-                            obj.report_event(PlaybackEvent::TrackChanged {
-                                song: Some(song),
-                                position: 0,
-                                can_go_next: (next_index + 1) < queue_len,
-                                can_go_previous: next_index > 0,
-                            });
-                            // Advance the shuffle cursor past the song we just transitioned to
-                            let _ = obj.next_index();
-                            obj.prefetch_next_uri();
+                            obj.advance_shuffle_cursor();
+                            obj.update_current_song(
+                                next_index,
+                                song,
+                                obj.imp().prefetched_next_uri.take(),
+                            );
                         }
                     }
                     PlayerEvent::StreamStarted => {
@@ -274,26 +265,30 @@ impl AudioModel {
             let stream_uri = self.stream_uri(&song.id());
             let player = self.player();
             player.stop();
-            self.set_property("position", 0u32);
-            self.set_property("duration", 0u32);
             self.set_property("loading", true);
-            self.set_queue_index(index);
             player.set_uri(&stream_uri);
-            self.imp().uri.replace(Some(stream_uri));
-            self.emit_by_name::<()>("song-changed", &[&song.id()]);
+            self.update_current_song(index, song, Some(stream_uri));
             self.apply_volume();
-            let queue_len = self.queue().len() as i32;
-            self.report_event(PlaybackEvent::TrackChanged {
-                song: Some(song),
-                position: 0,
-                can_go_next: index >= 0 && (index + 1) < queue_len,
-                can_go_previous: index > 0,
-            });
-            self.prefetch_next_uri();
         } else {
             self.stop();
             warn!("Failed to load song at index {}", index);
         }
+    }
+
+    fn update_current_song(&self, index: i32, song: SongModel, uri: Option<String>) {
+        self.imp().uri.replace(uri);
+        self.set_queue_index(index);
+        self.set_property("position", 0u32);
+        self.set_property("duration", 0u32);
+        self.emit_by_name::<()>("song-changed", &[&song.id()]);
+        let queue_len = self.queue_len();
+        self.report_event(PlaybackEvent::TrackChanged {
+            song: Some(song),
+            position: 0,
+            can_go_next: (index + 1) < queue_len,
+            can_go_previous: index > 0,
+        });
+        self.prefetch_next_uri();
     }
 
     fn prefetch_next_uri(&self) {
@@ -498,6 +493,13 @@ impl AudioModel {
 
     pub fn current_song_id(&self) -> String {
         self.current_song().map(|s| s.id()).unwrap_or_default()
+    }
+
+    fn advance_shuffle_cursor(&self) {
+        if self.playback_mode() == PlaybackMode::Shuffle as u32 {
+            let pos = self.imp().shuffle_index.get();
+            self.imp().shuffle_index.set(pos + 1);
+        }
     }
 
     fn new_shuffle_cycle(&self) {
