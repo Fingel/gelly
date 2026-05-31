@@ -268,7 +268,6 @@ impl AudioModel {
             self.set_property("loading", true);
             player.set_uri(&stream_uri);
             self.update_current_song(index, song, Some(stream_uri));
-            self.apply_volume();
         } else {
             self.stop();
             warn!("Failed to load song at index {}", index);
