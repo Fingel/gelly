@@ -4,6 +4,7 @@ use gstreamer as gst;
 use gstreamer::prelude::*;
 use gtk::glib;
 use log::warn;
+use std::sync::{Arc, Mutex};
 
 #[derive(Debug, Clone)]
 pub enum PlayerState {
@@ -19,6 +20,8 @@ pub enum PlayerEvent {
     Error(String),
     PositionChanged(u64),
     DurationChanged(u64),
+    AboutToFinish,
+    StreamStarted,
 }
 
 #[derive(Debug)]
@@ -26,6 +29,7 @@ pub struct AudioPlayer {
     pipeline: gst::Pipeline,
     playbin: gst::Element,
     event_sender: Sender<PlayerEvent>,
+    next_uri_cache: Arc<Mutex<Option<String>>>,
 }
 
 impl AudioPlayer {
@@ -46,10 +50,12 @@ impl AudioPlayer {
             pipeline,
             playbin,
             event_sender,
+            next_uri_cache: Arc::new(Mutex::new(None)),
         };
 
         player_instance.setup_bus_handling();
         player_instance.setup_position_timer();
+        player_instance.setup_element_signals();
 
         (player_instance, event_reciever)
     }
@@ -169,6 +175,9 @@ impl AudioPlayer {
                     gst::MessageView::DurationChanged(_) => {
                         // Get it via a timer instead
                     }
+                    gst::MessageView::StreamStart(_) => {
+                        let _ = sender.send(PlayerEvent::StreamStarted).await;
+                    }
                     _ => {}
                 }
             }
@@ -209,6 +218,28 @@ impl AudioPlayer {
                 }
             }
             glib::ControlFlow::Continue
+        });
+    }
+
+    pub fn cache_next_uri(&self, uri: String) {
+        *self.next_uri_cache.lock().unwrap() = Some(uri);
+    }
+
+    pub fn clear_next_uri_cache(&self) {
+        *self.next_uri_cache.lock().unwrap() = None;
+    }
+
+    fn setup_element_signals(&self) {
+        let cache = Arc::clone(&self.next_uri_cache);
+        let playbin = self.playbin.clone();
+        let sender = self.event_sender.clone();
+
+        self.playbin.connect("about-to-finish", false, move |_| {
+            if let Some(uri) = cache.lock().unwrap().take() {
+                playbin.set_property("uri", &uri);
+                let _ = sender.send_blocking(PlayerEvent::AboutToFinish);
+            }
+            None
         });
     }
 }
