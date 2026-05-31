@@ -86,6 +86,7 @@ impl AudioModel {
                                 .item(next_index as u32)
                                 .and_downcast::<SongModel>()
                         {
+                            obj.imp().uri.replace(obj.imp().prefetched_next_uri.take());
                             obj.emit_by_name::<()>("song-finished", &[]);
                             obj.set_queue_index(next_index);
                             obj.set_property("position", 0u32);
@@ -262,6 +263,7 @@ impl AudioModel {
 
     fn load_song(&self, index: i32) {
         self.imp().prefetched_next_index.set(None);
+        self.imp().prefetched_next_uri.replace(None);
         self.player().clear_next_uri_cache();
         if let Some(song) = self
             .imp()
@@ -305,6 +307,7 @@ impl AudioModel {
             let uri = self.stream_uri(&song.id());
             if !uri.is_empty() {
                 self.imp().prefetched_next_index.set(Some(next_index));
+                self.imp().prefetched_next_uri.replace(Some(uri.clone()));
                 self.player().cache_next_uri(uri);
             }
         }
@@ -569,6 +572,7 @@ mod imp {
         pub shuffle_seed: Cell<u64>,
         pub uri: RefCell<Option<String>>,
         pub prefetched_next_index: Cell<Option<i32>>,
+        pub prefetched_next_uri: RefCell<Option<String>>,
     }
 
     impl Default for AudioModel {
@@ -591,6 +595,7 @@ mod imp {
                 shuffle_seed: Cell::new(0),
                 uri: RefCell::new(None),
                 prefetched_next_index: Cell::new(None),
+                prefetched_next_uri: RefCell::new(None),
             }
         }
     }
