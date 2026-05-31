@@ -26,6 +26,7 @@ rand = "0.10.0"
 md5 = "0.8.0"
 num_enum = "0.7.5"
 lru = "0.18.0"
+gettext-rs = { version = "0.7", features = ["gettext-system"] }
 
 [build-dependencies]
 glib-build-tools = "0.22.0"
