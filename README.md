@@ -15,6 +15,7 @@
 - [x] MPRIS
 - [x] Lyrics
 - [x] Replaygain
+- [x] Gapless playback 
 - [x] Transcoding
 - [x] Search
 - [x] [CLI](#command-line-interface) 
