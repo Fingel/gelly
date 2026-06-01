@@ -21,9 +21,11 @@ modules:
       env:
         CARGO_HOME: /run/build/gelly/cargo
         CARGO_NET_OFFLINE: "true"
+        LOCALEDIR: /app/share/locale
     build-commands:
       - cargo --offline fetch --manifest-path Cargo.toml --verbose
       - cargo build --offline --release --all-features
+      - for po_file in po/*.po; do lang=$(basename "$po_file" .po); install -dm755 ${FLATPAK_DEST}/share/locale/$lang/LC_MESSAGES; msgfmt -o ${FLATPAK_DEST}/share/locale/$lang/LC_MESSAGES/gelly.mo $po_file; done
       - install -Dm0755 target/release/gelly ${FLATPAK_DEST}/bin/gelly
       - install -Dm644 resources/${FLATPAK_ID}.svg ${FLATPAK_DEST}/share/icons/hicolor/scalable/apps/${FLATPAK_ID}.svg
       - install -Dm644 resources/${FLATPAK_ID}-symbolic.svg ${FLATPAK_DEST}/share/icons/hicolor/symbolic/apps/${FLATPAK_ID}-symbolic.svg
