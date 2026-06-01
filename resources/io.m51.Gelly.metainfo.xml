@@ -70,6 +70,19 @@
     <color type="primary" scheme_preference="dark">#325a4a</color>
   </branding>
   <releases>
+    <release version="1.5.0" date="2026-06-01">
+      <description>
+        <ul>
+          <li>
+            Gapless playback.
+          </li>
+          <li>
+             Added Italian and French translations. Looking for volunteers to help translate to more languages!
+             See the README for details.
+          </li>
+        </ul>
+      </description>
+    </release>
     <release version="1.4.0" date="2026-05-25">
       <description>
         <ul>
