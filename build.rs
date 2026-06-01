@@ -37,9 +37,7 @@ fn compile_po_files(locale_dir: &str) {
             None => continue,
         };
 
-        let mo_dir = PathBuf::from(locale_dir)
-            .join(&lang)
-            .join("LC_MESSAGES");
+        let mo_dir = PathBuf::from(locale_dir).join(&lang).join("LC_MESSAGES");
         std::fs::create_dir_all(&mo_dir).expect("Failed to create locale dir");
 
         let status = Command::new("msgfmt")

@@ -1,5 +1,5 @@
-pub use gettextrs::ngettext;
 pub use gettextrs::gettext as tr;
+pub use gettextrs::ngettext;
 
 pub fn init() {
     gettextrs::setlocale(gettextrs::LocaleCategory::LcAll, "");
