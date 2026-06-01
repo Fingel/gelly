@@ -25,3 +25,6 @@ scratch/
 # Flatpak things
 build/
 repo/
+
+# compiled gettext files
+po/*.mo
