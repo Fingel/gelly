@@ -14,6 +14,7 @@ mod backend;
 mod cache;
 mod cli;
 mod config;
+mod i18n;
 mod jellyfin;
 mod library;
 mod library_utils;
@@ -24,6 +25,7 @@ mod ui;
 
 fn main() -> glib::ExitCode {
     env_logger::init();
+    i18n::init();
     gio::resources_register_include!("gelly.gresource").expect("Failed to register resources");
     let app = Application::new();
     app.connect_startup(|_| load_css());

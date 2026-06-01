@@ -1,5 +1,6 @@
 use crate::{
     async_utils::spawn_tokio,
+    i18n::ngettext,
     jellyfin::utils::format_duration,
     models::{AlbumModel, SongModel},
     ui::{
@@ -189,7 +190,15 @@ impl AlbumDetail {
             } else {
                 audio_model.prepend_to_queue(songs);
             }
-            self.toast(&format!("{} songs added to queue", song_cnt), None);
+            self.toast(
+                &ngettext(
+                    "1 song added to queue",
+                    "{} songs added to queue",
+                    song_cnt as u32,
+                )
+                .replace("{}", &song_cnt.to_string()),
+                None,
+            );
         } else {
             self.toast("Audio model not initialized, please restart", None);
             warn!("No audio model found");

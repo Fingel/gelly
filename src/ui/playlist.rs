@@ -1,6 +1,7 @@
 use crate::{
     backend::BackendError,
     config::{self, BackendType},
+    i18n::{ngettext, tr},
     library_utils::songs_for_playlist,
     models::{PlaylistModel, SongModel},
     ui::widget_ext::WidgetApplicationExt,
@@ -23,14 +24,15 @@ impl Playlist {
         let imp = self.imp();
         let card = &imp.media_card;
         let secondary_text = if playlist_model.child_count() > 0 {
-            &format!("{} songs", playlist_model.child_count())
+            ngettext("1 song", "{} songs", playlist_model.child_count() as u32)
+                .replace("{}", &playlist_model.child_count().to_string())
         } else if playlist_model.is_smart() {
-            "Smart playlist"
+            tr("Smart playlist")
         } else {
-            "Empty playlist"
+            tr("Empty playlist")
         };
         card.set_primary_text(&playlist_model.name());
-        card.set_secondary_text(secondary_text);
+        card.set_secondary_text(&secondary_text);
         card.set_image_id(&playlist_model.id());
         card.set_has_star_button(config::get_backend_type() == BackendType::Jellyfin);
         if playlist_model.is_smart() {
