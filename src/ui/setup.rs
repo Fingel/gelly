@@ -322,8 +322,6 @@ impl Setup {
     }
 
     fn start_quick_connect_polling(&self, host: String, secret: String) {
-        let stop_polling = Rc::new(Cell::new(false));
-
         glib::timeout_add_seconds_local(
             2,
             glib::clone!(
@@ -332,15 +330,10 @@ impl Setup {
                 #[upgrade_or]
                 glib::ControlFlow::Break,
                 move || {
-                    if stop_polling.get() {
+                    if setup.imp().stop_qc_polling.get() {
                         return glib::ControlFlow::Break;
                     }
-
-                    setup.check_quick_connect_status(
-                        host.clone(),
-                        secret.clone(),
-                        stop_polling.clone(),
-                    );
+                    setup.check_quick_connect_status(host.clone(), secret.clone());
 
                     glib::ControlFlow::Continue
                 }
@@ -348,12 +341,7 @@ impl Setup {
         );
     }
 
-    fn check_quick_connect_status(
-        &self,
-        host: String,
-        secret: String,
-        stop_polling: Rc<Cell<bool>>,
-    ) {
+    fn check_quick_connect_status(&self, host: String, secret: String) {
         let host_for_status = host.clone();
         let secret_for_status = secret.clone();
 
@@ -365,12 +353,12 @@ impl Setup {
                 move |result| match result {
                     Ok(status) => {
                         if status.authenticated {
-                            stop_polling.set(true);
+                            setup.imp().stop_qc_polling.set(true);
                             setup.authenticate_with_quick_connect(host.clone(), secret.clone());
                         }
                     }
                     Err(err) => {
-                        stop_polling.set(true);
+                        setup.imp().stop_qc_polling.set(true);
                         error!("Error checking quick connect status: {:?}", err);
                         setup.toast("Error during quick connect", None);
                     }
@@ -452,7 +440,10 @@ mod imp {
     use glib::subclass::InitializingObject;
     use gtk::{CompositeTemplate, glib, prelude::WidgetExt};
     use log::warn;
-    use std::cell::RefCell;
+    use std::{
+        cell::{Cell, RefCell},
+        rc::Rc,
+    };
 
     #[derive(CompositeTemplate, Default)]
     #[template(resource = "/io/m51/Gelly/ui/setup.ui")]
@@ -486,6 +477,8 @@ mod imp {
         #[template_child]
         pub quick_connect_code: TemplateChild<gtk::Label>,
         pub libraries: RefCell<Vec<LibraryDto>>,
+
+        pub stop_qc_polling: Rc<Cell<bool>>,
     }
 
     #[glib::object_subclass]
@@ -558,6 +551,7 @@ mod imp {
                     #[weak(rename_to=imp)]
                     self,
                     move |_| {
+                        imp.stop_qc_polling.set(true);
                         imp.obj().show_server_setup();
                     }
                 ));
