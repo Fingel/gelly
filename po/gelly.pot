@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-31 16:21-0700\n"
+"POT-Creation-Date: 2026-06-02 13:16-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -39,6 +39,22 @@ msgstr ""
 
 #: src/ui/playlist.rs:32
 msgid "Empty playlist"
+msgstr ""
+
+#: src/ui/setup.rs:218
+msgid "Connection error. Please supply a full URL (http://example.com:8096)"
+msgstr ""
+
+#: src/ui/setup.rs:232
+msgid "Invalid credentials"
+msgstr ""
+
+#: src/ui/setup.rs:242
+msgid "Could not authenticate with Jellyfin or Subsonic"
+msgstr ""
+
+#: src/ui/setup.rs:418
+msgid "Quick connect code copied to clipboard"
 msgstr ""
 
 #: resources/ui/album_art.ui:33
@@ -147,16 +163,52 @@ msgid ""
 "uses 4533."
 msgstr ""
 
-#: resources/ui/setup.ui:82
+#: resources/ui/setup.ui:42
+msgid "Username"
+msgstr ""
+
+#: resources/ui/setup.ui:47
+msgid "Password"
+msgstr ""
+
+#: resources/ui/setup.ui:54
+msgid "Connect"
+msgstr ""
+
+#: resources/ui/setup.ui:65 resources/ui/setup.ui:150
+msgid "Jellyfin Quick Connect"
+msgstr ""
+
+#: resources/ui/setup.ui:80
+msgid "Choose Library"
+msgstr ""
+
+#: resources/ui/setup.ui:89
 msgid "Select Library"
 msgstr ""
 
-#: resources/ui/setup.ui:83
+#: resources/ui/setup.ui:90
 msgid "Choose which library Gelly will use to load your music."
 msgstr ""
 
-#: resources/ui/setup.ui:98
+#: resources/ui/setup.ui:105
 msgid "Library"
+msgstr ""
+
+#: resources/ui/setup.ui:112
+msgid "Launch Gelly"
+msgstr ""
+
+#: resources/ui/setup.ui:123 resources/ui/setup.ui:186
+msgid "Cancel"
+msgstr ""
+
+#: resources/ui/setup.ui:141
+msgid "Quick Connect"
+msgstr ""
+
+#: resources/ui/setup.ui:151
+msgid "Enter the code on the Jellyfin web page to complete authentication."
 msgstr ""
 
 #: resources/ui/window.ui:57

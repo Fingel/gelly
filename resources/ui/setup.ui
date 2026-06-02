@@ -39,25 +39,32 @@
                                 </child>
                                 <child>
                                   <object class="AdwEntryRow" id="username_entry">
-                                    <property name="title">Username</property>
+                                    <property name="title" translatable="yes">Username</property>
                                   </object>
                                 </child>
                                 <child>
                                   <object class="AdwPasswordEntryRow" id="password_entry">
-                                    <property name="title">Password</property>
+                                    <property name="title" translatable="yes">Password</property>
                                   </object>
                                 </child>
                               </object>
                             </child>
                             <child>
                               <object class="GtkButton" id="connect_button">
-                                <property name="label">Connect</property>
+                                <property name="label" translatable="yes">Connect</property>
                                 <property name="sensitive">false</property>
                                 <property name="halign">center</property>
                                 <style>
                                   <class name="suggested-action"/>
                                   <class name="pill"/>
                                 </style>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkButton" id="quick_connect_button">
+                                <property name="label" translatable="yes">Jellyfin Quick Connect</property>
+                                <property name="sensitive">false</property>
+                                <property name="halign">center</property>
                               </object>
                             </child>
                           </object>
@@ -70,7 +77,7 @@
             </property>
           </object>
           <object class="AdwNavigationPage" id="setup_library">
-            <property name="title">Choose Library</property>
+            <property name="title" translatable="yes">Choose Library</property>
             <property name="child">
               <object class="AdwToolbarView">
                 <child type="top">
@@ -102,7 +109,7 @@
                             </child>
                             <child>
                               <object class="GtkButton" id="library_button">
-                                <property name="label">Launch Gelly</property>
+                                <property name="label" translatable="yes">Launch Gelly</property>
                                 <property name="sensitive">false</property>
                                 <property name="halign">center</property>
                                 <style>
@@ -113,10 +120,72 @@
                             </child>
                             <child>
                               <object class="GtkButton" id="cancel_library_button">
-                                <property name="label">Cancel</property>
+                                <property name="label" translatable="yes">Cancel</property>
                                 <property name="halign">center</property>
                                 <style>
                                   <class name="destructive-action"/>
+                                  <class name="flat"/>
+                                </style>
+                              </object>
+                            </child>
+                          </object>
+                        </property>
+                      </object>
+                    </property>
+                  </object>
+                </property>
+              </object>
+            </property>
+          </object>
+          <object class="AdwNavigationPage" id="quick_connect">
+            <property name="title" translatable="yes">Quick Connect</property>
+            <property name="child">
+              <object class="AdwToolbarView">
+                <child type="top">
+                  <object class="AdwHeaderBar"/>
+                </child>
+                <property name="content">
+                  <object class="AdwStatusPage">
+                    <property name="icon-name">network-transmit-receive-symbolic</property>
+                    <property name="title" translatable="yes">Jellyfin Quick Connect</property>
+                    <property name="description" translatable="yes">Enter the code on the Jellyfin web page to complete authentication.</property>
+                    <property name="child">
+                      <object class="AdwClamp">
+                        <property name="child">
+                          <object class="GtkBox">
+                            <property name="orientation">vertical</property>
+                            <property name="spacing">24</property>
+                            <property name="halign">center</property>
+                            <child>
+                              <object class="GtkBox">
+                                <property name="orientation">horizontal</property>
+                                <property name="spacing">6</property>
+                                <child>
+                                  <object class="GtkLabel" id="quick_connect_code">
+                                    <property name="label"></property>
+                                    <property name="halign">center</property>
+                                    <property name="selectable">true</property>
+                                    <style>
+                                      <class name="title-1"/>
+                                    </style>
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="GtkButton" id="quick_connect_copy_button">
+                                    <property name="icon-name">edit-copy-symbolic</property>
+                                    <property name="halign">center</property>
+                                    <style>
+                                      <class name="flat"/>
+                                    </style>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkButton" id="cancel_quick_connect_button">
+                                <property name="label" translatable="yes">Cancel</property>
+                                <property name="halign">center</property>
+                                <style>
                                   <class name="flat"/>
                                 </style>
                               </object>
