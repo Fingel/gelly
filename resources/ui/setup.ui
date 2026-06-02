@@ -155,14 +155,30 @@
                           <object class="GtkBox">
                             <property name="orientation">vertical</property>
                             <property name="spacing">24</property>
+                            <property name="halign">center</property>
                             <child>
-                              <object class="GtkLabel" id="quick_connect_code">
-                                <property name="label"></property>
-                                <property name="halign">center</property>
-                                <property name="selectable">true</property>
-                                <style>
-                                  <class name="title-1"/>
-                                </style>
+                              <object class="GtkBox">
+                                <property name="orientation">horizontal</property>
+                                <property name="spacing">6</property>
+                                <child>
+                                  <object class="GtkLabel" id="quick_connect_code">
+                                    <property name="label"></property>
+                                    <property name="halign">center</property>
+                                    <property name="selectable">true</property>
+                                    <style>
+                                      <class name="title-1"/>
+                                    </style>
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="GtkButton" id="quick_connect_copy_button">
+                                    <property name="icon-name">edit-copy-symbolic</property>
+                                    <property name="halign">center</property>
+                                    <style>
+                                      <class name="flat"/>
+                                    </style>
+                                  </object>
+                                </child>
                               </object>
                             </child>
                             <child>

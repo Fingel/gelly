@@ -292,6 +292,7 @@ impl Setup {
         let imp = self.imp();
         let host = imp.host_entry.text().to_string();
         let host_for_init = host.clone();
+        imp.stop_qc_polling.set(false);
 
         spawn_tokio(
             async move { initiate_quick_connect(&host_for_init).await },
@@ -308,7 +309,8 @@ impl Setup {
                     }
                     Err(err) => {
                         error!("Failed to initiate quick connect: {:?}", err);
-                        setup.toast("Failed to initiate quick connect", None);
+                        setup.toast("Failed to initiate quick connect. Is the host valid?", None);
+                        setup.show_server_setup();
                     }
                 }
             ),
@@ -403,6 +405,12 @@ impl Setup {
         );
     }
 
+    fn handle_qc_copy(&self) {
+        let text = self.imp().quick_connect_code.text();
+        self.clipboard().set_text(&text);
+        self.toast("Quick connect code copied to clipboard", None);
+    }
+
     fn handle_library_button_click(&self) {
         let library_id = self.get_selected_library();
         settings()
@@ -476,8 +484,10 @@ mod imp {
         pub cancel_quick_connect_button: TemplateChild<gtk::Button>,
         #[template_child]
         pub quick_connect_code: TemplateChild<gtk::Label>,
-        pub libraries: RefCell<Vec<LibraryDto>>,
+        #[template_child]
+        pub quick_connect_copy_button: TemplateChild<gtk::Button>,
 
+        pub libraries: RefCell<Vec<LibraryDto>>,
         pub stop_qc_polling: Rc<Cell<bool>>,
     }
 
@@ -573,6 +583,14 @@ mod imp {
                 self,
                 move |_| {
                     imp.obj().show_quick_connect();
+                }
+            ));
+
+            self.quick_connect_copy_button.connect_clicked(glib::clone!(
+                #[weak(rename_to=imp)]
+                self,
+                move |_| {
+                    imp.obj().handle_qc_copy();
                 }
             ));
         }
