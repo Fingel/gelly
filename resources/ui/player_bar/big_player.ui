@@ -94,7 +94,7 @@
           <object class="AdwClamp">
             <property name="maximum-size">600</property>
             <property name="tightening-threshold">400</property>
-            <child>
+            <property name="child">
               <object class="GtkBox">
                 <property name="orientation">horizontal</property>
                 <property name="spacing">6</property>
@@ -133,7 +133,7 @@
                   </object>
                 </child>
               </object>
-            </child>
+            </property>
           </object>
         </child>
         <child>
