@@ -1,0 +1,311 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-06-02 13:16-0700\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"Language: pt_BR\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+
+#: src/ui/album_detail.rs:195 src/ui/artist_detail.rs:225
+#: src/ui/playlist_detail.rs:538
+#, rust-format
+msgid "1 song added to queue"
+msgid_plural "{} songs added to queue"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/ui/playlist.rs:27
+#, rust-format
+msgid "1 song"
+msgid_plural "{} songs"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/ui/playlist.rs:30
+msgid "Smart playlist"
+msgstr ""
+
+#: src/ui/playlist.rs:32
+msgid "Empty playlist"
+msgstr ""
+
+#: src/ui/setup.rs:218
+msgid "Connection error. Please supply a full URL (http://example.com:8096)"
+msgstr ""
+
+#: src/ui/setup.rs:232
+msgid "Invalid credentials"
+msgstr ""
+
+#: src/ui/setup.rs:242
+msgid "Could not authenticate with Jellyfin or Subsonic"
+msgstr ""
+
+#: src/ui/setup.rs:418
+msgid "Quick connect code copied to clipboard"
+msgstr ""
+
+#: resources/ui/album_art.ui:33
+msgid "Missing album art"
+msgstr ""
+
+#: resources/ui/preferences.ui:9 resources/ui/preferences.ui:12
+msgid "General"
+msgstr ""
+
+#: resources/ui/preferences.ui:15
+msgid "Refresh library on startup"
+msgstr ""
+
+#: resources/ui/preferences.ui:16
+msgid "The library can be refreshed using ctrl+r or the menu."
+msgstr ""
+
+#: resources/ui/preferences.ui:28
+msgid "Extra eye candy"
+msgstr ""
+
+#: resources/ui/preferences.ui:29
+msgid "Utilizes transparency, blurred backgrounds, etc."
+msgstr ""
+
+#: resources/ui/preferences.ui:36
+msgid "Playback"
+msgstr ""
+
+#: resources/ui/preferences.ui:39
+msgid "Normalize Audio"
+msgstr ""
+
+#: resources/ui/preferences.ui:40
+msgid "May require backend plugins."
+msgstr ""
+
+#: resources/ui/preferences.ui:52
+msgid "Inhibit Suspend"
+msgstr ""
+
+#: resources/ui/preferences.ui:53
+msgid "Prevents the system from suspending while playing"
+msgstr ""
+
+#: resources/ui/preferences.ui:67
+msgid "Transcoding"
+msgstr ""
+
+#: resources/ui/preferences.ui:68
+msgid ""
+"Transcoding reduces stream quality and bandwidth at the expense of "
+"processing power on the server. Note that Subsonic backends cannot seek "
+"transcoded streams."
+msgstr ""
+
+#: resources/ui/preferences.ui:71
+msgid "Transcoding Profile"
+msgstr ""
+
+#: resources/ui/preferences.ui:72
+msgid "Only used when direct play is not available."
+msgstr ""
+
+#: resources/ui/preferences.ui:85
+msgid "Maximum Bitrate (kbps)"
+msgstr ""
+
+#: resources/ui/preferences.ui:86
+msgid "A value of 0 means no limit."
+msgstr ""
+
+#: resources/ui/preferences.ui:105 resources/ui/window.ui:275
+msgid "Playlists"
+msgstr ""
+
+#: resources/ui/preferences.ui:108
+msgid "Smart Playlists"
+msgstr ""
+
+#: resources/ui/preferences.ui:111
+msgid "Favorite Mix Playlist"
+msgstr ""
+
+#: resources/ui/preferences.ui:123
+msgid "Shuffled Playlist"
+msgstr ""
+
+#: resources/ui/preferences.ui:135
+msgid "Most Played Playlist"
+msgstr ""
+
+#: resources/ui/setup.ui:10
+msgid "Servers"
+msgstr ""
+
+#: resources/ui/setup.ui:19
+msgid "Connect to Server"
+msgstr ""
+
+#: resources/ui/setup.ui:20
+msgid ""
+"Gelly supports Jellyfin and Subsonic/Navidrome. Enter the full server URL "
+"including protocol and port. For Jellyfin this is usually 8096, Navidrome "
+"uses 4533."
+msgstr ""
+
+#: resources/ui/setup.ui:42
+msgid "Username"
+msgstr ""
+
+#: resources/ui/setup.ui:47
+msgid "Password"
+msgstr ""
+
+#: resources/ui/setup.ui:54
+msgid "Connect"
+msgstr ""
+
+#: resources/ui/setup.ui:65 resources/ui/setup.ui:150
+msgid "Jellyfin Quick Connect"
+msgstr ""
+
+#: resources/ui/setup.ui:80
+msgid "Choose Library"
+msgstr ""
+
+#: resources/ui/setup.ui:89
+msgid "Select Library"
+msgstr ""
+
+#: resources/ui/setup.ui:90
+msgid "Choose which library Gelly will use to load your music."
+msgstr ""
+
+#: resources/ui/setup.ui:105
+msgid "Library"
+msgstr ""
+
+#: resources/ui/setup.ui:112
+msgid "Launch Gelly"
+msgstr ""
+
+#: resources/ui/setup.ui:123 resources/ui/setup.ui:186
+msgid "Cancel"
+msgstr ""
+
+#: resources/ui/setup.ui:141
+msgid "Quick Connect"
+msgstr ""
+
+#: resources/ui/setup.ui:151
+msgid "Enter the code on the Jellyfin web page to complete authentication."
+msgstr ""
+
+#: resources/ui/window.ui:57
+msgid "Album Detail"
+msgstr ""
+
+#: resources/ui/window.ui:90
+msgid "Artist Detail"
+msgstr ""
+
+#: resources/ui/window.ui:122
+msgid "Playlist Detail"
+msgstr ""
+
+#: resources/ui/window.ui:145
+msgid "Main"
+msgstr ""
+
+#: resources/ui/window.ui:154
+msgid "Show Queue"
+msgstr ""
+
+#: resources/ui/window.ui:161
+msgid "Search"
+msgstr ""
+
+#: resources/ui/window.ui:167
+msgid "Sort"
+msgstr ""
+
+#: resources/ui/window.ui:174
+msgid "New"
+msgstr ""
+
+#: resources/ui/window.ui:215
+msgid "Favorites"
+msgstr ""
+
+#: resources/ui/window.ui:228
+msgid "Ascending"
+msgstr ""
+
+#: resources/ui/window.ui:235
+msgid "Descending"
+msgstr ""
+
+#: resources/ui/window.ui:251
+msgid "Albums"
+msgstr ""
+
+#: resources/ui/window.ui:263
+msgid "Artists"
+msgstr ""
+
+#: resources/ui/window.ui:287
+msgid "Songs"
+msgstr ""
+
+#: resources/ui/window.ui:332
+msgid "Hide Queue"
+msgstr ""
+
+#: resources/ui/window.ui:341
+msgid "Clear Queue"
+msgstr ""
+
+#: resources/ui/window.ui:348
+msgid "Save As Playlist"
+msgstr ""
+
+#: resources/ui/window.ui:369
+msgid "Request Rescan"
+msgstr ""
+
+#: resources/ui/window.ui:373
+msgid "Refresh Library"
+msgstr ""
+
+#: resources/ui/window.ui:377
+msgid "Clear Image Cache"
+msgstr ""
+
+#: resources/ui/window.ui:383
+msgid "Preferences"
+msgstr ""
+
+#: resources/ui/window.ui:387
+msgid "Keyboard Shortcuts"
+msgstr ""
+
+#: resources/ui/window.ui:391
+msgid "About Gelly"
+msgstr ""
+
+#: resources/ui/window.ui:395
+msgid "Logout"
+msgstr ""
+
+#: resources/ui/window.ui:399
+msgid "Quit"
+msgstr ""
