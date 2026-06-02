@@ -186,7 +186,6 @@
                                 <property name="label" translatable="yes">Cancel</property>
                                 <property name="halign">center</property>
                                 <style>
-                                  <class name="destructive-action"/>
                                   <class name="flat"/>
                                 </style>
                               </object>
