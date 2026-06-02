@@ -1,4 +1,4 @@
-use std::{cell::Cell, error::Error, rc::Rc};
+use std::error::Error;
 
 use crate::async_utils::spawn_tokio;
 use crate::backend::{Backend, BackendError};

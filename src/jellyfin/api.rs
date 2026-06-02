@@ -36,9 +36,6 @@ pub struct QuickConnectResponse {
     pub authenticated: bool,
     pub secret: String,
     pub code: String,
-    pub device_id: String,
-    pub device_name: String,
-    pub app_name: String,
 }
 
 #[derive(Debug, Deserialize)]
