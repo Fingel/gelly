@@ -5,6 +5,7 @@ use crate::backend::{Backend, BackendError};
 use crate::config::{
     BackendType, set_backend_type, settings, store_jellyfin_api_token, store_subsonic_password,
 };
+use crate::i18n::tr;
 use crate::jellyfin::{Jellyfin, initiate_quick_connect, quick_connect_status};
 use crate::subsonic::Subsonic;
 use crate::ui::widget_ext::WidgetApplicationExt;
@@ -149,7 +150,7 @@ impl Setup {
                             app.imp().backend.replace(Backend::Jellyfin(jellyfin));
 
                             if let Err(err) = setup.save_jellyfin_server_settings(&host, &user_id, &token) {
-                                setup.toast("Credentials could not be saved. Do you have a keyring daemon running?", None);
+                                setup.toast(&tr("Credentials could not be saved. Do you have a keyring daemon running?"), None);
                                 error!("Failed to save Jellyfin server settings. Aborting: {}", err);
                             }
 
@@ -164,7 +165,7 @@ impl Setup {
                             app.imp().backend.replace(Backend::Subsonic(subsonic));
 
                             if let Err(err) = setup.save_subsonic_server_settings(&host, &username, &password) {
-                                setup.toast("Credentials could not be saved. Do you have a keyring daemon running?", None);
+                                setup.toast(&tr("Credentials could not be saved. Do you have a keyring daemon running?"), None);
                                 error!("Failed to save server settings. Aborting: {}", err);
                             }
                             setup.show_library_setup();
@@ -214,7 +215,7 @@ impl Setup {
                 if jellyfin_transport && subsonic_transport {
                     self.host_error();
                     self.toast(
-                        "Connection error. Please supply a full URL (http://example.com:8096)",
+                        &tr("Connection error. Please supply a full URL (http://example.com:8096)"),
                         None,
                     );
                     debug!(
@@ -228,7 +229,7 @@ impl Setup {
                 let subsonic_auth = matches!(subsonic, BackendError::AuthenticationFailed { .. });
 
                 if jellyfin_auth || subsonic_auth {
-                    self.toast("Invalid credentials", None);
+                    self.toast(&tr("Invalid credentials"), None);
                     self.authentication_error();
                     debug!(
                         "Authentication failed: jellyfin={:?}, subsonic={:?}",
@@ -237,7 +238,10 @@ impl Setup {
                     return;
                 }
 
-                self.toast("Could not authenticate with Jellyfin or Subsonic", None);
+                self.toast(
+                    &tr("Could not authenticate with Jellyfin or Subsonic"),
+                    None,
+                );
                 warn!(
                     "Authentication failed for both backends. jellyfin={:?}, subsonic={:?}",
                     jellyfin, subsonic
@@ -280,7 +284,7 @@ impl Setup {
                         }
                         Err(err) => {
                             error!("Failed to fetch libraries: {:?}", err);
-                            setup.toast("Failed to load libraries", None);
+                            setup.toast(&tr("Failed to load libraries"), None);
                         }
                     }
                 }
@@ -309,7 +313,10 @@ impl Setup {
                     }
                     Err(err) => {
                         error!("Failed to initiate quick connect: {:?}", err);
-                        setup.toast("Failed to initiate quick connect. Is the host valid?", None);
+                        setup.toast(
+                            &tr("Failed to initiate quick connect. Is the host valid?"),
+                            None,
+                        );
                         setup.show_server_setup();
                     }
                 }
@@ -362,7 +369,7 @@ impl Setup {
                     Err(err) => {
                         setup.imp().stop_qc_polling.set(true);
                         error!("Error checking quick connect status: {:?}", err);
-                        setup.toast("Error during quick connect", None);
+                        setup.toast(&tr("Error during quick connect"), None);
                     }
                 }
             ),
@@ -388,7 +395,7 @@ impl Setup {
                             setup.save_jellyfin_server_settings(&host, &user_id, &token)
                         {
                             setup.toast(
-                            "Credentials could not be saved. Do you have a keyring daemon running?",
+                            &tr("Credentials could not be saved. Do you have a keyring daemon running?"),
                             None,
                         );
                             error!("Failed to save Jellyfin server settings. Aborting: {}", err);
@@ -398,7 +405,7 @@ impl Setup {
                     }
                     Err(err) => {
                         error!("Failed to authenticate with quick connect: {:?}", err);
-                        setup.toast("Failed to authenticate with quick connect", None);
+                        setup.toast(&tr("Failed to authenticate with quick connect"), None);
                     }
                 },
             ),
@@ -408,7 +415,7 @@ impl Setup {
     fn handle_qc_copy(&self) {
         let text = self.imp().quick_connect_code.text();
         self.clipboard().set_text(&text);
-        self.toast("Quick connect code copied to clipboard", None);
+        self.toast(&tr("Quick connect code copied to clipboard"), None);
     }
 
     fn handle_library_button_click(&self) {

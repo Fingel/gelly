@@ -39,19 +39,19 @@
                                 </child>
                                 <child>
                                   <object class="AdwEntryRow" id="username_entry">
-                                    <property name="title">Username</property>
+                                    <property name="title" translatable="yes">Username</property>
                                   </object>
                                 </child>
                                 <child>
                                   <object class="AdwPasswordEntryRow" id="password_entry">
-                                    <property name="title">Password</property>
+                                    <property name="title" translatable="yes">Password</property>
                                   </object>
                                 </child>
                               </object>
                             </child>
                             <child>
                               <object class="GtkButton" id="connect_button">
-                                <property name="label">Connect</property>
+                                <property name="label" translatable="yes">Connect</property>
                                 <property name="sensitive">false</property>
                                 <property name="halign">center</property>
                                 <style>
@@ -77,7 +77,7 @@
             </property>
           </object>
           <object class="AdwNavigationPage" id="setup_library">
-            <property name="title">Choose Library</property>
+            <property name="title" translatable="yes">Choose Library</property>
             <property name="child">
               <object class="AdwToolbarView">
                 <child type="top">
@@ -109,7 +109,7 @@
                             </child>
                             <child>
                               <object class="GtkButton" id="library_button">
-                                <property name="label">Launch Gelly</property>
+                                <property name="label" translatable="yes">Launch Gelly</property>
                                 <property name="sensitive">false</property>
                                 <property name="halign">center</property>
                                 <style>
@@ -120,7 +120,7 @@
                             </child>
                             <child>
                               <object class="GtkButton" id="cancel_library_button">
-                                <property name="label">Cancel</property>
+                                <property name="label" translatable="yes">Cancel</property>
                                 <property name="halign">center</property>
                                 <style>
                                   <class name="destructive-action"/>
@@ -138,7 +138,7 @@
             </property>
           </object>
           <object class="AdwNavigationPage" id="quick_connect">
-            <property name="title">Quick Connect</property>
+            <property name="title" translatable="yes">Quick Connect</property>
             <property name="child">
               <object class="AdwToolbarView">
                 <child type="top">
