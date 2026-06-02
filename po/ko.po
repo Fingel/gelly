@@ -8,15 +8,14 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-05-31 16:21-0700\n"
-"PO-Revision-Date: 2026-06-02 17:40+0000\n"
-"Last-Translator: Antonio Caria <ant8.caria@gmail.com>\n"
-"Language-Team: Italian <https://hosted.weblate.org/projects/gelly/gelly/it/>"
-"\n"
-"Language: it\n"
+"PO-Revision-Date: 2026-06-02 18:16+0000\n"
+"Last-Translator: standard non <leaderkys@naver.com>\n"
+"Language-Team: Korean <https://hosted.weblate.org/projects/gelly/gelly/ko/>\n"
+"Language: ko\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
 "X-Generator: Weblate 2026.6\n"
 
 #: src/ui/album_detail.rs:195 src/ui/artist_detail.rs:225
@@ -24,71 +23,69 @@ msgstr ""
 #, rust-format
 msgid "1 song added to queue"
 msgid_plural "{} songs added to queue"
-msgstr[0] "1 canzone aggiunta alla coda"
-msgstr[1] "{} canzoni aggiunte alla coda"
+msgstr[0] "곡 {}개가 추가됨"
 
 #: src/ui/playlist.rs:27
 #, rust-format
 msgid "1 song"
 msgid_plural "{} songs"
-msgstr[0] "1 canzone"
-msgstr[1] "{} canzoni"
+msgstr[0] "곡 {}개"
 
 #: src/ui/playlist.rs:30
 msgid "Smart playlist"
-msgstr "Playlist smart"
+msgstr "스마트 플레이리스트"
 
 #: src/ui/playlist.rs:32
 msgid "Empty playlist"
-msgstr "Playlist vuota"
+msgstr "빈 플레이리스트"
 
 #: resources/ui/album_art.ui:33
 msgid "Missing album art"
-msgstr "Copertina album mancante"
+msgstr "앨범 아트를 찾을 수 없음"
 
 #: resources/ui/preferences.ui:9 resources/ui/preferences.ui:12
 msgid "General"
-msgstr "Generale"
+msgstr "일반"
 
 #: resources/ui/preferences.ui:15
 msgid "Refresh library on startup"
-msgstr "Aggiorna libreria all'avvio"
+msgstr "시작 시 라이브러리 새로고침하기"
 
 #: resources/ui/preferences.ui:16
 msgid "The library can be refreshed using ctrl+r or the menu."
-msgstr "La libreria può essere aggiornata usando ctrl+r o il menù."
+msgstr "ctrl+r 또는 메뉴를 통해 라이브러리를 새로고침할 수 있습니다."
 
 #: resources/ui/preferences.ui:28
 msgid "Extra eye candy"
-msgstr "Sfondo immersivo"
+msgstr "인터페이스 더 예쁘게 하기"
 
 #: resources/ui/preferences.ui:29
 msgid "Utilizes transparency, blurred backgrounds, etc."
-msgstr "Utilizza trasparenza, sfondi sfocati, ecc."
+msgstr "배경 블러, 투명 효과 등 적용"
 
 #: resources/ui/preferences.ui:36
 msgid "Playback"
-msgstr "Riproduzione"
+msgstr "재생"
 
 #: resources/ui/preferences.ui:39
 msgid "Normalize Audio"
-msgstr "Normalizza Audio"
+msgstr "오디오 노멀라이징 적용"
 
 #: resources/ui/preferences.ui:40
 msgid "May require backend plugins."
-msgstr "Potrebbe richiedere componenti aggiuntive nel backend."
+msgstr "백엔드 플러그인을 설치해야 할 수 있습니다."
 
 #: resources/ui/preferences.ui:52
 msgid "Inhibit Suspend"
-msgstr "Inibizione della Sospensione"
+msgstr "절전모드 막기"
 
 #: resources/ui/preferences.ui:53
 msgid "Prevents the system from suspending while playing"
-msgstr "Impedisce la sospensione del sistema durante la riproduzione"
+msgstr "재생 중 컴퓨터가 절전모드로 전환되는 것을 방지"
 
 #: resources/ui/preferences.ui:67
 msgid "Transcoding"
-msgstr "Transcodifica"
+msgstr "트랜스코딩"
 
 #: resources/ui/preferences.ui:68
 msgid ""
@@ -96,53 +93,52 @@ msgid ""
 "processing power on the server. Note that Subsonic backends cannot seek "
 "transcoded streams."
 msgstr ""
-"La transcodifica riduce la qualità e la dimensione del flusso dati a spese "
-"della potenza di calcolo del server. Nota che non è possibile scorrere "
-"flussi transcodificati su backend Subsonic."
+"트랜스코딩을 하면 스트림의 품질과 데이터 용량을 줄임으로써 서버의 사용전력을 "
+"낮춥니다. 단, Subsonic 백엔드 사용시 스트림 타임라인 탐색을 할 수 없습니다."
 
 #: resources/ui/preferences.ui:71
 msgid "Transcoding Profile"
-msgstr "Profilo di Transcodifica"
+msgstr "트랜스코딩 프로파일"
 
 #: resources/ui/preferences.ui:72
 msgid "Only used when direct play is not available."
-msgstr "Usa solo quando la riproduzione diretta non è disponibile."
+msgstr "다이렉트 플레이를 할 수 없을 때만 사용됩니다."
 
 #: resources/ui/preferences.ui:85
 msgid "Maximum Bitrate (kbps)"
-msgstr "Bitrate Massimo (kbps)"
+msgstr "최고 비트레이트 (Kbps)"
 
 #: resources/ui/preferences.ui:86
 msgid "A value of 0 means no limit."
-msgstr "Un valore di 0 significa nessun limite."
+msgstr "0으로 설정시 무제한"
 
 #: resources/ui/preferences.ui:105 resources/ui/window.ui:275
 msgid "Playlists"
-msgstr "Playlist"
+msgstr "플레이리스트 목록"
 
 #: resources/ui/preferences.ui:108
 msgid "Smart Playlists"
-msgstr "Playlist Smart"
+msgstr "스마트 플레이리스트 목록"
 
 #: resources/ui/preferences.ui:111
 msgid "Favorite Mix Playlist"
-msgstr "Playlist Mix Preferiti"
+msgstr "즐겨찾는 곡 믹스 플레이리스트"
 
 #: resources/ui/preferences.ui:123
 msgid "Shuffled Playlist"
-msgstr "Playlist Rirpoduzione Casuale"
+msgstr "셔플 플레이리스트"
 
 #: resources/ui/preferences.ui:135
 msgid "Most Played Playlist"
-msgstr "Playlist Canzoni Più Ascoltate"
+msgstr "가장 많이 들은 플레이리스트"
 
 #: resources/ui/setup.ui:10
 msgid "Servers"
-msgstr "Server"
+msgstr "서버"
 
 #: resources/ui/setup.ui:19
 msgid "Connect to Server"
-msgstr "Connetti al Server"
+msgstr "서버에 연결"
 
 #: resources/ui/setup.ui:20
 msgid ""
@@ -150,118 +146,118 @@ msgid ""
 "including protocol and port. For Jellyfin this is usually 8096, Navidrome "
 "uses 4533."
 msgstr ""
-"Gelly supporta Jellyfin e Subsonic/Navidrome. Inserisci l'indirizzo completo "
-"del server, inclusi protocollo e porta. Per Jellyfin quest'ultima è "
-"solitamente 8096, Navidrome usa 4533."
+"Gelly는 Jellyfin과 Subsonic/Navidrome을 지원합니다. 프로토콜, 포트 번호를 "
+"포함한 URL을 입력하세요. 포트 번호는 Jellyfin의 경우 보통 8096, Navidrome은 "
+"4533을 사용합니다."
 
 #: resources/ui/setup.ui:82
 msgid "Select Library"
-msgstr "Seleziona Libreria"
+msgstr "라이브러리 선택"
 
 #: resources/ui/setup.ui:83
 msgid "Choose which library Gelly will use to load your music."
-msgstr "Scegli quale libreria Gelly utilizzerà per caricare la tua musica."
+msgstr "Gelly가 곡을 불러올 대상 라이브러리를 선택하세요."
 
 #: resources/ui/setup.ui:98
 msgid "Library"
-msgstr "Libreria"
+msgstr "라이브러리"
 
 #: resources/ui/window.ui:57
 msgid "Album Detail"
-msgstr "Dettaglio Album"
+msgstr "앨범 상세정보"
 
 #: resources/ui/window.ui:90
 msgid "Artist Detail"
-msgstr "Dettaglio Artista"
+msgstr "아티스트 상세정보"
 
 #: resources/ui/window.ui:122
 msgid "Playlist Detail"
-msgstr "Dettaglio Playlist"
+msgstr "플레이리스트 상세정보"
 
 #: resources/ui/window.ui:145
 msgid "Main"
-msgstr "Principale"
+msgstr "메인"
 
 #: resources/ui/window.ui:154
 msgid "Show Queue"
-msgstr "Mostra Coda"
+msgstr "재생목록 표시"
 
 #: resources/ui/window.ui:161
 msgid "Search"
-msgstr "Cerca"
+msgstr "검색"
 
 #: resources/ui/window.ui:167
 msgid "Sort"
-msgstr "Ordina"
+msgstr "정렬"
 
 #: resources/ui/window.ui:174
 msgid "New"
-msgstr "Nuovo"
+msgstr "신규"
 
 #: resources/ui/window.ui:215
 msgid "Favorites"
-msgstr "Preferiti"
+msgstr "즐겨찾기"
 
 #: resources/ui/window.ui:228
 msgid "Ascending"
-msgstr "Ascendente"
+msgstr "오름순"
 
 #: resources/ui/window.ui:235
 msgid "Descending"
-msgstr "Discendente"
+msgstr "내림순"
 
 #: resources/ui/window.ui:251
 msgid "Albums"
-msgstr "Album"
+msgstr "앨범 목록"
 
 #: resources/ui/window.ui:263
 msgid "Artists"
-msgstr "Artisti"
+msgstr "아티스트 목록"
 
 #: resources/ui/window.ui:287
 msgid "Songs"
-msgstr "Canzoni"
+msgstr "곡 목록"
 
 #: resources/ui/window.ui:332
 msgid "Hide Queue"
-msgstr "Nascondi Coda"
+msgstr "재생목록 숨기기"
 
 #: resources/ui/window.ui:341
 msgid "Clear Queue"
-msgstr "Svuota Coda"
+msgstr "재생목록 비우기"
 
 #: resources/ui/window.ui:348
 msgid "Save As Playlist"
-msgstr "Salva Come Playlist"
+msgstr "플레이리스트로 저장"
 
 #: resources/ui/window.ui:369
 msgid "Request Rescan"
-msgstr "Richiedi Nuova Scansione"
+msgstr "다시 스캔하기"
 
 #: resources/ui/window.ui:373
 msgid "Refresh Library"
-msgstr "Aggiorna Libreria"
+msgstr "라이브러리 새로고침"
 
 #: resources/ui/window.ui:377
 msgid "Clear Image Cache"
-msgstr "Svuota Cache Immagini"
+msgstr "이미지 캐시 지우기"
 
 #: resources/ui/window.ui:383
 msgid "Preferences"
-msgstr "Preferenze"
+msgstr "설정"
 
 #: resources/ui/window.ui:387
 msgid "Keyboard Shortcuts"
-msgstr "Scorciatoie da Tastiera"
+msgstr "단축키"
 
 #: resources/ui/window.ui:391
 msgid "About Gelly"
-msgstr "A proposito di Gelly"
+msgstr "Gelly 정보"
 
 #: resources/ui/window.ui:395
 msgid "Logout"
-msgstr "Logout"
+msgstr "로그아웃"
 
 #: resources/ui/window.ui:399
 msgid "Quit"
-msgstr "Esci"
+msgstr "나가기"
