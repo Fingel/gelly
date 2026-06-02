@@ -60,6 +60,13 @@
                                 </style>
                               </object>
                             </child>
+                            <child>
+                              <object class="GtkButton" id="quick_connect_button">
+                                <property name="label" translatable="yes">Jellyfin Quick Connect</property>
+                                <property name="sensitive">false</property>
+                                <property name="halign">center</property>
+                              </object>
+                            </child>
                           </object>
                         </property>
                       </object>
@@ -114,6 +121,53 @@
                             <child>
                               <object class="GtkButton" id="cancel_library_button">
                                 <property name="label">Cancel</property>
+                                <property name="halign">center</property>
+                                <style>
+                                  <class name="destructive-action"/>
+                                  <class name="flat"/>
+                                </style>
+                              </object>
+                            </child>
+                          </object>
+                        </property>
+                      </object>
+                    </property>
+                  </object>
+                </property>
+              </object>
+            </property>
+          </object>
+          <object class="AdwNavigationPage" id="quick_connect">
+            <property name="title">Quick Connect</property>
+            <property name="child">
+              <object class="AdwToolbarView">
+                <child type="top">
+                  <object class="AdwHeaderBar"/>
+                </child>
+                <property name="content">
+                  <object class="AdwStatusPage">
+                    <property name="icon-name">network-transmit-receive-symbolic</property>
+                    <property name="title" translatable="yes">Jellyfin Quick Connect</property>
+                    <property name="description" translatable="yes">Enter the code on the Jellyfin web page to complete authentication.</property>
+                    <property name="child">
+                      <object class="AdwClamp">
+                        <property name="child">
+                          <object class="GtkBox">
+                            <property name="orientation">vertical</property>
+                            <property name="spacing">24</property>
+                            <child>
+                              <object class="GtkLabel" id="quick_connect_code">
+                                <property name="label"></property>
+                                <property name="halign">center</property>
+                                <property name="selectable">true</property>
+                                <style>
+                                  <class name="title-1"/>
+                                </style>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkButton" id="cancel_quick_connect_button">
+                                <property name="label" translatable="yes">Cancel</property>
                                 <property name="halign">center</property>
                                 <style>
                                   <class name="destructive-action"/>

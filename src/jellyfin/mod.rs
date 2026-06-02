@@ -13,7 +13,7 @@ use crate::config;
 use crate::jellyfin::api::{
     FavoriteDtoList, ImageType, LibraryDtoList, LyricsResponse, MusicDtoList, NewPlaylist,
     NewPlaylistResponse, PlaybackInfo, PlaybackReport, PlaybackReportStatus, PlaylistDtoList,
-    PlaylistItems,
+    PlaylistItems, QuickConnectResponse,
 };
 
 pub mod api;
@@ -55,6 +55,23 @@ impl Jellyfin {
     ) -> Result<Self, BackendError> {
         let mut jellyfin = Self::new(host, "", "");
         let resp = jellyfin.authenticate(username, password).await?;
+        jellyfin.token = resp.access_token;
+        jellyfin.user_id = resp.user.id;
+
+        Ok(jellyfin)
+    }
+
+    pub async fn new_authenticate_quick_connect(
+        host: &str,
+        secret: &str,
+    ) -> Result<Self, BackendError> {
+        let mut jellyfin = Self::new(host, "", "");
+        let params = json!({ "secret": secret });
+        let response = jellyfin
+            .post_json("Users/authenticatewithquickconnect", &params)
+            .await?;
+        let body = jellyfin.handle_response(response).await?;
+        let resp = serde_json::from_str::<AuthenticateResponse>(&body)?;
         jellyfin.token = resp.access_token;
         jellyfin.user_id = resp.user.id;
 
@@ -548,4 +565,22 @@ impl Default for Jellyfin {
     fn default() -> Self {
         Self::new("", "", "")
     }
+}
+
+pub async fn initiate_quick_connect(host: &str) -> Result<QuickConnectResponse, BackendError> {
+    let jellyfin = Jellyfin::new(host, "", "");
+    let response = jellyfin.post("QuickConnect/Initiate", None, None).await?;
+    let body = jellyfin.handle_response(response).await?;
+    Ok(serde_json::from_str(&body)?)
+}
+
+pub async fn quick_connect_status(
+    host: &str,
+    secret: &str,
+) -> Result<QuickConnectResponse, BackendError> {
+    let jellyfin = Jellyfin::new(host, "", "");
+    let params = vec![("secret", secret)];
+    let response = jellyfin.get("QuickConnect/Connect", Some(&params)).await?;
+    let body = jellyfin.handle_response(response).await?;
+    Ok(serde_json::from_str(&body)?)
 }

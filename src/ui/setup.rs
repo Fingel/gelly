@@ -1,11 +1,11 @@
-use std::error::Error;
+use std::{cell::Cell, error::Error, rc::Rc};
 
 use crate::async_utils::spawn_tokio;
 use crate::backend::{Backend, BackendError};
 use crate::config::{
     BackendType, set_backend_type, settings, store_jellyfin_api_token, store_subsonic_password,
 };
-use crate::jellyfin::Jellyfin;
+use crate::jellyfin::{Jellyfin, initiate_quick_connect, quick_connect_status};
 use crate::subsonic::Subsonic;
 use crate::ui::widget_ext::WidgetApplicationExt;
 use adw::prelude::*;
@@ -65,6 +65,13 @@ impl Setup {
         imp.setup_navigation_view
             .replace(&[imp.setup_library.get()]);
         self.populate_library_list();
+    }
+
+    pub fn show_quick_connect(&self) {
+        let imp = self.imp();
+        imp.setup_navigation_view
+            .replace(&[imp.quick_connect.get()]);
+        self.initialize_quick_connect_flow();
     }
 
     pub fn is_complete(&self) -> bool {
@@ -281,6 +288,133 @@ impl Setup {
         );
     }
 
+    fn initialize_quick_connect_flow(&self) {
+        let imp = self.imp();
+        let host = imp.host_entry.text().to_string();
+        let host_for_init = host.clone();
+
+        spawn_tokio(
+            async move { initiate_quick_connect(&host_for_init).await },
+            glib::clone!(
+                #[weak(rename_to=setup)]
+                self,
+                move |result| match result {
+                    Ok(quick_connect_response) => {
+                        setup.show_quick_connect_code(&quick_connect_response.code);
+                        setup.start_quick_connect_polling(
+                            host.clone(),
+                            quick_connect_response.secret,
+                        );
+                    }
+                    Err(err) => {
+                        error!("Failed to initiate quick connect: {:?}", err);
+                        setup.toast("Failed to initiate quick connect", None);
+                    }
+                }
+            ),
+        );
+    }
+
+    fn show_quick_connect_code(&self, code: &str) {
+        let quick_connect_code = &self.imp().quick_connect_code;
+        quick_connect_code.set_text(code);
+        quick_connect_code.select_region(0, -1);
+    }
+
+    fn start_quick_connect_polling(&self, host: String, secret: String) {
+        let stop_polling = Rc::new(Cell::new(false));
+
+        glib::timeout_add_seconds_local(
+            2,
+            glib::clone!(
+                #[weak(rename_to=setup)]
+                self,
+                #[upgrade_or]
+                glib::ControlFlow::Break,
+                move || {
+                    if stop_polling.get() {
+                        return glib::ControlFlow::Break;
+                    }
+
+                    setup.check_quick_connect_status(
+                        host.clone(),
+                        secret.clone(),
+                        stop_polling.clone(),
+                    );
+
+                    glib::ControlFlow::Continue
+                }
+            ),
+        );
+    }
+
+    fn check_quick_connect_status(
+        &self,
+        host: String,
+        secret: String,
+        stop_polling: Rc<Cell<bool>>,
+    ) {
+        let host_for_status = host.clone();
+        let secret_for_status = secret.clone();
+
+        spawn_tokio(
+            async move { quick_connect_status(&host_for_status, &secret_for_status).await },
+            glib::clone!(
+                #[weak(rename_to=setup)]
+                self,
+                move |result| match result {
+                    Ok(status) => {
+                        if status.authenticated {
+                            stop_polling.set(true);
+                            setup.authenticate_with_quick_connect(host.clone(), secret.clone());
+                        }
+                    }
+                    Err(err) => {
+                        stop_polling.set(true);
+                        error!("Error checking quick connect status: {:?}", err);
+                        setup.toast("Error during quick connect", None);
+                    }
+                }
+            ),
+        );
+    }
+
+    fn authenticate_with_quick_connect(&self, host: String, secret: String) {
+        spawn_tokio(
+            async move { Jellyfin::new_authenticate_quick_connect(&host, &secret).await },
+            glib::clone!(
+                #[weak(rename_to=setup)]
+                self,
+                move |result| match result {
+                    Ok(jellyfin) => {
+                        let user_id = jellyfin.user_id.clone();
+                        let token = jellyfin.token.clone();
+                        let host = jellyfin.host.clone();
+
+                        let app = setup.get_application();
+                        app.imp().backend.replace(Backend::Jellyfin(jellyfin));
+
+                        if let Err(err) =
+                            setup.save_jellyfin_server_settings(&host, &user_id, &token)
+                        {
+                            setup.toast(
+                            "Credentials could not be saved. Do you have a keyring daemon running?",
+                            None,
+                        );
+                            error!("Failed to save Jellyfin server settings. Aborting: {}", err);
+                        }
+
+                        setup.show_library_setup();
+                    }
+                    Err(err) => {
+                        error!("Failed to authenticate with quick connect: {:?}", err);
+                        setup.toast("Failed to authenticate with quick connect", None);
+                    }
+                },
+            ),
+        );
+    }
+
     fn handle_library_button_click(&self) {
         let library_id = self.get_selected_library();
         settings()
@@ -330,6 +464,8 @@ mod imp {
         #[template_child]
         pub setup_library: TemplateChild<adw::NavigationPage>,
         #[template_child]
+        pub quick_connect: TemplateChild<adw::NavigationPage>,
+        #[template_child]
         pub host_entry: TemplateChild<adw::EntryRow>,
         #[template_child]
         pub username_entry: TemplateChild<adw::EntryRow>,
@@ -343,6 +479,12 @@ mod imp {
         pub library_button: TemplateChild<gtk::Button>,
         #[template_child]
         pub cancel_library_button: TemplateChild<gtk::Button>,
+        #[template_child]
+        pub quick_connect_button: TemplateChild<gtk::Button>,
+        #[template_child]
+        pub cancel_quick_connect_button: TemplateChild<gtk::Button>,
+        #[template_child]
+        pub quick_connect_code: TemplateChild<gtk::Label>,
         pub libraries: RefCell<Vec<LibraryDto>>,
     }
 
@@ -411,7 +553,16 @@ mod imp {
                 }
             ));
 
-            // Make sure connect button remains inactive until form is ready
+            self.cancel_quick_connect_button
+                .connect_clicked(glib::clone!(
+                    #[weak(rename_to=imp)]
+                    self,
+                    move |_| {
+                        imp.obj().show_server_setup();
+                    }
+                ));
+
+            // Make sure connect buttons remain inactive until form is ready
             self.obj().imp().host_entry.connect_changed(glib::clone!(
                 #[weak(rename_to=imp)]
                 self,
@@ -419,6 +570,15 @@ mod imp {
                     let obj = imp.obj();
                     let sensitive = obj.is_complete();
                     imp.connect_button.set_sensitive(sensitive);
+                    imp.quick_connect_button.set_sensitive(sensitive);
+                }
+            ));
+
+            self.quick_connect_button.connect_clicked(glib::clone!(
+                #[weak(rename_to=imp)]
+                self,
+                move |_| {
+                    imp.obj().show_quick_connect();
                 }
             ));
         }
