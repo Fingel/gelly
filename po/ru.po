@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-06-02 13:16-0700\n"
-"PO-Revision-Date: 2026-06-03 08:30+0000\n"
-"Last-Translator: Yulia <yuliabairo@gmail.com>\n"
+"PO-Revision-Date: 2026-06-03 13:48+0000\n"
+"Last-Translator: Yulia Volkova <yuliabairo@gmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/gelly/gelly/ru/>"
 "\n"
 "Language: ru\n"
@@ -48,7 +48,7 @@ msgstr "Пустой плейлист"
 #: src/ui/setup.rs:218
 msgid "Connection error. Please supply a full URL (http://example.com:8096)"
 msgstr ""
-"Ошибка подключения. Укажите полный URL-адрес (пример: http://"
+"Ошибка подключения. Укажите полный URL-адрес (например: http://"
 "example.com:8096)"
 
 #: src/ui/setup.rs:232
@@ -164,7 +164,7 @@ msgstr "Сервера"
 
 #: resources/ui/setup.ui:19
 msgid "Connect to Server"
-msgstr "Подключение к серверу"
+msgstr "Подключиться к серверу"
 
 #: resources/ui/setup.ui:20
 msgid ""
