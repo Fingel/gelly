@@ -198,10 +198,14 @@ impl AlbumList {
                 let item = list_item.downcast_ref::<gtk::ListItem>().unwrap();
                 let widget = Album::new();
                 let binding = album_list
-                    .bind_property("card-size", &widget.imp().media_card.get(), "card-size")
+                    .bind_property(
+                        "compact-mode",
+                        &widget.imp().media_card.get(),
+                        "compact-mode",
+                    )
                     .sync_create()
                     .build();
-                widget.imp().card_size_binding.replace(Some(binding));
+                widget.imp().compact_mode_binding.replace(Some(binding));
                 item.set_child(Some(&widget));
             }
         ));
@@ -214,7 +218,7 @@ impl AlbumList {
         factory.connect_teardown(move |_, list_item| {
             let list_item = list_item.downcast_ref::<gtk::ListItem>().unwrap();
             if let Some(w) = list_item.child().and_downcast::<Album>() {
-                w.imp().card_size_binding.replace(None);
+                w.imp().compact_mode_binding.replace(None);
             }
         });
 
@@ -268,16 +272,8 @@ mod imp {
         pub sorter: OnceCell<gtk::CustomSorter>,
         pub sort_state: Rc<Cell<(u32, u32)>>,
 
-        #[property(get, set = Self::set_card_size, default = 200_u32)]
-        pub card_size: Cell<u32>,
-    }
-
-    impl AlbumList {
-        fn set_card_size(&self, val: u32) {
-            self.card_size.set(val);
-            self.grid_view
-                .set_max_columns(if val < 200 { 3 } else { 10 });
-        }
+        #[property(get, set, default = false)]
+        pub compact_mode: Cell<bool>,
     }
 
     #[glib::object_subclass]
@@ -299,7 +295,6 @@ mod imp {
     impl ObjectImpl for AlbumList {
         fn constructed(&self) {
             self.parent_constructed();
-            self.card_size.set(200);
             self.obj().setup_model();
 
             self.grid_view.connect_activate(glib::clone!(

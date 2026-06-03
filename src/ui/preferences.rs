@@ -38,6 +38,10 @@ impl Preferences {
             )
             .build();
 
+        settings
+            .bind("compact-mode", &*imp.compact_mode_row, "active")
+            .build();
+
         // Normalize Audio
         settings
             .bind("normalize-audio", &*imp.normalize_audio_switch, "active")
@@ -118,6 +122,8 @@ mod imp {
         pub maximum_bitrate_row: TemplateChild<adw::SpinRow>,
         #[template_child]
         pub refresh_on_startup_switch: TemplateChild<gtk::Switch>,
+        #[template_child]
+        pub compact_mode_row: TemplateChild<adw::SwitchRow>,
         #[template_child]
         pub normalize_audio_switch: TemplateChild<gtk::Switch>,
         #[template_child]

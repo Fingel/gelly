@@ -4,13 +4,6 @@
   <template class="GellyMiniPlayerBar" parent="AdwBreakpointBin">
     <property name="width-request">200</property>
     <property name="height-request">48</property>
-    <child>
-      <object class="AdwBreakpoint">
-        <condition>max-width: 725sp</condition>
-        <setter object="full_bar" property="visible">false</setter>
-        <setter object="compact_bar" property="visible">true</setter>
-      </object>
-    </child>
     <property name="child">
       <object class="GtkBox">
         <property name="orientation">vertical</property>

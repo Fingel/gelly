@@ -11,10 +11,6 @@
         <setter object="header_bar" property="title-widget"></setter>
         <setter object="switcher_bar" property="reveal">true</setter>
         <setter object="header_bar" property="show-title">false</setter>
-        <setter object="split_view" property="collapsed">True</setter>
-        <setter object="album_list" property="card-size">130</setter>
-        <setter object="artist_list" property="card-size">130</setter>
-        <setter object="playlist_list" property="card-size">130</setter>
       </object>
     </child>
     <property name="content">

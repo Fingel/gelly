@@ -26,6 +26,11 @@ impl MiniPlayerBar {
         self.imp().compact_bar.clone()
     }
 
+    pub fn compact_mode(&self, compact_mode: bool) {
+        self.full_bar().set_visible(!compact_mode);
+        self.compact_bar().set_visible(compact_mode);
+    }
+
     pub fn bind_to_audio_model(&self, audio_model: &AudioModel, bottom_sheet: &adw::BottomSheet) {
         let imp = self.imp();
         if let Err(e) = imp.bottom_sheet.set(bottom_sheet.clone()) {
