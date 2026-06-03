@@ -274,29 +274,39 @@ impl Subsonic {
         let album = song.album.or_else(|| fallback.album_name.clone());
         let album_id = song.album_id.or_else(|| fallback.album_id.clone());
 
-        // The opensubsonic API is disgusting
+        // Prefer the track-level artist (song.artist / song.artist_id) over the
+        // album artist so that compilation tracks show the correct performer.
+        // Fall back to album_artists / album_artist when no track artist is set.
         let artist_name = song
-            .album_artists
-            .first()
-            .map(|artist| artist.name.clone())
-            .or(fallback
-                .album_artists
-                .first()
-                .map(|artist| artist.name.clone()))
+            .artist
             .or(song.album_artist)
-            .or(song.artist)
+            .or_else(|| {
+                song.album_artists
+                    .first()
+                    .map(|artist| artist.name.clone())
+            })
+            .or_else(|| {
+                fallback
+                    .album_artists
+                    .first()
+                    .map(|artist| artist.name.clone())
+            })
             .or(fallback.artist_name.clone())
             .unwrap_or_else(|| "Unknown Artist".to_string());
 
         let artist_id = song
-            .album_artists
-            .first()
-            .map(|artist| artist.id.clone())
-            .or(fallback
-                .album_artists
-                .first()
-                .map(|artist| artist.id.clone()))
-            .or(song.artist_id)
+            .artist_id
+            .or_else(|| {
+                song.album_artists
+                    .first()
+                    .map(|artist| artist.id.clone())
+            })
+            .or_else(|| {
+                fallback
+                    .album_artists
+                    .first()
+                    .map(|artist| artist.id.clone())
+            })
             .or(fallback.artist_id.clone())
             .unwrap_or_default();
 
