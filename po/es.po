@@ -7,11 +7,12 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-31 16:21-0700\n"
-"PO-Revision-Date: 2026-06-03 07:17+0000\n"
-"Last-Translator: miniwookie <miniwookie@mailbox.org>\n"
-"Language-Team: German <https://hosted.weblate.org/projects/gelly/gelly/de/>\n"
-"Language: de\n"
+"POT-Creation-Date: 2026-06-02 13:16-0700\n"
+"PO-Revision-Date: 2026-06-03 14:28+0000\n"
+"Last-Translator: Lian Cabrera Rodríguez <socialnetw99arie@gmail.com>\n"
+"Language-Team: Spanish <https://hosted.weblate.org/projects/gelly/gelly/es/>"
+"\n"
+"Language: es\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -23,43 +24,61 @@ msgstr ""
 #, rust-format
 msgid "1 song added to queue"
 msgid_plural "{} songs added to queue"
-msgstr[0] "1 Lied zur Warteschlange hinzugefügt"
-msgstr[1] "{} Lieder zur Warteschlange hinzugefügt"
+msgstr[0] "1 canción agregada a la cola"
+msgstr[1] "{} canciones agregadas a la cola"
 
 #: src/ui/playlist.rs:27
 #, rust-format
 msgid "1 song"
 msgid_plural "{} songs"
-msgstr[0] "1 Lied"
-msgstr[1] "{} Lieder"
+msgstr[0] "1 canción"
+msgstr[1] "{} canciones"
 
 #: src/ui/playlist.rs:30
 msgid "Smart playlist"
-msgstr "Intelligente Wiedergabeliste"
+msgstr "Lista de reproducción inteligente"
 
 #: src/ui/playlist.rs:32
 msgid "Empty playlist"
-msgstr "Leere Wiedergabeliste"
+msgstr "Lista de reproducción vacía"
+
+#: src/ui/setup.rs:218
+msgid "Connection error. Please supply a full URL (http://example.com:8096)"
+msgstr ""
+"Error de conexión. Por favor, proporciona una URL completa (http://"
+"example.com:8096)"
+
+#: src/ui/setup.rs:232
+msgid "Invalid credentials"
+msgstr "Credenciales incorrectas"
+
+#: src/ui/setup.rs:242
+msgid "Could not authenticate with Jellyfin or Subsonic"
+msgstr "No se pudo autenticar con Jellyfin o Subsonic"
+
+#: src/ui/setup.rs:418
+msgid "Quick connect code copied to clipboard"
+msgstr "Código para conexión rápida copiado al portapapeles"
 
 #: resources/ui/album_art.ui:33
 msgid "Missing album art"
-msgstr "Fehlendes Albumcover"
+msgstr "Carátula del álbum no encontrada"
 
 #: resources/ui/preferences.ui:9 resources/ui/preferences.ui:12
 msgid "General"
-msgstr ""
+msgstr "General"
 
 #: resources/ui/preferences.ui:15
 msgid "Refresh library on startup"
-msgstr "Bibliothek bei jedem Start aktualisieren"
+msgstr "Actualizar biblioteca al arrancar"
 
 #: resources/ui/preferences.ui:16
 msgid "The library can be refreshed using ctrl+r or the menu."
-msgstr "Die Bibliothek kann durch Strg+R oder das Menü aktualisiert werden."
+msgstr "La biblioteca puede ser actualizada usando ctrl+r o el menú."
 
 #: resources/ui/preferences.ui:28
 msgid "Extra eye candy"
-msgstr ""
+msgstr "Atractivo visual extra"
 
 #: resources/ui/preferences.ui:29
 msgid "Utilizes transparency, blurred backgrounds, etc."
@@ -67,11 +86,11 @@ msgstr ""
 
 #: resources/ui/preferences.ui:36
 msgid "Playback"
-msgstr "Wiedergabe"
+msgstr ""
 
 #: resources/ui/preferences.ui:39
 msgid "Normalize Audio"
-msgstr "Lautstärke normalisieren"
+msgstr ""
 
 #: resources/ui/preferences.ui:40
 msgid "May require backend plugins."
@@ -87,7 +106,7 @@ msgstr ""
 
 #: resources/ui/preferences.ui:67
 msgid "Transcoding"
-msgstr "Transcodierung"
+msgstr ""
 
 #: resources/ui/preferences.ui:68
 msgid ""
@@ -106,7 +125,7 @@ msgstr ""
 
 #: resources/ui/preferences.ui:85
 msgid "Maximum Bitrate (kbps)"
-msgstr "Maximale Bitrate (kbps)"
+msgstr ""
 
 #: resources/ui/preferences.ui:86
 msgid "A value of 0 means no limit."
@@ -114,11 +133,11 @@ msgstr ""
 
 #: resources/ui/preferences.ui:105 resources/ui/window.ui:275
 msgid "Playlists"
-msgstr "Wiedergabelisten"
+msgstr ""
 
 #: resources/ui/preferences.ui:108
 msgid "Smart Playlists"
-msgstr "Intelligente Wiedergabelisten"
+msgstr ""
 
 #: resources/ui/preferences.ui:111
 msgid "Favorite Mix Playlist"
@@ -147,17 +166,53 @@ msgid ""
 "uses 4533."
 msgstr ""
 
-#: resources/ui/setup.ui:82
+#: resources/ui/setup.ui:42
+msgid "Username"
+msgstr ""
+
+#: resources/ui/setup.ui:47
+msgid "Password"
+msgstr ""
+
+#: resources/ui/setup.ui:54
+msgid "Connect"
+msgstr ""
+
+#: resources/ui/setup.ui:65 resources/ui/setup.ui:150
+msgid "Jellyfin Quick Connect"
+msgstr ""
+
+#: resources/ui/setup.ui:80
+msgid "Choose Library"
+msgstr ""
+
+#: resources/ui/setup.ui:89
 msgid "Select Library"
 msgstr ""
 
-#: resources/ui/setup.ui:83
+#: resources/ui/setup.ui:90
 msgid "Choose which library Gelly will use to load your music."
 msgstr ""
 
-#: resources/ui/setup.ui:98
+#: resources/ui/setup.ui:105
 msgid "Library"
-msgstr "Bibliothek"
+msgstr ""
+
+#: resources/ui/setup.ui:112
+msgid "Launch Gelly"
+msgstr ""
+
+#: resources/ui/setup.ui:123 resources/ui/setup.ui:186
+msgid "Cancel"
+msgstr ""
+
+#: resources/ui/setup.ui:141
+msgid "Quick Connect"
+msgstr ""
+
+#: resources/ui/setup.ui:151
+msgid "Enter the code on the Jellyfin web page to complete authentication."
+msgstr ""
 
 #: resources/ui/window.ui:57
 msgid "Album Detail"

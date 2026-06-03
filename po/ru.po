@@ -8,15 +8,16 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-06-02 13:16-0700\n"
-"PO-Revision-Date: 2026-06-03 07:17+0000\n"
-"Last-Translator: Matheus <cybercountry@proton.me>\n"
-"Language-Team: Portuguese (Brazil) <https://hosted.weblate.org/projects/"
-"gelly/gelly/pt_BR/>\n"
-"Language: pt_BR\n"
+"PO-Revision-Date: 2026-06-03 13:48+0000\n"
+"Last-Translator: Yulia Volkova <yuliabairo@gmail.com>\n"
+"Language-Team: Russian <https://hosted.weblate.org/projects/gelly/gelly/ru/>"
+"\n"
+"Language: ru\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 "X-Generator: Weblate 2026.6\n"
 
 #: src/ui/album_detail.rs:195 src/ui/artist_detail.rs:225
@@ -24,89 +25,91 @@ msgstr ""
 #, rust-format
 msgid "1 song added to queue"
 msgid_plural "{} songs added to queue"
-msgstr[0] "1 música adicionada à fila"
-msgstr[1] "{} músicas adicionadas à fila"
+msgstr[0] "В очередь добавлен 1 трек"
+msgstr[1] "В очередь добавлено {} трека"
+msgstr[2] "В очередь добавлено {} треков"
 
 #: src/ui/playlist.rs:27
 #, rust-format
 msgid "1 song"
 msgid_plural "{} songs"
-msgstr[0] "1 música"
-msgstr[1] "{} músicas"
+msgstr[0] "{} трек"
+msgstr[1] "{} трека"
+msgstr[2] "{} треков"
 
 #: src/ui/playlist.rs:30
 msgid "Smart playlist"
-msgstr "Playlist inteligente"
+msgstr "Умный плейлист"
 
 #: src/ui/playlist.rs:32
 msgid "Empty playlist"
-msgstr "Playlist vazia"
+msgstr "Пустой плейлист"
 
 #: src/ui/setup.rs:218
 msgid "Connection error. Please supply a full URL (http://example.com:8096)"
 msgstr ""
-"Erro de conexão. Por favor, informe uma URL completa (http://"
+"Ошибка подключения. Укажите полный URL-адрес (например: http://"
 "example.com:8096)"
 
 #: src/ui/setup.rs:232
 msgid "Invalid credentials"
-msgstr "Credenciais inválidas"
+msgstr "Неверный логин или пароль"
 
 #: src/ui/setup.rs:242
 msgid "Could not authenticate with Jellyfin or Subsonic"
-msgstr "Não foi possível se autenticar no Jellyfin ou no Subsonic"
+msgstr "Не удалось пройти аутентификацию через Jellyfin или Subsonic"
 
 #: src/ui/setup.rs:418
 msgid "Quick connect code copied to clipboard"
-msgstr "Código de conexão rápida copiado"
+msgstr "Код скопирован в буфер обмена"
 
 #: resources/ui/album_art.ui:33
 msgid "Missing album art"
-msgstr "Capa do álbum não encontrada"
+msgstr "Обложка отсутствует"
 
 #: resources/ui/preferences.ui:9 resources/ui/preferences.ui:12
 msgid "General"
-msgstr "Geral"
+msgstr "Основные"
 
 #: resources/ui/preferences.ui:15
 msgid "Refresh library on startup"
-msgstr "Atualizar biblioteca na inicialização"
+msgstr "Обновлять медиатеку при запуске"
 
 #: resources/ui/preferences.ui:16
 msgid "The library can be refreshed using ctrl+r or the menu."
-msgstr "A biblioteca pode ser atualizada usando Ctrl+R ou pelo menu."
+msgstr "Обновить медиатеку можно с помощью Ctrl+R или через меню."
 
 #: resources/ui/preferences.ui:28
 msgid "Extra eye candy"
-msgstr "Efeitos visuais extras"
+msgstr "Дополнительные визуальные эффекты"
 
 #: resources/ui/preferences.ui:29
 msgid "Utilizes transparency, blurred backgrounds, etc."
-msgstr "Utiliza transparência, fundos desfocados, etc."
+msgstr "Использует прозрачность, размытые фоны и т. д."
 
 #: resources/ui/preferences.ui:36
 msgid "Playback"
-msgstr "Reprodução"
+msgstr "Воспроизведение"
 
 #: resources/ui/preferences.ui:39
 msgid "Normalize Audio"
-msgstr "Normalizar Áudio"
+msgstr "Выравнивание громкости"
 
 #: resources/ui/preferences.ui:40
 msgid "May require backend plugins."
-msgstr "Pode exigir plugins de backend."
+msgstr "Могут потребоваться серверные плагины."
 
 #: resources/ui/preferences.ui:52
 msgid "Inhibit Suspend"
-msgstr "Impedir suspensão"
+msgstr "Запрет спящего режима"
 
 #: resources/ui/preferences.ui:53
 msgid "Prevents the system from suspending while playing"
-msgstr "Impede que o sistema suspenda durante a reprodução"
+msgstr "Не даёт системе переходить в спящий режим во время воспроизведения"
 
 #: resources/ui/preferences.ui:67
 msgid "Transcoding"
-msgstr "Transcodificação"
+msgstr "Перекодирование"
 
 #: resources/ui/preferences.ui:68
 msgid ""
@@ -114,53 +117,54 @@ msgid ""
 "processing power on the server. Note that Subsonic backends cannot seek "
 "transcoded streams."
 msgstr ""
-"A transcodificação reduz a qualidade da transmissão e a largura de banda, "
-"exigindo mais processamento do servidor. Observe que não é possível avançar "
-"ou retroceder em transmissões transcodificadas no Subsonic."
+"Перекодирование снижает качество потока и потребляемую пропускную "
+"способность ценой увеличения нагрузки на процессор сервера. Обратите "
+"внимание: бэкенды Subsonic не поддерживают перемотку перекодированных "
+"потоков."
 
 #: resources/ui/preferences.ui:71
 msgid "Transcoding Profile"
-msgstr "Perfil de transcodificação"
+msgstr "Профиль перекодирования"
 
 #: resources/ui/preferences.ui:72
 msgid "Only used when direct play is not available."
-msgstr "Usado apenas quando a reprodução direta não estiver disponível."
+msgstr "Используется только когда прямое воспроизведение недоступно."
 
 #: resources/ui/preferences.ui:85
 msgid "Maximum Bitrate (kbps)"
-msgstr "Bitrate máximo (kbps)"
+msgstr "Максимальный битрейт (кбит/с)"
 
 #: resources/ui/preferences.ui:86
 msgid "A value of 0 means no limit."
-msgstr "O valor 0 significa que não há limite."
+msgstr "Если указать 0, ограничения не будет."
 
 #: resources/ui/preferences.ui:105 resources/ui/window.ui:275
 msgid "Playlists"
-msgstr "Playlists"
+msgstr "Плейлисты"
 
 #: resources/ui/preferences.ui:108
 msgid "Smart Playlists"
-msgstr "Playlists inteligentes"
+msgstr "Умные плейлисты"
 
 #: resources/ui/preferences.ui:111
 msgid "Favorite Mix Playlist"
-msgstr "Playlist Mix de favoritas"
+msgstr "Плейлист любимых треков"
 
 #: resources/ui/preferences.ui:123
 msgid "Shuffled Playlist"
-msgstr "Playlist aleatória"
+msgstr "Перемешанный плейлист"
 
 #: resources/ui/preferences.ui:135
 msgid "Most Played Playlist"
-msgstr "Playlist de mais tocadas"
+msgstr "Часто проигрываемые"
 
 #: resources/ui/setup.ui:10
 msgid "Servers"
-msgstr "Servidores"
+msgstr "Сервера"
 
 #: resources/ui/setup.ui:19
 msgid "Connect to Server"
-msgstr "Conectar ao servidor"
+msgstr "Подключиться к серверу"
 
 #: resources/ui/setup.ui:20
 msgid ""
@@ -168,154 +172,156 @@ msgid ""
 "including protocol and port. For Jellyfin this is usually 8096, Navidrome "
 "uses 4533."
 msgstr ""
-"Gelly é compatível com Jellyfin e Subsonic/Navidrome. Insira a URL completa "
-"do servidor, incluindo o protocolo e a porta. Para o Jellyfin, geralmente é "
-"a 8096; o Navidrome usa a 4533."
+"Gelly поддерживает Jellyfin и Subsonic/Navidrome. Введите полный URL-адрес "
+"сервера, включая протокол и порт. Для Jellyfin это обычно 8096, для "
+"Navidrome — 4533."
 
 #: resources/ui/setup.ui:42
 msgid "Username"
-msgstr "Usuário"
+msgstr "Имя пользователя"
 
 #: resources/ui/setup.ui:47
 msgid "Password"
-msgstr "Senha"
+msgstr "Пароль"
 
 #: resources/ui/setup.ui:54
 msgid "Connect"
-msgstr "Conectar"
+msgstr "Подключение"
 
 #: resources/ui/setup.ui:65 resources/ui/setup.ui:150
 msgid "Jellyfin Quick Connect"
-msgstr "Conexão rápida do Jellyfin"
+msgstr "Jellyfin: быстрый вход"
 
 #: resources/ui/setup.ui:80
 msgid "Choose Library"
-msgstr "Escolher biblioteca"
+msgstr "Выбрать медиатеку"
 
 #: resources/ui/setup.ui:89
 msgid "Select Library"
-msgstr "Selecionar biblioteca"
+msgstr "Выбор медиатеки"
 
 #: resources/ui/setup.ui:90
 msgid "Choose which library Gelly will use to load your music."
-msgstr "Escolha qual biblioteca o Gelly usará para carregar suas músicas."
+msgstr ""
+"Выберите медиатеку, которую Gelly будет использовать для загрузки вашей "
+"музыки."
 
 #: resources/ui/setup.ui:105
 msgid "Library"
-msgstr "Biblioteca"
+msgstr "Медиатека"
 
 #: resources/ui/setup.ui:112
 msgid "Launch Gelly"
-msgstr "Iniciar o Gelly"
+msgstr "Запустить Gelly"
 
 #: resources/ui/setup.ui:123 resources/ui/setup.ui:186
 msgid "Cancel"
-msgstr "Cancelar"
+msgstr "Отменить"
 
 #: resources/ui/setup.ui:141
 msgid "Quick Connect"
-msgstr "Conexão Rápida"
+msgstr "Быстрый вход"
 
 #: resources/ui/setup.ui:151
 msgid "Enter the code on the Jellyfin web page to complete authentication."
-msgstr "Insira o código na página web do Jellyfin para concluir a autenticação."
+msgstr "Введите код на веб-странице Jellyfin, чтобы завершить аутентификацию."
 
 #: resources/ui/window.ui:57
 msgid "Album Detail"
-msgstr "Detalhes do Álbum"
+msgstr "Информация об альбоме"
 
 #: resources/ui/window.ui:90
 msgid "Artist Detail"
-msgstr "Detalhes do Artista"
+msgstr "Информация об исполнителе"
 
 #: resources/ui/window.ui:122
 msgid "Playlist Detail"
-msgstr "Detalhes da Playlist"
+msgstr "Информация о плейлисте"
 
 #: resources/ui/window.ui:145
 msgid "Main"
-msgstr "Principal"
+msgstr "Главный"
 
 #: resources/ui/window.ui:154
 msgid "Show Queue"
-msgstr "Mostrar Fila"
+msgstr "Показать очередь"
 
 #: resources/ui/window.ui:161
 msgid "Search"
-msgstr "Pesquisar"
+msgstr "Поиск"
 
 #: resources/ui/window.ui:167
 msgid "Sort"
-msgstr "Ordenar"
+msgstr "Сортировка"
 
 #: resources/ui/window.ui:174
 msgid "New"
-msgstr "Novo"
+msgstr "Новый"
 
 #: resources/ui/window.ui:215
 msgid "Favorites"
-msgstr "Favoritos"
+msgstr "Избранное"
 
 #: resources/ui/window.ui:228
 msgid "Ascending"
-msgstr "Crescente"
+msgstr "По возрастанию"
 
 #: resources/ui/window.ui:235
 msgid "Descending"
-msgstr "Descendente"
+msgstr "По убыванию"
 
 #: resources/ui/window.ui:251
 msgid "Albums"
-msgstr "Álbuns"
+msgstr "Альбомы"
 
 #: resources/ui/window.ui:263
 msgid "Artists"
-msgstr "Artistas"
+msgstr "Исполнители"
 
 #: resources/ui/window.ui:287
 msgid "Songs"
-msgstr "Músicas"
+msgstr "Треки"
 
 #: resources/ui/window.ui:332
 msgid "Hide Queue"
-msgstr "Ocultar Fila"
+msgstr "Скрыть очередь"
 
 #: resources/ui/window.ui:341
 msgid "Clear Queue"
-msgstr "Limpar Fila"
+msgstr "Очистить очередь"
 
 #: resources/ui/window.ui:348
 msgid "Save As Playlist"
-msgstr "Salvar como Playlist"
+msgstr "Сохранить как плейлист"
 
 #: resources/ui/window.ui:369
 msgid "Request Rescan"
-msgstr "Solicitar nova varredura"
+msgstr "Запросить повторное сканирование"
 
 #: resources/ui/window.ui:373
 msgid "Refresh Library"
-msgstr "Atualizar Biblioteca"
+msgstr "Обновить медиатеку"
 
 #: resources/ui/window.ui:377
 msgid "Clear Image Cache"
-msgstr "Limpar cache de imagens"
+msgstr "Очистить кеш изображений"
 
 #: resources/ui/window.ui:383
 msgid "Preferences"
-msgstr "Preferências"
+msgstr "Настройки"
 
 #: resources/ui/window.ui:387
 msgid "Keyboard Shortcuts"
-msgstr "Atalhos de Teclado"
+msgstr "Горячие клавиши"
 
 #: resources/ui/window.ui:391
 msgid "About Gelly"
-msgstr "Sobre o Gelly"
+msgstr "Об Gelly"
 
 #: resources/ui/window.ui:395
 msgid "Logout"
-msgstr "Desconectar"
+msgstr "Выйти"
 
 #: resources/ui/window.ui:399
 msgid "Quit"
-msgstr "Sair"
+msgstr "Выход"
