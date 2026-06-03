@@ -79,7 +79,7 @@ msgstr "Erfordert eventuell zusätzliche Plugins."
 
 #: resources/ui/preferences.ui:52
 msgid "Inhibit Suspend"
-msgstr ""
+msgstr "Bereitschaftsmodus verhindern"
 
 #: resources/ui/preferences.ui:53
 msgid "Prevents the system from suspending while playing"
