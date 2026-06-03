@@ -12,6 +12,7 @@
             <property name="title" translatable="yes">General</property>
             <child>
               <object class="AdwActionRow">
+                <!-- TODO: Apparently I didn't know about AdwSwitchRow, these can all be converted -->
                 <property name="title" translatable="yes">Refresh library on startup</property>
                 <property name="subtitle" translatable="yes">The library can be refreshed using ctrl+r or the menu.</property>
                 <property name="use_underline">True</property>
@@ -27,6 +28,12 @@
               <object class="AdwSwitchRow" id="album_art_background_row">
                 <property name="title" translatable="yes">Extra eye candy</property>
                 <property name="subtitle" translatable="yes">Utilizes transparency, blurred backgrounds, etc.</property>
+              </object>
+            </child>
+            <child>
+              <object class="AdwSwitchRow" id="compact_mode_row">
+                <property name="title" translatable="yes">Compact Mode</property>
+                <property name="subtitle" translatable="yes">Use smaller UI elements regardless of window size.</property>
               </object>
             </child>
           </object>
@@ -65,7 +72,7 @@
         <child>
           <object class="AdwPreferencesGroup">
           <property name="title" translatable="yes">Transcoding</property>
-          <property name="description" translatable="yes">Transcoding reduces stream quality and bandwidth at the expense of processing power on the server. Note that Subsonic backends cannot seek transcoded streams.</property>
+          <property name="description" translatable="yes">Currently Subsonic backends cannot seek transcoded streams.</property>
             <child>
               <object class="AdwComboRow" id="transcoding_profile_row">
                 <property name="title" translatable="yes">Transcoding Profile</property>

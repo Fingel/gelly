@@ -105,5 +105,9 @@
       <default>0</default>
       <summary>Playback mode</summary>
     </key>
+    <key name="compact-mode" type="b">
+      <default>false</default>
+      <summary>Enable compact mode</summary>
+    </key>
   </schema>
 </schemalist>

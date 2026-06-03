@@ -107,8 +107,8 @@ mod imp {
         has_secondary_label: Cell<bool>,
         #[property(get, set = Self::set_favorite)]
         favorite: Cell<bool>,
-        #[property(get, set = Self::set_card_size, default = 200_u32)]
-        card_size: Cell<u32>,
+        #[property(get, set = Self::set_compact_mode, default = false)]
+        compact_mode: Cell<bool>,
     }
 
     #[glib::object_subclass]
@@ -130,7 +130,7 @@ mod imp {
     impl ObjectImpl for MediaCard {
         fn constructed(&self) {
             self.parent_constructed();
-            self.card_size.set(200);
+            self.set_compact_mode(false);
             self.setup_revealer_signals();
             self.obj().connect_map(|widget| {
                 let imp = widget.imp();
@@ -143,11 +143,26 @@ mod imp {
     }
 
     impl MediaCard {
-        fn set_card_size(&self, val: u32) {
-            self.card_size.set(val);
-            self.image.set_size(val);
-            self.static_icon.set_width_request(val as i32);
-            self.static_icon.set_height_request(val as i32);
+        const DEFAULT_CARD_SIZE: u32 = 200;
+        const COMPACT_CARD_SIZE: u32 = 130;
+
+        fn set_compact_mode(&self, compact_mode: bool) {
+            self.compact_mode.set(compact_mode);
+            let size = if compact_mode {
+                Self::COMPACT_CARD_SIZE
+            } else {
+                Self::DEFAULT_CARD_SIZE
+            };
+            self.image.set_size(size);
+            self.static_icon.set_width_request(size as i32);
+            self.static_icon.set_height_request(size as i32);
+
+            let obj = self.obj();
+            let margin = if compact_mode { 3 } else { 12 };
+            obj.set_margin_top(margin);
+            obj.set_margin_bottom(margin);
+            obj.set_margin_start(margin);
+            obj.set_margin_end(margin);
         }
 
         fn set_favorite(&self, val: bool) {

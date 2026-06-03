@@ -1,4 +1,4 @@
-use crate::config::settings;
+use crate::config::{self, settings};
 use crate::models::{AlbumModel, ArtistModel, PlaylistModel};
 use crate::ui::page_traits::{DetailPage, TopPage};
 use crate::ui::preferences::Preferences;
@@ -261,6 +261,15 @@ impl Window {
 
     fn show_big_player(&self) {
         self.imp().bottom_sheet.set_open(true);
+    }
+
+    fn update_compact_mode(&self) {
+        let imp = self.imp();
+        let compact_mode = imp.split_view.is_collapsed() || config::get_compact_mode_enabled();
+        imp.album_list.set_property("compact-mode", compact_mode);
+        imp.artist_list.set_property("compact-mode", compact_mode);
+        imp.playlist_list.set_property("compact-mode", compact_mode);
+        imp.player_bar.compact_mode(compact_mode);
     }
 }
 
@@ -798,6 +807,30 @@ mod imp {
                     }
                 ),
             );
+
+            config::settings().connect_changed(
+                Some("compact-mode"),
+                clone!(
+                    #[weak(rename_to = window)]
+                    self,
+                    move |_, _| {
+                        window.obj().update_compact_mode();
+                    }
+                ),
+            );
+
+            self.split_view.connect_notify_local(
+                Some("collapsed"),
+                clone!(
+                    #[weak(rename_to = window)]
+                    self,
+                    move |_, _| {
+                        window.obj().update_compact_mode();
+                    }
+                ),
+            );
+
+            self.obj().update_compact_mode();
         }
 
         fn signals() -> &'static [Signal] {
@@ -813,7 +846,9 @@ mod imp {
     }
 
     impl Window {
+        // TODO not sure how this ended up in a separate impl block
         fn update_blurred_paintable(&self) {
+            // TODO config should use function on config module not settings directly
             if !config::settings().boolean("album-art-window-background") {
                 self.obj().remove_css_class("album-art-background");
                 if self.blur_background.has_content() {

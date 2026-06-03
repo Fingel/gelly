@@ -351,3 +351,7 @@ pub fn get_playback_mode() -> u32 {
 pub fn set_playback_mode(mode: u32) {
     settings().set_uint("playback-mode", mode).unwrap();
 }
+
+pub fn get_compact_mode_enabled() -> bool {
+    settings().boolean("compact-mode")
+}
