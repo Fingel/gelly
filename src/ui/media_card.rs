@@ -156,6 +156,13 @@ mod imp {
             self.image.set_size(size);
             self.static_icon.set_width_request(size as i32);
             self.static_icon.set_height_request(size as i32);
+
+            let obj = self.obj();
+            let margin = if compact_mode { 3 } else { 12 };
+            obj.set_margin_top(margin);
+            obj.set_margin_bottom(margin);
+            obj.set_margin_start(margin);
+            obj.set_margin_end(margin);
         }
 
         fn set_favorite(&self, val: bool) {

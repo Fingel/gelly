@@ -21,7 +21,7 @@
           <object class="GtkGridView" id="grid_view">
             <property name="orientation">vertical</property>
             <property name="min-columns">1</property>
-            <property name="max-columns">10</property>
+            <property name="max-columns">20</property>
             <property name="single-click-activate">true</property>
             <property name="visible">false</property>
             <property name="css-classes"></property>
