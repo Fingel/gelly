@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-05-31 16:21-0700\n"
-"PO-Revision-Date: 2026-06-03 07:17+0000\n"
+"PO-Revision-Date: 2026-06-03 18:46+0000\n"
 "Last-Translator: miniwookie <miniwookie@mailbox.org>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/gelly/gelly/de/>\n"
 "Language: de\n"
@@ -75,7 +75,7 @@ msgstr "Lautstärke normalisieren"
 
 #: resources/ui/preferences.ui:40
 msgid "May require backend plugins."
-msgstr ""
+msgstr "Erfordert eventuell zusätzliche Plugins."
 
 #: resources/ui/preferences.ui:52
 msgid "Inhibit Suspend"
