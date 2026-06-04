@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-04 12:54+0200\n"
+"POT-Creation-Date: 2026-06-04 16:03-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -138,80 +138,80 @@ msgstr ""
 msgid "No"
 msgstr ""
 
-#: src/ui/stream_info_dialog.rs:21 src/ui/stream_info_dialog.rs:29
-#: src/ui/stream_info_dialog.rs:51
+#: src/ui/stream_info_dialog.rs:21 src/ui/stream_info_dialog.rs:32
+#: src/ui/stream_info_dialog.rs:54
 msgid "Unknown"
 msgstr ""
 
-#: src/ui/stream_info_dialog.rs:28
+#: src/ui/stream_info_dialog.rs:29
 msgid "Backend"
 msgstr ""
 
-#: src/ui/stream_info_dialog.rs:29
+#: src/ui/stream_info_dialog.rs:32
 msgid "Codec"
 msgstr ""
 
-#: src/ui/stream_info_dialog.rs:31
+#: src/ui/stream_info_dialog.rs:34
 msgid "Container"
 msgstr ""
 
-#: src/ui/stream_info_dialog.rs:32 src/ui/stream_info_dialog.rs:55
+#: src/ui/stream_info_dialog.rs:35 src/ui/stream_info_dialog.rs:58
 msgid "None"
 msgstr ""
 
-#: src/ui/stream_info_dialog.rs:35
+#: src/ui/stream_info_dialog.rs:38
 msgid "Sample Rate"
 msgstr ""
 
-#: src/ui/stream_info_dialog.rs:38
+#: src/ui/stream_info_dialog.rs:41
 msgid "Channels"
 msgstr ""
 
-#: src/ui/stream_info_dialog.rs:41
+#: src/ui/stream_info_dialog.rs:44
 msgid "Bit Rate"
 msgstr ""
 
-#: src/ui/stream_info_dialog.rs:44
+#: src/ui/stream_info_dialog.rs:47
 msgid "Encoder"
 msgstr ""
 
-#: src/ui/stream_info_dialog.rs:50
+#: src/ui/stream_info_dialog.rs:53
 msgid "Original Codec"
 msgstr ""
 
-#: src/ui/stream_info_dialog.rs:54
+#: src/ui/stream_info_dialog.rs:57
 msgid "Original Container"
 msgstr ""
 
-#: src/ui/stream_info_dialog.rs:58
+#: src/ui/stream_info_dialog.rs:61
 msgid "Original Sample Rate"
 msgstr ""
 
-#: src/ui/stream_info_dialog.rs:62
+#: src/ui/stream_info_dialog.rs:65
 msgid "Original Channels"
 msgstr ""
 
-#: src/ui/stream_info_dialog.rs:65
+#: src/ui/stream_info_dialog.rs:69
 msgid "Supports Direct Play"
 msgstr ""
 
-#: src/ui/stream_info_dialog.rs:67
+#: src/ui/stream_info_dialog.rs:73
 msgid "Supports Direct Stream"
 msgstr ""
 
-#: src/ui/stream_info_dialog.rs:70
+#: src/ui/stream_info_dialog.rs:77
 msgid "Supports Transcoding"
 msgstr ""
 
-#: src/ui/stream_info_dialog.rs:74
+#: src/ui/stream_info_dialog.rs:83
 msgid "Original Bit Rate"
 msgstr ""
 
-#: src/ui/stream_info_dialog.rs:79
+#: src/ui/stream_info_dialog.rs:89
 msgid "File Size"
 msgstr ""
 
-#: src/ui/stream_info_dialog.rs:106
+#: src/ui/stream_info_dialog.rs:118
 msgid "Stream Info"
 msgstr ""
 
@@ -268,6 +268,7 @@ msgstr ""
 msgid "General"
 msgstr ""
 
+#. TODO: Apparently I didn't know about AdwSwitchRow, these can all be converted
 #: resources/ui/preferences.ui:16
 msgid "Refresh library on startup"
 msgstr ""
@@ -377,12 +378,6 @@ msgstr ""
 
 #: resources/ui/setup.ui:35
 msgid "Host URL"
-msgstr ""
-
-#: resources/ui/setup.ui:37
-msgid ""
-"Enter the complete server address including protocol (http:// or https://) "
-"and port number (:8096)"
 msgstr ""
 
 #: resources/ui/setup.ui:42

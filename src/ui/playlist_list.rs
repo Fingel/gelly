@@ -166,11 +166,7 @@ impl PlaylistList {
                             playlist_list.toast(&tr("Playlist created"), None);
                         }
                         Err(err) => {
-                            playlist_list.toast(
-                                &tr("Failed to create playlist: {}")
-                                    .replace("{}", &err.to_string()),
-                                None,
-                            );
+                            playlist_list.toast(&tr("Failed to create playlist"), None);
                             error!("Failed to create playlist: {}", err);
                         }
                     }

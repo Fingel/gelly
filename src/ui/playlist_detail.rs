@@ -597,11 +597,7 @@ impl PlaylistDetail {
                             playlist_detail.toast(&tr("Playlist deleted"), None);
                         }
                         Err(err) => {
-                            playlist_detail.toast(
-                                &tr("Failed to delete playlist: {}")
-                                    .replace("{}", &err.to_string()),
-                                None,
-                            );
+                            playlist_detail.toast(&tr("Failed to delete playlist"), None);
                             error!("Failed to delete playlist: {}", err);
                         }
                     }
