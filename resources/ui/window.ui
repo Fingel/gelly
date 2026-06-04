@@ -192,7 +192,7 @@
                                             <property name="search-mode-enabled">false</property>
                                             <property name="child">
                                               <object class="GtkSearchEntry" id="search_entry">
-                                                <property name="placeholder-text">Search...</property>
+                                                <property name="placeholder-text" translatable="yes">Search...</property>
                                               </object>
                                             </property>
                                           </object>

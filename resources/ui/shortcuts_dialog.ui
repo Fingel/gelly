@@ -3,48 +3,48 @@
   <object class="AdwShortcutsDialog" id="shortcuts-dialog">
     <child>
       <object class="AdwShortcutsSection">
-        <property name="title">General</property>
+        <property name="title" translatable="yes">General</property>
         <child>
           <object class="AdwShortcutsItem">
-            <property name="title">Refresh Library</property>
-            <property name="subtitle">Re-downloads the music library</property>
+            <property name="title" translatable="yes">Refresh Library</property>
+            <property name="subtitle" translatable="yes">Re-downloads the music library</property>
             <property name="action-name">win.refresh-library</property>
           </object>
         </child>
         <child>
           <object class="AdwShortcutsItem">
-            <property name="title">Request Library Rescan</property>
-            <property name="subtitle">Ask Jellyfin to rescan the library for new or modified files</property>
+            <property name="title" translatable="yes">Request Library Rescan</property>
+            <property name="subtitle" translatable="yes">Ask Jellyfin to rescan the library for new or modified files</property>
             <property name="action-name">win.request-library-rescan</property>
           </object>
         </child>
         <child>
           <object class="AdwShortcutsItem">
-            <property name="title">Search</property>
+            <property name="title" translatable="yes">Search</property>
             <property name="action-name">win.search</property>
           </object>
         </child>
         <child>
           <object class="AdwShortcutsItem">
-            <property name="title">Show Favorites</property>
+            <property name="title" translatable="yes">Show Favorites</property>
             <property name="action-name">win.favorites</property>
           </object>
         </child>
         <child>
           <object class="AdwShortcutsItem">
-            <property name="title">Preferences</property>
+            <property name="title" translatable="yes">Preferences</property>
             <property name="action-name">win.preferences</property>
           </object>
         </child>
         <child>
           <object class="AdwShortcutsItem">
-            <property name="title">Keyboard Shortcuts</property>
+            <property name="title" translatable="yes">Keyboard Shortcuts</property>
             <property name="action-name">win.shortcuts</property>
           </object>
         </child>
         <child>
           <object class="AdwShortcutsItem">
-            <property name="title">Quit</property>
+            <property name="title" translatable="yes">Quit</property>
             <property name="action-name">window.close</property>
           </object>
         </child>
@@ -52,28 +52,28 @@
     </child>
     <child>
       <object class="AdwShortcutsSection">
-        <property name="title">Navigation</property>
+        <property name="title" translatable="yes">Navigation</property>
         <child>
           <object class="AdwShortcutsItem">
-            <property name="title">Focus Albums</property>
+            <property name="title" translatable="yes">Focus Albums</property>
             <property name="action-name">win.show-album-list</property>
           </object>
         </child>
         <child>
           <object class="AdwShortcutsItem">
-            <property name="title">Focus Artists</property>
+            <property name="title" translatable="yes">Focus Artists</property>
             <property name="action-name">win.show-artist-list</property>
           </object>
         </child>
         <child>
           <object class="AdwShortcutsItem">
-            <property name="title">Focus Playlist</property>
+            <property name="title" translatable="yes">Focus Playlist</property>
             <property name="action-name">win.show-playlist-list</property>
           </object>
         </child>
         <child>
           <object class="AdwShortcutsItem">
-            <property name="title">Focus Song List</property>
+            <property name="title" translatable="yes">Focus Song List</property>
             <property name="action-name">win.show-song-list</property>
           </object>
         </child>
@@ -81,11 +81,11 @@
     </child>
     <child>
       <object class="AdwShortcutsSection">
-        <property name="title">Playback</property>
+        <property name="title" translatable="yes">Playback</property>
         <child>
           <object class="AdwShortcutsItem">
-            <property name="title">Play Selected</property>
-            <property name="subtitle">Play the currently selected item in the list</property>
+            <property name="title" translatable="yes">Play Selected</property>
+            <property name="subtitle" translatable="yes">Play the currently selected item in the list</property>
             <property name="action-name">win.play-selected</property>
           </object>
         </child>

@@ -1,10 +1,11 @@
 use adw::prelude::*;
 use gtk::Window;
 
+use crate::i18n::tr;
 use crate::{audio::stream_info::StreamInfo, config};
 
-fn add_to_grid(row: i32, col_offset: i32, prop: &(&str, String), grid: &gtk::Grid) {
-    let key = gtk::Label::new(Some(prop.0));
+fn add_to_grid(row: i32, col_offset: i32, prop: &(String, String), grid: &gtk::Grid) {
+    let key = gtk::Label::new(Some(&prop.0));
     let value = gtk::Label::new(Some(&prop.1));
     key.set_halign(gtk::Align::End);
     value.set_halign(gtk::Align::Start);
@@ -15,67 +16,79 @@ fn add_to_grid(row: i32, col_offset: i32, prop: &(&str, String), grid: &gtk::Gri
 
 fn yes_no(value: Option<bool>) -> String {
     match value {
-        Some(true) => "Yes".to_string(),
-        Some(false) => "No".to_string(),
-        None => "Unknown".to_string(),
+        Some(true) => tr("Yes"),
+        Some(false) => tr("No"),
+        None => tr("Unknown"),
     }
 }
 
 pub fn show(parent: Option<&Window>, info: StreamInfo) {
     // Local properties
     let mut left_props = vec![
-        ("Backend", config::get_backend_type().as_str().to_string()),
-        ("Codec", info.codec.unwrap_or("Unknown".to_string())),
         (
-            "Container",
-            info.container_format.unwrap_or("None".to_string()),
+            tr("Backend"),
+            config::get_backend_type().as_str().to_string(),
+        ),
+        (tr("Codec"), info.codec.unwrap_or_else(|| tr("Unknown"))),
+        (
+            tr("Container"),
+            info.container_format.unwrap_or_else(|| tr("None")),
         ),
         (
-            "Sample Rate",
+            tr("Sample Rate"),
             format!("{} Hz", info.sample_rate.unwrap_or(0)),
         ),
-        ("Channels", info.channels.unwrap_or(0).to_string()),
+        (tr("Channels"), info.channels.unwrap_or(0).to_string()),
     ];
     if let Some(bit_rate) = info.bit_rate {
-        left_props.push(("Bit Rate", format!("{} kbps", bit_rate)));
+        left_props.push((tr("Bit Rate"), format!("{} kbps", bit_rate)));
     }
     if let Some(encoder) = info.encoder {
-        left_props.push(("Encoder", encoder));
+        left_props.push((tr("Encoder"), encoder));
     }
 
     // Remote properties
     let mut right_props = vec![
         (
-            "Original Codec",
-            info.original_codec.unwrap_or("Unknown".to_string()),
+            tr("Original Codec"),
+            info.original_codec.unwrap_or_else(|| tr("Unknown")),
         ),
         (
-            "Original Container",
-            info.original_container_format.unwrap_or("None".to_string()),
+            tr("Original Container"),
+            info.original_container_format.unwrap_or_else(|| tr("None")),
         ),
         (
-            "Original Sample Rate",
+            tr("Original Sample Rate"),
             info.original_sample_rate.unwrap_or(0).to_string(),
         ),
         (
-            "Original Channels",
+            tr("Original Channels"),
             info.original_channels.unwrap_or(0).to_string(),
         ),
-        ("Supports Direct Play", yes_no(info.supports_direct_play)),
         (
-            "Supports Direct Stream",
+            tr("Supports Direct Play"),
+            yes_no(info.supports_direct_play),
+        ),
+        (
+            tr("Supports Direct Stream"),
             yes_no(info.supports_direct_stream),
         ),
-        ("Supports Transcoding", yes_no(info.supports_transcoding)),
+        (
+            tr("Supports Transcoding"),
+            yes_no(info.supports_transcoding),
+        ),
     ];
     if let Some(original_bit_rate) = info.original_bit_rate {
         right_props.push((
-            "Original Bit Rate",
+            tr("Original Bit Rate"),
             format!("{:.1} kbps", original_bit_rate / 1000),
         ));
     }
     if let Some(file_size) = info.file_size {
-        right_props.push(("File Size", format!("{:.1} MB", file_size / 1024 / 1024)));
+        right_props.push((
+            tr("File Size"),
+            format!("{:.1} MB", file_size / 1024 / 1024),
+        ));
     }
 
     let num_rows = left_props.len().max(right_props.len()) as i32;
@@ -102,7 +115,7 @@ pub fn show(parent: Option<&Window>, info: StreamInfo) {
 
     // Create a header bar with title
     let header_bar = adw::HeaderBar::new();
-    header_bar.set_title_widget(Some(&adw::WindowTitle::new("Stream Info", "")));
+    header_bar.set_title_widget(Some(&adw::WindowTitle::new(&tr("Stream Info"), "")));
 
     // Create a toolbar view to combine header and content
     let toolbar_view = adw::ToolbarView::new();

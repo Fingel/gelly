@@ -5,7 +5,7 @@
     <property name="orientation">vertical</property>
     <child>
       <object class="AdwStatusPage" id="empty">
-        <property name="title">Nothing Playing</property>
+        <property name="title" translatable="yes">Nothing Playing</property>
         <property name="icon-name">audio-x-generic-symbolic</property>
         <property name="visible">true</property>
       </object>

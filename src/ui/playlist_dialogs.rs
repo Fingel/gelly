@@ -1,9 +1,10 @@
+use crate::i18n::tr;
 use crate::ui::window::Window;
 use adw::prelude::*;
 use gtk::glib;
 
 pub fn new_playlist(parent: Option<&Window>, cb: impl Fn(String) + 'static) {
-    let name_entry = adw::EntryRow::builder().title("Playlist name").build();
+    let name_entry = adw::EntryRow::builder().title(tr("Playlist name")).build();
     let entry_box = gtk::ListBox::builder()
         .margin_top(12)
         .margin_bottom(12)
@@ -12,11 +13,11 @@ pub fn new_playlist(parent: Option<&Window>, cb: impl Fn(String) + 'static) {
     entry_box.append(&name_entry);
 
     let dialog = adw::AlertDialog::builder()
-        .heading("New Playlist")
+        .heading(tr("New Playlist"))
         .extra_child(&entry_box)
         .build();
 
-    dialog.add_responses(&[("cancel", "Cancel"), ("create", "Create")]);
+    dialog.add_responses(&[("cancel", &tr("Cancel")), ("create", &tr("Create"))]);
     dialog.set_response_appearance("create", adw::ResponseAppearance::Suggested);
     dialog.set_default_response(Some("create"));
     dialog.set_close_response("cancel");
@@ -52,10 +53,10 @@ pub fn new_playlist(parent: Option<&Window>, cb: impl Fn(String) + 'static) {
 }
 
 pub fn confirm_delete(parent: Option<&Window>, cb: impl Fn(bool) + 'static) {
-    let dialog = adw::AlertDialog::new(Some("Delete playlist?"), None);
+    let dialog = adw::AlertDialog::new(Some(&tr("Delete playlist?")), None);
     dialog.set_default_response(Some("cancel"));
     dialog.set_close_response("cancel");
-    dialog.add_responses(&[("cancel", "Cancel"), ("delete", "Delete")]);
+    dialog.add_responses(&[("cancel", &tr("Cancel")), ("delete", &tr("Delete"))]);
     dialog.set_response_appearance("delete", adw::ResponseAppearance::Destructive);
     dialog.connect_response(
         None,

@@ -1,6 +1,6 @@
 use crate::{
     async_utils::spawn_tokio,
-    i18n::ngettext,
+    i18n::{ngettext, tr},
     jellyfin::utils::format_duration,
     models::{AlbumModel, SongModel},
     ui::{
@@ -37,7 +37,7 @@ impl DetailPage for AlbumDetail {
         if model.year() > 0 {
             imp.year_label.set_text(&model.year().to_string());
         } else {
-            imp.year_label.set_text("N/A");
+            imp.year_label.set_text(&tr("N/A"));
         }
         imp.album_image.set_item_id(&model.id(), None);
         let binding = model
@@ -166,7 +166,7 @@ impl AlbumDetail {
         if let Some(audio_model) = self.get_application().audio_model() {
             audio_model.set_queue(songs, index, true);
         } else {
-            self.toast("Audio model not initialized, please restart", None);
+            self.toast(&tr("Audio model not initialized, please restart"), None);
             warn!("No audio model found");
         }
     }
@@ -176,7 +176,7 @@ impl AlbumDetail {
         if let Some(audio_model) = self.get_application().audio_model() {
             audio_model.set_queue(songs, 0, false);
         } else {
-            self.toast("Audio model not initialized, please restart", None);
+            self.toast(&tr("Audio model not initialized, please restart"), None);
             warn!("No audio model found");
         }
     }
@@ -200,7 +200,7 @@ impl AlbumDetail {
                 None,
             );
         } else {
-            self.toast("Audio model not initialized, please restart", None);
+            self.toast(&tr("Audio model not initialized, please restart"), None);
             warn!("No audio model found");
         }
     }
@@ -265,7 +265,7 @@ impl AlbumDetail {
             move || {
                 let id = album.id();
                 album.clipboard().set_text(&id);
-                album.toast("Album ID copied to clipboard", None);
+                album.toast(&tr("Album ID copied to clipboard"), None);
             }
         );
 
@@ -298,11 +298,11 @@ impl AlbumDetail {
                 move |result| {
                     match result {
                         Ok(()) => {
-                            album.toast("Added album to playlist", None);
+                            album.toast(&tr("Added album to playlist"), None);
                             app.refresh_playlists(true);
                         }
                         Err(e) => {
-                            album.toast("Failed to add album to playlist", None);
+                            album.toast(&tr("Failed to add album to playlist"), None);
                             warn!("Failed to add album to playlist: {}", e);
                         }
                     }

@@ -3,6 +3,7 @@ use crate::{
     async_utils::spawn_tokio,
     backend::BackendError,
     config,
+    i18n::tr,
     library_utils::songs_for_playlist,
     models::{
         PlaylistModel, SongModel,
@@ -58,13 +59,13 @@ impl TopPage for PlaylistList {
                                     audio_model.set_queue(songs, 0, false);
                                 } else {
                                     playlist_list
-                                        .toast("No audio model found, please restart.", None);
+                                        .toast(&tr("No audio model found, please restart."), None);
                                     log::warn!("No audio model found");
                                 }
                             }
                             Err(error) => {
                                 playlist_list
-                                    .toast("Could not load playlist, please try again.", None);
+                                    .toast(&tr("Could not load playlist, please try again."), None);
                                 warn!("Unable to load playlist: {error}");
                             }
                         }
@@ -162,11 +163,10 @@ impl PlaylistList {
                     match result {
                         Ok(_id) => {
                             app.refresh_playlists(true);
-                            playlist_list.toast("Playlist created", None);
+                            playlist_list.toast(&tr("Playlist created"), None);
                         }
                         Err(err) => {
-                            playlist_list
-                                .toast(&format!("Failed to create playlist: {}", err), None);
+                            playlist_list.toast(&tr("Failed to create playlist"), None);
                             error!("Failed to create playlist: {}", err);
                         }
                     }

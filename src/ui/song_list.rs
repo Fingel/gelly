@@ -8,6 +8,7 @@ use log::warn;
 
 use crate::{
     application::Application,
+    i18n::tr,
     models::SongModel,
     ui::{
         list_helpers::create_string_filter,
@@ -137,7 +138,7 @@ impl SongList {
         if let Some(audio_model) = self.get_application().audio_model() {
             audio_model.set_queue(songs, index, true);
         } else {
-            self.toast("Audio model not initialized, please restart", None);
+            self.toast(&tr("Audio model not initialized, please restart"), None);
             warn!("No audio model found");
         }
     }

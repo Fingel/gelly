@@ -79,7 +79,7 @@
                     <property name="focusable">False</property>
                     <property name="halign">start</property>
                     <property name="ellipsize">middle</property>
-                    <property name="label">tracks</property>
+                    <property name="label" translatable="yes">tracks</property>
                     <style>
                       <class name="dimmed" />
                     </style>
@@ -116,7 +116,7 @@
                     <property
                       name="icon-name"
                     >media-playback-start-symbolic</property>
-                    <property name="tooltip-text">Play</property>
+                    <property name="tooltip-text" translatable="yes">Play</property>
                     <style>
                       <class name="circular" />
                     </style>
@@ -142,7 +142,7 @@
                     <property
                       name="icon-name"
                     >view-more-symbolic</property>
-                    <property name="tooltip-text">More Actions</property>
+                    <property name="tooltip-text" translatable="yes">More Actions</property>
                     <style>
                       <class name="circular" />
                     </style>

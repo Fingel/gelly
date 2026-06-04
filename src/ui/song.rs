@@ -11,6 +11,7 @@ use log::warn;
 
 use crate::{
     async_utils::spawn_tokio,
+    i18n::tr,
     jellyfin::{api::ItemType, utils::format_duration},
     models::SongModel,
     ui::{
@@ -250,7 +251,7 @@ impl Song {
             move || {
                 let id = song.song_id();
                 song.clipboard().set_text(&id);
-                song.toast("Song ID copied to clipboard", None);
+                song.toast(&tr("Song ID copied to clipboard"), None);
             }
         );
 
@@ -299,11 +300,11 @@ impl Song {
                 move |result| {
                     match result {
                         Ok(()) => {
-                            song.toast("Added song to playlist", None);
+                            song.toast(&tr("Added song to playlist"), None);
                             app.refresh_playlists(true);
                         }
                         Err(e) => {
-                            song.toast("Failed to add song to playlist", None);
+                            song.toast(&tr("Failed to add song to playlist"), None);
                             warn!("Failed to add song to playlist: {}", e);
                         }
                     }

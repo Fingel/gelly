@@ -1,7 +1,7 @@
 use crate::{
     async_utils::spawn_tokio,
     backend::BackendError,
-    i18n::ngettext,
+    i18n::{ngettext, tr},
     jellyfin::utils::format_duration,
     library_utils::songs_for_playlist,
     models::{PlaylistModel, SongModel},
@@ -257,7 +257,7 @@ impl PlaylistDetail {
                         }
                         Err(error) => {
                             playlist_detail
-                                .toast("Could not load playlist, please try again.", None);
+                                .toast(&tr("Could not load playlist, please try again."), None);
                             warn!("Unable to load playlist: {error}");
                         }
                     }
@@ -330,7 +330,7 @@ impl PlaylistDetail {
                 if let Some(model) = playlist.get_model() {
                     let id = model.id();
                     playlist.clipboard().set_text(&id);
-                    playlist.toast("Playlist ID copied to clipboard", None);
+                    playlist.toast(&tr("Playlist ID copied to clipboard"), None);
                 }
             }
         );
@@ -364,11 +364,11 @@ impl PlaylistDetail {
                 move |result| {
                     match result {
                         Ok(()) => {
-                            playlist.toast("Added songs to playlist", None);
+                            playlist.toast(&tr("Added songs to playlist"), None);
                             app.refresh_playlists(true);
                         }
                         Err(e) => {
-                            playlist.toast("Failed to add songs to playlist", None);
+                            playlist.toast(&tr("Failed to add songs to playlist"), None);
                             warn!("Failed to add songs to playlist: {}", e);
                         }
                     }
@@ -447,7 +447,7 @@ impl PlaylistDetail {
                     }
                     Err(error) => {
                         log::error!("Failed to move playlist item: {}", error);
-                        playlist_detail.toast("Failed to save playlist order.", None);
+                        playlist_detail.toast(&tr("Failed to save playlist order."), None);
                         // Revert to server state
                         playlist_detail.pull_tracks();
                     }
@@ -493,7 +493,7 @@ impl PlaylistDetail {
                             }
                             Err(error) => {
                                 log::error!("Failed to remove song from playlist: {}", error);
-                                playlist_detail.toast("Failed to modify playlist.", None);
+                                playlist_detail.toast(&tr("Failed to modify playlist."), None);
                                 // Revert to server state
                                 playlist_detail.pull_tracks();
                             }
@@ -509,7 +509,7 @@ impl PlaylistDetail {
         if let Some(audio_model) = self.get_application().audio_model() {
             audio_model.set_queue(songs, index, true);
         } else {
-            self.toast("Audio model not initialized, please restart", None);
+            self.toast(&tr("Audio model not initialized, please restart"), None);
             warn!("No audio model found");
         }
     }
@@ -519,7 +519,7 @@ impl PlaylistDetail {
         if let Some(audio_model) = self.get_application().audio_model() {
             audio_model.set_queue(songs, 0, false);
         } else {
-            self.toast("Audio model not initialized, please restart", None);
+            self.toast(&tr("Audio model not initialized, please restart"), None);
             warn!("No audio model found");
         }
     }
@@ -543,7 +543,7 @@ impl PlaylistDetail {
                 None,
             );
         } else {
-            self.toast("Audio model not initialized, please restart", None);
+            self.toast(&tr("Audio model not initialized, please restart"), None);
             warn!("No audio model found");
         }
     }
@@ -561,7 +561,7 @@ impl PlaylistDetail {
         if let Some(model) = self.get_model()
             && model.is_smart()
         {
-            self.toast("Smart playlists cannot be deleted", None);
+            self.toast(&tr("Smart playlists cannot be deleted"), None);
             return;
         }
 
@@ -594,11 +594,10 @@ impl PlaylistDetail {
                         Ok(()) => {
                             app.refresh_playlists(true);
                             window.go_back();
-                            playlist_detail.toast("Playlist deleted", None);
+                            playlist_detail.toast(&tr("Playlist deleted"), None);
                         }
                         Err(err) => {
-                            playlist_detail
-                                .toast(&format!("Failed to delete playlist: {}", err), None);
+                            playlist_detail.toast(&tr("Failed to delete playlist"), None);
                             error!("Failed to delete playlist: {}", err);
                         }
                     }

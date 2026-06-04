@@ -1,6 +1,7 @@
 use crate::{
     async_utils::spawn_tokio,
     audio::{model::AudioModel, stream_info::discover_stream_info},
+    i18n::tr,
     jellyfin::api::ItemType,
     ui::{
         album_art::AlbumArt, lyrics::Lyrics, stream_info_dialog, widget_ext::WidgetApplicationExt,
@@ -69,10 +70,10 @@ where
         let btn = self.play_pause_button();
         if playing {
             btn.set_icon_name("media-playback-pause-symbolic");
-            btn.set_tooltip_text(Some("Pause"));
+            btn.set_tooltip_text(Some(&tr("Pause")));
         } else {
             btn.set_icon_name("media-playback-start-symbolic");
-            btn.set_tooltip_text(Some("Play"));
+            btn.set_tooltip_text(Some(&tr("Play")));
         }
     }
 
@@ -82,7 +83,7 @@ where
         let artists = audio_model.current_song_artists();
         let album = audio_model.current_song_album();
         let artist_str = if artists.is_empty() {
-            "Unknown Artist".to_string()
+            tr("Unknown Artist")
         } else {
             artists.join(", ")
         };

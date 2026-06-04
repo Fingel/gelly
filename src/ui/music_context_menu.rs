@@ -1,5 +1,6 @@
 use gtk::{self, gio, glib, prelude::*};
 
+use crate::i18n::tr;
 use crate::jellyfin::api::PlaylistDto;
 
 #[derive(Debug, Clone)]
@@ -31,11 +32,11 @@ fn create_menu_model(config: &ContextActions, playlists: &[PlaylistDto]) -> gio:
     if !config.in_queue {
         let queue_section = gio::Menu::new();
         queue_section.append(
-            Some("Queue Next"),
+            Some(&tr("Queue Next")),
             Some(&format!("{}.queue_next", config.action_prefix)),
         );
         queue_section.append(
-            Some("Queue Last"),
+            Some(&tr("Queue Last")),
             Some(&format!("{}.queue_last", config.action_prefix)),
         );
         menu.append_section(None, &queue_section);
@@ -57,11 +58,11 @@ fn create_menu_model(config: &ContextActions, playlists: &[PlaylistDto]) -> gio:
             );
             playlist_submenu.append_item(&menu_item);
         }
-        playlist_section.append_submenu(Some("Add to Playlist"), &playlist_submenu);
+        playlist_section.append_submenu(Some(&tr("Add to Playlist")), &playlist_submenu);
     }
     if config.can_remove_from_playlist {
         playlist_section.append(
-            Some("Remove from Playlist"),
+            Some(&tr("Remove from Playlist")),
             Some(&format!("{}.remove_playlist", config.action_prefix)),
         );
     }
@@ -69,7 +70,7 @@ fn create_menu_model(config: &ContextActions, playlists: &[PlaylistDto]) -> gio:
 
     let other_section = gio::Menu::new();
     other_section.append(
-        Some("Copy ID"),
+        Some(&tr("Copy ID")),
         Some(&format!("{}.copy_id", config.action_prefix)),
     );
     menu.append_section(None, &other_section);

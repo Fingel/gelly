@@ -63,7 +63,7 @@
                     <property name="focusable">False</property>
                     <property name="halign">start</property>
                     <property name="ellipsize">middle</property>
-                    <property name="label">tracks</property>
+                    <property name="label" translatable="yes">tracks</property>
                     <style>
                       <class name="dimmed" />
                     </style>
@@ -98,7 +98,7 @@
                 <child>
                   <object class="GtkButton" id="play_all">
                     <property name="icon-name">media-playback-start-symbolic</property>
-                    <property name="tooltip-text">Play</property>
+                    <property name="tooltip-text" translatable="yes">Play</property>
                     <style>
                       <class name="circular" />
                     </style>
@@ -124,7 +124,7 @@
                     <property
                       name="icon-name"
                     >view-more-symbolic</property>
-                    <property name="tooltip-text">More actions</property>
+                    <property name="tooltip-text" translatable="yes">More actions</property>
                     <style>
                       <class name="circular" />
                     </style>
@@ -135,7 +135,7 @@
                     <property
                       name="icon-name"
                     >user-trash-symbolic</property>
-                    <property name="tooltip-text">Delete playlist</property>
+                    <property name="tooltip-text" translatable="yes">Delete playlist</property>
                     <style>
                       <class name="circular" />
                     </style>
@@ -149,7 +149,7 @@
     </child>
     <child>
       <object class="AdwStatusPage" id="empty">
-        <property name="title">Playlist is Empty</property>
+        <property name="title" translatable="yes">Playlist is Empty</property>
         <property name="icon-name">audio-x-generic-symbolic</property>
         <property name="visible">false</property>
       </object>

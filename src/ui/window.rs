@@ -1,4 +1,5 @@
 use crate::config::{self, settings};
+use crate::i18n::tr;
 use crate::models::{AlbumModel, ArtistModel, PlaylistModel};
 use crate::ui::page_traits::{DetailPage, TopPage};
 use crate::ui::preferences::Preferences;
@@ -185,7 +186,7 @@ impl Window {
     pub fn logout(&self) {
         self.get_application().logout();
         self.show_server_setup();
-        self.toast("Logged out", None);
+        self.toast(&tr("Logged out"), None);
     }
 
     pub fn save_window_size(&self) -> Result<(), glib::BoolError> {
