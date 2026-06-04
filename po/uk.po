@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-06-02 13:16-0700\n"
-"PO-Revision-Date: 2026-06-04 07:17+0000\n"
+"PO-Revision-Date: 2026-06-04 08:01+0000\n"
 "Last-Translator: Димко <Dymkovych@proton.me>\n"
 "Language-Team: Ukrainian <https://hosted.weblate.org/projects/gelly/gelly/"
 "uk/>\n"
@@ -63,14 +63,12 @@ msgid "Quick connect code copied to clipboard"
 msgstr "Код швидкого підключення скопійовано до буфера обміну"
 
 #: resources/ui/album_art.ui:33
-#, fuzzy
 msgid "Missing album art"
 msgstr "Обкладинка відсутня"
 
 #: resources/ui/preferences.ui:9 resources/ui/preferences.ui:12
-#, fuzzy
 msgid "General"
-msgstr "Загальні"
+msgstr "Загальне"
 
 #: resources/ui/preferences.ui:15
 msgid "Refresh library on startup"
@@ -82,7 +80,7 @@ msgstr "Фонотеку можна оновити через Ctrl+R або ме
 
 #: resources/ui/preferences.ui:28
 msgid "Extra eye candy"
-msgstr "Прикрасити"
+msgstr "Покращене оформлення"
 
 #: resources/ui/preferences.ui:29
 msgid "Utilizes transparency, blurred backgrounds, etc."
@@ -90,7 +88,7 @@ msgstr "Використовує прозорість, розмиття тла �
 
 #: resources/ui/preferences.ui:36
 msgid "Playback"
-msgstr "Грати"
+msgstr "Відтворення"
 
 #: resources/ui/preferences.ui:39
 msgid "Normalize Audio"
@@ -113,7 +111,6 @@ msgid "Transcoding"
 msgstr "Перекодування"
 
 #: resources/ui/preferences.ui:68
-#, fuzzy
 msgid ""
 "Transcoding reduces stream quality and bandwidth at the expense of "
 "processing power on the server. Note that Subsonic backends cannot seek "
@@ -295,7 +292,7 @@ msgstr "Зберегти як добірку"
 
 #: resources/ui/window.ui:369
 msgid "Request Rescan"
-msgstr "Повторне сканування"
+msgstr "Пересканувати"
 
 #: resources/ui/window.ui:373
 msgid "Refresh Library"
