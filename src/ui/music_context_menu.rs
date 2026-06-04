@@ -1,4 +1,4 @@
-use gtk::{self, gio, glib, prelude::*};
+use gtk::{self, gio, prelude::*};
 
 use crate::i18n::tr;
 use crate::jellyfin::api::PlaylistDto;
@@ -76,59 +76,4 @@ fn create_menu_model(config: &ContextActions, playlists: &[PlaylistDto]) -> gio:
     menu.append_section(None, &other_section);
 
     menu
-}
-
-pub fn create_actiongroup(
-    on_add_to_playlist: Option<impl Fn(String) + 'static>,
-    on_remove_from_playlist: Option<impl Fn() + 'static>,
-    on_queue_next: Option<impl Fn() + 'static>,
-    on_queue_last: Option<impl Fn() + 'static>,
-    on_copy_id: Option<impl Fn() + 'static>,
-) -> gio::SimpleActionGroup {
-    let action_group = gio::SimpleActionGroup::new();
-
-    if let Some(on_add_to_playlist) = on_add_to_playlist {
-        let add_to_playlist_action =
-            gio::SimpleAction::new("add_to_playlist", Some(glib::VariantTy::STRING));
-        add_to_playlist_action.connect_activate(move |_, playlist_id| {
-            if let Some(playlist_id) = playlist_id.and_then(|id| id.get::<String>()) {
-                on_add_to_playlist(playlist_id);
-            }
-        });
-        action_group.add_action(&add_to_playlist_action);
-    }
-
-    if let Some(on_remove_from_playlist) = on_remove_from_playlist {
-        let remove_playlist_action = gio::SimpleAction::new("remove_playlist", None);
-        remove_playlist_action.connect_activate(glib::clone!(move |_, _| {
-            on_remove_from_playlist();
-        }));
-        action_group.add_action(&remove_playlist_action);
-    }
-
-    if let Some(on_queue_next) = on_queue_next {
-        let queue_next_action = gio::SimpleAction::new("queue_next", None);
-        queue_next_action.connect_activate(glib::clone!(move |_, _| {
-            on_queue_next();
-        }));
-        action_group.add_action(&queue_next_action);
-    }
-
-    if let Some(on_queue_last) = on_queue_last {
-        let queue_last_action = gio::SimpleAction::new("queue_last", None);
-        queue_last_action.connect_activate(glib::clone!(move |_, _| {
-            on_queue_last();
-        }));
-        action_group.add_action(&queue_last_action);
-    }
-
-    if let Some(on_copy_id) = on_copy_id {
-        let copy_id_action = gio::SimpleAction::new("copy_id", None);
-        copy_id_action.connect_activate(move |_, _| {
-            on_copy_id();
-        });
-        action_group.add_action(&copy_id_action);
-    }
-
-    action_group
 }

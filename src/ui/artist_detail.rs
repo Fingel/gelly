@@ -6,7 +6,7 @@ use crate::{
     models::{AlbumModel, ArtistModel},
     ui::{
         album_detail::AlbumDetail,
-        music_context_menu::{ContextActions, construct_menu, create_actiongroup},
+        music_context_menu::{ContextActions, construct_menu},
         page_traits::DetailPage,
         widget_ext::WidgetApplicationExt,
     },
@@ -131,47 +131,50 @@ impl ArtistDetail {
     }
 
     fn create_action_group(&self) -> SimpleActionGroup {
-        let on_add_to_playlist = glib::clone!(
-            #[weak(rename_to = artist)]
-            self,
-            move |playlist_id| {
-                artist.on_add_to_playlist(playlist_id);
-            }
-        );
+        let action_group = SimpleActionGroup::new();
 
-        let on_queue_next = glib::clone!(
+        let add_to_playlist_action =
+            gio::SimpleAction::new("add_to_playlist", Some(glib::VariantTy::STRING));
+        add_to_playlist_action.connect_activate(glib::clone!(
             #[weak(rename_to = artist)]
             self,
-            move || {
-                artist.enqueue_artist(false);
+            move |_, playlist_id| {
+                if let Some(playlist_id) = playlist_id.and_then(|id| id.get::<String>()) {
+                    artist.on_add_to_playlist(playlist_id);
+                }
             }
-        );
+        ));
+        action_group.add_action(&add_to_playlist_action);
 
-        let on_queue_last = glib::clone!(
+        let queue_next_action = gio::SimpleAction::new("queue_next", None);
+        queue_next_action.connect_activate(glib::clone!(
             #[weak(rename_to = artist)]
             self,
-            move || {
-                artist.enqueue_artist(true);
-            }
-        );
+            move |_, _| artist.enqueue_artist(false)
+        ));
+        action_group.add_action(&queue_next_action);
 
-        let on_copy_id = glib::clone!(
+        let queue_last_action = gio::SimpleAction::new("queue_last", None);
+        queue_last_action.connect_activate(glib::clone!(
             #[weak(rename_to = artist)]
             self,
-            move || {
+            move |_, _| artist.enqueue_artist(true)
+        ));
+        action_group.add_action(&queue_last_action);
+
+        let on_copy_id_action = gio::SimpleAction::new("copy_id", None);
+        on_copy_id_action.connect_activate(glib::clone!(
+            #[weak(rename_to = artist)]
+            self,
+            move |_, _| {
                 let id = artist.id();
                 artist.clipboard().set_text(&id);
                 artist.toast(&tr("Artist ID copied to clipboard"), None);
             }
-        );
+        ));
+        action_group.add_action(&on_copy_id_action);
 
-        create_actiongroup(
-            Some(on_add_to_playlist),
-            None::<fn()>,
-            Some(on_queue_next),
-            Some(on_queue_last),
-            Some(on_copy_id),
-        )
+        action_group
     }
 
     fn on_add_to_playlist(&self, playlist_id: String) {
