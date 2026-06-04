@@ -59,7 +59,7 @@ impl Playlist {
         if let Some(audio_model) = self.get_application().audio_model() {
             audio_model.set_queue(songs, 0, false);
         } else {
-            self.toast("Audio model not initialized, please restart", None);
+            self.toast(&tr("Audio model not initialized, please restart"), None);
             warn!("No audio model found");
         }
     }
@@ -83,7 +83,7 @@ impl Playlist {
                             playlist.play_songs(songs);
                         }
                         Err(error) => {
-                            playlist.toast("Unable to load playlist", None);
+                            playlist.toast(&tr("Unable to load playlist"), None);
                             warn!("Unable to load playlist: {error}");
                         }
                     }

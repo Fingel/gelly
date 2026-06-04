@@ -1,5 +1,6 @@
 use crate::{
     async_utils::spawn_tokio,
+    i18n::tr,
     models::SongModel,
     ui::{
         playlist_dialogs,
@@ -120,10 +121,10 @@ impl Queue {
                     match result {
                         Ok(_id) => {
                             app.refresh_playlists(true);
-                            queue.toast("Playlist created", None);
+                            queue.toast(&tr("Playlist created"), None);
                         }
                         Err(err) => {
-                            queue.toast(&format!("Failed to create playlist: {}", err), None);
+                            queue.toast(&tr("Failed to create playlist: {}").replace("{}", &err.to_string()), None);
                             error!("Failed to create playlist: {}", err);
                         }
                     }

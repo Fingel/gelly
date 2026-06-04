@@ -53,7 +53,7 @@
                 </child>
                 <child>
                   <object class="GtkLabel" id="lyrics_label_empty">
-                    <property name="label">No lyrics available</property>
+                    <property name="label" translatable="yes">No lyrics available</property>
                     <property name="visible">false</property>
                     <property name="wrap">true</property>
                     <property name="justify">center</property>

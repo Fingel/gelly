@@ -38,7 +38,7 @@
                 <property name="margin-bottom">24</property>
                 <child>
                   <object class="GtkLabel" id="artist_name">
-                    <property name="label">Artist Name</property>
+                    <property name="label" translatable="yes">Artist Name</property>
                     <property name="halign">start</property>
                     <property name="ellipsize">end</property>
                     <style>
@@ -49,7 +49,7 @@
                 <child>
                   <object class="GtkButton" id="play_all">
                     <property name="icon-name">media-playback-start-symbolic</property>
-                    <property name="tooltip-text">Play</property>
+                    <property name="tooltip-text" translatable="yes">Play</property>
                     <property name="margin-start">24</property>
                     <style>
                       <class name="circular" />
@@ -76,7 +76,7 @@
                 <child>
                   <object class="GtkMenuButton" id="action_menu">
                     <property name="icon-name">view-more-symbolic</property>
-                    <property name="tooltip-text">More Actions</property>
+                    <property name="tooltip-text" translatable="yes">More Actions</property>
                     <style>
                       <class name="circular" />
                       <class name="opaque" />

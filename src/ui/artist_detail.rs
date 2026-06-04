@@ -1,6 +1,6 @@
 use crate::{
     async_utils::spawn_tokio,
-    i18n::ngettext,
+    i18n::{ngettext, tr},
     jellyfin::api::ImageType,
     library_utils::play_artist,
     models::{AlbumModel, ArtistModel},
@@ -161,7 +161,7 @@ impl ArtistDetail {
             move || {
                 let id = artist.id();
                 artist.clipboard().set_text(&id);
-                artist.toast("Artist ID copied to clipboard", None);
+                artist.toast(&tr("Artist ID copied to clipboard"), None);
             }
         );
 
@@ -194,11 +194,11 @@ impl ArtistDetail {
                     move |result| {
                         match result {
                             Ok(()) => {
-                                artist.toast("Added artist to playlist", None);
+                                artist.toast(&tr("Added artist to playlist"), None);
                                 app.refresh_playlists(true);
                             }
                             Err(e) => {
-                                artist.toast("Failed to add artist to playlist", None);
+                                artist.toast(&tr("Failed to add artist to playlist"), None);
                                 warn!("Failed to add artist to playlist: {}", e);
                             }
                         }
@@ -230,7 +230,7 @@ impl ArtistDetail {
                     None,
                 );
             } else {
-                self.toast("Audio model not initialized, please restart", None);
+                self.toast(&tr("Audio model not initialized, please restart"), None);
                 warn!("No audio model found");
             }
         }
