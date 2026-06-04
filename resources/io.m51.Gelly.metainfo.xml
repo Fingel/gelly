@@ -70,6 +70,24 @@
     <color type="primary" scheme_preference="dark">#325a4a</color>
   </branding>
   <releases>
+    <release version="1.6.0" date="2026-06-03">
+      <description>
+        <ul>
+          <li>
+            Added support for Jellyfin quick connect.
+          </li>
+          <li>
+            Added a preference for a compact mode which will display UI elements in a smaller size
+            regardless of window size.
+          </li>
+          <li>
+            Added translations for Catalan, Dutch, French, German, Italian, Korean, Portuguese, Russian and Spanish.
+            Thank you @julianm, @lianariel99, @Volkova-Yulia, @miniwookie, @Jeffrey2107, @nonstandarduser, @gabmus,
+            @antoniocariaa, @Calvicii, @Dymko, @Cybercountry, @gnesterif and @juxuanu for your contributions!
+          </li>
+        </ul>
+      </description>
+    </release>
     <release version="1.5.0" date="2026-06-01">
       <description>
         <ul>
