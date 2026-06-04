@@ -25,7 +25,10 @@ fn yes_no(value: Option<bool>) -> String {
 pub fn show(parent: Option<&Window>, info: StreamInfo) {
     // Local properties
     let mut left_props = vec![
-        (tr("Backend"), config::get_backend_type().as_str().to_string()),
+        (
+            tr("Backend"),
+            config::get_backend_type().as_str().to_string(),
+        ),
         (tr("Codec"), info.codec.unwrap_or_else(|| tr("Unknown"))),
         (
             tr("Container"),
@@ -62,12 +65,18 @@ pub fn show(parent: Option<&Window>, info: StreamInfo) {
             tr("Original Channels"),
             info.original_channels.unwrap_or(0).to_string(),
         ),
-        (tr("Supports Direct Play"), yes_no(info.supports_direct_play)),
+        (
+            tr("Supports Direct Play"),
+            yes_no(info.supports_direct_play),
+        ),
         (
             tr("Supports Direct Stream"),
             yes_no(info.supports_direct_stream),
         ),
-        (tr("Supports Transcoding"), yes_no(info.supports_transcoding)),
+        (
+            tr("Supports Transcoding"),
+            yes_no(info.supports_transcoding),
+        ),
     ];
     if let Some(original_bit_rate) = info.original_bit_rate {
         right_props.push((
@@ -76,7 +85,10 @@ pub fn show(parent: Option<&Window>, info: StreamInfo) {
         ));
     }
     if let Some(file_size) = info.file_size {
-        right_props.push((tr("File Size"), format!("{:.1} MB", file_size / 1024 / 1024)));
+        right_props.push((
+            tr("File Size"),
+            format!("{:.1} MB", file_size / 1024 / 1024),
+        ));
     }
 
     let num_rows = left_props.len().max(right_props.len()) as i32;
