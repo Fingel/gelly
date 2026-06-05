@@ -48,6 +48,9 @@
                             <property name="modal">true</property>
                             <property name="content">
                               <object class="AdwNavigationView" id="main_navigation">
+                                <property name="margin-bottom">12</property>
+                                <property name="margin-start">12</property>
+                                <property name="margin-end">12</property>
                                 <child>
                                   <object class="AdwNavigationPage" id="album_detail_page">
                                     <property name="title" translatable="yes">Album Detail</property>
