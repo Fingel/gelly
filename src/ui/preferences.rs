@@ -31,11 +31,7 @@ impl Preferences {
 
         // Refresh on startup
         settings
-            .bind(
-                "refresh-on-startup",
-                &*imp.refresh_on_startup_switch,
-                "active",
-            )
+            .bind("refresh-on-startup", &*imp.refresh_on_startup_row, "active")
             .build();
 
         settings
@@ -44,32 +40,32 @@ impl Preferences {
 
         // Normalize Audio
         settings
-            .bind("normalize-audio", &*imp.normalize_audio_switch, "active")
+            .bind("normalize-audio", &*imp.normalize_audio_row, "active")
             .build();
 
         settings
-            .bind("inhibit-suspend", &*imp.inhibit_suspend_switch, "active")
+            .bind("inhibit-suspend", &*imp.inhibit_suspend_row, "active")
             .build();
 
         // Smart Playlists
         settings
             .bind(
                 "playlist-favorites-enabled",
-                &*imp.playlist_favorites_enabled_switch,
+                &*imp.playlist_favorites_enabled_row,
                 "active",
             )
             .build();
         settings
             .bind(
                 "playlist-shuffle-enabled",
-                &*imp.playlist_shuffle_enabled_switch,
+                &*imp.playlist_shuffle_enabled_row,
                 "active",
             )
             .build();
         settings
             .bind(
                 "playlist-most-played-enabled",
-                &*imp.playlist_most_played_enabled_switch,
+                &*imp.playlist_most_played_enabled_row,
                 "active",
             )
             .build();
@@ -121,19 +117,19 @@ mod imp {
         #[template_child]
         pub maximum_bitrate_row: TemplateChild<adw::SpinRow>,
         #[template_child]
-        pub refresh_on_startup_switch: TemplateChild<gtk::Switch>,
+        pub refresh_on_startup_row: TemplateChild<adw::SwitchRow>,
         #[template_child]
         pub compact_mode_row: TemplateChild<adw::SwitchRow>,
         #[template_child]
-        pub normalize_audio_switch: TemplateChild<gtk::Switch>,
+        pub normalize_audio_row: TemplateChild<adw::SwitchRow>,
         #[template_child]
-        pub inhibit_suspend_switch: TemplateChild<gtk::Switch>,
+        pub inhibit_suspend_row: TemplateChild<adw::SwitchRow>,
         #[template_child]
-        pub playlist_favorites_enabled_switch: TemplateChild<gtk::Switch>,
+        pub playlist_favorites_enabled_row: TemplateChild<adw::SwitchRow>,
         #[template_child]
-        pub playlist_shuffle_enabled_switch: TemplateChild<gtk::Switch>,
+        pub playlist_shuffle_enabled_row: TemplateChild<adw::SwitchRow>,
         #[template_child]
-        pub playlist_most_played_enabled_switch: TemplateChild<gtk::Switch>,
+        pub playlist_most_played_enabled_row: TemplateChild<adw::SwitchRow>,
         #[template_child]
         pub album_art_background_row: TemplateChild<adw::SwitchRow>,
     }

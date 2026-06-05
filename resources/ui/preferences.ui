@@ -11,17 +11,9 @@
           <object class="AdwPreferencesGroup">
             <property name="title" translatable="yes">General</property>
             <child>
-              <object class="AdwActionRow">
-                <!-- TODO: Apparently I didn't know about AdwSwitchRow, these can all be converted -->
+              <object class="AdwSwitchRow" id="refresh_on_startup_row">
                 <property name="title" translatable="yes">Refresh library on startup</property>
                 <property name="subtitle" translatable="yes">The library can be refreshed using ctrl+r or the menu.</property>
-                <property name="use_underline">True</property>
-                <property name="activatable_widget">refresh_on_startup_switch</property>
-                <child>
-                  <object class="GtkSwitch" id="refresh_on_startup_switch">
-                    <property name="valign">center</property>
-                  </object>
-                </child>
               </object>
             </child>
             <child>
@@ -42,29 +34,15 @@
           <object class="AdwPreferencesGroup">
             <property name="title" translatable="yes">Playback</property>
             <child>
-              <object class="AdwActionRow">
+              <object class="AdwSwitchRow" id="normalize_audio_row">
                 <property name="title" translatable="yes">Normalize Audio</property>
                 <property name="subtitle" translatable="yes">May require backend plugins.</property>
-                <property name="use_underline">True</property>
-                <property name="activatable_widget">normalize_audio_switch</property>
-                <child>
-                  <object class="GtkSwitch" id="normalize_audio_switch">
-                    <property name="valign">center</property>
-                  </object>
-                </child>
               </object>
             </child>
             <child>
-              <object class="AdwActionRow">
+              <object class="AdwSwitchRow" id="inhibit_suspend_row">
                 <property name="title" translatable="yes">Inhibit Suspend</property>
                 <property name="subtitle" translatable="yes">Prevents the system from suspending while playing</property>
-                <property name="use_underline">True</property>
-                <property name="activatable_widget">inhibit_suspend_switch</property>
-                <child>
-                  <object class="GtkSwitch" id="inhibit_suspend_switch">
-                    <property name="valign">center</property>
-                  </object>
-                </child>
               </object>
             </child>
           </object>
@@ -114,39 +92,18 @@
           <object class="AdwPreferencesGroup">
             <property name="title" translatable="yes">Smart Playlists</property>
             <child>
-              <object class="AdwActionRow">
+              <object class="AdwSwitchRow" id="playlist_favorites_enabled_row">
                 <property name="title" translatable="yes">Favorite Mix Playlist</property>
-                <property name="use_underline">True</property>
-                <property name="activatable_widget">playlist_favorites_enabled_switch</property>
-                <child>
-                  <object class="GtkSwitch" id="playlist_favorites_enabled_switch">
-                    <property name="valign">center</property>
-                  </object>
-                </child>
               </object>
             </child>
             <child>
-              <object class="AdwActionRow">
+              <object class="AdwSwitchRow" id="playlist_shuffle_enabled_row">
                 <property name="title" translatable="yes">Shuffled Playlist</property>
-                <property name="use_underline">True</property>
-                <property name="activatable_widget">playlist_shuffle_enabled_switch</property>
-                <child>
-                  <object class="GtkSwitch" id="playlist_shuffle_enabled_switch">
-                    <property name="valign">center</property>
-                  </object>
-                </child>
               </object>
             </child>
             <child>
-              <object class="AdwActionRow">
+              <object class="AdwSwitchRow" id="playlist_most_played_enabled_row">
                 <property name="title" translatable="yes">Most Played Playlist</property>
-                <property name="use_underline">True</property>
-                <property name="activatable_widget">playlist_most_played_enabled_switch</property>
-                <child>
-                  <object class="GtkSwitch" id="playlist_most_played_enabled_switch">
-                    <property name="valign">center</property>
-                  </object>
-                </child>
               </object>
             </child>
           </object>
