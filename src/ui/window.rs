@@ -1,6 +1,7 @@
 use crate::config::{self, settings};
 use crate::i18n::tr;
 use crate::models::{AlbumModel, ArtistModel, PlaylistModel};
+use crate::ui::album_art_background::create_blur_paintable;
 use crate::ui::page_traits::{DetailPage, TopPage};
 use crate::ui::preferences::Preferences;
 use crate::ui::{about_dialog, shortcuts_dialog};
@@ -21,18 +22,6 @@ glib::wrapper! {
 }
 
 impl Window {
-    pub fn snapshot_blur_background(
-        &self,
-        snapshot: &gtk::Snapshot,
-        width: f64,
-        height: f64,
-        translate: Option<(f32, f32)>,
-    ) {
-        self.imp()
-            .blur_background
-            .snapshot(snapshot, width, height, translate);
-    }
-
     pub fn new(app: &Application) -> Self {
         let window: Self = Object::builder().property("application", app).build();
         if !app.setup_complete() {
@@ -272,6 +261,44 @@ impl Window {
         imp.playlist_list.set_property("compact-mode", compact_mode);
         imp.player_bar.compact_mode(compact_mode);
     }
+
+    pub fn snapshot_blur_background(
+        &self,
+        snapshot: &gtk::Snapshot,
+        width: f64,
+        height: f64,
+        translate: Option<(f32, f32)>,
+    ) {
+        self.imp()
+            .blur_background
+            .snapshot(snapshot, width, height, translate);
+    }
+
+    fn update_blurred_paintable(&self) {
+        let imp = self.imp();
+        if !config::get_album_art_window_background_enabled() {
+            self.remove_css_class("album-art-background");
+            if imp.blur_background.has_content() {
+                imp.blur_background.update(None);
+            }
+            return;
+        }
+
+        let blurred = imp.big_player.album_art_paintable().and_then(|p| {
+            create_blur_paintable(
+                self.upcast_ref::<gtk::Widget>(),
+                &p,
+                self.width(),
+                self.height(),
+            )
+        });
+        if blurred.is_some() {
+            self.add_css_class("album-art-background");
+        } else {
+            self.remove_css_class("album-art-background");
+        }
+        imp.blur_background.update(blurred);
+    }
 }
 
 mod imp {
@@ -289,7 +316,7 @@ mod imp {
     use log::{debug, warn};
 
     use crate::ui::{
-        album_art_background::{BlurBackground, create_blur_paintable},
+        album_art_background::BlurBackground,
         artist_detail::ArtistDetail,
         page_traits::TopPage,
         player_bar::{big_player::BigPlayer, mini_player::MiniPlayerBar},
@@ -791,20 +818,20 @@ mod imp {
                 .connect_bottom_bar_height_notify(update_margin);
 
             self.big_player.connect_album_art_paintable_notify(clone!(
-                #[weak(rename_to = this)]
+                #[weak(rename_to = window)]
                 self,
                 move |_| {
-                    this.update_blurred_paintable();
+                    window.obj().update_blurred_paintable();
                 }
             ));
 
             config::settings().connect_changed(
                 Some("album-art-window-background"),
                 clone!(
-                    #[weak(rename_to = this)]
+                    #[weak(rename_to = window)]
                     self,
                     move |_, _| {
-                        this.update_blurred_paintable();
+                        window.obj().update_blurred_paintable();
                     }
                 ),
             );
@@ -843,36 +870,6 @@ mod imp {
                     Signal::builder("play-selected").build(),
                 ]
             })
-        }
-    }
-
-    impl Window {
-        // TODO not sure how this ended up in a separate impl block
-        fn update_blurred_paintable(&self) {
-            // TODO config should use function on config module not settings directly
-            if !config::settings().boolean("album-art-window-background") {
-                self.obj().remove_css_class("album-art-background");
-                if self.blur_background.has_content() {
-                    self.blur_background.update(None);
-                }
-                return;
-            }
-
-            let blurred = self.big_player.album_art_paintable().and_then(|p| {
-                let obj = self.obj();
-                create_blur_paintable(
-                    obj.upcast_ref::<gtk::Widget>(),
-                    &p,
-                    obj.width(),
-                    obj.height(),
-                )
-            });
-            if blurred.is_some() {
-                self.obj().add_css_class("album-art-background");
-            } else {
-                self.obj().remove_css_class("album-art-background");
-            }
-            self.blur_background.update(blurred);
         }
     }
 

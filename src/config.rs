@@ -355,3 +355,7 @@ pub fn set_playback_mode(mode: u32) {
 pub fn get_compact_mode_enabled() -> bool {
     settings().boolean("compact-mode")
 }
+
+pub fn get_album_art_window_background_enabled() -> bool {
+    settings().boolean("album-art-window-background")
+}
