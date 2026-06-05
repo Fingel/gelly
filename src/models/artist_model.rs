@@ -41,7 +41,7 @@ impl ArtistModel {
 
     pub fn toggle_favorite(&self, is_favorite: bool, app: &Application) {
         self.set_favorite(is_favorite);
-        let backend = app.jellyfin();
+        let backend = app.backend();
         let item_id = self.id();
         let app = app.clone();
         spawn_tokio(

@@ -153,9 +153,9 @@ impl PlaylistList {
 
     pub fn create_new_playlist(&self, name: String) {
         let app = self.get_application();
-        let jellyfin = app.jellyfin();
+        let backend = app.backend();
         spawn_tokio(
-            async move { jellyfin.new_playlist(&name, vec![]).await },
+            async move { backend.new_playlist(&name, vec![]).await },
             glib::clone!(
                 #[weak (rename_to = playlist_list)]
                 self,

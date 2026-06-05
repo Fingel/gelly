@@ -89,7 +89,7 @@ impl Song {
         self.set_starred(is_favorite);
         let item_id = song_model.id();
         let app = self.get_application();
-        let backend = app.jellyfin();
+        let backend = app.backend();
         spawn_tokio(
             async move {
                 backend
@@ -293,10 +293,10 @@ impl Song {
     fn on_add_to_playlist(&self, playlist_id: String) {
         let song_id = self.song_id();
         let app = self.get_application();
-        let jellyfin = app.jellyfin();
+        let backend = app.backend();
         let playlist_id = playlist_id.to_string();
         spawn_tokio(
-            async move { jellyfin.add_playlist_items(&playlist_id, &[song_id]).await },
+            async move { backend.add_playlist_items(&playlist_id, &[song_id]).await },
             glib::clone!(
                 #[weak(rename_to = song)]
                 self,

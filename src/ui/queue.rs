@@ -111,9 +111,9 @@ impl Queue {
 
     fn create_new_playlist(&self, name: String, song_ids: Vec<String>) {
         let app = self.get_application();
-        let jellyfin = app.jellyfin();
+        let backend = app.backend();
         spawn_tokio(
-            async move { jellyfin.new_playlist(&name, song_ids).await },
+            async move { backend.new_playlist(&name, song_ids).await },
             glib::clone!(
                 #[weak (rename_to = queue)]
                 self,

@@ -43,7 +43,7 @@ impl Setup {
 
     fn select_page(&self) {
         let app = self.get_application();
-        if app.jellyfin().is_authenticated() {
+        if app.backend().is_authenticated() {
             self.show_library_setup();
         } else {
             self.show_server_setup();
@@ -252,10 +252,10 @@ impl Setup {
 
     fn populate_library_list(&self) {
         let imp = self.imp();
-        let jellyfin = self.get_application().jellyfin();
+        let backend = self.get_application().backend();
         let combo = imp.library_combo.clone();
         spawn_tokio(
-            async move { jellyfin.get_views().await },
+            async move { backend.get_views().await },
             glib::clone!(
                 #[weak(rename_to=setup)]
                 self,

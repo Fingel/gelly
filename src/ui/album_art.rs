@@ -74,7 +74,7 @@ impl AlbumArt {
             return;
         };
 
-        let jellyfin = self.get_application().jellyfin();
+        let backend = self.get_application().backend();
         self.set_loading(true);
 
         glib::spawn_future_local(glib::clone!(
@@ -82,7 +82,7 @@ impl AlbumArt {
             self,
             async move {
                 let result = image_cache
-                    .get_primary_texture(&item_id, fallback_id.as_deref(), &jellyfin)
+                    .get_primary_texture(&item_id, fallback_id.as_deref(), &backend)
                     .await;
                 album_art.set_loading(false);
                 match result {

@@ -18,9 +18,9 @@ pub fn songs_for_playlist(
 
     // Regular playlists are fetched from the backend
     let id = playlist_type.to_id();
-    let jellyfin = app.jellyfin();
+    let backend = app.backend();
     app.http_with_loading(
-        async move { jellyfin.get_playlist_items(&id).await },
+        async move { backend.get_playlist_items(&id).await },
         move |result| {
             cb(result.map(|items| {
                 items

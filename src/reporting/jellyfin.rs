@@ -101,9 +101,9 @@ impl JellyfinReporter {
             warn!("JellyfinReporter: Unable to access application instance");
             return;
         };
-        let jellyfin = app.jellyfin();
+        let backend = app.backend();
         spawn_tokio(
-            async move { jellyfin.playback_report(&report, &status).await },
+            async move { backend.playback_report(&report, &status).await },
             move |result| {
                 if let Err(err) = result {
                     warn!("JellyfinReporter: Error reporting playback: {}", err);

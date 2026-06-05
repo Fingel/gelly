@@ -114,7 +114,7 @@ impl Application {
                 #[weak(rename_to = app)]
                 self,
                 move |_audio_model: AudioModel, song_id: &str| -> String {
-                    app.jellyfin().get_stream_uri(song_id)
+                    app.backend().get_stream_uri(song_id)
                 }
             ),
         );
@@ -174,7 +174,7 @@ impl Application {
         self.imp().audio_model.replace(Some(audio_model));
     }
 
-    pub fn jellyfin(&self) -> Backend {
+    pub fn backend(&self) -> Backend {
         self.imp().backend.borrow().clone()
     }
 
@@ -227,13 +227,13 @@ impl Application {
             }
         }
         let library_id = self.imp().library_id.borrow().clone();
-        let jellyfin = self.jellyfin();
-        if !jellyfin.is_authenticated() {
+        let backend = self.backend();
+        if !backend.is_authenticated() {
             debug!("Not authenticated, skipping library refresh");
             return;
         }
         self.http_with_loading(
-            async move { jellyfin.get_library(&library_id).await },
+            async move { backend.get_library(&library_id).await },
             glib::clone!(
                 #[weak(rename_to=app)]
                 self,
@@ -263,13 +263,13 @@ impl Application {
                 Err(error) => warn!("Failed to load favorites cache: {}. Refreshing.", error),
             }
         }
-        let jellyfin = self.jellyfin();
-        if !jellyfin.is_authenticated() {
+        let backend = self.backend();
+        if !backend.is_authenticated() {
             debug!("Not authenticated, skipping favorites refresh");
             return;
         }
         self.http_with_loading(
-            async move { jellyfin.get_favorites().await },
+            async move { backend.get_favorites().await },
             glib::clone!(
                 #[weak(rename_to=app)]
                 self,
@@ -302,13 +302,13 @@ impl Application {
                 }
             }
         }
-        let jellyfin = self.jellyfin();
-        if !jellyfin.is_authenticated() {
+        let backend = self.backend();
+        if !backend.is_authenticated() {
             debug!("Not authenticated, skipping playlist refresh");
             return;
         }
         self.http_with_loading(
-            async move { jellyfin.get_playlists().await },
+            async move { backend.get_playlists().await },
             glib::clone!(
                 #[weak(rename_to=app)]
                 self,
@@ -351,9 +351,9 @@ impl Application {
 
     pub fn request_library_rescan(&self) {
         let library_id = self.imp().library_id.borrow().clone();
-        let jellyfin = self.jellyfin();
+        let backend = self.backend();
         spawn_tokio(
-            async move { jellyfin.request_library_rescan(&library_id).await },
+            async move { backend.request_library_rescan(&library_id).await },
             glib::clone!(
                 #[weak(rename_to=app)]
                 self,

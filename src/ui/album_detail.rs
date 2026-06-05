@@ -291,10 +291,10 @@ impl AlbumDetail {
             .collect::<Vec<_>>();
 
         let app = self.get_application();
-        let jellyfin = app.jellyfin();
+        let backend = app.backend();
         let playlist_id = playlist_id.to_string();
         spawn_tokio(
-            async move { jellyfin.add_playlist_items(&playlist_id, &song_ids).await },
+            async move { backend.add_playlist_items(&playlist_id, &song_ids).await },
             glib::clone!(
                 #[weak(rename_to = album)]
                 self,

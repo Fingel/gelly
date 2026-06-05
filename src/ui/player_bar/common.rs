@@ -118,7 +118,7 @@ where
         song.set_favorite(is_favorite);
         let item_id = song.id();
         let app = self.obj().get_application();
-        let backend = app.jellyfin();
+        let backend = app.backend();
         let weak = self.obj().downgrade();
         let song_weak = song.downgrade();
         spawn_tokio(
@@ -160,9 +160,9 @@ where
             && let Some(song_model) = self.audio_model().current_song()
         {
             let song_id = song_model.id();
-            let jellyfin = self.obj().get_application().jellyfin();
+            let backend = self.obj().get_application().backend();
             let weak = self.obj().downgrade();
-            discover_stream_info(&uri, &song_id, &jellyfin, move |info| {
+            discover_stream_info(&uri, &song_id, &backend, move |info| {
                 if let Some(obj) = weak.upgrade() {
                     stream_info_dialog::show(obj.get_gtk_window().as_ref(), info);
                 }
@@ -182,8 +182,8 @@ where
             window.present();
         } else {
             let lyrics_widget = Lyrics::new();
-            let jellyfin = self.obj().get_application().jellyfin();
-            lyrics_widget.set_jellyfin(&jellyfin);
+            let backend = self.obj().get_application().backend();
+            lyrics_widget.set_jellyfin(&backend);
             lyrics_widget.bind_to_audio_model(self.audio_model());
 
             let window = adw::Window::new();

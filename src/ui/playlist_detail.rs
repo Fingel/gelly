@@ -357,10 +357,10 @@ impl PlaylistDetail {
             .collect::<Vec<_>>();
 
         let app = self.get_application();
-        let jellyfin = app.jellyfin();
+        let backend = app.backend();
         let playlist_id = playlist_id.to_string();
         spawn_tokio(
-            async move { jellyfin.add_playlist_items(&playlist_id, &song_ids).await },
+            async move { backend.add_playlist_items(&playlist_id, &song_ids).await },
             glib::clone!(
                 #[weak(rename_to = playlist)]
                 self,
@@ -429,7 +429,7 @@ impl PlaylistDetail {
         // Persist the change
         let playlist_id = playlist_model.id();
         let app = self.get_application();
-        let backend = app.jellyfin();
+        let backend = app.backend();
 
         spawn_tokio(
             async move {
@@ -481,10 +481,10 @@ impl PlaylistDetail {
             // Persist the change
             let playlist_id = playlist_model.id();
             let app = self.get_application();
-            let jellyfin = app.jellyfin();
+            let backend = app.backend();
 
             spawn_tokio(
-                async move { jellyfin.remove_playlist_item(&playlist_id, &song_id).await },
+                async move { backend.remove_playlist_item(&playlist_id, &song_id).await },
                 glib::clone!(
                     #[weak(rename_to = playlist_detail)]
                     self,
@@ -584,11 +584,11 @@ impl PlaylistDetail {
 
     fn delete_playlist(&self) {
         let app = self.get_application();
-        let jellyfin = app.jellyfin();
+        let backend = app.backend();
         let window = self.get_root_window();
         let item_id = self.id();
         spawn_tokio(
-            async move { jellyfin.delete_item(&item_id).await },
+            async move { backend.delete_item(&item_id).await },
             glib::clone!(
                 #[weak (rename_to = playlist_detail)]
                 self,

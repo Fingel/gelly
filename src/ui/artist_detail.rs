@@ -78,14 +78,14 @@ impl ArtistDetail {
         let Some(model) = self.get_model() else {
             return;
         };
-        let jellyfin = self.get_application().jellyfin();
+        let backend = self.get_application().backend();
         let item_id = model.id();
         glib::spawn_future_local(glib::clone!(
             #[weak(rename_to = artist_detail)]
             self,
             async move {
                 match image_cache
-                    .get_texture(&item_id, ImageType::Backdrop, &jellyfin)
+                    .get_texture(&item_id, ImageType::Backdrop, &backend)
                     .await
                 {
                     Ok(texture) => {
@@ -181,7 +181,7 @@ impl ArtistDetail {
         if let Some(model) = self.get_model() {
             let id = model.id();
             let app = self.get_application();
-            let jellyfin = app.jellyfin();
+            let backend = app.backend();
             let playlist_id = playlist_id.to_string();
             let song_ids: Vec<String> = app
                 .library()
@@ -190,7 +190,7 @@ impl ArtistDetail {
                 .map(|song| song.id().to_string())
                 .collect();
             spawn_tokio(
-                async move { jellyfin.add_playlist_items(&playlist_id, &song_ids).await },
+                async move { backend.add_playlist_items(&playlist_id, &song_ids).await },
                 glib::clone!(
                     #[weak(rename_to = artist)]
                     self,
