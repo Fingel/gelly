@@ -8,101 +8,103 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-06-02 13:16-0700\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
+"PO-Revision-Date: 2026-06-05 20:09+0000\n"
+"Last-Translator: Balázs Meskó <meskobalazs@mailbox.org>\n"
+"Language-Team: Hungarian <https://hosted.weblate.org/projects/gelly/gelly/"
+"hu/>\n"
 "Language: hu\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 2026.6\n"
 
 #: src/ui/album_detail.rs:195 src/ui/artist_detail.rs:225
 #: src/ui/playlist_detail.rs:538
 #, rust-format
 msgid "1 song added to queue"
 msgid_plural "{} songs added to queue"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "1 szám hozzáadva a sorhoz"
+msgstr[1] "{} szám hozzáadva a sorhoz"
 
 #: src/ui/playlist.rs:27
 #, rust-format
 msgid "1 song"
 msgid_plural "{} songs"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "1 szám"
+msgstr[1] "{} szám"
 
 #: src/ui/playlist.rs:30
 msgid "Smart playlist"
-msgstr ""
+msgstr "Okos lejátszólista"
 
 #: src/ui/playlist.rs:32
 msgid "Empty playlist"
-msgstr ""
+msgstr "Üres lejátszólista"
 
 #: src/ui/setup.rs:218
 msgid "Connection error. Please supply a full URL (http://example.com:8096)"
-msgstr ""
+msgstr "Kapcsolódási hiba. Adjon meg teljes webcímet (http://example.com:8096)"
 
 #: src/ui/setup.rs:232
 msgid "Invalid credentials"
-msgstr ""
+msgstr "Érvénytelen hitelesítő adatok"
 
 #: src/ui/setup.rs:242
 msgid "Could not authenticate with Jellyfin or Subsonic"
-msgstr ""
+msgstr "Nem sikerült a hitelesítés a Jellyfinnel vagy a Subsonickal"
 
 #: src/ui/setup.rs:418
 msgid "Quick connect code copied to clipboard"
-msgstr ""
+msgstr "Gyors kapcsolódási kód vágólapra másolva"
 
 #: resources/ui/album_art.ui:33
 msgid "Missing album art"
-msgstr ""
+msgstr "Hiányzó albumillusztráció"
 
 #: resources/ui/preferences.ui:9 resources/ui/preferences.ui:12
 msgid "General"
-msgstr ""
+msgstr "Általános"
 
 #: resources/ui/preferences.ui:15
 msgid "Refresh library on startup"
-msgstr ""
+msgstr "Gyűjtemény frissítése indításkor"
 
 #: resources/ui/preferences.ui:16
 msgid "The library can be refreshed using ctrl+r or the menu."
-msgstr ""
+msgstr "A gyűjtemény a Ctrl+R vagy a menü használatával frissíthető."
 
 #: resources/ui/preferences.ui:28
 msgid "Extra eye candy"
-msgstr ""
+msgstr "További vizuális hatások"
 
 #: resources/ui/preferences.ui:29
 msgid "Utilizes transparency, blurred backgrounds, etc."
-msgstr ""
+msgstr "Áttetszőség, elmosott hátterek és egyebek használata"
 
 #: resources/ui/preferences.ui:36
 msgid "Playback"
-msgstr ""
+msgstr "Lejátszás"
 
 #: resources/ui/preferences.ui:39
 msgid "Normalize Audio"
-msgstr ""
+msgstr "Hang kiegyenlítése"
 
 #: resources/ui/preferences.ui:40
 msgid "May require backend plugins."
-msgstr ""
+msgstr "Háttérrendszer-bővítmények lehetnek szükségesek."
 
 #: resources/ui/preferences.ui:52
 msgid "Inhibit Suspend"
-msgstr ""
+msgstr "Felfüggesztés megakadályozása"
 
 #: resources/ui/preferences.ui:53
 msgid "Prevents the system from suspending while playing"
-msgstr ""
+msgstr "Megakadályozza, hogy rendszer lejátszás közben fel legyen függesztve"
 
 #: resources/ui/preferences.ui:67
 msgid "Transcoding"
-msgstr ""
+msgstr "Átkódolás"
 
 #: resources/ui/preferences.ui:68
 msgid ""
@@ -113,47 +115,47 @@ msgstr ""
 
 #: resources/ui/preferences.ui:71
 msgid "Transcoding Profile"
-msgstr ""
+msgstr "Átkódolási profil"
 
 #: resources/ui/preferences.ui:72
 msgid "Only used when direct play is not available."
-msgstr ""
+msgstr "Csak akkor van használva, ha a közvetlen lejátszás nem érhető el."
 
 #: resources/ui/preferences.ui:85
 msgid "Maximum Bitrate (kbps)"
-msgstr ""
+msgstr "Legmagasabb bitsebesség (kbps)"
 
 #: resources/ui/preferences.ui:86
 msgid "A value of 0 means no limit."
-msgstr ""
+msgstr "A 0-s érték azt jelenti, hogy nincs korlát."
 
 #: resources/ui/preferences.ui:105 resources/ui/window.ui:275
 msgid "Playlists"
-msgstr ""
+msgstr "Lejátszólisták"
 
 #: resources/ui/preferences.ui:108
 msgid "Smart Playlists"
-msgstr ""
+msgstr "Okos lejátszólisták"
 
 #: resources/ui/preferences.ui:111
 msgid "Favorite Mix Playlist"
-msgstr ""
+msgstr "Kedvenc mix lejátszólistája"
 
 #: resources/ui/preferences.ui:123
 msgid "Shuffled Playlist"
-msgstr ""
+msgstr "Kevert lejátszólista"
 
 #: resources/ui/preferences.ui:135
 msgid "Most Played Playlist"
-msgstr ""
+msgstr "Leggyakrabban játszottak lejátszólistája"
 
 #: resources/ui/setup.ui:10
 msgid "Servers"
-msgstr ""
+msgstr "Kiszolgálók"
 
 #: resources/ui/setup.ui:19
 msgid "Connect to Server"
-msgstr ""
+msgstr "Kapcsolód kiszolgálóhoz"
 
 #: resources/ui/setup.ui:20
 msgid ""
@@ -161,151 +163,155 @@ msgid ""
 "including protocol and port. For Jellyfin this is usually 8096, Navidrome "
 "uses 4533."
 msgstr ""
+"A Gelly a Jellyfint és a Subsonicot/Navidrome-ot támogatja. Adja meg a "
+"kiszolgáló teljes webcímét, protokollal és porttal. A Jellyfin esetén ez "
+"általában 8096, a Navidrome 4533-at használ."
 
 #: resources/ui/setup.ui:42
 msgid "Username"
-msgstr ""
+msgstr "Felhasználónév"
 
 #: resources/ui/setup.ui:47
 msgid "Password"
-msgstr ""
+msgstr "Jelszó"
 
 #: resources/ui/setup.ui:54
 msgid "Connect"
-msgstr ""
+msgstr "Kapcsolódás"
 
 #: resources/ui/setup.ui:65 resources/ui/setup.ui:150
 msgid "Jellyfin Quick Connect"
-msgstr ""
+msgstr "Jellyfin gyors kapcsolódás"
 
 #: resources/ui/setup.ui:80
 msgid "Choose Library"
-msgstr ""
+msgstr "Válasszon könyvtárat"
 
 #: resources/ui/setup.ui:89
 msgid "Select Library"
-msgstr ""
+msgstr "Könyvtár kiválasztása"
 
 #: resources/ui/setup.ui:90
 msgid "Choose which library Gelly will use to load your music."
 msgstr ""
+"Válasszon, hogy a Gelly melyik könyvtárat használja a zenéje betöltéséhez."
 
 #: resources/ui/setup.ui:105
 msgid "Library"
-msgstr ""
+msgstr "Könyvtár"
 
 #: resources/ui/setup.ui:112
 msgid "Launch Gelly"
-msgstr ""
+msgstr "A Gelly indítása"
 
 #: resources/ui/setup.ui:123 resources/ui/setup.ui:186
 msgid "Cancel"
-msgstr ""
+msgstr "Mégse"
 
 #: resources/ui/setup.ui:141
 msgid "Quick Connect"
-msgstr ""
+msgstr "Gyors kapcsolódás"
 
 #: resources/ui/setup.ui:151
 msgid "Enter the code on the Jellyfin web page to complete authentication."
-msgstr ""
+msgstr "A hitelesítés befejezéséhez adja meg a kódot a Jellyfin weblapján."
 
 #: resources/ui/window.ui:57
 msgid "Album Detail"
-msgstr ""
+msgstr "Album részletei"
 
 #: resources/ui/window.ui:90
 msgid "Artist Detail"
-msgstr ""
+msgstr "Előadó részletei"
 
 #: resources/ui/window.ui:122
 msgid "Playlist Detail"
-msgstr ""
+msgstr "Lejátszólista részletei"
 
 #: resources/ui/window.ui:145
 msgid "Main"
-msgstr ""
+msgstr "Elsődleges"
 
 #: resources/ui/window.ui:154
 msgid "Show Queue"
-msgstr ""
+msgstr "Sor megjelenítése"
 
 #: resources/ui/window.ui:161
 msgid "Search"
-msgstr ""
+msgstr "Keresés"
 
 #: resources/ui/window.ui:167
 msgid "Sort"
-msgstr ""
+msgstr "Rendezés"
 
 #: resources/ui/window.ui:174
 msgid "New"
-msgstr ""
+msgstr "Új"
 
 #: resources/ui/window.ui:215
 msgid "Favorites"
-msgstr ""
+msgstr "Kedvencek"
 
 #: resources/ui/window.ui:228
 msgid "Ascending"
-msgstr ""
+msgstr "Növekvő"
 
 #: resources/ui/window.ui:235
 msgid "Descending"
-msgstr ""
+msgstr "Csökkenő"
 
 #: resources/ui/window.ui:251
 msgid "Albums"
-msgstr ""
+msgstr "Albumok"
 
 #: resources/ui/window.ui:263
 msgid "Artists"
-msgstr ""
+msgstr "Előadók"
 
 #: resources/ui/window.ui:287
 msgid "Songs"
-msgstr ""
+msgstr "Számok"
 
 #: resources/ui/window.ui:332
 msgid "Hide Queue"
-msgstr ""
+msgstr "Sor elrejtése"
 
 #: resources/ui/window.ui:341
 msgid "Clear Queue"
-msgstr ""
+msgstr "Sor ürítése"
 
 #: resources/ui/window.ui:348
 msgid "Save As Playlist"
-msgstr ""
+msgstr "Mentés lejátszólistaként"
 
 #: resources/ui/window.ui:369
 msgid "Request Rescan"
-msgstr ""
+msgstr "Újraolvasás kérése"
 
 #: resources/ui/window.ui:373
 msgid "Refresh Library"
-msgstr ""
+msgstr "Gyűjtemény frissítése"
 
 #: resources/ui/window.ui:377
 msgid "Clear Image Cache"
-msgstr ""
+msgstr "Képgyorsítótár ürítése"
 
 #: resources/ui/window.ui:383
 msgid "Preferences"
-msgstr ""
+msgstr "Beállítások"
 
 #: resources/ui/window.ui:387
 msgid "Keyboard Shortcuts"
-msgstr ""
+msgstr "Gyorsbillenytűk"
 
 #: resources/ui/window.ui:391
 msgid "About Gelly"
-msgstr ""
+msgstr "A Gelly névjegye"
 
 #: resources/ui/window.ui:395
 msgid "Logout"
-msgstr ""
+msgstr "Kijelentkezés"
 
 #: resources/ui/window.ui:399
 msgid "Quit"
-msgstr ""
+msgstr "Kilépés"
