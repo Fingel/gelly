@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-05-31 16:21-0700\n"
-"PO-Revision-Date: 2026-06-03 18:46+0000\n"
+"PO-Revision-Date: 2026-06-04 07:17+0000\n"
 "Last-Translator: Julian Meergans <tubuspapaya@gmail.com>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/gelly/gelly/de/>\n"
 "Language: de\n"
@@ -59,7 +59,7 @@ msgstr "Die Bibliothek kann durch Strg+R oder das Menü aktualisiert werden."
 
 #: resources/ui/preferences.ui:28
 msgid "Extra eye candy"
-msgstr ""
+msgstr "Zusätzliche visuelle Effekte"
 
 #: resources/ui/preferences.ui:29
 msgid "Utilizes transparency, blurred backgrounds, etc."
@@ -182,7 +182,7 @@ msgstr "Wiedergabelisten-Details"
 
 #: resources/ui/window.ui:145
 msgid "Main"
-msgstr ""
+msgstr "Startseite"
 
 #: resources/ui/window.ui:154
 msgid "Show Queue"
