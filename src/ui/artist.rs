@@ -2,7 +2,7 @@ use crate::{
     library_utils::play_artist, models::ArtistModel, ui::widget_ext::WidgetApplicationExt,
 };
 use glib::Object;
-use gtk::{gio, glib, prelude::*, subclass::prelude::*};
+use gtk::{gio, glib, subclass::prelude::*};
 
 glib::wrapper! {
     pub struct Artist(ObjectSubclass<imp::Artist>)
@@ -19,12 +19,7 @@ impl Artist {
         let card = &imp.media_card;
         card.set_primary_text(&artist_model.name());
         card.set_image_id(&artist_model.id());
-        card.set_favorite(artist_model.favorite());
         imp.artist_model.replace(Some(artist_model.clone()));
-        let binding = artist_model
-            .bind_property("favorite", &card.get(), "favorite")
-            .build();
-        imp.favorite_binding.replace(Some(binding));
     }
 
     pub fn play(&self) {
@@ -65,7 +60,6 @@ mod imp {
         pub media_card: TemplateChild<MediaCard>,
 
         pub artist_model: RefCell<Option<ArtistModel>>,
-        pub favorite_binding: RefCell<Option<glib::Binding>>,
         pub compact_mode_binding: RefCell<Option<glib::Binding>>,
     }
 
@@ -92,13 +86,6 @@ mod imp {
                 self.obj(),
                 move || {
                     artist.play();
-                }
-            ));
-            self.media_card.connect_star_toggled(glib::clone!(
-                #[weak(rename_to = artist)]
-                self.obj(),
-                move |is_favorite| {
-                    artist.toggle_favorite(is_favorite);
                 }
             ));
         }

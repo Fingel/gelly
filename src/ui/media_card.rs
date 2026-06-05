@@ -8,10 +8,9 @@ glib::wrapper! {
 }
 
 impl MediaCard {
-    pub fn new(has_play_button: bool, has_star_button: bool, has_secondary_label: bool) -> Self {
+    pub fn new(has_play_button: bool, has_secondary_label: bool) -> Self {
         Object::builder()
             .property("has-play-button", has_play_button)
-            .property("has-star-button", has_star_button)
             .property("has-secondary-label", has_secondary_label)
             .build()
     }
@@ -43,20 +42,11 @@ impl MediaCard {
     {
         self.imp().overlay_play.connect_clicked(move |_| f());
     }
-
-    pub fn connect_star_toggled<F>(&self, f: F)
-    where
-        F: Fn(bool) + 'static,
-    {
-        self.imp()
-            .overlay_star
-            .connect_clicked(move |btn| f(btn.is_active()));
-    }
 }
 
 impl Default for MediaCard {
     fn default() -> Self {
-        Self::new(false, false, false)
+        Self::new(false, false)
     }
 }
 
@@ -87,26 +77,16 @@ mod imp {
         #[template_child]
         pub play_revealer: TemplateChild<gtk::Revealer>,
         #[template_child]
-        pub star_revealer: TemplateChild<gtk::Revealer>,
-        #[template_child]
         pub motion_controller: TemplateChild<gtk::EventControllerMotion>,
         #[template_child]
         pub overlay_play: TemplateChild<gtk::Button>,
-        #[template_child]
-        pub overlay_star: TemplateChild<gtk::ToggleButton>,
-        #[template_child]
-        pub star_icon: TemplateChild<gtk::Image>,
         #[template_child]
         pub static_icon: TemplateChild<gtk::Image>,
 
         #[property(get, set)]
         has_play_button: Cell<bool>,
         #[property(get, set)]
-        has_star_button: Cell<bool>,
-        #[property(get, set)]
         has_secondary_label: Cell<bool>,
-        #[property(get, set = Self::set_favorite)]
-        favorite: Cell<bool>,
         #[property(get, set = Self::set_compact_mode, default = false)]
         compact_mode: Cell<bool>,
     }
@@ -137,7 +117,6 @@ mod imp {
                 imp.secondary_label
                     .set_visible(widget.has_secondary_label());
                 imp.play_revealer.set_visible(widget.has_play_button());
-                imp.star_revealer.set_visible(widget.has_star_button());
             });
         }
     }
@@ -165,23 +144,12 @@ mod imp {
             obj.set_margin_end(margin);
         }
 
-        fn set_favorite(&self, val: bool) {
-            self.favorite.set(val);
-            self.overlay_star.set_active(val);
-            self.star_icon.set_icon_name(Some(if val {
-                "starred-symbolic"
-            } else {
-                "non-starred-symbolic"
-            }));
-        }
-
         fn setup_revealer_signals(&self) {
             self.motion_controller.connect_enter(glib::clone!(
                 #[weak(rename_to = imp)]
                 self,
                 move |_, _, _| {
                     imp.play_revealer.set_reveal_child(true);
-                    imp.star_revealer.set_reveal_child(true);
                 }
             ));
 
@@ -190,7 +158,6 @@ mod imp {
                 self,
                 move |_| {
                     imp.play_revealer.set_reveal_child(false);
-                    imp.star_revealer.set_reveal_child(false);
                 }
             ));
         }

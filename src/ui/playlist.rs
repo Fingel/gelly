@@ -1,13 +1,12 @@
 use crate::{
     backend::BackendError,
-    config::{self, BackendType},
     i18n::{ngettext, tr},
     library_utils::songs_for_playlist,
     models::{PlaylistModel, SongModel},
     ui::widget_ext::WidgetApplicationExt,
 };
 use glib::Object;
-use gtk::{self, gio, glib, prelude::*, subclass::prelude::*};
+use gtk::{self, gio, glib, subclass::prelude::*};
 use log::warn;
 
 glib::wrapper! {
@@ -34,21 +33,13 @@ impl Playlist {
         card.set_primary_text(&playlist_model.name());
         card.set_secondary_text(&secondary_text);
         card.set_image_id(&playlist_model.id());
-        card.set_has_star_button(config::get_backend_type() == BackendType::Jellyfin);
         if playlist_model.is_smart() {
             card.set_static_icon(playlist_model.playlist_type().icon_name());
             card.display_icon();
-            card.set_has_star_button(false);
         }
         self.imp()
             .playlist_model
             .replace(Some(playlist_model.clone()));
-
-        card.set_favorite(playlist_model.favorite());
-        let binding = playlist_model
-            .bind_property("favorite", &card.get(), "favorite")
-            .build();
-        imp.favorite_binding.replace(Some(binding));
     }
 
     fn get_playlist_model(&self) -> Option<PlaylistModel> {
@@ -123,7 +114,6 @@ mod imp {
         pub media_card: TemplateChild<MediaCard>,
 
         pub playlist_model: RefCell<Option<PlaylistModel>>,
-        pub favorite_binding: RefCell<Option<glib::Binding>>,
         pub compact_mode_binding: RefCell<Option<glib::Binding>>,
     }
 
@@ -149,14 +139,6 @@ mod imp {
                 self.obj(),
                 move || {
                     playlist.play();
-                }
-            ));
-
-            self.media_card.connect_star_toggled(glib::clone!(
-                #[weak(rename_to = playlist)]
-                self.obj(),
-                move |is_favorite| {
-                    playlist.toggle_favorite(is_favorite);
                 }
             ));
         }

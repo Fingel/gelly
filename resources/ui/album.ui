@@ -6,7 +6,6 @@
     <child>
       <object class="GellyMediaCard" id="media_card">
         <property name="has-play-button">true</property>
-        <property name="has-star-button">true</property>
         <property name="has-secondary-label">true</property>
       </object>
     </child>
