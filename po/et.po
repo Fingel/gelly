@@ -8,365 +8,371 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-06-04 16:03-0700\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
+"PO-Revision-Date: 2026-06-06 21:01+0000\n"
+"Last-Translator: Priit Jõerüüt <jrthwlate@users.noreply.hosted.weblate.org>\n"
+"Language-Team: Estonian <https://hosted.weblate.org/projects/gelly/gelly/et/>"
+"\n"
 "Language: et\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 2026.6\n"
 
 #: src/ui/album_detail.rs:40
 msgid "N/A"
-msgstr ""
+msgstr "pole saadaval"
 
 #: src/ui/album_detail.rs:169 src/ui/album_detail.rs:179
 #: src/ui/album_detail.rs:203 src/ui/artist_detail.rs:233 src/ui/playlist.rs:62
 #: src/ui/playlist_detail.rs:512 src/ui/playlist_detail.rs:522
 #: src/ui/playlist_detail.rs:546 src/ui/song_list.rs:141
 msgid "Audio model not initialized, please restart"
-msgstr ""
+msgstr "Helimudel pole valmendatud, palun käivita uuesti"
 
 #: src/ui/album_detail.rs:195 src/ui/artist_detail.rs:225
 #: src/ui/playlist_detail.rs:538
 #, rust-format
 msgid "1 song added to queue"
 msgid_plural "{} songs added to queue"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "1 lugu on lisatud esitusjärjekorda"
+msgstr[1] "{} lugu on lisatud esitusjärjekorda"
 
 #: src/ui/music_context_menu.rs:35
 msgid "Queue Next"
-msgstr ""
+msgstr "Lisa järgmiseks esitusjärjekorda"
 
 #: src/ui/music_context_menu.rs:39
 msgid "Queue Last"
-msgstr ""
+msgstr "Lisa esitusjärjekorda viimaseks"
 
 #: src/ui/music_context_menu.rs:61
 msgid "Add to Playlist"
-msgstr ""
+msgstr "Lisa esitusloendisse"
 
 #: src/ui/music_context_menu.rs:65
 msgid "Remove from Playlist"
-msgstr ""
+msgstr "Eemalda esitusloendist"
 
 #: src/ui/music_context_menu.rs:73
 msgid "Copy ID"
-msgstr ""
+msgstr "Kopeeri tunnus"
 
 #: src/ui/player_bar/common.rs:73
 msgid "Pause"
-msgstr ""
+msgstr "Peata esitus"
 
 #: src/ui/player_bar/common.rs:76 resources/ui/album_detail.ui:119
 #: resources/ui/artist_detail.ui:52 resources/ui/playlist_detail.ui:101
 msgid "Play"
-msgstr ""
+msgstr "Esita"
 
 #: src/ui/player_bar/common.rs:86
 msgid "Unknown Artist"
-msgstr ""
+msgstr "Tundmatu esitaja"
 
 #: src/ui/playlist.rs:27
 #, rust-format
 msgid "1 song"
 msgid_plural "{} songs"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "1 lugu"
+msgstr[1] "{} lugu"
 
 #: src/ui/playlist.rs:30
 msgid "Smart playlist"
-msgstr ""
+msgstr "Nutikas esitusloend"
 
 #: src/ui/playlist.rs:32
 msgid "Empty playlist"
-msgstr ""
+msgstr "Tühi esitusloend"
 
 #: src/ui/playlist_detail.rs:564
 msgid "Smart playlists cannot be deleted"
-msgstr ""
+msgstr "Nutikate esitusloendite kustutamine pole võimalik"
 
 #: src/ui/playlist_dialogs.rs:7
 msgid "Playlist name"
-msgstr ""
+msgstr "Esitusloendi nimi"
 
 #: src/ui/playlist_dialogs.rs:16
 msgid "New Playlist"
-msgstr ""
+msgstr "Uus esitusloend"
 
 #: src/ui/playlist_dialogs.rs:20 src/ui/playlist_dialogs.rs:59
 #: resources/ui/setup.ui:123 resources/ui/setup.ui:186
 msgid "Cancel"
-msgstr ""
+msgstr "Katkesta"
 
 #: src/ui/playlist_dialogs.rs:20
 msgid "Create"
-msgstr ""
+msgstr "Loo"
 
 #: src/ui/playlist_dialogs.rs:56
 msgid "Delete playlist?"
-msgstr ""
+msgstr "Kas kustutad esitusloendi?"
 
 #: src/ui/playlist_dialogs.rs:59
 msgid "Delete"
-msgstr ""
+msgstr "Kustuta"
 
 #: src/ui/setup.rs:218
 msgid "Connection error. Please supply a full URL (http://example.com:8096)"
 msgstr ""
+"Ühenduse viga. Palun sisesta täismahus võrguaadress (http://"
+"toredomeen.ee:8096)"
 
 #: src/ui/setup.rs:232
 msgid "Invalid credentials"
-msgstr ""
+msgstr "Vigased autentimise atribuudid"
 
 #: src/ui/setup.rs:242
 msgid "Could not authenticate with Jellyfin or Subsonic"
-msgstr ""
+msgstr "Jellyfiniga või Subsonicuga autentimine ei õnnestunud"
 
 #: src/ui/setup.rs:418
 msgid "Quick connect code copied to clipboard"
-msgstr ""
+msgstr "Kiirühendamise kood on kopeeritud lõikelauale"
 
 #: src/ui/stream_info_dialog.rs:19
 msgid "Yes"
-msgstr ""
+msgstr "Jah"
 
 #: src/ui/stream_info_dialog.rs:20
 msgid "No"
-msgstr ""
+msgstr "Ei"
 
 #: src/ui/stream_info_dialog.rs:21 src/ui/stream_info_dialog.rs:32
 #: src/ui/stream_info_dialog.rs:54
 msgid "Unknown"
-msgstr ""
+msgstr "Tundmatu"
 
 #: src/ui/stream_info_dialog.rs:29
 msgid "Backend"
-msgstr ""
+msgstr "Taustateenus"
 
 #: src/ui/stream_info_dialog.rs:32
 msgid "Codec"
-msgstr ""
+msgstr "Koodek"
 
 #: src/ui/stream_info_dialog.rs:34
 msgid "Container"
-msgstr ""
+msgstr "Konteiner"
 
 #: src/ui/stream_info_dialog.rs:35 src/ui/stream_info_dialog.rs:58
 msgid "None"
-msgstr ""
+msgstr "Määramata"
 
 #: src/ui/stream_info_dialog.rs:38
 msgid "Sample Rate"
-msgstr ""
+msgstr "Diskreetimissagedus"
 
 #: src/ui/stream_info_dialog.rs:41
 msgid "Channels"
-msgstr ""
+msgstr "Kanaleid"
 
 #: src/ui/stream_info_dialog.rs:44
 msgid "Bit Rate"
-msgstr ""
+msgstr "Bitikiirus"
 
 #: src/ui/stream_info_dialog.rs:47
 msgid "Encoder"
-msgstr ""
+msgstr "Kodeerija"
 
 #: src/ui/stream_info_dialog.rs:53
 msgid "Original Codec"
-msgstr ""
+msgstr "Algne koodek"
 
 #: src/ui/stream_info_dialog.rs:57
 msgid "Original Container"
-msgstr ""
+msgstr "Algne konteiner"
 
 #: src/ui/stream_info_dialog.rs:61
 msgid "Original Sample Rate"
-msgstr ""
+msgstr "Algne diskreetimissagedus"
 
 #: src/ui/stream_info_dialog.rs:65
 msgid "Original Channels"
-msgstr ""
+msgstr "Algselt kanaleid"
 
 #: src/ui/stream_info_dialog.rs:69
 msgid "Supports Direct Play"
-msgstr ""
+msgstr "Otseesitus (Direct Play) on toetatud"
 
 #: src/ui/stream_info_dialog.rs:73
 msgid "Supports Direct Stream"
-msgstr ""
+msgstr "Otsevoogesitus (Direct Stream) on toetatud"
 
 #: src/ui/stream_info_dialog.rs:77
 msgid "Supports Transcoding"
-msgstr ""
+msgstr "Ümberkodeerimine on toetatud"
 
 #: src/ui/stream_info_dialog.rs:83
 msgid "Original Bit Rate"
-msgstr ""
+msgstr "Algne bitikiirus"
 
 #: src/ui/stream_info_dialog.rs:89
 msgid "File Size"
-msgstr ""
+msgstr "Faili suurus"
 
 #: src/ui/stream_info_dialog.rs:118
 msgid "Stream Info"
-msgstr ""
+msgstr "Voogesituse teave"
 
 #: src/ui/window.rs:189
 msgid "Logged out"
-msgstr ""
+msgstr "Väljalogitud"
 
 #: resources/ui/album_art.ui:33
 msgid "Missing album art"
-msgstr ""
+msgstr "Kaanepilt on puudu"
 
 #: resources/ui/album_detail.ui:82 resources/ui/playlist_detail.ui:66
 msgid "tracks"
-msgstr ""
+msgstr "lood"
 
 #: resources/ui/album_detail.ui:145 resources/ui/artist_detail.ui:79
 msgid "More Actions"
-msgstr ""
+msgstr "Täiendavad tegevused"
 
 #: resources/ui/album_list.ui:8
 msgid "No Albums"
-msgstr ""
+msgstr "Albumeid ei leidu"
 
 #: resources/ui/artist_detail.ui:41
 msgid "Artist Name"
-msgstr ""
+msgstr "Esitaja nimi"
 
 #: resources/ui/artist_list.ui:8
 msgid "No Artists"
-msgstr ""
+msgstr "Esitajaid ei leidu"
 
 #: resources/ui/lyrics.ui:56
 msgid "No lyrics available"
-msgstr ""
+msgstr "Laulusõnu pole saadaval"
 
 #: resources/ui/playlist_detail.ui:127
 msgid "More actions"
-msgstr ""
+msgstr "Täiendavad tegevused"
 
 #: resources/ui/playlist_detail.ui:138
 msgid "Delete playlist"
-msgstr ""
+msgstr "Kustuta esitusloend"
 
 #: resources/ui/playlist_detail.ui:152
 msgid "Playlist is Empty"
-msgstr ""
+msgstr "Esitusloend on tühi"
 
 #: resources/ui/playlist_list.ui:8
 msgid "No Playlists"
-msgstr ""
+msgstr "Esitusloendeid pole"
 
 #: resources/ui/preferences.ui:9 resources/ui/preferences.ui:12
 #: resources/ui/shortcuts_dialog.ui:6
 msgid "General"
-msgstr ""
+msgstr "Üldised"
 
 #. TODO: Apparently I didn't know about AdwSwitchRow, these can all be converted
 #: resources/ui/preferences.ui:16
 msgid "Refresh library on startup"
-msgstr ""
+msgstr "Käivitamisel uuenda meediakogu uuesti"
 
 #: resources/ui/preferences.ui:17
 msgid "The library can be refreshed using ctrl+r or the menu."
-msgstr ""
+msgstr "Meediakogu saad uuendada ka Ctrl+R klahvivajutusega."
 
 #: resources/ui/preferences.ui:29
 msgid "Extra eye candy"
-msgstr ""
+msgstr "Täiendav silmailu"
 
 #: resources/ui/preferences.ui:30
 msgid "Utilizes transparency, blurred backgrounds, etc."
-msgstr ""
+msgstr "Kasutab nii läbipaistvust kui hägustatud taustu, jne."
 
 #: resources/ui/preferences.ui:35
 msgid "Compact Mode"
-msgstr ""
+msgstr "Kompaktne vaade"
 
 #: resources/ui/preferences.ui:36
 msgid "Use smaller UI elements regardless of window size."
 msgstr ""
+"Sõltumata akna suurusest on kasutusel pisemad kasutajaliidese elemendid."
 
 #: resources/ui/preferences.ui:43 resources/ui/shortcuts_dialog.ui:84
 msgid "Playback"
-msgstr ""
+msgstr "Taasesitus"
 
 #: resources/ui/preferences.ui:46
 msgid "Normalize Audio"
-msgstr ""
+msgstr "Normaliseeri heli"
 
 #: resources/ui/preferences.ui:47
 msgid "May require backend plugins."
-msgstr ""
+msgstr "Kasutatav taustateenus võib vajada lisamooduleid."
 
 #: resources/ui/preferences.ui:59
 msgid "Inhibit Suspend"
-msgstr ""
+msgstr "Seadme uninumise keelamine"
 
 #: resources/ui/preferences.ui:60
 msgid "Prevents the system from suspending while playing"
-msgstr ""
+msgstr "Takistab seadme uinumist muusika esitamise ajal"
 
 #: resources/ui/preferences.ui:74
 msgid "Transcoding"
-msgstr ""
+msgstr "Kodeeringu muutmine"
 
 #: resources/ui/preferences.ui:75
 msgid "Currently Subsonic backends cannot seek transcoded streams."
 msgstr ""
+"Hetkel Subsonicu taustateenused ei oska muudetud kodeeringuga lugusid kerida."
 
 #: resources/ui/preferences.ui:78
 msgid "Transcoding Profile"
-msgstr ""
+msgstr "Kodeeringu muutmise profiil"
 
 #: resources/ui/preferences.ui:79
 msgid "Only used when direct play is not available."
-msgstr ""
+msgstr "Kasutusel vaid siis, kui otseesitus pole saadaval."
 
 #: resources/ui/preferences.ui:92
 msgid "Maximum Bitrate (kbps)"
-msgstr ""
+msgstr "Maksimaalne bitikiirus (kbps)"
 
 #: resources/ui/preferences.ui:93
 msgid "A value of 0 means no limit."
-msgstr ""
+msgstr "0 tähendab piirangu puudumist."
 
 #: resources/ui/preferences.ui:112 resources/ui/window.ui:271
 msgid "Playlists"
-msgstr ""
+msgstr "Esitusloendid"
 
 #: resources/ui/preferences.ui:115
 msgid "Smart Playlists"
-msgstr ""
+msgstr "Nutikad esitusloendid"
 
 #: resources/ui/preferences.ui:118
 msgid "Favorite Mix Playlist"
-msgstr ""
+msgstr "Esitusloend: Miks lemmikutest"
 
 #: resources/ui/preferences.ui:130
 msgid "Shuffled Playlist"
-msgstr ""
+msgstr "Segatud esitusloend"
 
 #: resources/ui/preferences.ui:142
 msgid "Most Played Playlist"
-msgstr ""
+msgstr "Esitusloend: Enimesitatud lood"
 
 #: resources/ui/queue.ui:8
 msgid "Nothing Playing"
-msgstr ""
+msgstr "Mitte midagi pole esitamisel"
 
 #: resources/ui/setup.ui:10
 msgid "Servers"
-msgstr ""
+msgstr "Serverid"
 
 #: resources/ui/setup.ui:19
 msgid "Connect to Server"
-msgstr ""
+msgstr "Ühenda serveriga"
 
 #: resources/ui/setup.ui:20
 msgid ""
@@ -374,207 +380,212 @@ msgid ""
 "including protocol and port. For Jellyfin this is usually 8096, Navidrome "
 "uses 4533."
 msgstr ""
+"Gelly toetab Jellyfini, Subsonicu ja Navidrome'i servereid. Sisesta serveri "
+"täisaadress koos protokolliga ja pordiga. Jellyfini puhul on see tavaliselt "
+"8096 ja Navidrome kasutab porti 4533."
 
 #: resources/ui/setup.ui:35
 msgid "Host URL"
-msgstr ""
+msgstr "Serveri võrguaadress"
 
 #: resources/ui/setup.ui:42
 msgid "Username"
-msgstr ""
+msgstr "Kasutajanimi"
 
 #: resources/ui/setup.ui:47
 msgid "Password"
-msgstr ""
+msgstr "Salasõna"
 
 #: resources/ui/setup.ui:54
 msgid "Connect"
-msgstr ""
+msgstr "Ühenda"
 
 #: resources/ui/setup.ui:65 resources/ui/setup.ui:150
 msgid "Jellyfin Quick Connect"
-msgstr ""
+msgstr "Jellyfini kiirühendus"
 
 #: resources/ui/setup.ui:80
 msgid "Choose Library"
-msgstr ""
+msgstr "Vali meediakogu"
 
 #: resources/ui/setup.ui:89
 msgid "Select Library"
-msgstr ""
+msgstr "Vali meediakogu"
 
 #: resources/ui/setup.ui:90
 msgid "Choose which library Gelly will use to load your music."
-msgstr ""
+msgstr "Vali meediakogu, mida Gelly kasutab sinu muusika laadimiseks."
 
 #: resources/ui/setup.ui:105
 msgid "Library"
-msgstr ""
+msgstr "meediakogu"
 
 #: resources/ui/setup.ui:112
 msgid "Launch Gelly"
-msgstr ""
+msgstr "Käivita Gelly"
 
 #: resources/ui/setup.ui:141
 msgid "Quick Connect"
-msgstr ""
+msgstr "Kiirühendus"
 
 #: resources/ui/setup.ui:151
 msgid "Enter the code on the Jellyfin web page to complete authentication."
-msgstr ""
+msgstr "Autentimise lõpetamiseks sisesta Jellyfini lehel näidatud kood."
 
 #: resources/ui/shortcuts_dialog.ui:9 resources/ui/window.ui:369
 msgid "Refresh Library"
-msgstr ""
+msgstr "Uuenda meediakogu andmed"
 
 #: resources/ui/shortcuts_dialog.ui:10
 msgid "Re-downloads the music library"
-msgstr ""
+msgstr "Laadib meediakogu uuesti alla"
 
 #: resources/ui/shortcuts_dialog.ui:16
 msgid "Request Library Rescan"
-msgstr ""
+msgstr "Alusta meediakogu uut skaneerimist"
 
 #: resources/ui/shortcuts_dialog.ui:17
 msgid "Ask Jellyfin to rescan the library for new or modified files"
 msgstr ""
+"Palu, et Jellyfin skaneeriks uute ja muudetud failide otsimiseks meediakogu "
+"uuesti"
 
 #: resources/ui/shortcuts_dialog.ui:23 resources/ui/window.ui:157
 msgid "Search"
-msgstr ""
+msgstr "Otsi"
 
 #: resources/ui/shortcuts_dialog.ui:29
 msgid "Show Favorites"
-msgstr ""
+msgstr "Näita lemmikuid"
 
 #: resources/ui/shortcuts_dialog.ui:35 resources/ui/window.ui:379
 msgid "Preferences"
-msgstr ""
+msgstr "Eelistused"
 
 #: resources/ui/shortcuts_dialog.ui:41 resources/ui/window.ui:383
 msgid "Keyboard Shortcuts"
-msgstr ""
+msgstr "Klaviatuuri kiirklahvid"
 
 #: resources/ui/shortcuts_dialog.ui:47 resources/ui/window.ui:395
 msgid "Quit"
-msgstr ""
+msgstr "Välju"
 
 #: resources/ui/shortcuts_dialog.ui:55
 msgid "Navigation"
-msgstr ""
+msgstr "Liikumine rakenduses"
 
 #: resources/ui/shortcuts_dialog.ui:58
 msgid "Focus Albums"
-msgstr ""
+msgstr "Säti fookus albumitele"
 
 #: resources/ui/shortcuts_dialog.ui:64
 msgid "Focus Artists"
-msgstr ""
+msgstr "Säti fookus esitajatele"
 
 #: resources/ui/shortcuts_dialog.ui:70
 msgid "Focus Playlist"
-msgstr ""
+msgstr "Säti fookus esitusloendile"
 
 #: resources/ui/shortcuts_dialog.ui:76
 msgid "Focus Song List"
-msgstr ""
+msgstr "Säti fookus lugude loendile"
 
 #: resources/ui/shortcuts_dialog.ui:87
 msgid "Play Selected"
-msgstr ""
+msgstr "Esita valituid"
 
 #: resources/ui/shortcuts_dialog.ui:88
 msgid "Play the currently selected item in the list"
-msgstr ""
+msgstr "Esita hetkel loendis valitud kirjet"
 
 #: resources/ui/song_list.ui:8
 msgid "No Songs"
-msgstr ""
+msgstr "Lugusid ei leidu"
 
 #: resources/ui/song_list.ui:35
 msgid "songs"
-msgstr ""
+msgstr "lood"
 
 #: resources/ui/window.ui:53
 msgid "Album Detail"
-msgstr ""
+msgstr "Albumi üksikasjad"
 
 #: resources/ui/window.ui:86
 msgid "Artist Detail"
-msgstr ""
+msgstr "Esitaja üksikasjad"
 
 #: resources/ui/window.ui:118
 msgid "Playlist Detail"
-msgstr ""
+msgstr "Esitusloendi üksikasjad"
 
 #: resources/ui/window.ui:141
 msgid "Main"
-msgstr ""
+msgstr "Põhivaade"
 
 #: resources/ui/window.ui:150
 msgid "Show Queue"
-msgstr ""
+msgstr "Näita esitusjärjekorda"
 
 #: resources/ui/window.ui:163
 msgid "Sort"
-msgstr ""
+msgstr "Järjesta"
 
 #: resources/ui/window.ui:170
 msgid "New"
-msgstr ""
+msgstr "Uus"
 
 #: resources/ui/window.ui:195
 msgid "Search..."
-msgstr ""
+msgstr "Otsi…"
 
 #: resources/ui/window.ui:211
 msgid "Favorites"
-msgstr ""
+msgstr "Lemmikud"
 
 #: resources/ui/window.ui:224
 msgid "Ascending"
-msgstr ""
+msgstr "Järjesta kasvavalt"
 
 #: resources/ui/window.ui:231
 msgid "Descending"
-msgstr ""
+msgstr "Järjesta kahanevalt"
 
 #: resources/ui/window.ui:247
 msgid "Albums"
-msgstr ""
+msgstr "Albumid"
 
 #: resources/ui/window.ui:259
 msgid "Artists"
-msgstr ""
+msgstr "Esitajad"
 
 #: resources/ui/window.ui:283
 msgid "Songs"
-msgstr ""
+msgstr "Lood"
 
 #: resources/ui/window.ui:328
 msgid "Hide Queue"
-msgstr ""
+msgstr "Peida esitusjärjekord"
 
 #: resources/ui/window.ui:337
 msgid "Clear Queue"
-msgstr ""
+msgstr "Tühjenda esitusjärjekord"
 
 #: resources/ui/window.ui:344
 msgid "Save As Playlist"
-msgstr ""
+msgstr "Salvesta esitusloendina"
 
 #: resources/ui/window.ui:365
 msgid "Request Rescan"
-msgstr ""
+msgstr "Skaneeri uuesti"
 
 #: resources/ui/window.ui:373
 msgid "Clear Image Cache"
-msgstr ""
+msgstr "Eemalda vahemälust pildid"
 
 #: resources/ui/window.ui:387
 msgid "About Gelly"
-msgstr ""
+msgstr "Rakenduse teave: Gelly"
 
 #: resources/ui/window.ui:391
 msgid "Logout"
-msgstr ""
+msgstr "Logi välja"
