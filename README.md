@@ -5,9 +5,9 @@
     <em>A native, lightweight music client for Jellyfin and Subsonic. Built with Rust and GTK.</em>
     🦀🐧
 </p>
-
-<img width="807" height="769" alt="Screenshot from 2026-04-25 10-11-15" src="https://github.com/user-attachments/assets/bb7338ca-bc47-41e5-ada2-3bb370060ace" />
-
+<p align="center">
+<img width="801" height="876" alt="gelly_june_2026" src="https://github.com/user-attachments/assets/497febf0-0c40-4594-9118-b6d7f6ffc681" />
+</p>
 
 ## Features
 
