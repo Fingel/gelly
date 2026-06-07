@@ -70,6 +70,22 @@
     <color type="primary" scheme_preference="dark">#325a4a</color>
   </branding>
   <releases>
+    <release version="1.6.1" date="2026-06-07">
+      <description>
+        <ul>
+          <li>
+            Fixed overly verbose MPRIS reporting
+          </li>
+          <li>
+            UI updates: memoved the favorite option on hover from album art. It was not worth the clutter.
+            Also added some padding around the main area.
+          </li>
+          <li>
+            More translations.
+          </li>
+        </ul>
+      </description>
+    </release>
     <release version="1.6.0" date="2026-06-03">
       <description>
         <ul>
