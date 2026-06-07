@@ -47,6 +47,17 @@ impl AudioModel {
                 match event {
                     PlayerEvent::StateChanged(state) => {
                         let playing = matches!(state, PlayerState::Playing);
+                        // During internal gstreamer pipeline transitions, it emits a bunch of state changes
+                        // It seems safe to suppress them for mpris, reporting, and ui purposes.
+                        // TODO The real fix to this is to introduce a higher level state machine
+                        let transition_in_progress = obj.imp().track_transition_in_progress.get();
+                        if transition_in_progress && !playing {
+                            continue;
+                        }
+                        if transition_in_progress && playing {
+                            obj.imp().track_transition_in_progress.set(false);
+                        }
+
                         let paused = matches!(state, PlayerState::Paused);
 
                         obj.set_property("playing", playing);
@@ -75,6 +86,7 @@ impl AudioModel {
                         obj.set_property("duration", dur as u32);
                     }
                     PlayerEvent::Error(err) => {
+                        obj.imp().track_transition_in_progress.set(false);
                         obj.set_property("loading", false);
                         obj.emit_by_name::<()>("error", &[&err]);
                     }
@@ -137,13 +149,14 @@ impl AudioModel {
             .expect("Player should be initialized")
     }
 
-    fn stream_uri(&self, song_id: &str) -> String {
+    fn stream_uri(&self, song_id: &str) -> Option<String> {
         let uri: String = self.emit_by_name("request-stream-uri", &[&song_id]);
         if uri.is_empty() {
             self.emit_by_name::<()>("error", &[&"Failed to get stream URI".to_string()]);
-            return String::new();
+            warn!("Failed to get stream URI for song {}", song_id);
+            return None;
         }
-        uri
+        Some(uri)
     }
 
     fn apply_volume(&self) {
@@ -262,13 +275,21 @@ impl AudioModel {
             .item(index as u32)
             .and_downcast::<SongModel>()
         {
-            let stream_uri = self.stream_uri(&song.id());
+            let Some(stream_uri) = self.stream_uri(&song.id()) else {
+                self.imp().track_transition_in_progress.set(false);
+                self.set_property("loading", false);
+                self.stop();
+                return;
+            };
+
             let player = self.player();
-            player.stop();
+            self.imp().track_transition_in_progress.set(true);
             self.set_property("loading", true);
+            player.stop();
             player.set_uri(&stream_uri);
             self.update_current_song(index, song, Some(stream_uri));
         } else {
+            self.imp().track_transition_in_progress.set(false);
             self.stop();
             warn!("Failed to load song at index {}", index);
         }
@@ -297,13 +318,11 @@ impl AudioModel {
                 .queue
                 .item(next_index as u32)
                 .and_downcast::<SongModel>()
+            && let Some(uri) = self.stream_uri(&song.id())
         {
-            let uri = self.stream_uri(&song.id());
-            if !uri.is_empty() {
-                self.imp().prefetched_next_index.set(Some(next_index));
-                self.imp().prefetched_next_uri.replace(Some(uri.clone()));
-                self.player().cache_next_uri(uri);
-            }
+            self.imp().prefetched_next_index.set(Some(next_index));
+            self.imp().prefetched_next_uri.replace(Some(uri.clone()));
+            self.player().cache_next_uri(uri);
         }
     }
 
@@ -429,6 +448,7 @@ impl AudioModel {
     }
 
     pub fn stop(&self) {
+        self.imp().track_transition_in_progress.set(false);
         self.player().stop();
         self.set_property("position", 0u32);
         self.set_property("duration", 0u32);
@@ -574,6 +594,7 @@ mod imp {
         pub uri: RefCell<Option<String>>,
         pub prefetched_next_index: Cell<Option<i32>>,
         pub prefetched_next_uri: RefCell<Option<String>>,
+        pub track_transition_in_progress: Cell<bool>,
     }
 
     impl Default for AudioModel {
@@ -597,6 +618,7 @@ mod imp {
                 uri: RefCell::new(None),
                 prefetched_next_index: Cell::new(None),
                 prefetched_next_uri: RefCell::new(None),
+                track_transition_in_progress: Cell::new(false),
             }
         }
     }

@@ -6,7 +6,7 @@ use gtk::glib;
 use log::warn;
 use std::sync::{Arc, Mutex};
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub enum PlayerState {
     Stopped,
     Playing,
@@ -141,6 +141,7 @@ impl AudioPlayer {
 
         glib::spawn_future_local(async move {
             let mut messages = bus.stream();
+            let mut last_reported_state: Option<PlayerState> = None;
 
             while let Some(msg) = messages.next().await {
                 match msg.view() {
@@ -154,10 +155,14 @@ impl AudioPlayer {
                             let player_state = match new_state {
                                 gst::State::Playing => PlayerState::Playing,
                                 gst::State::Paused => PlayerState::Paused,
-                                gst::State::Null | gst::State::Ready => PlayerState::Stopped,
+                                gst::State::Null => PlayerState::Stopped,
                                 _ => continue,
                             };
-                            let _ = sender.send(PlayerEvent::StateChanged(player_state)).await;
+
+                            if last_reported_state.as_ref() != Some(&player_state) {
+                                last_reported_state = Some(player_state.clone());
+                                let _ = sender.send(PlayerEvent::StateChanged(player_state)).await;
+                            }
                         }
                     }
                     gst::MessageView::Eos(_) => {
