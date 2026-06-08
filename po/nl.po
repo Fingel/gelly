@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-05-31 16:21-0700\n"
-"PO-Revision-Date: 2026-06-02 20:59+0000\n"
-"Last-Translator: Jeffrey van Altena <jeffrey2107@outlook.com>\n"
+"PO-Revision-Date: 2026-06-09 20:01+0000\n"
+"Last-Translator: CodingKitten <codingkitten@disroot.org>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/gelly/gelly/nl/>\n"
 "Language: nl\n"
 "MIME-Version: 1.0\n"
@@ -88,7 +88,7 @@ msgstr "Voorkomt dat het systeem in slaapstand gaat tijdens het afspelen"
 
 #: resources/ui/preferences.ui:67
 msgid "Transcoding"
-msgstr ""
+msgstr "Transcodering"
 
 #: resources/ui/preferences.ui:68
 msgid ""
@@ -107,7 +107,7 @@ msgstr ""
 
 #: resources/ui/preferences.ui:85
 msgid "Maximum Bitrate (kbps)"
-msgstr ""
+msgstr "Maximale Bitrate (kbps)"
 
 #: resources/ui/preferences.ui:86
 msgid "A value of 0 means no limit."
@@ -131,7 +131,7 @@ msgstr ""
 
 #: resources/ui/preferences.ui:135
 msgid "Most Played Playlist"
-msgstr ""
+msgstr "Meest Gespeelde Afspeellijst"
 
 #: resources/ui/setup.ui:10
 msgid "Servers"
@@ -142,15 +142,19 @@ msgid "Connect to Server"
 msgstr "Verbinden met server"
 
 #: resources/ui/setup.ui:20
+#, fuzzy
 msgid ""
 "Gelly supports Jellyfin and Subsonic/Navidrome. Enter the full server URL "
 "including protocol and port. For Jellyfin this is usually 8096, Navidrome "
 "uses 4533."
 msgstr ""
+"Gelly ondersteund Jellyfin en Subsonic/Navidrome. Voer de volledige server "
+"URL in, inclusief protocol en port. Voor Jellyfin is 8096 de standaart port "
+"en voor Navidrome 4533."
 
 #: resources/ui/setup.ui:82
 msgid "Select Library"
-msgstr ""
+msgstr "Selecteer Bibliotheek"
 
 #: resources/ui/setup.ui:83
 msgid "Choose which library Gelly will use to load your music."
@@ -162,15 +166,17 @@ msgstr "Bibliotheek"
 
 #: resources/ui/window.ui:57
 msgid "Album Detail"
-msgstr ""
+msgstr "Album Detail"
 
 #: resources/ui/window.ui:90
+#, fuzzy
 msgid "Artist Detail"
-msgstr ""
+msgstr "Artiest Detail"
 
 #: resources/ui/window.ui:122
+#, fuzzy
 msgid "Playlist Detail"
-msgstr ""
+msgstr "Afspeellijst Detail"
 
 #: resources/ui/window.ui:145
 msgid "Main"
@@ -178,63 +184,64 @@ msgstr ""
 
 #: resources/ui/window.ui:154
 msgid "Show Queue"
-msgstr ""
+msgstr "Laat wachtrij zien"
 
 #: resources/ui/window.ui:161
 msgid "Search"
-msgstr ""
+msgstr "Zoeken"
 
 #: resources/ui/window.ui:167
 msgid "Sort"
-msgstr ""
+msgstr "Soorteren"
 
 #: resources/ui/window.ui:174
 msgid "New"
-msgstr ""
+msgstr "Nieuw"
 
 #: resources/ui/window.ui:215
 msgid "Favorites"
-msgstr ""
+msgstr "Favorieten"
 
 #: resources/ui/window.ui:228
 msgid "Ascending"
-msgstr ""
+msgstr "Oplopend"
 
 #: resources/ui/window.ui:235
 msgid "Descending"
-msgstr ""
+msgstr "Aflopend"
 
 #: resources/ui/window.ui:251
 msgid "Albums"
-msgstr ""
+msgstr "Albums"
 
 #: resources/ui/window.ui:263
 msgid "Artists"
-msgstr ""
+msgstr "Artiesten"
 
 #: resources/ui/window.ui:287
 msgid "Songs"
-msgstr ""
+msgstr "Nummers"
 
 #: resources/ui/window.ui:332
 msgid "Hide Queue"
-msgstr ""
+msgstr "Verberg Wachtrij"
 
 #: resources/ui/window.ui:341
 msgid "Clear Queue"
-msgstr ""
+msgstr "Leeg Wachtrij"
 
 #: resources/ui/window.ui:348
 msgid "Save As Playlist"
-msgstr ""
+msgstr "Opslaan Als Playlist"
 
 #: resources/ui/window.ui:369
 msgid "Request Rescan"
-msgstr ""
+msgstr "Rescan Aanvragen"
 
 #: resources/ui/window.ui:373
+#, fuzzy
 msgid "Refresh Library"
-msgstr ""
+msgstr "Bibliotheek Verversen"
 
 #: resources/ui/window.ui:377
 msgid "Clear Image Cache"
@@ -242,7 +249,7 @@ msgstr ""
 
 #: resources/ui/window.ui:383
 msgid "Preferences"
-msgstr ""
+msgstr "Voorkeuren"
 
 #: resources/ui/window.ui:387
 msgid "Keyboard Shortcuts"
@@ -250,12 +257,12 @@ msgstr ""
 
 #: resources/ui/window.ui:391
 msgid "About Gelly"
-msgstr ""
+msgstr "Over Gelly"
 
 #: resources/ui/window.ui:395
 msgid "Logout"
-msgstr ""
+msgstr "Afmelden"
 
 #: resources/ui/window.ui:399
 msgid "Quit"
-msgstr ""
+msgstr "Afsluiten"
