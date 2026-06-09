@@ -1,4 +1,5 @@
 use std::fs;
+use std::time::Duration;
 use std::{fmt::Debug, sync::OnceLock};
 
 use api::AuthenticateResponse;
@@ -33,6 +34,8 @@ impl Jellyfin {
     pub fn new(host: &str, token: &str, user_id: &str) -> Self {
         let client = Client::builder()
             .user_agent(format!("Gelly/{}", config::VERSION))
+            .connect_timeout(Duration::from_secs(10))
+            .timeout(Duration::from_secs(30))
             .build()
             .expect("Failed to create HTTP client");
 

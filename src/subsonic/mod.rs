@@ -1,3 +1,5 @@
+use std::time::Duration;
+
 use log::{debug, warn};
 use rand::RngExt;
 use reqwest::{Client, Response, StatusCode, Url};
@@ -42,6 +44,8 @@ impl Subsonic {
     pub fn new(host: &str, username: &str, password: &str) -> Self {
         let client = Client::builder()
             .user_agent(format!("Gelly/{}", config::VERSION))
+            .connect_timeout(Duration::from_secs(10))
+            .timeout(Duration::from_secs(30))
             .build()
             .expect("Failed to create HTTP client");
 
