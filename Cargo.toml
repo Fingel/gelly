@@ -8,7 +8,7 @@ gtk = { version = "0.11.1", package = "gtk4", features = ["v4_22"] }
 adw = { version = "0.9.1", package = "libadwaita", features = ["v1_9"] }
 log = { version = "0.4.28", features = ["std"] }
 env_logger = { version = "0.11.8", features = ["color"] }
-tokio = { version = "1.47.1", features = ["rt-multi-thread", "sync"] }
+tokio = { version = "1.47.1", features = ["rt-multi-thread", "sync", "fs"] }
 reqwest = { version = "0.13.1", features = ["json", "query"] }
 serde_json = { version = "1.0.143", features = ["std"] }
 serde = { version = "1.0.219", features = ["derive"] }

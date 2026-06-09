@@ -157,8 +157,6 @@ impl LibraryCache {
     }
 }
 
-const MAX_TEXTURE_CACHE_ENTRIES: usize = 10_000;
-
 type TextureCache = LruCache<String, gdk::Texture>;
 
 #[derive(Debug, Clone)]
@@ -175,6 +173,7 @@ impl ImageCache {
     pub fn new() -> Result<Self, CacheError> {
         const MAX_CONCURRENT_DOWNLOADS: usize = 4;
         const MAX_CONCURRENT_DECODES: usize = 4;
+        const MAX_TEXTURE_CACHE_ENTRIES: usize = 10_000;
         let cache_dir = get_cache_directory("album-art")?;
         fs::create_dir_all(&cache_dir)?;
         Ok(Self {
@@ -228,7 +227,7 @@ impl ImageCache {
         jellyfin: &Backend,
     ) -> Result<Vec<u8>, CacheError> {
         loop {
-            if let Ok(bytes) = self.load_from_disk(item_id, image_type) {
+            if let Ok(bytes) = self.load_from_disk(item_id, image_type).await {
                 return Ok(bytes);
             }
 
@@ -266,26 +265,23 @@ impl ImageCache {
         debug!("Downloading album art for {}", item_id);
         let image_data = jellyfin.get_image(item_id, image_type).await?;
 
-        if let Err(e) = self.save_to_disk(item_id, image_type, &image_data) {
+        if let Err(e) = self.save_to_disk(item_id, image_type, &image_data).await {
             warn!("Failed to save image to disk cache: {}", e);
         }
 
         Ok(image_data)
     }
 
-    fn load_from_disk(&self, item_id: &str, image_type: ImageType) -> Result<Vec<u8>, CacheError> {
+    async fn load_from_disk(
+        &self,
+        item_id: &str,
+        image_type: ImageType,
+    ) -> Result<Vec<u8>, CacheError> {
         let file_path = self.get_cache_file_path(item_id, image_type);
-        if !file_path.exists() {
-            return Err(CacheError::Io(std::io::Error::new(
-                std::io::ErrorKind::NotFound,
-                "Cache file not found",
-            )));
-        }
-
-        Ok(fs::read(&file_path)?)
+        Ok(tokio::fs::read(&file_path).await?)
     }
 
-    fn save_to_disk(
+    async fn save_to_disk(
         &self,
         item_id: &str,
         image_type: ImageType,
@@ -293,9 +289,9 @@ impl ImageCache {
     ) -> Result<(), CacheError> {
         let file_path = self.get_cache_file_path(item_id, image_type);
         if let Some(parent) = file_path.parent() {
-            fs::create_dir_all(parent)?;
+            tokio::fs::create_dir_all(parent).await?;
         }
-        fs::write(&file_path, image_data)?;
+        tokio::fs::write(&file_path, image_data).await?;
         Ok(())
     }
 
