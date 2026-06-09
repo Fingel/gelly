@@ -206,7 +206,11 @@ impl ImageCache {
                     if fallback_image.is_ok() {
                         let primary_path = self.get_cache_file_path(primary, ImageType::Primary);
                         let fallback_path = self.get_cache_file_path(fallback, ImageType::Primary);
-                        unix::fs::symlink(&fallback_path, &primary_path)?;
+                        if let Err(e) = unix::fs::symlink(&fallback_path, &primary_path)
+                            && e.kind() != std::io::ErrorKind::AlreadyExists
+                        {
+                            return Err(e.into());
+                        }
                     }
                     fallback_image
                 }
