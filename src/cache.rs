@@ -165,6 +165,7 @@ type TextureCache = LruCache<String, gdk::Texture>;
 pub struct ImageCache {
     pending_requests: Arc<Mutex<HashSet<String>>>,
     download_semaphore: Arc<Semaphore>,
+    decode_semaphore: Arc<Semaphore>,
     texture_cache: Arc<std::sync::Mutex<TextureCache>>,
     cache_dir: PathBuf,
 }
@@ -173,11 +174,13 @@ impl ImageCache {
     // TODO: move the jellyfin logic into an image service or something
     pub fn new() -> Result<Self, CacheError> {
         const MAX_CONCURRENT_DOWNLOADS: usize = 4;
+        const MAX_CONCURRENT_DECODES: usize = 4;
         let cache_dir = get_cache_directory("album-art")?;
         fs::create_dir_all(&cache_dir)?;
         Ok(Self {
             pending_requests: Arc::new(Mutex::new(HashSet::new())),
             download_semaphore: Arc::new(Semaphore::new(MAX_CONCURRENT_DOWNLOADS)),
+            decode_semaphore: Arc::new(Semaphore::new(MAX_CONCURRENT_DECODES)),
             texture_cache: Arc::new(std::sync::Mutex::new(LruCache::new(
                 NonZeroUsize::new(MAX_TEXTURE_CACHE_ENTRIES).unwrap(),
             ))),
@@ -317,6 +320,7 @@ impl ImageCache {
         image_type: ImageType,
         image_data: &[u8],
     ) -> Result<gdk::Texture, CacheError> {
+        let _permit = self.decode_semaphore.acquire().await.unwrap();
         let texture = bytes_to_texture(image_data)
             .await
             .map_err(|e| CacheError::Decode(e.to_string()))?;
