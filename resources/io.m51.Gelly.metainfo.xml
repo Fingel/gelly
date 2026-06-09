@@ -70,6 +70,15 @@
     <color type="primary" scheme_preference="dark">#325a4a</color>
   </branding>
   <releases>
+    <release version="1.6.2" date="2026-06-08">
+      <description>
+        <ul>
+          <li>
+            Fix some performance issues with large libraries.
+          </li>
+        </ul>
+      </description>
+    </release>
     <release version="1.6.1" date="2026-06-07">
       <description>
         <ul>
