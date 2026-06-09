@@ -17,7 +17,7 @@
 - [x] Replaygain
 - [x] Gapless playback 
 - [x] Transcoding
-- [x] Search
+- [x] Translated to 13+ languages
 - [x] [CLI](#command-line-interface) 
 - [x] Playlist management
 - [x] Favorites 
@@ -90,12 +90,12 @@ set the `SSL_CERT_FILE` env var to point to it. This can be done using a tool li
 
 The other alternative is to use a non flatpak installation method.
 
-  ## Translations
+## Translations
 
-  Gelly needs help with translations! See the 
-  [Weblate project page](https://hosted.weblate.org/engage/gelly/) to submit translations via Weblate.
+Gelly needs help with translations! See the 
+[Weblate project page](https://hosted.weblate.org/engage/gelly/) to submit translations via Weblate.
 
-  [![Translation status](https://hosted.weblate.org/widgets/gelly/-/gelly/svg-badge.svg)](https://hosted.weblate.org/engage/gelly/)
+[![Translation status](https://hosted.weblate.org/widget/gelly/horizontal-auto.svg)](https://hosted.weblate.org/engage/gelly/)
 
 ## Development
 
