@@ -341,11 +341,9 @@ impl Queue {
             return;
         }
 
-        self.imp().track_list.scroll_to(
-            current_index,
-            gtk::ListScrollFlags::NONE,
-            None::<gtk::ScrollInfo>,
-        );
+        self.imp()
+            .scroll_window
+            .scroll_index_to_top(current_index, store.n_items());
     }
 }
 

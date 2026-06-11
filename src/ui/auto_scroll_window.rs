@@ -30,6 +30,38 @@ impl AutoScrollWindow {
     pub fn vadjustment(&self) -> gtk::Adjustment {
         self.scrolled_window().vadjustment()
     }
+
+    // Paper over timing issues when the list model isn't fully populated yet
+    pub fn scroll_index_to_top(&self, index: u32, item_count: u32) {
+        if item_count == 0 || index >= item_count {
+            return;
+        }
+
+        let auto_scroll = self.clone();
+        glib::timeout_add_local_once(std::time::Duration::from_millis(16), move || {
+            auto_scroll.scroll_index_to_top_now(index, item_count);
+        });
+    }
+
+    fn scroll_index_to_top_now(&self, index: u32, item_count: u32) {
+        let adj = self.vadjustment();
+        let lower = adj.lower();
+        let upper = adj.upper();
+        let page_size = adj.page_size();
+
+        if upper <= lower || page_size <= 0.0 {
+            return;
+        }
+
+        let row_height = (upper - lower) / item_count as f64;
+        if row_height <= 0.0 {
+            return;
+        }
+
+        let target = lower + (index as f64 * row_height);
+        let max_value = (upper - page_size).max(lower);
+        adj.set_value(target.clamp(lower, max_value));
+    }
 }
 
 impl Default for AutoScrollWindow {
