@@ -8,365 +8,371 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-06-04 16:03-0700\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
+"PO-Revision-Date: 2026-06-12 11:01+0000\n"
+"Last-Translator: Tuan Dat Pham <tuandatdavid@proton.me>\n"
+"Language-Team: Czech <https://hosted.weblate.org/projects/gelly/gelly/cs/>\n"
 "Language: cs\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
+"Plural-Forms: nplurals=3; plural=((n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2);\n"
+"X-Generator: Weblate 2026.7.dev0\n"
 
 #: src/ui/album_detail.rs:40
 msgid "N/A"
-msgstr ""
+msgstr "—"
 
 #: src/ui/album_detail.rs:169 src/ui/album_detail.rs:179
 #: src/ui/album_detail.rs:203 src/ui/artist_detail.rs:233 src/ui/playlist.rs:62
 #: src/ui/playlist_detail.rs:512 src/ui/playlist_detail.rs:522
 #: src/ui/playlist_detail.rs:546 src/ui/song_list.rs:141
 msgid "Audio model not initialized, please restart"
-msgstr ""
+msgstr "Audio model neinicializován, prosím zrestartujte aplikaci"
 
 #: src/ui/album_detail.rs:195 src/ui/artist_detail.rs:225
 #: src/ui/playlist_detail.rs:538
 #, rust-format
 msgid "1 song added to queue"
 msgid_plural "{} songs added to queue"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "1 písnička přidána do fronty"
+msgstr[1] "{} písničky přidány do fronty"
+msgstr[2] "{} písniček přidány do fronty"
 
 #: src/ui/music_context_menu.rs:35
 msgid "Queue Next"
-msgstr ""
+msgstr "Přidat jako další do fronty"
 
 #: src/ui/music_context_menu.rs:39
 msgid "Queue Last"
-msgstr ""
+msgstr "Přidat na konec fronty"
 
 #: src/ui/music_context_menu.rs:61
 msgid "Add to Playlist"
-msgstr ""
+msgstr "Přidat do playlistu"
 
 #: src/ui/music_context_menu.rs:65
 msgid "Remove from Playlist"
-msgstr ""
+msgstr "Smazat z playlistu"
 
 #: src/ui/music_context_menu.rs:73
 msgid "Copy ID"
-msgstr ""
+msgstr "Zkopírovat ID"
 
 #: src/ui/player_bar/common.rs:73
 msgid "Pause"
-msgstr ""
+msgstr "Pozastavit"
 
 #: src/ui/player_bar/common.rs:76 resources/ui/album_detail.ui:119
 #: resources/ui/artist_detail.ui:52 resources/ui/playlist_detail.ui:101
 msgid "Play"
-msgstr ""
+msgstr "Zahrát"
 
 #: src/ui/player_bar/common.rs:86
 msgid "Unknown Artist"
-msgstr ""
+msgstr "Neznámý umělec"
 
 #: src/ui/playlist.rs:27
 #, rust-format
 msgid "1 song"
 msgid_plural "{} songs"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "1 písnička"
+msgstr[1] "{} písničky"
+msgstr[2] "{} písniček"
 
 #: src/ui/playlist.rs:30
 msgid "Smart playlist"
-msgstr ""
+msgstr "Dynamický playlist"
 
 #: src/ui/playlist.rs:32
 msgid "Empty playlist"
-msgstr ""
+msgstr "Prázdný playlist"
 
 #: src/ui/playlist_detail.rs:564
 msgid "Smart playlists cannot be deleted"
-msgstr ""
+msgstr "Dynamické playlisty se nedají smazat"
 
 #: src/ui/playlist_dialogs.rs:7
 msgid "Playlist name"
-msgstr ""
+msgstr "Jméno playlistu"
 
 #: src/ui/playlist_dialogs.rs:16
 msgid "New Playlist"
-msgstr ""
+msgstr "Nový playlist"
 
 #: src/ui/playlist_dialogs.rs:20 src/ui/playlist_dialogs.rs:59
 #: resources/ui/setup.ui:123 resources/ui/setup.ui:186
 msgid "Cancel"
-msgstr ""
+msgstr "Zrušit"
 
 #: src/ui/playlist_dialogs.rs:20
 msgid "Create"
-msgstr ""
+msgstr "Vytvořit"
 
 #: src/ui/playlist_dialogs.rs:56
 msgid "Delete playlist?"
-msgstr ""
+msgstr "Smazat playlist?"
 
 #: src/ui/playlist_dialogs.rs:59
 msgid "Delete"
-msgstr ""
+msgstr "Smazat"
 
 #: src/ui/setup.rs:218
 msgid "Connection error. Please supply a full URL (http://example.com:8096)"
 msgstr ""
+"Problém s připojením. Prosím zadejte celou adresu (http://example.com:8096)"
 
 #: src/ui/setup.rs:232
 msgid "Invalid credentials"
-msgstr ""
+msgstr "Špatné přihlašovací údaje"
 
 #: src/ui/setup.rs:242
 msgid "Could not authenticate with Jellyfin or Subsonic"
-msgstr ""
+msgstr "Ověření s Jellyfin nebo Subsonic selhalo"
 
 #: src/ui/setup.rs:418
 msgid "Quick connect code copied to clipboard"
-msgstr ""
+msgstr "Kód pro rychlé připojení zkopírováno do schránky"
 
 #: src/ui/stream_info_dialog.rs:19
 msgid "Yes"
-msgstr ""
+msgstr "Ano"
 
 #: src/ui/stream_info_dialog.rs:20
 msgid "No"
-msgstr ""
+msgstr "Ne"
 
 #: src/ui/stream_info_dialog.rs:21 src/ui/stream_info_dialog.rs:32
 #: src/ui/stream_info_dialog.rs:54
 msgid "Unknown"
-msgstr ""
+msgstr "Neznámý"
 
 #: src/ui/stream_info_dialog.rs:29
 msgid "Backend"
-msgstr ""
+msgstr "Backend"
 
 #: src/ui/stream_info_dialog.rs:32
 msgid "Codec"
-msgstr ""
+msgstr "Kodek"
 
 #: src/ui/stream_info_dialog.rs:34
 msgid "Container"
-msgstr ""
+msgstr "Kontejner"
 
 #: src/ui/stream_info_dialog.rs:35 src/ui/stream_info_dialog.rs:58
 msgid "None"
-msgstr ""
+msgstr "Nic"
 
 #: src/ui/stream_info_dialog.rs:38
 msgid "Sample Rate"
-msgstr ""
+msgstr "Vzorkovací frekvence"
 
 #: src/ui/stream_info_dialog.rs:41
 msgid "Channels"
-msgstr ""
+msgstr "Kanály"
 
 #: src/ui/stream_info_dialog.rs:44
 msgid "Bit Rate"
-msgstr ""
+msgstr "Přenosová rychlost"
 
 #: src/ui/stream_info_dialog.rs:47
 msgid "Encoder"
-msgstr ""
+msgstr "Enkodér"
 
 #: src/ui/stream_info_dialog.rs:53
 msgid "Original Codec"
-msgstr ""
+msgstr "Originální kodek"
 
 #: src/ui/stream_info_dialog.rs:57
 msgid "Original Container"
-msgstr ""
+msgstr "Originální kontejner"
 
 #: src/ui/stream_info_dialog.rs:61
 msgid "Original Sample Rate"
-msgstr ""
+msgstr "Originální vzorková frekvence"
 
 #: src/ui/stream_info_dialog.rs:65
 msgid "Original Channels"
-msgstr ""
+msgstr "Originální kanály"
 
 #: src/ui/stream_info_dialog.rs:69
 msgid "Supports Direct Play"
-msgstr ""
+msgstr "Podporuje direct play"
 
 #: src/ui/stream_info_dialog.rs:73
 msgid "Supports Direct Stream"
-msgstr ""
+msgstr "Podporuje direct stream"
 
 #: src/ui/stream_info_dialog.rs:77
 msgid "Supports Transcoding"
-msgstr ""
+msgstr "Podporuje transkódování"
 
 #: src/ui/stream_info_dialog.rs:83
 msgid "Original Bit Rate"
-msgstr ""
+msgstr "Originální přenosová rychlost"
 
 #: src/ui/stream_info_dialog.rs:89
 msgid "File Size"
-msgstr ""
+msgstr "Velikost souboru"
 
 #: src/ui/stream_info_dialog.rs:118
 msgid "Stream Info"
-msgstr ""
+msgstr "Info o streamu"
 
 #: src/ui/window.rs:189
 msgid "Logged out"
-msgstr ""
+msgstr "Jste odhlášen/a"
 
 #: resources/ui/album_art.ui:33
 msgid "Missing album art"
-msgstr ""
+msgstr "Chybějící obrázek alba"
 
 #: resources/ui/album_detail.ui:82 resources/ui/playlist_detail.ui:66
 msgid "tracks"
-msgstr ""
+msgstr "písničky"
 
 #: resources/ui/album_detail.ui:145 resources/ui/artist_detail.ui:79
 msgid "More Actions"
-msgstr ""
+msgstr "Další možnosti"
 
 #: resources/ui/album_list.ui:8
 msgid "No Albums"
-msgstr ""
+msgstr "Žádná alba"
 
 #: resources/ui/artist_detail.ui:41
 msgid "Artist Name"
-msgstr ""
+msgstr "Jméno umělce"
 
 #: resources/ui/artist_list.ui:8
 msgid "No Artists"
-msgstr ""
+msgstr "Žádní umělci"
 
 #: resources/ui/lyrics.ui:56
 msgid "No lyrics available"
-msgstr ""
+msgstr "Text písně není dostupný"
 
 #: resources/ui/playlist_detail.ui:127
 msgid "More actions"
-msgstr ""
+msgstr "Více akcí"
 
 #: resources/ui/playlist_detail.ui:138
 msgid "Delete playlist"
-msgstr ""
+msgstr "Smazat playlist"
 
 #: resources/ui/playlist_detail.ui:152
 msgid "Playlist is Empty"
-msgstr ""
+msgstr "Playlist je prázdný"
 
 #: resources/ui/playlist_list.ui:8
 msgid "No Playlists"
-msgstr ""
+msgstr "Žádné playlisty"
 
 #: resources/ui/preferences.ui:9 resources/ui/preferences.ui:12
 #: resources/ui/shortcuts_dialog.ui:6
 msgid "General"
-msgstr ""
+msgstr "Obecné"
 
 #. TODO: Apparently I didn't know about AdwSwitchRow, these can all be converted
 #: resources/ui/preferences.ui:16
 msgid "Refresh library on startup"
-msgstr ""
+msgstr "Aktualizovat knihovnu při spuštění"
 
 #: resources/ui/preferences.ui:17
 msgid "The library can be refreshed using ctrl+r or the menu."
 msgstr ""
+"Knihovna může být zaktualizována klávesovou zkratkou ctrl+r nebo v menu."
 
 #: resources/ui/preferences.ui:29
 msgid "Extra eye candy"
-msgstr ""
+msgstr "Extra vizuální parádičky"
 
 #: resources/ui/preferences.ui:30
 msgid "Utilizes transparency, blurred backgrounds, etc."
-msgstr ""
+msgstr "Používá průhlednost, rozmazaná pozadí atd."
 
 #: resources/ui/preferences.ui:35
 msgid "Compact Mode"
-msgstr ""
+msgstr "Kompaktní režim"
 
 #: resources/ui/preferences.ui:36
 msgid "Use smaller UI elements regardless of window size."
-msgstr ""
+msgstr "Používá menší UI elementy bez ohledu na velikost okna."
 
 #: resources/ui/preferences.ui:43 resources/ui/shortcuts_dialog.ui:84
 msgid "Playback"
-msgstr ""
+msgstr "Přehrávání"
 
 #: resources/ui/preferences.ui:46
 msgid "Normalize Audio"
-msgstr ""
+msgstr "Normalizovat zvuk"
 
 #: resources/ui/preferences.ui:47
 msgid "May require backend plugins."
-msgstr ""
+msgstr "Je možné, že vyžaduje backend pluginy."
 
 #: resources/ui/preferences.ui:59
 msgid "Inhibit Suspend"
-msgstr ""
+msgstr "Blokovat uspání"
 
 #: resources/ui/preferences.ui:60
 msgid "Prevents the system from suspending while playing"
-msgstr ""
+msgstr "Blokuje uspání systému při přehrávání"
 
 #: resources/ui/preferences.ui:74
 msgid "Transcoding"
-msgstr ""
+msgstr "Transkódování"
 
 #: resources/ui/preferences.ui:75
 msgid "Currently Subsonic backends cannot seek transcoded streams."
 msgstr ""
+"Aktuální subsonic servery nemohou vyhledávat transkódované datové proudy."
 
 #: resources/ui/preferences.ui:78
 msgid "Transcoding Profile"
-msgstr ""
+msgstr "Profil pro transkódování"
 
 #: resources/ui/preferences.ui:79
 msgid "Only used when direct play is not available."
-msgstr ""
+msgstr "Pouze se používá, když není dostupné přímé přehrávání (direct play)."
 
 #: resources/ui/preferences.ui:92
 msgid "Maximum Bitrate (kbps)"
-msgstr ""
+msgstr "Maximální přenosová rychlost (kbps)"
 
 #: resources/ui/preferences.ui:93
 msgid "A value of 0 means no limit."
-msgstr ""
+msgstr "Hodnota 0 znamená, že je to bez limitu."
 
 #: resources/ui/preferences.ui:112 resources/ui/window.ui:271
 msgid "Playlists"
-msgstr ""
+msgstr "Playlisty"
 
 #: resources/ui/preferences.ui:115
 msgid "Smart Playlists"
-msgstr ""
+msgstr "Dynamické playlisty"
 
 #: resources/ui/preferences.ui:118
 msgid "Favorite Mix Playlist"
-msgstr ""
+msgstr "Oblíbený mix playlist"
 
 #: resources/ui/preferences.ui:130
 msgid "Shuffled Playlist"
-msgstr ""
+msgstr "Playlist v náhodném pořadí"
 
 #: resources/ui/preferences.ui:142
 msgid "Most Played Playlist"
-msgstr ""
+msgstr "Nejvíc hraný playlist"
 
 #: resources/ui/queue.ui:8
 msgid "Nothing Playing"
-msgstr ""
+msgstr "Nic se nehraje"
 
 #: resources/ui/setup.ui:10
 msgid "Servers"
-msgstr ""
+msgstr "Servery"
 
 #: resources/ui/setup.ui:19
 msgid "Connect to Server"
-msgstr ""
+msgstr "Připojit se k serveru"
 
 #: resources/ui/setup.ui:20
 msgid ""
@@ -374,207 +380,213 @@ msgid ""
 "including protocol and port. For Jellyfin this is usually 8096, Navidrome "
 "uses 4533."
 msgstr ""
+"Gelly podporuje Jellyfin a Subsonic/Navidrome. Zadejte celou adresu včetně "
+"protokolu a portu. Pro Jellyfin to je většinou 8096, pro Navidrome 4533."
 
 #: resources/ui/setup.ui:35
 msgid "Host URL"
-msgstr ""
+msgstr "Adresa serveru"
 
 #: resources/ui/setup.ui:42
 msgid "Username"
-msgstr ""
+msgstr "Uživatelské jméno"
 
 #: resources/ui/setup.ui:47
 msgid "Password"
-msgstr ""
+msgstr "Heslo"
 
 #: resources/ui/setup.ui:54
 msgid "Connect"
-msgstr ""
+msgstr "Připojit se"
 
 #: resources/ui/setup.ui:65 resources/ui/setup.ui:150
 msgid "Jellyfin Quick Connect"
-msgstr ""
+msgstr "Jellyfin rychlé připojení"
 
 #: resources/ui/setup.ui:80
 msgid "Choose Library"
-msgstr ""
+msgstr "Zvolit knihovnu"
 
 #: resources/ui/setup.ui:89
 msgid "Select Library"
-msgstr ""
+msgstr "Vybrat knihovnu"
 
 #: resources/ui/setup.ui:90
 msgid "Choose which library Gelly will use to load your music."
-msgstr ""
+msgstr "Zvolte knihovnu, ze které Gelly načte vaši hudbu."
 
 #: resources/ui/setup.ui:105
 msgid "Library"
-msgstr ""
+msgstr "Knihovna"
 
 #: resources/ui/setup.ui:112
 msgid "Launch Gelly"
-msgstr ""
+msgstr "Spustit Gelly"
 
 #: resources/ui/setup.ui:141
 msgid "Quick Connect"
-msgstr ""
+msgstr "Rychlé připojení"
 
 #: resources/ui/setup.ui:151
 msgid "Enter the code on the Jellyfin web page to complete authentication."
-msgstr ""
+msgstr "Zadejte kód na webu Jellyfin, abyste dokončil přihlášení."
 
 #: resources/ui/shortcuts_dialog.ui:9 resources/ui/window.ui:369
 msgid "Refresh Library"
-msgstr ""
+msgstr "Zaktualizovat knihovnu"
 
 #: resources/ui/shortcuts_dialog.ui:10
 msgid "Re-downloads the music library"
-msgstr ""
+msgstr "Znovu stáhne celou hudební knihovnu"
 
 #: resources/ui/shortcuts_dialog.ui:16
 msgid "Request Library Rescan"
-msgstr ""
+msgstr "Znovu proskenovat knihovnu"
 
 #: resources/ui/shortcuts_dialog.ui:17
 msgid "Ask Jellyfin to rescan the library for new or modified files"
-msgstr ""
+msgstr "Požádat Jellyfin o proskenování knihovny pro nové či změněné soubory"
 
 #: resources/ui/shortcuts_dialog.ui:23 resources/ui/window.ui:157
 msgid "Search"
-msgstr ""
+msgstr "Hledat"
 
 #: resources/ui/shortcuts_dialog.ui:29
 msgid "Show Favorites"
-msgstr ""
+msgstr "Zobrazit oblíbené"
 
 #: resources/ui/shortcuts_dialog.ui:35 resources/ui/window.ui:379
 msgid "Preferences"
-msgstr ""
+msgstr "Nastavení"
 
 #: resources/ui/shortcuts_dialog.ui:41 resources/ui/window.ui:383
 msgid "Keyboard Shortcuts"
-msgstr ""
+msgstr "Klávesové zkratky"
 
 #: resources/ui/shortcuts_dialog.ui:47 resources/ui/window.ui:395
 msgid "Quit"
-msgstr ""
+msgstr "Ukončit"
 
 #: resources/ui/shortcuts_dialog.ui:55
 msgid "Navigation"
-msgstr ""
+msgstr "Navigace"
 
 #: resources/ui/shortcuts_dialog.ui:58
+#, fuzzy
 msgid "Focus Albums"
-msgstr ""
+msgstr "Zaměřit se na alba"
 
 #: resources/ui/shortcuts_dialog.ui:64
+#, fuzzy
 msgid "Focus Artists"
-msgstr ""
+msgstr "Zaměřit se na umělce"
 
 #: resources/ui/shortcuts_dialog.ui:70
+#, fuzzy
 msgid "Focus Playlist"
-msgstr ""
+msgstr "Zaměřit se na playlisty"
 
 #: resources/ui/shortcuts_dialog.ui:76
+#, fuzzy
 msgid "Focus Song List"
-msgstr ""
+msgstr "Zaměřit se na seznam písniček"
 
 #: resources/ui/shortcuts_dialog.ui:87
 msgid "Play Selected"
-msgstr ""
+msgstr "Přehrát vybrané"
 
 #: resources/ui/shortcuts_dialog.ui:88
 msgid "Play the currently selected item in the list"
-msgstr ""
+msgstr "Přehrát aktuálně zvolenou položku v seznamu"
 
 #: resources/ui/song_list.ui:8
 msgid "No Songs"
-msgstr ""
+msgstr "Žádné písničky"
 
 #: resources/ui/song_list.ui:35
 msgid "songs"
-msgstr ""
+msgstr "písničky"
 
 #: resources/ui/window.ui:53
 msgid "Album Detail"
-msgstr ""
+msgstr "Detaily o albu"
 
 #: resources/ui/window.ui:86
 msgid "Artist Detail"
-msgstr ""
+msgstr "Detaily o umělci"
 
 #: resources/ui/window.ui:118
 msgid "Playlist Detail"
-msgstr ""
+msgstr "Detaily o playlistu"
 
 #: resources/ui/window.ui:141
 msgid "Main"
-msgstr ""
+msgstr "Hlavní"
 
 #: resources/ui/window.ui:150
 msgid "Show Queue"
-msgstr ""
+msgstr "Zobrazit frontu"
 
 #: resources/ui/window.ui:163
 msgid "Sort"
-msgstr ""
+msgstr "Seřadit"
 
 #: resources/ui/window.ui:170
 msgid "New"
-msgstr ""
+msgstr "Nový"
 
 #: resources/ui/window.ui:195
 msgid "Search..."
-msgstr ""
+msgstr "Hledání…"
 
 #: resources/ui/window.ui:211
 msgid "Favorites"
-msgstr ""
+msgstr "Oblíbené"
 
 #: resources/ui/window.ui:224
 msgid "Ascending"
-msgstr ""
+msgstr "Vzestupně"
 
 #: resources/ui/window.ui:231
 msgid "Descending"
-msgstr ""
+msgstr "Sestupně"
 
 #: resources/ui/window.ui:247
 msgid "Albums"
-msgstr ""
+msgstr "Alba"
 
 #: resources/ui/window.ui:259
 msgid "Artists"
-msgstr ""
+msgstr "Umělci"
 
 #: resources/ui/window.ui:283
 msgid "Songs"
-msgstr ""
+msgstr "Pisničky"
 
 #: resources/ui/window.ui:328
 msgid "Hide Queue"
-msgstr ""
+msgstr "Skrýt frontu"
 
 #: resources/ui/window.ui:337
 msgid "Clear Queue"
-msgstr ""
+msgstr "Vyprázdnit frontu"
 
 #: resources/ui/window.ui:344
 msgid "Save As Playlist"
-msgstr ""
+msgstr "Uložit jako playlist"
 
 #: resources/ui/window.ui:365
 msgid "Request Rescan"
-msgstr ""
+msgstr "Znovu proskenovat"
 
 #: resources/ui/window.ui:373
 msgid "Clear Image Cache"
-msgstr ""
+msgstr "Vyčistit mezipaměť obrázků"
 
 #: resources/ui/window.ui:387
 msgid "About Gelly"
-msgstr ""
+msgstr "O aplikaci Gelly"
 
 #: resources/ui/window.ui:391
 msgid "Logout"
-msgstr ""
+msgstr "Odhlásit se"
