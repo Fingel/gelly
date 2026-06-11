@@ -27,6 +27,7 @@
         <property name="orientation">vertical</property>
         <style>
           <class name="frame"/>
+          <class name="dimmed"/>
         </style>
         <child>
           <object class="GtkCenterBox">
