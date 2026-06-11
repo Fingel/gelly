@@ -1,0 +1,580 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-06-04 16:03-0700\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"Language: cs\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
+
+#: src/ui/album_detail.rs:40
+msgid "N/A"
+msgstr ""
+
+#: src/ui/album_detail.rs:169 src/ui/album_detail.rs:179
+#: src/ui/album_detail.rs:203 src/ui/artist_detail.rs:233 src/ui/playlist.rs:62
+#: src/ui/playlist_detail.rs:512 src/ui/playlist_detail.rs:522
+#: src/ui/playlist_detail.rs:546 src/ui/song_list.rs:141
+msgid "Audio model not initialized, please restart"
+msgstr ""
+
+#: src/ui/album_detail.rs:195 src/ui/artist_detail.rs:225
+#: src/ui/playlist_detail.rs:538
+#, rust-format
+msgid "1 song added to queue"
+msgid_plural "{} songs added to queue"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/ui/music_context_menu.rs:35
+msgid "Queue Next"
+msgstr ""
+
+#: src/ui/music_context_menu.rs:39
+msgid "Queue Last"
+msgstr ""
+
+#: src/ui/music_context_menu.rs:61
+msgid "Add to Playlist"
+msgstr ""
+
+#: src/ui/music_context_menu.rs:65
+msgid "Remove from Playlist"
+msgstr ""
+
+#: src/ui/music_context_menu.rs:73
+msgid "Copy ID"
+msgstr ""
+
+#: src/ui/player_bar/common.rs:73
+msgid "Pause"
+msgstr ""
+
+#: src/ui/player_bar/common.rs:76 resources/ui/album_detail.ui:119
+#: resources/ui/artist_detail.ui:52 resources/ui/playlist_detail.ui:101
+msgid "Play"
+msgstr ""
+
+#: src/ui/player_bar/common.rs:86
+msgid "Unknown Artist"
+msgstr ""
+
+#: src/ui/playlist.rs:27
+#, rust-format
+msgid "1 song"
+msgid_plural "{} songs"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/ui/playlist.rs:30
+msgid "Smart playlist"
+msgstr ""
+
+#: src/ui/playlist.rs:32
+msgid "Empty playlist"
+msgstr ""
+
+#: src/ui/playlist_detail.rs:564
+msgid "Smart playlists cannot be deleted"
+msgstr ""
+
+#: src/ui/playlist_dialogs.rs:7
+msgid "Playlist name"
+msgstr ""
+
+#: src/ui/playlist_dialogs.rs:16
+msgid "New Playlist"
+msgstr ""
+
+#: src/ui/playlist_dialogs.rs:20 src/ui/playlist_dialogs.rs:59
+#: resources/ui/setup.ui:123 resources/ui/setup.ui:186
+msgid "Cancel"
+msgstr ""
+
+#: src/ui/playlist_dialogs.rs:20
+msgid "Create"
+msgstr ""
+
+#: src/ui/playlist_dialogs.rs:56
+msgid "Delete playlist?"
+msgstr ""
+
+#: src/ui/playlist_dialogs.rs:59
+msgid "Delete"
+msgstr ""
+
+#: src/ui/setup.rs:218
+msgid "Connection error. Please supply a full URL (http://example.com:8096)"
+msgstr ""
+
+#: src/ui/setup.rs:232
+msgid "Invalid credentials"
+msgstr ""
+
+#: src/ui/setup.rs:242
+msgid "Could not authenticate with Jellyfin or Subsonic"
+msgstr ""
+
+#: src/ui/setup.rs:418
+msgid "Quick connect code copied to clipboard"
+msgstr ""
+
+#: src/ui/stream_info_dialog.rs:19
+msgid "Yes"
+msgstr ""
+
+#: src/ui/stream_info_dialog.rs:20
+msgid "No"
+msgstr ""
+
+#: src/ui/stream_info_dialog.rs:21 src/ui/stream_info_dialog.rs:32
+#: src/ui/stream_info_dialog.rs:54
+msgid "Unknown"
+msgstr ""
+
+#: src/ui/stream_info_dialog.rs:29
+msgid "Backend"
+msgstr ""
+
+#: src/ui/stream_info_dialog.rs:32
+msgid "Codec"
+msgstr ""
+
+#: src/ui/stream_info_dialog.rs:34
+msgid "Container"
+msgstr ""
+
+#: src/ui/stream_info_dialog.rs:35 src/ui/stream_info_dialog.rs:58
+msgid "None"
+msgstr ""
+
+#: src/ui/stream_info_dialog.rs:38
+msgid "Sample Rate"
+msgstr ""
+
+#: src/ui/stream_info_dialog.rs:41
+msgid "Channels"
+msgstr ""
+
+#: src/ui/stream_info_dialog.rs:44
+msgid "Bit Rate"
+msgstr ""
+
+#: src/ui/stream_info_dialog.rs:47
+msgid "Encoder"
+msgstr ""
+
+#: src/ui/stream_info_dialog.rs:53
+msgid "Original Codec"
+msgstr ""
+
+#: src/ui/stream_info_dialog.rs:57
+msgid "Original Container"
+msgstr ""
+
+#: src/ui/stream_info_dialog.rs:61
+msgid "Original Sample Rate"
+msgstr ""
+
+#: src/ui/stream_info_dialog.rs:65
+msgid "Original Channels"
+msgstr ""
+
+#: src/ui/stream_info_dialog.rs:69
+msgid "Supports Direct Play"
+msgstr ""
+
+#: src/ui/stream_info_dialog.rs:73
+msgid "Supports Direct Stream"
+msgstr ""
+
+#: src/ui/stream_info_dialog.rs:77
+msgid "Supports Transcoding"
+msgstr ""
+
+#: src/ui/stream_info_dialog.rs:83
+msgid "Original Bit Rate"
+msgstr ""
+
+#: src/ui/stream_info_dialog.rs:89
+msgid "File Size"
+msgstr ""
+
+#: src/ui/stream_info_dialog.rs:118
+msgid "Stream Info"
+msgstr ""
+
+#: src/ui/window.rs:189
+msgid "Logged out"
+msgstr ""
+
+#: resources/ui/album_art.ui:33
+msgid "Missing album art"
+msgstr ""
+
+#: resources/ui/album_detail.ui:82 resources/ui/playlist_detail.ui:66
+msgid "tracks"
+msgstr ""
+
+#: resources/ui/album_detail.ui:145 resources/ui/artist_detail.ui:79
+msgid "More Actions"
+msgstr ""
+
+#: resources/ui/album_list.ui:8
+msgid "No Albums"
+msgstr ""
+
+#: resources/ui/artist_detail.ui:41
+msgid "Artist Name"
+msgstr ""
+
+#: resources/ui/artist_list.ui:8
+msgid "No Artists"
+msgstr ""
+
+#: resources/ui/lyrics.ui:56
+msgid "No lyrics available"
+msgstr ""
+
+#: resources/ui/playlist_detail.ui:127
+msgid "More actions"
+msgstr ""
+
+#: resources/ui/playlist_detail.ui:138
+msgid "Delete playlist"
+msgstr ""
+
+#: resources/ui/playlist_detail.ui:152
+msgid "Playlist is Empty"
+msgstr ""
+
+#: resources/ui/playlist_list.ui:8
+msgid "No Playlists"
+msgstr ""
+
+#: resources/ui/preferences.ui:9 resources/ui/preferences.ui:12
+#: resources/ui/shortcuts_dialog.ui:6
+msgid "General"
+msgstr ""
+
+#. TODO: Apparently I didn't know about AdwSwitchRow, these can all be converted
+#: resources/ui/preferences.ui:16
+msgid "Refresh library on startup"
+msgstr ""
+
+#: resources/ui/preferences.ui:17
+msgid "The library can be refreshed using ctrl+r or the menu."
+msgstr ""
+
+#: resources/ui/preferences.ui:29
+msgid "Extra eye candy"
+msgstr ""
+
+#: resources/ui/preferences.ui:30
+msgid "Utilizes transparency, blurred backgrounds, etc."
+msgstr ""
+
+#: resources/ui/preferences.ui:35
+msgid "Compact Mode"
+msgstr ""
+
+#: resources/ui/preferences.ui:36
+msgid "Use smaller UI elements regardless of window size."
+msgstr ""
+
+#: resources/ui/preferences.ui:43 resources/ui/shortcuts_dialog.ui:84
+msgid "Playback"
+msgstr ""
+
+#: resources/ui/preferences.ui:46
+msgid "Normalize Audio"
+msgstr ""
+
+#: resources/ui/preferences.ui:47
+msgid "May require backend plugins."
+msgstr ""
+
+#: resources/ui/preferences.ui:59
+msgid "Inhibit Suspend"
+msgstr ""
+
+#: resources/ui/preferences.ui:60
+msgid "Prevents the system from suspending while playing"
+msgstr ""
+
+#: resources/ui/preferences.ui:74
+msgid "Transcoding"
+msgstr ""
+
+#: resources/ui/preferences.ui:75
+msgid "Currently Subsonic backends cannot seek transcoded streams."
+msgstr ""
+
+#: resources/ui/preferences.ui:78
+msgid "Transcoding Profile"
+msgstr ""
+
+#: resources/ui/preferences.ui:79
+msgid "Only used when direct play is not available."
+msgstr ""
+
+#: resources/ui/preferences.ui:92
+msgid "Maximum Bitrate (kbps)"
+msgstr ""
+
+#: resources/ui/preferences.ui:93
+msgid "A value of 0 means no limit."
+msgstr ""
+
+#: resources/ui/preferences.ui:112 resources/ui/window.ui:271
+msgid "Playlists"
+msgstr ""
+
+#: resources/ui/preferences.ui:115
+msgid "Smart Playlists"
+msgstr ""
+
+#: resources/ui/preferences.ui:118
+msgid "Favorite Mix Playlist"
+msgstr ""
+
+#: resources/ui/preferences.ui:130
+msgid "Shuffled Playlist"
+msgstr ""
+
+#: resources/ui/preferences.ui:142
+msgid "Most Played Playlist"
+msgstr ""
+
+#: resources/ui/queue.ui:8
+msgid "Nothing Playing"
+msgstr ""
+
+#: resources/ui/setup.ui:10
+msgid "Servers"
+msgstr ""
+
+#: resources/ui/setup.ui:19
+msgid "Connect to Server"
+msgstr ""
+
+#: resources/ui/setup.ui:20
+msgid ""
+"Gelly supports Jellyfin and Subsonic/Navidrome. Enter the full server URL "
+"including protocol and port. For Jellyfin this is usually 8096, Navidrome "
+"uses 4533."
+msgstr ""
+
+#: resources/ui/setup.ui:35
+msgid "Host URL"
+msgstr ""
+
+#: resources/ui/setup.ui:42
+msgid "Username"
+msgstr ""
+
+#: resources/ui/setup.ui:47
+msgid "Password"
+msgstr ""
+
+#: resources/ui/setup.ui:54
+msgid "Connect"
+msgstr ""
+
+#: resources/ui/setup.ui:65 resources/ui/setup.ui:150
+msgid "Jellyfin Quick Connect"
+msgstr ""
+
+#: resources/ui/setup.ui:80
+msgid "Choose Library"
+msgstr ""
+
+#: resources/ui/setup.ui:89
+msgid "Select Library"
+msgstr ""
+
+#: resources/ui/setup.ui:90
+msgid "Choose which library Gelly will use to load your music."
+msgstr ""
+
+#: resources/ui/setup.ui:105
+msgid "Library"
+msgstr ""
+
+#: resources/ui/setup.ui:112
+msgid "Launch Gelly"
+msgstr ""
+
+#: resources/ui/setup.ui:141
+msgid "Quick Connect"
+msgstr ""
+
+#: resources/ui/setup.ui:151
+msgid "Enter the code on the Jellyfin web page to complete authentication."
+msgstr ""
+
+#: resources/ui/shortcuts_dialog.ui:9 resources/ui/window.ui:369
+msgid "Refresh Library"
+msgstr ""
+
+#: resources/ui/shortcuts_dialog.ui:10
+msgid "Re-downloads the music library"
+msgstr ""
+
+#: resources/ui/shortcuts_dialog.ui:16
+msgid "Request Library Rescan"
+msgstr ""
+
+#: resources/ui/shortcuts_dialog.ui:17
+msgid "Ask Jellyfin to rescan the library for new or modified files"
+msgstr ""
+
+#: resources/ui/shortcuts_dialog.ui:23 resources/ui/window.ui:157
+msgid "Search"
+msgstr ""
+
+#: resources/ui/shortcuts_dialog.ui:29
+msgid "Show Favorites"
+msgstr ""
+
+#: resources/ui/shortcuts_dialog.ui:35 resources/ui/window.ui:379
+msgid "Preferences"
+msgstr ""
+
+#: resources/ui/shortcuts_dialog.ui:41 resources/ui/window.ui:383
+msgid "Keyboard Shortcuts"
+msgstr ""
+
+#: resources/ui/shortcuts_dialog.ui:47 resources/ui/window.ui:395
+msgid "Quit"
+msgstr ""
+
+#: resources/ui/shortcuts_dialog.ui:55
+msgid "Navigation"
+msgstr ""
+
+#: resources/ui/shortcuts_dialog.ui:58
+msgid "Focus Albums"
+msgstr ""
+
+#: resources/ui/shortcuts_dialog.ui:64
+msgid "Focus Artists"
+msgstr ""
+
+#: resources/ui/shortcuts_dialog.ui:70
+msgid "Focus Playlist"
+msgstr ""
+
+#: resources/ui/shortcuts_dialog.ui:76
+msgid "Focus Song List"
+msgstr ""
+
+#: resources/ui/shortcuts_dialog.ui:87
+msgid "Play Selected"
+msgstr ""
+
+#: resources/ui/shortcuts_dialog.ui:88
+msgid "Play the currently selected item in the list"
+msgstr ""
+
+#: resources/ui/song_list.ui:8
+msgid "No Songs"
+msgstr ""
+
+#: resources/ui/song_list.ui:35
+msgid "songs"
+msgstr ""
+
+#: resources/ui/window.ui:53
+msgid "Album Detail"
+msgstr ""
+
+#: resources/ui/window.ui:86
+msgid "Artist Detail"
+msgstr ""
+
+#: resources/ui/window.ui:118
+msgid "Playlist Detail"
+msgstr ""
+
+#: resources/ui/window.ui:141
+msgid "Main"
+msgstr ""
+
+#: resources/ui/window.ui:150
+msgid "Show Queue"
+msgstr ""
+
+#: resources/ui/window.ui:163
+msgid "Sort"
+msgstr ""
+
+#: resources/ui/window.ui:170
+msgid "New"
+msgstr ""
+
+#: resources/ui/window.ui:195
+msgid "Search..."
+msgstr ""
+
+#: resources/ui/window.ui:211
+msgid "Favorites"
+msgstr ""
+
+#: resources/ui/window.ui:224
+msgid "Ascending"
+msgstr ""
+
+#: resources/ui/window.ui:231
+msgid "Descending"
+msgstr ""
+
+#: resources/ui/window.ui:247
+msgid "Albums"
+msgstr ""
+
+#: resources/ui/window.ui:259
+msgid "Artists"
+msgstr ""
+
+#: resources/ui/window.ui:283
+msgid "Songs"
+msgstr ""
+
+#: resources/ui/window.ui:328
+msgid "Hide Queue"
+msgstr ""
+
+#: resources/ui/window.ui:337
+msgid "Clear Queue"
+msgstr ""
+
+#: resources/ui/window.ui:344
+msgid "Save As Playlist"
+msgstr ""
+
+#: resources/ui/window.ui:365
+msgid "Request Rescan"
+msgstr ""
+
+#: resources/ui/window.ui:373
+msgid "Clear Image Cache"
+msgstr ""
+
+#: resources/ui/window.ui:387
+msgid "About Gelly"
+msgstr ""
+
+#: resources/ui/window.ui:391
+msgid "Logout"
+msgstr ""
