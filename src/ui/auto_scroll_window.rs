@@ -40,10 +40,16 @@ impl AutoScrollWindow {
             return;
         }
 
-        let auto_scroll = self.clone();
-        glib::timeout_add_local_once(Duration::from_millis(SCROLL_ANIMATION_TICK_MS), move || {
-            auto_scroll.scroll_index_to_top_now(index, item_count);
-        });
+        glib::timeout_add_local_once(
+            Duration::from_millis(SCROLL_ANIMATION_TICK_MS),
+            glib::clone!(
+                #[weak(rename_to = auto_scroll)]
+                self,
+                move || {
+                    auto_scroll.scroll_index_to_top_now(index, item_count);
+                }
+            ),
+        );
     }
 
     fn scroll_index_to_top_now(&self, index: u32, item_count: u32) {
@@ -80,25 +86,32 @@ impl AutoScrollWindow {
         }
 
         let started_at = Instant::now();
-        let auto_scroll = self.clone();
-        let timeout_id =
-            glib::timeout_add_local(Duration::from_millis(SCROLL_ANIMATION_TICK_MS), move || {
-                let elapsed_ms = started_at.elapsed().as_secs_f64() * 1000.0;
-                let t = (elapsed_ms / SCROLL_ANIMATION_DURATION_MS).clamp(0.0, 1.0);
+        let timeout_id = glib::timeout_add_local(
+            Duration::from_millis(SCROLL_ANIMATION_TICK_MS),
+            glib::clone!(
+                #[weak(rename_to = auto_scroll)]
+                self,
+                #[upgrade_or]
+                glib::ControlFlow::Break,
+                move || {
+                    let elapsed_ms = started_at.elapsed().as_secs_f64() * 1000.0;
+                    let t = (elapsed_ms / SCROLL_ANIMATION_DURATION_MS).clamp(0.0, 1.0);
 
-                // ease-out cubic
-                let eased = 1.0 - (1.0 - t).powi(3);
-                let value = start + ((target - start) * eased);
+                    // ease-out cubic
+                    let eased = 1.0 - (1.0 - t).powi(3);
+                    let value = start + ((target - start) * eased);
 
-                auto_scroll.vadjustment().set_value(value);
+                    auto_scroll.vadjustment().set_value(value);
 
-                if t >= 1.0 {
-                    auto_scroll.imp().scroll_animation_timeout_id.take();
-                    glib::ControlFlow::Break
-                } else {
-                    glib::ControlFlow::Continue
+                    if t >= 1.0 {
+                        auto_scroll.imp().scroll_animation_timeout_id.take();
+                        glib::ControlFlow::Break
+                    } else {
+                        glib::ControlFlow::Continue
+                    }
                 }
-            });
+            ),
+        );
 
         imp.scroll_animation_timeout_id.replace(Some(timeout_id));
     }
@@ -125,7 +138,7 @@ mod imp {
         content: RefCell<Option<gtk::Widget>>,
 
         scroll_timeout_id: RefCell<Option<SourceId>>,
-        pub(super) scroll_animation_timeout_id: RefCell<Option<SourceId>>,
+        pub scroll_animation_timeout_id: RefCell<Option<SourceId>>,
         scroll_speed: Cell<f64>,
     }
 
