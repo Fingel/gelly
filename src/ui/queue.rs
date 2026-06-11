@@ -1,6 +1,7 @@
 use crate::{
     async_utils::spawn_tokio,
     i18n::tr,
+    jellyfin::utils::format_duration,
     models::SongModel,
     ui::{
         playlist_dialogs,
@@ -244,8 +245,33 @@ impl Queue {
             }
         ));
 
+        audio_model.connect_queue_index_notify(glib::clone!(
+            #[weak(rename_to = queue)]
+            self,
+            move |_| {
+                queue.render_status_widget();
+            }
+        ));
+
+        audio_model.connect_queue_size_notify(glib::clone!(
+            #[weak(rename_to = queue)]
+            self,
+            move |_| {
+                queue.render_status_widget();
+            }
+        ));
+
+        audio_model.connect_queue_total_duration_notify(glib::clone!(
+            #[weak(rename_to = queue)]
+            self,
+            move |_| {
+                queue.render_status_widget();
+            }
+        ));
+
         // Set initial empty state
         self.set_empty(store.n_items() == 0);
+        self.render_status_widget();
     }
 
     // Creates an action group for the clear and save buttons that are outside of this widget
@@ -275,6 +301,23 @@ impl Queue {
         self.get_root_window()
             .insert_action_group("queue", Some(&actions));
     }
+
+    fn render_status_widget(&self) {
+        let imp = self.imp();
+        if let Some(audio_model) = self.get_application().audio_model() {
+            let queue_size = audio_model.queue_size();
+            let current_index = audio_model.queue_index();
+            let position_text = if queue_size == 0 {
+                "0 / 0".to_string()
+            } else {
+                format!("{} / {}", current_index + 1, queue_size)
+            };
+            let duration_text = format_duration(audio_model.queue_total_duration());
+
+            imp.queue_position.set_text(&position_text);
+            imp.queue_duration.set_text(&duration_text);
+        }
+    }
 }
 
 impl Default for Queue {
@@ -301,6 +344,10 @@ mod imp {
         pub empty: TemplateChild<adw::StatusPage>,
         #[template_child]
         pub track_list: TemplateChild<gtk::ListView>,
+        #[template_child]
+        pub queue_position: TemplateChild<gtk::Label>,
+        #[template_child]
+        pub queue_duration: TemplateChild<gtk::Label>,
         pub store: OnceCell<gio::ListStore>,
     }
 

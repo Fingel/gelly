@@ -25,10 +25,12 @@ impl AudioModel {
     pub fn new() -> Self {
         let obj: Self = Object::builder().build();
         obj.initialize_player();
+        obj.connect_queue_store_signals();
         obj.set_queue_index(-1);
         obj.set_volume(config::get_volume());
         obj.set_playback_mode(config::get_playback_mode());
         obj.set_muted(false);
+        obj.refresh_queue_metrics();
         obj
     }
 
@@ -186,6 +188,30 @@ impl AudioModel {
 
     pub fn queue_len(&self) -> i32 {
         self.imp().queue.n_items() as i32
+    }
+
+    pub fn queue_duration(&self) -> u64 {
+        self.queue().iter().map(|s| s.duration()).sum()
+    }
+
+    fn connect_queue_store_signals(&self) {
+        let queue = self.imp().queue.clone();
+        queue.connect_items_changed(glib::clone!(
+            #[weak(rename_to = audio_model)]
+            self,
+            move |_, _, _, _| {
+                audio_model.refresh_queue_metrics();
+            }
+        ));
+    }
+
+    fn refresh_queue_metrics(&self) {
+        let queue_size = self.imp().queue.n_items();
+        let queue_total_duration = self.queue_duration();
+        self.imp().queue_size.set(queue_size);
+        self.imp().queue_total_duration.set(queue_total_duration);
+        self.notify("queue-size");
+        self.notify("queue-total-duration");
     }
 
     pub fn set_queue(&self, songs: Vec<SongModel>, start_index: usize, ignore_shuffle: bool) {
@@ -558,8 +584,14 @@ mod imp {
     #[derive(Properties)]
     #[properties(wrapper_type = super::AudioModel)]
     pub struct AudioModel {
-        #[property(get, set)]
+        #[property(get, set = Self::set_queue_index)]
         pub queue_index: Cell<i32>,
+
+        #[property(get)]
+        pub queue_size: Cell<u32>,
+
+        #[property(get)]
+        pub queue_total_duration: Cell<u64>,
 
         #[property(get, set)]
         pub playing: Cell<bool>,
@@ -601,6 +633,8 @@ mod imp {
         fn default() -> Self {
             Self {
                 queue_index: Cell::new(0),
+                queue_size: Cell::new(0),
+                queue_total_duration: Cell::new(0),
                 playing: Cell::new(false),
                 paused: Cell::new(false),
                 loading: Cell::new(false),
@@ -668,6 +702,11 @@ mod imp {
             } else {
                 PlaybackMode::Normal as u32
             });
+        }
+
+        pub fn set_queue_index(&self, queue_index: i32) {
+            self.queue_index.set(queue_index);
+            self.obj().refresh_queue_metrics();
         }
 
         pub fn set_volume(&self, volume: f64) {
