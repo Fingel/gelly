@@ -31,8 +31,8 @@
         </style>
         <child>
           <object class="GtkCenterBox">
-            <property name="margin-bottom">12</property>
-            <property name="margin-top">12</property>
+            <property name="margin-bottom">6</property>
+            <property name="margin-top">6</property>
             <property name="margin-start">12</property>
             <property name="margin-end">12</property>
             <child type="start">
@@ -41,6 +41,7 @@
                 <property name="tooltip-text" translatable="yes">Jump to current song</property>
                 <style>
                   <class name="flat"/>
+                  <class name="normal-font"/>
                 </style>
               </object>
             </child>

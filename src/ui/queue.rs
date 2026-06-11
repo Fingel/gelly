@@ -318,6 +318,7 @@ impl Queue {
 
             imp.queue_position.set_label(&position_text);
             imp.queue_duration.set_text(&duration_text);
+            imp.queue_position.set_cursor_from_name(Some("pointer"));
         }
     }
 
