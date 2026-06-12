@@ -1,6 +1,7 @@
 use crate::{
     async_utils::spawn_tokio,
     i18n::tr,
+    jellyfin::utils::format_duration,
     models::SongModel,
     ui::{
         playlist_dialogs,
@@ -244,8 +245,34 @@ impl Queue {
             }
         ));
 
+        audio_model.connect_queue_index_notify(glib::clone!(
+            #[weak(rename_to = queue)]
+            self,
+            move |_| {
+                queue.render_status_widget();
+            }
+        ));
+
+        audio_model.connect_queue_size_notify(glib::clone!(
+            #[weak(rename_to = queue)]
+            self,
+            move |_| {
+                queue.render_status_widget();
+            }
+        ));
+
+        audio_model.connect_queue_total_duration_notify(glib::clone!(
+            #[weak(rename_to = queue)]
+            self,
+            move |_| {
+                queue.render_status_widget();
+            }
+        ));
+
         // Set initial empty state
         self.set_empty(store.n_items() == 0);
+        self.render_status_widget();
+        self.scroll_to_current_song();
     }
 
     // Creates an action group for the clear and save buttons that are outside of this widget
@@ -275,6 +302,38 @@ impl Queue {
         self.get_root_window()
             .insert_action_group("queue", Some(&actions));
     }
+
+    fn render_status_widget(&self) {
+        let imp = self.imp();
+        if let Some(audio_model) = self.get_application().audio_model() {
+            let queue_size = audio_model.queue_size();
+            let current_index = audio_model.queue_index();
+            let position_text = if queue_size == 0 || current_index < 0 {
+                "0 / 0".to_string()
+            } else {
+                format!("{} / {}", current_index + 1, queue_size)
+            };
+            let duration_text = format_duration(audio_model.queue_total_duration());
+
+            imp.queue_position.set_label(&position_text);
+            imp.queue_duration.set_text(&duration_text);
+            imp.queue_position.set_cursor_from_name(Some("pointer"));
+        }
+    }
+
+    fn scroll_to_current_song(&self) {
+        if let Some(audio_model) = self.get_application().audio_model()
+            && let Some(store) = self.imp().store.get()
+        {
+            let index = audio_model.queue_index();
+            if index < 0 {
+                return;
+            }
+            self.imp()
+                .scroll_window
+                .scroll_index_to_top(index as u32, store.n_items());
+        }
+    }
 }
 
 impl Default for Queue {
@@ -294,13 +353,21 @@ mod imp {
         prelude::*,
     };
 
+    use crate::ui::auto_scroll_window::AutoScrollWindow;
+
     #[derive(CompositeTemplate, Default)]
     #[template(resource = "/io/m51/Gelly/ui/queue.ui")]
     pub struct Queue {
         #[template_child]
         pub empty: TemplateChild<adw::StatusPage>,
         #[template_child]
+        pub scroll_window: TemplateChild<AutoScrollWindow>,
+        #[template_child]
         pub track_list: TemplateChild<gtk::ListView>,
+        #[template_child]
+        pub queue_position: TemplateChild<gtk::Button>,
+        #[template_child]
+        pub queue_duration: TemplateChild<gtk::Label>,
         pub store: OnceCell<gio::ListStore>,
     }
 
@@ -345,6 +412,14 @@ mod imp {
                 self,
                 move |_, position| {
                     imp.obj().song_selected(position as usize);
+                }
+            ));
+
+            self.queue_position.connect_clicked(glib::clone!(
+                #[weak(rename_to = imp)]
+                self,
+                move |_| {
+                    imp.obj().scroll_to_current_song();
                 }
             ));
         }

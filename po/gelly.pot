@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-04 16:03-0700\n"
+"POT-Creation-Date: 2026-06-12 08:16-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -23,14 +23,14 @@ msgid "N/A"
 msgstr ""
 
 #: src/ui/album_detail.rs:169 src/ui/album_detail.rs:179
-#: src/ui/album_detail.rs:203 src/ui/artist_detail.rs:233 src/ui/playlist.rs:62
-#: src/ui/playlist_detail.rs:512 src/ui/playlist_detail.rs:522
-#: src/ui/playlist_detail.rs:546 src/ui/song_list.rs:141
+#: src/ui/album_detail.rs:203 src/ui/artist_detail.rs:236 src/ui/playlist.rs:53
+#: src/ui/playlist_detail.rs:515 src/ui/playlist_detail.rs:525
+#: src/ui/playlist_detail.rs:549 src/ui/song_list.rs:141
 msgid "Audio model not initialized, please restart"
 msgstr ""
 
-#: src/ui/album_detail.rs:195 src/ui/artist_detail.rs:225
-#: src/ui/playlist_detail.rs:538
+#: src/ui/album_detail.rs:195 src/ui/artist_detail.rs:228
+#: src/ui/playlist_detail.rs:541
 #, rust-format
 msgid "1 song added to queue"
 msgid_plural "{} songs added to queue"
@@ -70,22 +70,22 @@ msgstr ""
 msgid "Unknown Artist"
 msgstr ""
 
-#: src/ui/playlist.rs:27
+#: src/ui/playlist.rs:26
 #, rust-format
 msgid "1 song"
 msgid_plural "{} songs"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/ui/playlist.rs:30
+#: src/ui/playlist.rs:29
 msgid "Smart playlist"
 msgstr ""
 
-#: src/ui/playlist.rs:32
+#: src/ui/playlist.rs:31
 msgid "Empty playlist"
 msgstr ""
 
-#: src/ui/playlist_detail.rs:564
+#: src/ui/playlist_detail.rs:567
 msgid "Smart playlists cannot be deleted"
 msgstr ""
 
@@ -215,7 +215,7 @@ msgstr ""
 msgid "Stream Info"
 msgstr ""
 
-#: src/ui/window.rs:189
+#: src/ui/window.rs:178
 msgid "Logged out"
 msgstr ""
 
@@ -268,97 +268,100 @@ msgstr ""
 msgid "General"
 msgstr ""
 
-#. TODO: Apparently I didn't know about AdwSwitchRow, these can all be converted
-#: resources/ui/preferences.ui:16
+#: resources/ui/preferences.ui:15
 msgid "Refresh library on startup"
 msgstr ""
 
-#: resources/ui/preferences.ui:17
+#: resources/ui/preferences.ui:16
 msgid "The library can be refreshed using ctrl+r or the menu."
 msgstr ""
 
-#: resources/ui/preferences.ui:29
+#: resources/ui/preferences.ui:21
 msgid "Extra eye candy"
 msgstr ""
 
-#: resources/ui/preferences.ui:30
+#: resources/ui/preferences.ui:22
 msgid "Utilizes transparency, blurred backgrounds, etc."
 msgstr ""
 
-#: resources/ui/preferences.ui:35
+#: resources/ui/preferences.ui:27
 msgid "Compact Mode"
 msgstr ""
 
-#: resources/ui/preferences.ui:36
+#: resources/ui/preferences.ui:28
 msgid "Use smaller UI elements regardless of window size."
 msgstr ""
 
-#: resources/ui/preferences.ui:43 resources/ui/shortcuts_dialog.ui:84
+#: resources/ui/preferences.ui:35 resources/ui/shortcuts_dialog.ui:84
 msgid "Playback"
 msgstr ""
 
-#: resources/ui/preferences.ui:46
+#: resources/ui/preferences.ui:38
 msgid "Normalize Audio"
 msgstr ""
 
-#: resources/ui/preferences.ui:47
+#: resources/ui/preferences.ui:39
 msgid "May require backend plugins."
 msgstr ""
 
-#: resources/ui/preferences.ui:59
+#: resources/ui/preferences.ui:44
 msgid "Inhibit Suspend"
 msgstr ""
 
-#: resources/ui/preferences.ui:60
+#: resources/ui/preferences.ui:45
 msgid "Prevents the system from suspending while playing"
 msgstr ""
 
-#: resources/ui/preferences.ui:74
+#: resources/ui/preferences.ui:52
 msgid "Transcoding"
 msgstr ""
 
-#: resources/ui/preferences.ui:75
+#: resources/ui/preferences.ui:53
 msgid "Currently Subsonic backends cannot seek transcoded streams."
 msgstr ""
 
-#: resources/ui/preferences.ui:78
+#: resources/ui/preferences.ui:56
 msgid "Transcoding Profile"
 msgstr ""
 
-#: resources/ui/preferences.ui:79
+#: resources/ui/preferences.ui:57
 msgid "Only used when direct play is not available."
 msgstr ""
 
-#: resources/ui/preferences.ui:92
+#: resources/ui/preferences.ui:70
 msgid "Maximum Bitrate (kbps)"
 msgstr ""
 
-#: resources/ui/preferences.ui:93
+#: resources/ui/preferences.ui:71
 msgid "A value of 0 means no limit."
 msgstr ""
 
-#: resources/ui/preferences.ui:112 resources/ui/window.ui:271
+#: resources/ui/preferences.ui:90 resources/ui/window.ui:274
 msgid "Playlists"
 msgstr ""
 
-#: resources/ui/preferences.ui:115
+#: resources/ui/preferences.ui:93
 msgid "Smart Playlists"
 msgstr ""
 
-#: resources/ui/preferences.ui:118
+#: resources/ui/preferences.ui:96
 msgid "Favorite Mix Playlist"
 msgstr ""
 
-#: resources/ui/preferences.ui:130
+#: resources/ui/preferences.ui:101
 msgid "Shuffled Playlist"
 msgstr ""
 
-#: resources/ui/preferences.ui:142
+#: resources/ui/preferences.ui:106
 msgid "Most Played Playlist"
 msgstr ""
 
 #: resources/ui/queue.ui:8
 msgid "Nothing Playing"
+msgstr ""
+
+#: resources/ui/queue.ui:41
+msgid "Jump to current song"
 msgstr ""
 
 #: resources/ui/setup.ui:10
@@ -424,7 +427,7 @@ msgstr ""
 msgid "Enter the code on the Jellyfin web page to complete authentication."
 msgstr ""
 
-#: resources/ui/shortcuts_dialog.ui:9 resources/ui/window.ui:369
+#: resources/ui/shortcuts_dialog.ui:9 resources/ui/window.ui:372
 msgid "Refresh Library"
 msgstr ""
 
@@ -440,7 +443,7 @@ msgstr ""
 msgid "Ask Jellyfin to rescan the library for new or modified files"
 msgstr ""
 
-#: resources/ui/shortcuts_dialog.ui:23 resources/ui/window.ui:157
+#: resources/ui/shortcuts_dialog.ui:23 resources/ui/window.ui:160
 msgid "Search"
 msgstr ""
 
@@ -448,15 +451,15 @@ msgstr ""
 msgid "Show Favorites"
 msgstr ""
 
-#: resources/ui/shortcuts_dialog.ui:35 resources/ui/window.ui:379
+#: resources/ui/shortcuts_dialog.ui:35 resources/ui/window.ui:382
 msgid "Preferences"
 msgstr ""
 
-#: resources/ui/shortcuts_dialog.ui:41 resources/ui/window.ui:383
+#: resources/ui/shortcuts_dialog.ui:41 resources/ui/window.ui:386
 msgid "Keyboard Shortcuts"
 msgstr ""
 
-#: resources/ui/shortcuts_dialog.ui:47 resources/ui/window.ui:395
+#: resources/ui/shortcuts_dialog.ui:47 resources/ui/window.ui:398
 msgid "Quit"
 msgstr ""
 
@@ -496,86 +499,86 @@ msgstr ""
 msgid "songs"
 msgstr ""
 
-#: resources/ui/window.ui:53
+#: resources/ui/window.ui:56
 msgid "Album Detail"
 msgstr ""
 
-#: resources/ui/window.ui:86
+#: resources/ui/window.ui:89
 msgid "Artist Detail"
 msgstr ""
 
-#: resources/ui/window.ui:118
+#: resources/ui/window.ui:121
 msgid "Playlist Detail"
 msgstr ""
 
-#: resources/ui/window.ui:141
+#: resources/ui/window.ui:144
 msgid "Main"
 msgstr ""
 
-#: resources/ui/window.ui:150
+#: resources/ui/window.ui:153
 msgid "Show Queue"
 msgstr ""
 
-#: resources/ui/window.ui:163
+#: resources/ui/window.ui:166
 msgid "Sort"
 msgstr ""
 
-#: resources/ui/window.ui:170
+#: resources/ui/window.ui:173
 msgid "New"
 msgstr ""
 
-#: resources/ui/window.ui:195
+#: resources/ui/window.ui:198
 msgid "Search..."
 msgstr ""
 
-#: resources/ui/window.ui:211
+#: resources/ui/window.ui:214
 msgid "Favorites"
 msgstr ""
 
-#: resources/ui/window.ui:224
+#: resources/ui/window.ui:227
 msgid "Ascending"
 msgstr ""
 
-#: resources/ui/window.ui:231
+#: resources/ui/window.ui:234
 msgid "Descending"
 msgstr ""
 
-#: resources/ui/window.ui:247
+#: resources/ui/window.ui:250
 msgid "Albums"
 msgstr ""
 
-#: resources/ui/window.ui:259
+#: resources/ui/window.ui:262
 msgid "Artists"
 msgstr ""
 
-#: resources/ui/window.ui:283
+#: resources/ui/window.ui:286
 msgid "Songs"
 msgstr ""
 
-#: resources/ui/window.ui:328
+#: resources/ui/window.ui:331
 msgid "Hide Queue"
 msgstr ""
 
-#: resources/ui/window.ui:337
+#: resources/ui/window.ui:340
 msgid "Clear Queue"
 msgstr ""
 
-#: resources/ui/window.ui:344
+#: resources/ui/window.ui:347
 msgid "Save As Playlist"
 msgstr ""
 
-#: resources/ui/window.ui:365
+#: resources/ui/window.ui:368
 msgid "Request Rescan"
 msgstr ""
 
-#: resources/ui/window.ui:373
+#: resources/ui/window.ui:376
 msgid "Clear Image Cache"
 msgstr ""
 
-#: resources/ui/window.ui:387
+#: resources/ui/window.ui:390
 msgid "About Gelly"
 msgstr ""
 
-#: resources/ui/window.ui:391
+#: resources/ui/window.ui:394
 msgid "Logout"
 msgstr ""

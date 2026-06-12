@@ -10,16 +10,42 @@
         <property name="visible">true</property>
       </object>
     </child>
-    <child>
-      <object class="GellyAutoScrollWindow" id="scroll_window">
-        <property name="vexpand">true</property>
-        <property name="content">
-          <object class="GtkListView" id="track_list">
-            <style>
-              <class name="boxed-list" />
-            </style>
+        <child>
+          <object class="GellyAutoScrollWindow" id="scroll_window">
+            <property name="vexpand">true</property>
+            <property name="content">
+              <object class="GtkListView" id="track_list">
+                <style>
+                  <class name="boxed-list" />
+                </style>
+              </object>
+            </property>
           </object>
-        </property>
+        </child>
+    <child>
+      <object class="GtkBox">
+        <property name="orientation">vertical</property>
+        <style>
+          <class name="frame"/>
+          <class name="dimmed"/>
+        </style>
+        <child>
+          <object class="GtkCenterBox">
+            <property name="margin-bottom">9</property>
+            <property name="margin-top">9</property>
+            <property name="margin-start">12</property>
+            <property name="margin-end">12</property>
+            <child type="start">
+              <object class="GtkButton" id="queue_position">
+                <property name="has-frame">false</property>
+                <property name="tooltip-text" translatable="yes">Jump to current song</property>
+              </object>
+            </child>
+            <child type="end">
+              <object class="GtkLabel" id="queue_duration"/>
+            </child>
+          </object>
+        </child>
       </object>
     </child>
   </template>
