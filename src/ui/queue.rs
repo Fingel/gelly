@@ -322,24 +322,16 @@ impl Queue {
     }
 
     fn scroll_to_current_song(&self) {
-        if let Some(audio_model) = self.get_application().audio_model() {
+        if let Some(audio_model) = self.get_application().audio_model()
+            && let Some(store) = self.imp().store.get()
+        {
             let index = audio_model.queue_index();
             if index < 0 {
                 return;
             }
-            let index = index as u32;
-
-            let Some(store) = self.imp().store.get() else {
-                return;
-            };
-
-            if index >= store.n_items() {
-                return;
-            }
-
             self.imp()
                 .scroll_window
-                .scroll_index_to_top(index, store.n_items());
+                .scroll_index_to_top(index as u32, store.n_items());
         }
     }
 }
