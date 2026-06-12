@@ -248,9 +248,8 @@ impl Queue {
         audio_model.connect_queue_index_notify(glib::clone!(
             #[weak(rename_to = queue)]
             self,
-            move |model| {
+            move |_| {
                 queue.render_status_widget();
-                queue.scroll_current_song_into_view(model.queue_index());
             }
         ));
 
@@ -324,27 +323,24 @@ impl Queue {
 
     fn scroll_to_current_song(&self) {
         if let Some(audio_model) = self.get_application().audio_model() {
-            self.scroll_current_song_into_view(audio_model.queue_index());
+            let index = audio_model.queue_index();
+            if index < 0 {
+                return;
+            }
+            let index = index as u32;
+
+            let Some(store) = self.imp().store.get() else {
+                return;
+            };
+
+            if index >= store.n_items() {
+                return;
+            }
+
+            self.imp()
+                .scroll_window
+                .scroll_index_to_top(index, store.n_items());
         }
-    }
-
-    fn scroll_current_song_into_view(&self, index: i32) {
-        if index < 0 {
-            return;
-        }
-
-        let Some(store) = self.imp().store.get() else {
-            return;
-        };
-
-        let current_index = index as u32;
-        if current_index >= store.n_items() {
-            return;
-        }
-
-        self.imp()
-            .scroll_window
-            .scroll_index_to_top(current_index, store.n_items());
     }
 }
 
