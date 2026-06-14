@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-06-04 16:03-0700\n"
-"PO-Revision-Date: 2026-06-12 11:01+0000\n"
+"PO-Revision-Date: 2026-06-13 19:01+0000\n"
 "Last-Translator: Tuan Dat Pham <tuandatdavid@proton.me>\n"
 "Language-Team: Czech <https://hosted.weblate.org/projects/gelly/gelly/cs/>\n"
 "Language: cs\n"
@@ -228,7 +228,7 @@ msgstr "Chybějící obrázek alba"
 
 #: resources/ui/album_detail.ui:82 resources/ui/playlist_detail.ui:66
 msgid "tracks"
-msgstr "písničky"
+msgstr "stopáže"
 
 #: resources/ui/album_detail.ui:145 resources/ui/artist_detail.ui:79
 msgid "More Actions"
@@ -360,7 +360,7 @@ msgstr "Playlist v náhodném pořadí"
 
 #: resources/ui/preferences.ui:142
 msgid "Most Played Playlist"
-msgstr "Nejvíc hraný playlist"
+msgstr "Nejvíc hrané písničky"
 
 #: resources/ui/queue.ui:8
 msgid "Nothing Playing"
@@ -472,22 +472,18 @@ msgid "Navigation"
 msgstr "Navigace"
 
 #: resources/ui/shortcuts_dialog.ui:58
-#, fuzzy
 msgid "Focus Albums"
 msgstr "Zaměřit se na alba"
 
 #: resources/ui/shortcuts_dialog.ui:64
-#, fuzzy
 msgid "Focus Artists"
 msgstr "Zaměřit se na umělce"
 
 #: resources/ui/shortcuts_dialog.ui:70
-#, fuzzy
 msgid "Focus Playlist"
 msgstr "Zaměřit se na playlisty"
 
 #: resources/ui/shortcuts_dialog.ui:76
-#, fuzzy
 msgid "Focus Song List"
 msgstr "Zaměřit se na seznam písniček"
 
