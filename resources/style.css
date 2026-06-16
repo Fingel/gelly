@@ -82,6 +82,7 @@ scale.top-border-scale trough {
     padding-bottom: 10px;
     background-clip: content-box;
     border-radius: 0;
+    box-shadow: none;
     transition:
         min-height 150ms ease,
         padding-bottom 150ms ease;
