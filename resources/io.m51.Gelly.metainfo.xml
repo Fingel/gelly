@@ -70,6 +70,22 @@
     <color type="primary" scheme_preference="dark">#325a4a</color>
   </branding>
   <releases>
+    <release version="1.7.0" date="2026-06-17">
+      <description>
+        <ul>
+          <li>
+            Added a widget to the queue that shows position and total duration, and a button to jump to the current
+            song in the list.
+          </li>
+          <li>
+            Fixed visual bug when using the high contrast GTK theme.
+          </li>
+          <li>
+            More translations. Thank you!
+          </li>
+        </ul>
+      </description>
+    </release>
     <release version="1.6.2" date="2026-06-08">
       <description>
         <ul>
