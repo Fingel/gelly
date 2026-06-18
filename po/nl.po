@@ -9,7 +9,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-05-31 16:21-0700\n"
 "PO-Revision-Date: 2026-06-19 18:01+0000\n"
-"Last-Translator: Thomas Frans <franske2000@gmail.com>\n"
+"Last-Translator: Jeffrey van Altena <jeffrey2107@outlook.com>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/gelly/gelly/nl/>\n"
 "Language: nl\n"
 "MIME-Version: 1.0\n"
@@ -88,7 +88,7 @@ msgstr "Voorkomt dat het systeem in slaapstand gaat tijdens het afspelen"
 
 #: resources/ui/preferences.ui:67
 msgid "Transcoding"
-msgstr "Transcodering"
+msgstr "Transcoderen"
 
 #: resources/ui/preferences.ui:68
 msgid ""
@@ -107,7 +107,7 @@ msgstr "Enkel gebruiken wanneer direct play niet beschikbaar is."
 
 #: resources/ui/preferences.ui:85
 msgid "Maximum Bitrate (kbps)"
-msgstr "Maximale Bitrate (kbps)"
+msgstr "Maximale bitrate (kbps)"
 
 #: resources/ui/preferences.ui:86
 msgid "A value of 0 means no limit."
