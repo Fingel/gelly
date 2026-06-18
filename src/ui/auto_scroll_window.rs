@@ -1,12 +1,9 @@
 //! Custom implementation of a scrollable window with automatic scrolling during D&D.
 use adw::{prelude::*, subclass::prelude::*};
 use gtk::glib;
-use std::time::{Duration, Instant};
 
 const MARGIN: f64 = 64.0;
 const SPEED: f64 = 25.0;
-const SCROLL_ANIMATION_DURATION_MS: f64 = 140.0;
-const SCROLL_ANIMATION_TICK_MS: u64 = 16;
 
 glib::wrapper! {
     pub struct AutoScrollWindow(ObjectSubclass<imp::AutoScrollWindow>)
@@ -34,25 +31,7 @@ impl AutoScrollWindow {
         self.scrolled_window().vadjustment()
     }
 
-    // Paper over timing issues when the list model isn't fully populated yet
     pub fn scroll_index_to_top(&self, index: u32, item_count: u32) {
-        if item_count == 0 || index >= item_count {
-            return;
-        }
-
-        glib::timeout_add_local_once(
-            Duration::from_millis(SCROLL_ANIMATION_TICK_MS),
-            glib::clone!(
-                #[weak(rename_to = auto_scroll)]
-                self,
-                move || {
-                    auto_scroll.scroll_index_to_top_now(index, item_count);
-                }
-            ),
-        );
-    }
-
-    fn scroll_index_to_top_now(&self, index: u32, item_count: u32) {
         let adj = self.vadjustment();
         let lower = adj.lower();
         let upper = adj.upper();
@@ -68,52 +47,10 @@ impl AutoScrollWindow {
         }
 
         let target = lower + (index as f64 * row_height);
-        let max_value = (upper - page_size).max(lower);
-        self.animate_vadjustment_to(target.clamp(lower, max_value));
-    }
-
-    fn animate_vadjustment_to(&self, target: f64) {
-        let imp = self.imp();
-        if let Some(timeout_id) = imp.scroll_animation_timeout_id.take() {
-            timeout_id.remove();
-        }
-
-        let adj = self.vadjustment();
-        let start = adj.value();
-        if (target - start).abs() < 0.5 {
-            adj.set_value(target);
-            return;
-        }
-
-        let started_at = Instant::now();
-        let timeout_id = glib::timeout_add_local(
-            Duration::from_millis(SCROLL_ANIMATION_TICK_MS),
-            glib::clone!(
-                #[weak(rename_to = auto_scroll)]
-                self,
-                #[upgrade_or]
-                glib::ControlFlow::Break,
-                move || {
-                    let elapsed_ms = started_at.elapsed().as_secs_f64() * 1000.0;
-                    let t = (elapsed_ms / SCROLL_ANIMATION_DURATION_MS).clamp(0.0, 1.0);
-
-                    // ease-out cubic
-                    let eased = 1.0 - (1.0 - t).powi(3);
-                    let value = start + ((target - start) * eased);
-
-                    auto_scroll.vadjustment().set_value(value);
-
-                    if t >= 1.0 {
-                        auto_scroll.imp().scroll_animation_timeout_id.take();
-                        glib::ControlFlow::Break
-                    } else {
-                        glib::ControlFlow::Continue
-                    }
-                }
-            ),
-        );
-
-        imp.scroll_animation_timeout_id.replace(Some(timeout_id));
+        // Kinetic scrolling seems to overwrite the value set here, even if no scrolling is happening.
+        self.scrolled_window().set_kinetic_scrolling(false);
+        self.vadjustment().set_value(target);
+        self.scrolled_window().set_kinetic_scrolling(true);
     }
 }
 
@@ -138,7 +75,6 @@ mod imp {
         content: RefCell<Option<gtk::Widget>>,
 
         scroll_timeout_id: RefCell<Option<SourceId>>,
-        pub scroll_animation_timeout_id: RefCell<Option<SourceId>>,
         scroll_speed: Cell<f64>,
     }
 
@@ -153,10 +89,6 @@ mod imp {
         fn start_auto_scroll(&self, drop_motion_ctrl: &gtk::DropControllerMotion) {
             if self.scroll_timeout_id.borrow().is_some() {
                 return;
-            }
-
-            if let Some(timeout_id) = self.scroll_animation_timeout_id.take() {
-                timeout_id.remove();
             }
 
             let timeout_id = glib::timeout_add_local(
