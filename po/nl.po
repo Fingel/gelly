@@ -8,15 +8,15 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-05-31 16:21-0700\n"
-"PO-Revision-Date: 2026-06-09 20:01+0000\n"
-"Last-Translator: CodingKitten <codingkitten@disroot.org>\n"
+"PO-Revision-Date: 2026-06-19 18:01+0000\n"
+"Last-Translator: Jeffrey van Altena <jeffrey2107@outlook.com>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/gelly/gelly/nl/>\n"
 "Language: nl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 2026.6\n"
+"X-Generator: Weblate 2026.7.dev0\n"
 
 #: src/ui/album_detail.rs:195 src/ui/artist_detail.rs:225
 #: src/ui/playlist_detail.rs:538
@@ -35,11 +35,11 @@ msgstr[1] "{} nummers"
 
 #: src/ui/playlist.rs:30
 msgid "Smart playlist"
-msgstr "slimme afspeellijst"
+msgstr "Slimme afspeellijst"
 
 #: src/ui/playlist.rs:32
 msgid "Empty playlist"
-msgstr "lege afspeellijst"
+msgstr "Lege afspeellijst"
 
 #: resources/ui/album_art.ui:33
 msgid "Missing album art"
@@ -64,7 +64,7 @@ msgstr "Visuele extra's"
 
 #: resources/ui/preferences.ui:29
 msgid "Utilizes transparency, blurred backgrounds, etc."
-msgstr ""
+msgstr "Gebruikt transparantie, geblurde achtergronden, enz."
 
 #: resources/ui/preferences.ui:36
 msgid "Playback"
@@ -76,7 +76,7 @@ msgstr "Audio normaliseren"
 
 #: resources/ui/preferences.ui:40
 msgid "May require backend plugins."
-msgstr ""
+msgstr "Kan backend plugins nodig hebben."
 
 #: resources/ui/preferences.ui:52
 msgid "Inhibit Suspend"
@@ -88,7 +88,7 @@ msgstr "Voorkomt dat het systeem in slaapstand gaat tijdens het afspelen"
 
 #: resources/ui/preferences.ui:67
 msgid "Transcoding"
-msgstr "Transcodering"
+msgstr "Transcoderen"
 
 #: resources/ui/preferences.ui:68
 msgid ""
@@ -99,19 +99,19 @@ msgstr ""
 
 #: resources/ui/preferences.ui:71
 msgid "Transcoding Profile"
-msgstr ""
+msgstr "Transcoding Instelling"
 
 #: resources/ui/preferences.ui:72
 msgid "Only used when direct play is not available."
-msgstr ""
+msgstr "Enkel gebruiken wanneer direct play niet beschikbaar is."
 
 #: resources/ui/preferences.ui:85
 msgid "Maximum Bitrate (kbps)"
-msgstr "Maximale Bitrate (kbps)"
+msgstr "Maximale bitrate (kbps)"
 
 #: resources/ui/preferences.ui:86
 msgid "A value of 0 means no limit."
-msgstr ""
+msgstr "De waarde 0 betekent geen limiet."
 
 #: resources/ui/preferences.ui:105 resources/ui/window.ui:275
 msgid "Playlists"
@@ -123,11 +123,11 @@ msgstr "Slimme afspeellijsten"
 
 #: resources/ui/preferences.ui:111
 msgid "Favorite Mix Playlist"
-msgstr ""
+msgstr "Favoriete Mix Afspeellijst"
 
 #: resources/ui/preferences.ui:123
 msgid "Shuffled Playlist"
-msgstr ""
+msgstr "Shuffled Afspeellijst"
 
 #: resources/ui/preferences.ui:135
 msgid "Most Played Playlist"
@@ -142,15 +142,14 @@ msgid "Connect to Server"
 msgstr "Verbinden met server"
 
 #: resources/ui/setup.ui:20
-#, fuzzy
 msgid ""
 "Gelly supports Jellyfin and Subsonic/Navidrome. Enter the full server URL "
 "including protocol and port. For Jellyfin this is usually 8096, Navidrome "
 "uses 4533."
 msgstr ""
-"Gelly ondersteund Jellyfin en Subsonic/Navidrome. Voer de volledige server "
-"URL in, inclusief protocol en port. Voor Jellyfin is 8096 de standaart port "
-"en voor Navidrome 4533."
+"Gelly ondersteunt Jellyfin en Subsonic/Navidrome. Voer de volledige server "
+"URL in, inclusief protocol en poort. Voor Jellyfin is 8096 de standaard "
+"poort en voor Navidrome 4533."
 
 #: resources/ui/setup.ui:82
 msgid "Select Library"
@@ -158,7 +157,7 @@ msgstr "Selecteer Bibliotheek"
 
 #: resources/ui/setup.ui:83
 msgid "Choose which library Gelly will use to load your music."
-msgstr ""
+msgstr "Kies welke bibliotheek Gelly moet gebruiken om muziek in te laden."
 
 #: resources/ui/setup.ui:98
 msgid "Library"
@@ -169,18 +168,16 @@ msgid "Album Detail"
 msgstr "Album Detail"
 
 #: resources/ui/window.ui:90
-#, fuzzy
 msgid "Artist Detail"
 msgstr "Artiest Detail"
 
 #: resources/ui/window.ui:122
-#, fuzzy
 msgid "Playlist Detail"
 msgstr "Afspeellijst Detail"
 
 #: resources/ui/window.ui:145
 msgid "Main"
-msgstr ""
+msgstr "Hoofdpagina"
 
 #: resources/ui/window.ui:154
 msgid "Show Queue"
@@ -239,13 +236,12 @@ msgid "Request Rescan"
 msgstr "Rescan Aanvragen"
 
 #: resources/ui/window.ui:373
-#, fuzzy
 msgid "Refresh Library"
 msgstr "Bibliotheek Verversen"
 
 #: resources/ui/window.ui:377
 msgid "Clear Image Cache"
-msgstr ""
+msgstr "Verwijder Afbeelding Cache"
 
 #: resources/ui/window.ui:383
 msgid "Preferences"
@@ -253,7 +249,7 @@ msgstr "Voorkeuren"
 
 #: resources/ui/window.ui:387
 msgid "Keyboard Shortcuts"
-msgstr ""
+msgstr "Toetsenbord Snelkoppelingen"
 
 #: resources/ui/window.ui:391
 msgid "About Gelly"
