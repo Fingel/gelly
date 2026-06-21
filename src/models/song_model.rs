@@ -8,11 +8,7 @@ glib::wrapper! {
 
 impl SongModel {
     pub fn new(dto: &MusicDto, favorite: bool) -> Self {
-        let artists: Vec<String> = dto
-            .album_artists
-            .iter()
-            .map(|artist| artist.name.clone())
-            .collect();
+        let artists = Self::get_artists(dto);
         let artists_string = artists.join(", ");
         let date_created = dto.date_created.clone().unwrap_or("".to_string());
         Object::builder()
@@ -34,6 +30,22 @@ impl SongModel {
 
     pub fn duration_seconds(&self) -> u64 {
         self.duration() / 10_000_000 // Jellyfin ticks
+    }
+
+    /// Attempts to prioritize song artists for display purposes. If there are no song artists,
+    /// falls back to album artists.
+    fn get_artists(dto: &MusicDto) -> Vec<String> {
+        if dto.artist_items.is_empty() {
+            dto.album_artists
+                .iter()
+                .map(|artist| artist.name.clone())
+                .collect()
+        } else {
+            dto.artist_items
+                .iter()
+                .map(|artist| artist.name.clone())
+                .collect()
+        }
     }
 }
 
