@@ -279,6 +279,8 @@ impl PlaylistDetail {
             can_remove_from_playlist: false,
             in_queue: false,
             action_prefix: "playlist_detail".to_string(),
+            go_to_album: false,
+            go_to_artist: false,
         };
         let popover_menu = construct_menu(
             &options,

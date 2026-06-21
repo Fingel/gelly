@@ -8,6 +8,8 @@ pub struct ContextActions {
     pub can_remove_from_playlist: bool,
     pub in_queue: bool,
     pub action_prefix: String,
+    pub go_to_artist: bool,
+    pub go_to_album: bool,
 }
 
 pub fn construct_menu(
@@ -67,6 +69,22 @@ fn create_menu_model(config: &ContextActions, playlists: &[PlaylistDto]) -> gio:
         );
     }
     menu.append_section(None, &playlist_section);
+
+    let navigation_section = gio::Menu::new();
+    if config.go_to_album {
+        navigation_section.append(
+            Some(&tr("Go to Album")),
+            Some(&format!("{}.go_to_album", config.action_prefix)),
+        );
+    }
+
+    if config.go_to_artist {
+        navigation_section.append(
+            Some(&tr("Go to Artist")),
+            Some(&format!("{}.go_to_artist", config.action_prefix)),
+        );
+    }
+    menu.append_section(None, &navigation_section);
 
     let other_section = gio::Menu::new();
     other_section.append(

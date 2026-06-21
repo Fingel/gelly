@@ -205,6 +205,15 @@ impl AlbumDetail {
         }
     }
 
+    fn on_go_to_artist(&self) {
+        if let Some(song) = self.imp().songs.borrow().first()
+            && let Some(artist_model) = self.get_application().library().artist_for_item(&song.id())
+        {
+            let window = self.get_root_window();
+            window.show_artist_detail(&artist_model);
+        }
+    }
+
     fn update_track_metadata(&self) {
         let songs = self.imp().songs.borrow();
         self.imp().track_count.set_text(&songs.len().to_string());
@@ -219,6 +228,8 @@ impl AlbumDetail {
             can_remove_from_playlist: false,
             in_queue: false,
             action_prefix: "album".to_string(),
+            go_to_artist: true,
+            go_to_album: false,
         };
         let popover_menu = construct_menu(
             &options,
@@ -277,6 +288,14 @@ impl AlbumDetail {
             }
         ));
         action_group.add_action(&on_copy_id_action);
+
+        let on_go_to_artist_action = gio::SimpleAction::new("go_to_artist", None);
+        on_go_to_artist_action.connect_activate(glib::clone!(
+            #[weak(rename_to = album)]
+            self,
+            move |_, _| album.on_go_to_artist()
+        ));
+        action_group.add_action(&on_go_to_artist_action);
 
         action_group
     }

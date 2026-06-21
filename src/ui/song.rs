@@ -197,6 +197,8 @@ impl Song {
             can_remove_from_playlist: self.imp().in_playlist.get(),
             in_queue: self.imp().in_queue.get(),
             action_prefix: "song".to_string(),
+            go_to_album: true,
+            go_to_artist: true,
         };
         let popover_menu = construct_menu(
             &options,
@@ -263,6 +265,22 @@ impl Song {
             }
         ));
         action_group.add_action(&on_copy_id_action);
+
+        let on_go_to_album_action = gio::SimpleAction::new("go_to_album", None);
+        on_go_to_album_action.connect_activate(glib::clone!(
+            #[weak (rename_to = song)]
+            self,
+            move |_, _| song.on_go_to_album()
+        ));
+        action_group.add_action(&on_go_to_album_action);
+
+        let on_go_to_artist_action = gio::SimpleAction::new("go_to_artist", None);
+        on_go_to_artist_action.connect_activate(glib::clone!(
+            #[weak (rename_to = song)]
+            self,
+            move |_, _| song.on_go_to_artist()
+        ));
+        action_group.add_action(&on_go_to_artist_action);
 
         action_group
     }
@@ -336,6 +354,14 @@ impl Song {
         {
             audio_model.append_to_queue(vec![song_model]);
         }
+    }
+
+    fn on_go_to_album(&self) {
+        self.emit_by_name::<()>("album-clicked", &[&self.song_id()]);
+    }
+
+    fn on_go_to_artist(&self) {
+        self.emit_by_name::<()>("artist-clicked", &[&self.song_id()]);
     }
 }
 
