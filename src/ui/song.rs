@@ -217,6 +217,8 @@ impl Song {
     fn create_action_group(&self) -> SimpleActionGroup {
         let action_group = SimpleActionGroup::new();
 
+        // TODO add helper here like in the player bar implementation
+
         let add_to_playlist_action =
             gio::SimpleAction::new("add_to_playlist", Some(glib::VariantTy::STRING));
         add_to_playlist_action.connect_activate(glib::clone!(

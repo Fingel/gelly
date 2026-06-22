@@ -152,6 +152,8 @@ mod imp {
         pub favorite_button: TemplateChild<gtk::ToggleButton>,
         #[template_child]
         pub playback_mode_menu: TemplateChild<PlaybackModeMenu>,
+        #[template_child]
+        pub action_menu: TemplateChild<gtk::MenuButton>,
 
         pub audio_model: OnceCell<AudioModel>,
         pub lyrics_window: RefCell<Option<WeakRef<adw::Window>>>,
@@ -189,6 +191,7 @@ mod imp {
             self.parent_constructed();
             self.setup_common_signals();
             self.setup_clickable_labels();
+            self.setup_menu();
             self.setup_volume_icons();
 
             self.album_art.connect_closure(
@@ -279,6 +282,9 @@ mod imp {
         }
         fn album_art(&self) -> &AlbumArt {
             &self.album_art
+        }
+        fn action_menu(&self) -> &gtk::MenuButton {
+            &self.action_menu
         }
     }
 

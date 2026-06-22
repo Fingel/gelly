@@ -4,12 +4,19 @@ use crate::{
     i18n::tr,
     jellyfin::api::ItemType,
     ui::{
-        album_art::AlbumArt, lyrics::Lyrics, stream_info_dialog, widget_ext::WidgetApplicationExt,
+        album_art::AlbumArt,
+        lyrics::Lyrics,
+        music_context_menu::{ContextActions, construct_menu},
+        stream_info_dialog,
+        widget_ext::WidgetApplicationExt,
     },
 };
 use adw::prelude::*;
 use glib::{WeakRef, object::ObjectSubclassIs, subclass::prelude::*};
-use gtk::glib;
+use gtk::{
+    gio::{SimpleAction, SimpleActionGroup},
+    glib,
+};
 use log::warn;
 use std::cell::RefCell;
 
@@ -49,6 +56,7 @@ where
     fn album_label(&self) -> &gtk::Label;
     fn album_art(&self) -> &AlbumArt;
     fn favorite_button(&self) -> &gtk::ToggleButton;
+    fn action_menu(&self) -> &gtk::MenuButton;
 
     fn snapshot_background(&self, snapshot: &gtk::Snapshot) {
         let obj = self.obj();
@@ -211,7 +219,7 @@ where
         }
     }
 
-    fn show_artist(&self) {
+    fn on_go_to_artist(&self) {
         let song_id = self.audio_model().current_song_id();
         let window = self.obj().get_root_window();
         if let Some(artist_model) = self
@@ -224,7 +232,7 @@ where
         }
     }
 
-    fn show_album(&self) {
+    fn on_go_to_album(&self) {
         let song_id = self.audio_model().current_song_id();
         let window = self.obj().get_root_window();
         if let Some(album_model) = self
@@ -246,7 +254,7 @@ where
             let weak = weak.clone();
             move |_| {
                 if let Some(obj) = weak.upgrade() {
-                    obj.imp().show_artist();
+                    obj.imp().on_go_to_artist();
                 }
             }
         });
@@ -254,10 +262,109 @@ where
             let weak = weak.clone();
             move |_| {
                 if let Some(obj) = weak.upgrade() {
-                    obj.imp().show_album();
+                    obj.imp().on_go_to_album();
                 }
             }
         });
+    }
+
+    fn on_add_to_playlist(&self, playlist_id: String) {
+        let song_id = self.audio_model().current_song_id();
+        let app = self.obj().get_application();
+        let backend = app.backend();
+        let weak = self.obj().downgrade();
+        spawn_tokio(
+            async move { backend.add_playlist_items(&playlist_id, &[song_id]).await },
+            move |result| {
+                if let Some(player) = weak.upgrade() {
+                    match result {
+                        Ok(()) => {
+                            player.toast(&tr("Added song to playlist"), None);
+                            app.refresh_playlists(true);
+                        }
+                        Err(e) => {
+                            player.toast(&tr("Failed to add song to playlist"), None);
+                            warn!("Failed to add song to playlist: {}", e);
+                        }
+                    }
+                }
+            },
+        );
+    }
+
+    fn on_queue_next(&self) {
+        if let Some(song_model) = self.audio_model().current_song() {
+            self.audio_model().prepend_to_queue(vec![song_model]);
+        }
+    }
+
+    fn on_queue_last(&self) {
+        if let Some(song_model) = self.audio_model().current_song() {
+            self.audio_model().append_to_queue(vec![song_model]);
+        }
+    }
+
+    fn on_copy_id(&self) {
+        let id = self.audio_model().current_song_id();
+        self.obj().clipboard().set_text(&id);
+        self.obj().toast(&tr("Song ID copied to clipboard"), None);
+    }
+
+    fn setup_menu(&self) {
+        let options = ContextActions {
+            can_remove_from_playlist: false,
+            in_queue: false,
+            action_prefix: "song".to_string(),
+            go_to_artist: true,
+            go_to_album: true,
+        };
+        let weak = self.obj().downgrade();
+        let menu = construct_menu(&options, move || {
+            if let Some(obj) = weak.upgrade() {
+                obj.get_application().playlists().borrow().clone()
+            } else {
+                Vec::new()
+            }
+        });
+        self.action_menu().set_popover(Some(&menu));
+        let action_group = self.create_action_group();
+        self.obj()
+            .insert_action_group(&options.action_prefix, Some(&action_group));
+    }
+
+    fn create_action_group(&self) -> SimpleActionGroup {
+        let action_group = SimpleActionGroup::new();
+
+        let add_noarg_action = |name: &str, handler: fn(&Self)| {
+            let action = SimpleAction::new(name, None);
+            let weak = self.obj().downgrade();
+            action.connect_activate(move |_, _| {
+                if let Some(player) = weak.upgrade() {
+                    handler(player.imp());
+                }
+            });
+            action_group.add_action(&action);
+        };
+
+        let add_to_playlist_action =
+            SimpleAction::new("add_to_playlist", Some(glib::VariantTy::STRING));
+        let weak = self.obj().downgrade();
+        add_to_playlist_action.connect_activate(move |_, playlist_id| {
+            if let Some(player) = weak.upgrade()
+                && let Some(playlist_id) = playlist_id.and_then(|id| id.get::<String>())
+            {
+                player.imp().on_add_to_playlist(playlist_id);
+            }
+        });
+        action_group.add_action(&add_to_playlist_action);
+
+        add_noarg_action("queue_next", Self::on_queue_next);
+        add_noarg_action("queue_last", Self::on_queue_last);
+        add_noarg_action("copy_id", Self::on_copy_id);
+        add_noarg_action("go_to_album", Self::on_go_to_album);
+        add_noarg_action("go_to_artist", Self::on_go_to_artist);
+
+        action_group
     }
 
     fn setup_volume_icons(&self) {
