@@ -47,9 +47,16 @@ impl GellyTray {
     fn menu_item(label: &str, command: TrayCommand) -> ksni::MenuItem<Self> {
         StandardItem {
             label: label.to_string(),
-            activate: Box::new(move |tray: &mut GellyTray| tray.send(command)),
+            activate: Box::new(move |tray: &mut GellyTray| {
+                println!(
+                    "menu item activated on thread: {:?}",
+                    std::thread::current().id()
+                );
+                tray.send(command);
+            }),
             ..Default::default()
-        }.into()
+        }
+        .into()
     }
 }
 
