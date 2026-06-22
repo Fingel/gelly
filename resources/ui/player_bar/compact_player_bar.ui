@@ -68,6 +68,7 @@
                             <property name="xalign">1.0</property>
                             <style>
                               <class name="dimmed"/>
+                              <class name="numeric"/>
                             </style>
                           </object>
                         </child>
@@ -86,6 +87,7 @@
                             <property name="xalign">0.0</property>
                             <style>
                               <class name="dimmed"/>
+                              <class name="numeric"/>
                             </style>
                           </object>
                         </child>
