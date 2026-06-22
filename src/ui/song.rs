@@ -2,7 +2,7 @@ use glib::Object;
 use gtk::{
     DragSource, DropTarget,
     gdk::{ContentProvider, Drag, DragAction},
-    gio::{self, SimpleActionGroup},
+    gio::{self, SimpleAction, SimpleActionGroup},
     glib,
     prelude::*,
     subclass::prelude::*,
@@ -217,7 +217,15 @@ impl Song {
     fn create_action_group(&self) -> SimpleActionGroup {
         let action_group = SimpleActionGroup::new();
 
-        // TODO add helper here like in the player bar implementation
+        let add_noarg_action = |name: &str, handler: fn(&Self)| {
+            let action = SimpleAction::new(name, None);
+            action.connect_activate(glib::clone!(
+                #[weak(rename_to = song)]
+                self,
+                move |_, _| handler(&song)
+            ));
+            action_group.add_action(&action);
+        };
 
         let add_to_playlist_action =
             gio::SimpleAction::new("add_to_playlist", Some(glib::VariantTy::STRING));
@@ -240,49 +248,11 @@ impl Song {
         ));
         action_group.add_action(&remove_from_playlist_action);
 
-        let queue_next_action = gio::SimpleAction::new("queue_next", None);
-        queue_next_action.connect_activate(glib::clone!(
-            #[weak(rename_to = song)]
-            self,
-            move |_, _| song.on_queue_next()
-        ));
-        action_group.add_action(&queue_next_action);
-
-        let queue_last_action = gio::SimpleAction::new("queue_last", None);
-        queue_last_action.connect_activate(glib::clone!(
-            #[weak(rename_to = song)]
-            self,
-            move |_, _| song.on_queue_last()
-        ));
-        action_group.add_action(&queue_last_action);
-
-        let on_copy_id_action = gio::SimpleAction::new("copy_id", None);
-        on_copy_id_action.connect_activate(glib::clone!(
-            #[weak(rename_to = song)]
-            self,
-            move |_, _| {
-                let id = song.song_id();
-                song.clipboard().set_text(&id);
-                song.toast(&tr("Song ID copied to clipboard"), None);
-            }
-        ));
-        action_group.add_action(&on_copy_id_action);
-
-        let on_go_to_album_action = gio::SimpleAction::new("go_to_album", None);
-        on_go_to_album_action.connect_activate(glib::clone!(
-            #[weak (rename_to = song)]
-            self,
-            move |_, _| song.on_go_to_album()
-        ));
-        action_group.add_action(&on_go_to_album_action);
-
-        let on_go_to_artist_action = gio::SimpleAction::new("go_to_artist", None);
-        on_go_to_artist_action.connect_activate(glib::clone!(
-            #[weak (rename_to = song)]
-            self,
-            move |_, _| song.on_go_to_artist()
-        ));
-        action_group.add_action(&on_go_to_artist_action);
+        add_noarg_action("queue_next", Self::on_queue_next);
+        add_noarg_action("queue_last", Self::on_queue_last);
+        add_noarg_action("copy_id", Self::on_copy_id);
+        add_noarg_action("go_to_album", Self::on_go_to_album);
+        add_noarg_action("go_to_artist", Self::on_go_to_artist);
 
         action_group
     }
@@ -341,6 +311,12 @@ impl Song {
 
     fn on_go_to_artist(&self) {
         self.emit_by_name::<()>("artist-clicked", &[&self.song_id()]);
+    }
+
+    fn on_copy_id(&self) {
+        let id = self.song_id();
+        self.clipboard().set_text(&id);
+        self.toast(&tr("Song ID copied to clipboard"), None);
     }
 }
 
