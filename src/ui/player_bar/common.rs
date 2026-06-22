@@ -49,8 +49,6 @@ where
     fn position_label(&self) -> &gtk::Label;
     fn duration_label(&self) -> &gtk::Label;
     fn lyrics_button(&self) -> &gtk::Button;
-    fn artist_button(&self) -> &gtk::Button;
-    fn album_button(&self) -> &gtk::Button;
     fn title_label(&self) -> &gtk::Label;
     fn artist_label(&self) -> &gtk::Label;
     fn album_label(&self) -> &gtk::Label;
@@ -243,29 +241,6 @@ where
         {
             window.show_album_detail(&album_model);
         }
-    }
-
-    fn setup_clickable_labels(&self) {
-        self.artist_button().set_cursor_from_name(Some("pointer"));
-        self.album_button().set_cursor_from_name(Some("pointer"));
-
-        let weak = self.obj().downgrade();
-        self.artist_button().connect_clicked({
-            let weak = weak.clone();
-            move |_| {
-                if let Some(obj) = weak.upgrade() {
-                    obj.imp().on_go_to_artist();
-                }
-            }
-        });
-        self.album_button().connect_clicked({
-            let weak = weak.clone();
-            move |_| {
-                if let Some(obj) = weak.upgrade() {
-                    obj.imp().on_go_to_album();
-                }
-            }
-        });
     }
 
     fn on_add_to_playlist(&self, playlist_id: String) {

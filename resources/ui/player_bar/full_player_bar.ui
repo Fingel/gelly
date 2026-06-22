@@ -71,21 +71,12 @@
                             <property name="halign">center</property>
                             <property name="margin-bottom">2</property>
                             <child>
-                              <object class="GtkButton" id="artist_button">
-                                <property name="focusable">True</property>
-                                <property name="halign">end</property>
-                                <property name="has-frame">False</property>
-                                <style>
-                                  <class name="flat"/>
-                                  <class name="dimmed"/>
-                                  <class name="song-link"/>
-                                </style>
-                                <property name="child">
-                                  <object class="GtkLabel" id="artist_label">
-                                    <property name="ellipsize">end</property>
-                                    <property name="max_width_chars">90</property>
-                                  </object>
-                                </property>
+                              <object class="GtkLabel" id="artist_label">
+                                <property name="ellipsize">end</property>
+                                <property name="max_width_chars">90</property>
+                                  <style>
+                                    <class name="dimmed"/>
+                                  </style>
                               </object>
                             </child>
                             <child>
@@ -99,22 +90,13 @@
                               </object>
                             </child>
                             <child>
-                              <object class="GtkButton" id="album_button">
-                                <property name="focusable">True</property>
-                                <property name="has-frame">False</property>
+                              <object class="GtkLabel" id="album_label">
+                                <property name="ellipsize">end</property>
                                 <property name="halign">start</property>
+                                <property name="max_width_chars">90</property>
                                 <style>
-                                  <class name="flat"/>
                                   <class name="dimmed"/>
-                                  <class name="song-link"/>
                                 </style>
-                                <property name="child">
-                                  <object class="GtkLabel" id="album_label">
-                                    <property name="ellipsize">end</property>
-                                    <property name="halign">start</property>
-                                    <property name="max_width_chars">90</property>
-                                  </object>
-                                </property>
                               </object>
                             </child>
                           </object>

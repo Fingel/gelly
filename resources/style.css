@@ -8,14 +8,6 @@
     padding-left: 7px; /* 12 minus border-left */
 }
 
-.song-link {
-    font-weight: normal;
-    padding: 0;
-    margin: 0;
-    min-width: 0;
-    min-height: 0;
-}
-
 progressbar.osd {
     margin-top: 3em;
 }

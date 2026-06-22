@@ -164,18 +164,10 @@
               <object class="GtkBox">
                 <property name="visible">false</property>
                 <child>
-                  <object class="GtkButton" id="artist_button">
-                    <property name="child">
-                      <object class="GtkLabel" id="artist_label"/>
-                    </property>
-                  </object>
+                  <object class="GtkLabel" id="artist_label"/>
                 </child>
                 <child>
-                  <object class="GtkButton" id="album_button">
-                    <property name="child">
-                      <object class="GtkLabel" id="album_label"/>
-                    </property>
-                  </object>
+                  <object class="GtkLabel" id="album_label"/>
                 </child>
                 <child>
                   <object class="GtkButton" id="info_button"/>
