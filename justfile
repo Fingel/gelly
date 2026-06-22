@@ -10,11 +10,14 @@ schemas:
     glib-compile-schemas ~/.local/share/glib-2.0/schemas/
 
 pot:
+    # https://crates.io/crates/xtr
+    xtr src/main.rs -o po/gelly.pot
     xgettext \
         --from-code=UTF-8 \
         --keyword=tr \
         --keyword=ngettext:1,2 \
         --add-comments \
+        --join-existing \
         --output=po/gelly.pot \
         --files-from=po/POTFILES.in
 
