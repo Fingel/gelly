@@ -44,6 +44,9 @@
                   <object class="GtkLabel" id="artist_label">
                     <property name="ellipsize">end</property>
                     <property name="max_width_chars">90</property>
+                    <style>
+                      <class name="dimmed"/>
+                    </style>
                   </object>
                 </child>
                 <child>
@@ -60,6 +63,9 @@
                   <object class="GtkLabel" id="album_label">
                     <property name="ellipsize">end</property>
                     <property name="max_width_chars">90</property>
+                    <style>
+                      <class name="dimmed"/>
+                    </style>
                   </object>
                 </child>
               </object>
