@@ -21,6 +21,7 @@ mod library_utils;
 mod models;
 mod reporting;
 mod subsonic;
+mod tray;
 mod ui;
 
 fn main() -> glib::ExitCode {
@@ -52,6 +53,7 @@ fn build_ui(app: &Application) {
         return;
     }
     let window = Window::new(app);
+    app.set_main_window(&window);
     window.present();
 }
 

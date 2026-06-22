@@ -17,6 +17,12 @@
               </object>
             </child>
             <child>
+              <object class="AdwSwitchRow" id="close_to_tray_row">
+                <property name="title" translatable="yes">Close to tray</property>
+                <property name="subtitle" translatable="yes">Hide the window instead of quitting when closed.</property>
+              </object>
+            </child>
+            <child>
               <object class="AdwSwitchRow" id="album_art_background_row">
                 <property name="title" translatable="yes">Extra eye candy</property>
                 <property name="subtitle" translatable="yes">Utilizes transparency, blurred backgrounds, etc.</property>

@@ -359,3 +359,7 @@ pub fn get_compact_mode_enabled() -> bool {
 pub fn get_album_art_window_background_enabled() -> bool {
     settings().boolean("album-art-window-background")
 }
+
+pub fn get_close_to_tray_enabled() -> bool {
+    settings().boolean("close-to-tray")
+}

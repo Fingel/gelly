@@ -1,6 +1,6 @@
 use adw::subclass::prelude::ObjectSubclassIsExt;
 use glib::Object;
-use gtk::gio::prelude::SettingsExt;
+use gtk::gio::prelude::{ApplicationExt, SettingsExt};
 use gtk::prelude::{GtkApplicationExt, ObjectExt};
 use gtk::{gio, glib};
 
@@ -17,6 +17,8 @@ use crate::jellyfin::Jellyfin;
 use crate::jellyfin::api::{FavoriteDtoList, MusicDtoList, PlaylistDto, PlaylistDtoList};
 use crate::library::Library;
 use crate::subsonic::Subsonic;
+use crate::tray::{TrayCommand, TrayService};
+use crate::ui::window::Window;
 use log::{debug, error, warn};
 use std::cell::RefCell;
 use std::rc::Rc;
@@ -40,7 +42,38 @@ impl Application {
         app.initialize_image_cache();
         app.initialize_audio_model();
         app.initialize_cli();
+        app.initialize_tray();
         app
+    }
+
+    pub fn set_main_window(&self, window: &Window) {
+        self.imp().main_window.replace(Some(window.downgrade()));
+    }
+
+    pub fn has_tray(&self) -> bool {
+        self.imp().tray_service.borrow().is_some()
+    }
+
+    fn initialize_tray(&self) {
+        let (sender, receiver) = async_channel::unbounded();
+        let Some(tray_service) = TrayService::spawn(sender) else {
+            return;
+        };
+
+        self.imp().tray_service.replace(Some(tray_service));
+
+        glib::spawn_future_local(glib::clone!(
+            #[weak (rename_to = app)]
+            self,
+            async move {
+                while let Ok(command) = receiver.recv().await {
+                    match command {
+                        TrayCommand::ShowWindow => app.activate(),
+                        TrayCommand::Quit => app.quit(),
+                    }
+                }
+            }
+        ));
     }
 
     pub fn load_settings(&self) {
@@ -456,6 +489,8 @@ mod imp {
     use crate::cache::{ImageCache, LibraryCache};
     use crate::jellyfin::api::PlaylistDto;
     use crate::library::Library;
+    use crate::tray::TrayService;
+    use crate::ui::window::Window;
 
     #[derive(Default)]
     pub struct Application {
@@ -468,6 +503,8 @@ mod imp {
         pub audio_model: RefCell<Option<AudioModel>>,
         pub http_request_count: AtomicU32,
         pub inhibit_cookie: Cell<u32>,
+        pub main_window: RefCell<Option<glib::WeakRef<Window>>>,
+        pub tray_service: RefCell<Option<TrayService>>,
     }
 
     #[glib::object_subclass]

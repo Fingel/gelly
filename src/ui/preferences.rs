@@ -24,6 +24,12 @@ impl Preferences {
     fn setup_bindings(&self) {
         let imp = self.imp();
         let settings = config::settings();
+
+        // Close To Tray
+        settings
+            .bind("close-to-tray", &*imp.close_to_tray_row, "active")
+            .build();
+
         // Max Bitrate
         settings
             .bind("max-bitrate", &*imp.maximum_bitrate_row, "value")
@@ -112,6 +118,8 @@ mod imp {
     #[derive(CompositeTemplate, Default)]
     #[template(resource = "/io/m51/Gelly/ui/preferences.ui")]
     pub struct Preferences {
+        #[template_child]
+        pub close_to_tray_row: TemplateChild<adw::SwitchRow>,
         #[template_child]
         pub transcoding_profile_row: TemplateChild<adw::ComboRow>,
         #[template_child]

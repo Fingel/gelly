@@ -887,7 +887,12 @@ mod imp {
             self.obj()
                 .save_window_size()
                 .expect("Could not save window size");
-            glib::Propagation::Proceed
+            if config::get_close_to_tray_enabled() && self.obj().get_application().has_tray() {
+                self.obj().set_visible(false);
+                glib::Propagation::Stop
+            } else {
+                glib::Propagation::Proceed
+            }
         }
     }
 

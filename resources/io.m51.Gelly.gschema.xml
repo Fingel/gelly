@@ -109,5 +109,9 @@
       <default>false</default>
       <summary>Enable compact mode</summary>
     </key>
+    <key name="close-to-tray" type="b">
+      <default>false</default>
+      <summary>Close to tray</summary>
+    </key>
   </schema>
 </schemalist>
