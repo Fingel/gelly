@@ -41,21 +41,12 @@
                 <property name="valign">center</property>
                 <property name="hexpand">true</property>
                 <child>
-                  <object class="GtkButton" id="artist_button">
-                    <property name="focusable">True</property>
-                    <property name="halign">start</property>
-                    <property name="has-frame">False</property>
+                  <object class="GtkLabel" id="artist_label">
+                    <property name="ellipsize">end</property>
+                    <property name="max_width_chars">90</property>
                     <style>
-                      <class name="flat"/>
                       <class name="dimmed"/>
-                      <class name="song-link"/>
                     </style>
-                    <property name="child">
-                      <object class="GtkLabel" id="artist_label">
-                        <property name="ellipsize">end</property>
-                        <property name="max_width_chars">90</property>
-                      </object>
-                    </property>
                   </object>
                 </child>
                 <child>
@@ -69,21 +60,12 @@
                   </object>
                 </child>
                 <child>
-                  <object class="GtkButton" id="album_button">
-                    <property name="focusable">True</property>
-                    <property name="halign">start</property>
-                    <property name="has-frame">False</property>
+                  <object class="GtkLabel" id="album_label">
+                    <property name="ellipsize">end</property>
+                    <property name="max_width_chars">90</property>
                     <style>
-                      <class name="flat"/>
                       <class name="dimmed"/>
-                      <class name="song-link"/>
                     </style>
-                    <property name="child">
-                      <object class="GtkLabel" id="album_label">
-                        <property name="ellipsize">end</property>
-                        <property name="max_width_chars">90</property>
-                      </object>
-                    </property>
                   </object>
                 </child>
               </object>
@@ -234,6 +216,14 @@
                     <property name="value">1.0</property>
                   </object>
                 </property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkMenuButton" id="action_menu">
+                <property name="icon-name">view-more-symbolic</property>
+                <style>
+                  <class name="flat"/>
+                </style>
               </object>
             </child>
           </object>

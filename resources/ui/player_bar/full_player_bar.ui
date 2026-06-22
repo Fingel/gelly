@@ -71,21 +71,12 @@
                             <property name="halign">center</property>
                             <property name="margin-bottom">2</property>
                             <child>
-                              <object class="GtkButton" id="artist_button">
-                                <property name="focusable">True</property>
-                                <property name="halign">end</property>
-                                <property name="has-frame">False</property>
-                                <style>
-                                  <class name="flat"/>
-                                  <class name="dimmed"/>
-                                  <class name="song-link"/>
-                                </style>
-                                <property name="child">
-                                  <object class="GtkLabel" id="artist_label">
-                                    <property name="ellipsize">end</property>
-                                    <property name="max_width_chars">90</property>
-                                  </object>
-                                </property>
+                              <object class="GtkLabel" id="artist_label">
+                                <property name="ellipsize">end</property>
+                                <property name="max_width_chars">90</property>
+                                  <style>
+                                    <class name="dimmed"/>
+                                  </style>
                               </object>
                             </child>
                             <child>
@@ -99,22 +90,13 @@
                               </object>
                             </child>
                             <child>
-                              <object class="GtkButton" id="album_button">
-                                <property name="focusable">True</property>
-                                <property name="has-frame">False</property>
+                              <object class="GtkLabel" id="album_label">
+                                <property name="ellipsize">end</property>
                                 <property name="halign">start</property>
+                                <property name="max_width_chars">90</property>
                                 <style>
-                                  <class name="flat"/>
                                   <class name="dimmed"/>
-                                  <class name="song-link"/>
                                 </style>
-                                <property name="child">
-                                  <object class="GtkLabel" id="album_label">
-                                    <property name="ellipsize">end</property>
-                                    <property name="halign">start</property>
-                                    <property name="max_width_chars">90</property>
-                                  </object>
-                                </property>
                               </object>
                             </child>
                           </object>
@@ -180,6 +162,7 @@
                     <property name="margin-end">4</property>
                     <property name="spacing">3</property>
                     <child>
+                    <!-- TODO this needs to be monospace to prevent it from jittering -->
                       <object class="GtkLabel" id="scale_position_label">
                         <property name="label">0:00</property>
                         <property name="width-chars">4</property>
@@ -211,6 +194,20 @@
                     <property name="halign">end</property>
                     <property name="valign">center</property>
                     <property name="spacing">3</property>
+                    <child>
+                      <object class="GtkButton" id="info_button">
+                        <property name="margin-start">2</property>
+                        <property name="child">
+                          <object class="GtkImage">
+                            <property name="icon-name">help-about-symbolic</property>
+                            <property name="icon-size">1</property>
+                          </object>
+                        </property>
+                        <style>
+                          <class name="flat"/>
+                        </style>
+                      </object>
+                    </child>
                     <child>
                       <object class="GtkButton" id="lyrics_button">
                         <property name="icon-name">subtitles-symbolic</property>
@@ -245,14 +242,8 @@
                     <property name="valign">center</property>
                     <property name="spacing">3</property>
                     <child>
-                      <object class="GtkButton" id="info_button">
-                        <property name="margin-start">2</property>
-                        <property name="child">
-                          <object class="GtkImage">
-                            <property name="icon-name">help-about-symbolic</property>
-                            <property name="icon-size">1</property>
-                          </object>
-                        </property>
+                      <object class="GtkMenuButton" id="action_menu">
+                        <property name="icon-name">view-more-symbolic</property>
                         <style>
                           <class name="flat"/>
                         </style>

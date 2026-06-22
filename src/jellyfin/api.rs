@@ -76,6 +76,7 @@ pub struct MusicDto {
     pub run_time_ticks: u64,
     pub album: Option<String>,
     pub album_artists: Vec<ArtistItemsDto>,
+    pub artist_items: Vec<ArtistItemsDto>, // This is song artists
     pub album_id: Option<String>,
     pub normalization_gain: Option<f64>,
     pub production_year: Option<u32>,

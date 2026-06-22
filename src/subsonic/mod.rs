@@ -287,8 +287,8 @@ impl Subsonic {
                 .album_artists
                 .first()
                 .map(|artist| artist.name.clone()))
-            .or(song.album_artist)
-            .or(song.artist)
+            .or(song.album_artist.clone())
+            .or(song.artist.clone())
             .or(fallback.artist_name.clone())
             .unwrap_or_else(|| "Unknown Artist".to_string());
 
@@ -300,7 +300,18 @@ impl Subsonic {
                 .album_artists
                 .first()
                 .map(|artist| artist.id.clone()))
-            .or(song.artist_id)
+            .or(song.artist_id.clone())
+            .or(fallback.artist_id.clone())
+            .unwrap_or_default();
+
+        let song_artist_name = song
+            .artist
+            .or(song.album_artist)
+            .or(fallback.artist_name.clone())
+            .unwrap_or_else(|| "Unknown Artist".to_string());
+
+        let song_artist_id = song
+            .artist_id
             .or(fallback.artist_id.clone())
             .unwrap_or_default();
 
@@ -322,6 +333,10 @@ impl Subsonic {
             album_artists: vec![ArtistItemsDto {
                 name: artist_name,
                 id: artist_id,
+            }],
+            artist_items: vec![ArtistItemsDto {
+                name: song_artist_name,
+                id: song_artist_id,
             }],
             album_id,
             normalization_gain,

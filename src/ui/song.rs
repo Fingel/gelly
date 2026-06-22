@@ -197,6 +197,8 @@ impl Song {
             can_remove_from_playlist: self.imp().in_playlist.get(),
             in_queue: self.imp().in_queue.get(),
             action_prefix: "song".to_string(),
+            go_to_album: true,
+            go_to_artist: true,
         };
         let popover_menu = construct_menu(
             &options,
@@ -214,6 +216,8 @@ impl Song {
 
     fn create_action_group(&self) -> SimpleActionGroup {
         let action_group = SimpleActionGroup::new();
+
+        // TODO add helper here like in the player bar implementation
 
         let add_to_playlist_action =
             gio::SimpleAction::new("add_to_playlist", Some(glib::VariantTy::STRING));
@@ -264,30 +268,23 @@ impl Song {
         ));
         action_group.add_action(&on_copy_id_action);
 
+        let on_go_to_album_action = gio::SimpleAction::new("go_to_album", None);
+        on_go_to_album_action.connect_activate(glib::clone!(
+            #[weak (rename_to = song)]
+            self,
+            move |_, _| song.on_go_to_album()
+        ));
+        action_group.add_action(&on_go_to_album_action);
+
+        let on_go_to_artist_action = gio::SimpleAction::new("go_to_artist", None);
+        on_go_to_artist_action.connect_activate(glib::clone!(
+            #[weak (rename_to = song)]
+            self,
+            move |_, _| song.on_go_to_artist()
+        ));
+        action_group.add_action(&on_go_to_artist_action);
+
         action_group
-    }
-
-    fn setup_clickable_labels(&self) {
-        let imp = self.imp();
-        // Set pointer cursor for better discoverability
-        imp.artist_button.set_cursor_from_name(Some("pointer"));
-        imp.album_button.set_cursor_from_name(Some("pointer"));
-
-        imp.artist_button.connect_clicked(glib::clone!(
-            #[weak(rename_to = song)]
-            self,
-            move |_| {
-                song.emit_by_name::<()>("artist-clicked", &[&song.song_id()]);
-            }
-        ));
-
-        imp.album_button.connect_clicked(glib::clone!(
-            #[weak(rename_to = song)]
-            self,
-            move |_| {
-                song.emit_by_name::<()>("album-clicked", &[&song.song_id()]);
-            }
-        ));
     }
 
     fn on_add_to_playlist(&self, playlist_id: String) {
@@ -337,6 +334,14 @@ impl Song {
             audio_model.append_to_queue(vec![song_model]);
         }
     }
+
+    fn on_go_to_album(&self) {
+        self.emit_by_name::<()>("album-clicked", &[&self.song_id()]);
+    }
+
+    fn on_go_to_artist(&self) {
+        self.emit_by_name::<()>("artist-clicked", &[&self.song_id()]);
+    }
 }
 
 impl Default for Song {
@@ -372,11 +377,7 @@ mod imp {
         #[template_child]
         pub artist_box: TemplateChild<gtk::Box>,
         #[template_child]
-        pub artist_button: TemplateChild<gtk::Button>,
-        #[template_child]
         pub artist_label: TemplateChild<gtk::Label>,
-        #[template_child]
-        pub album_button: TemplateChild<gtk::Button>,
         #[template_child]
         pub album_label: TemplateChild<gtk::Label>,
         #[template_child]
@@ -449,7 +450,6 @@ mod imp {
         fn constructed(&self) {
             self.parent_constructed();
             self.obj().setup_menu();
-            self.obj().setup_clickable_labels();
 
             // Sadly this can't be done in the template itself
             let orientation = if self.in_queue.get() {

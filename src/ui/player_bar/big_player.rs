@@ -123,11 +123,7 @@ mod imp {
         #[template_child]
         pub title_label: TemplateChild<gtk::Label>,
         #[template_child]
-        pub artist_button: TemplateChild<gtk::Button>,
-        #[template_child]
         pub artist_label: TemplateChild<gtk::Label>,
-        #[template_child]
-        pub album_button: TemplateChild<gtk::Button>,
         #[template_child]
         pub album_label: TemplateChild<gtk::Label>,
         #[template_child]
@@ -152,6 +148,8 @@ mod imp {
         pub favorite_button: TemplateChild<gtk::ToggleButton>,
         #[template_child]
         pub playback_mode_menu: TemplateChild<PlaybackModeMenu>,
+        #[template_child]
+        pub action_menu: TemplateChild<gtk::MenuButton>,
 
         pub audio_model: OnceCell<AudioModel>,
         pub lyrics_window: RefCell<Option<WeakRef<adw::Window>>>,
@@ -188,7 +186,7 @@ mod imp {
         fn constructed(&self) {
             self.parent_constructed();
             self.setup_common_signals();
-            self.setup_clickable_labels();
+            self.setup_menu();
             self.setup_volume_icons();
 
             self.album_art.connect_closure(
@@ -262,12 +260,6 @@ mod imp {
         fn favorite_binding(&self) -> &RefCell<Option<glib::Binding>> {
             &self.favorite_binding
         }
-        fn artist_button(&self) -> &gtk::Button {
-            &self.artist_button
-        }
-        fn album_button(&self) -> &gtk::Button {
-            &self.album_button
-        }
         fn title_label(&self) -> &gtk::Label {
             &self.title_label
         }
@@ -279,6 +271,9 @@ mod imp {
         }
         fn album_art(&self) -> &AlbumArt {
             &self.album_art
+        }
+        fn action_menu(&self) -> &gtk::MenuButton {
+            &self.action_menu
         }
     }
 

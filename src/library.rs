@@ -337,6 +337,7 @@ mod tests {
                 name: artist_name.to_string(),
                 id: artist_id.to_string(),
             }],
+            artist_items: vec![],
             date_created: Some("2025-01-01".to_string()),
             run_time_ticks: 2000000000,
             normalization_gain: None,
@@ -367,6 +368,7 @@ mod tests {
                     id: id.to_string(),
                 })
                 .collect(),
+            artist_items: vec![],
             date_created: Some("2025-01-01".to_string()),
             run_time_ticks: 2000000000,
             normalization_gain: None,
@@ -389,6 +391,7 @@ mod tests {
                 name: format!("user-data-{}", play_count),
                 id: format!("user-data-{}", play_count),
             }],
+            artist_items: vec![],
             date_created: Some("2025-01-01".to_string()),
             run_time_ticks: 2000000000,
             normalization_gain: None,
