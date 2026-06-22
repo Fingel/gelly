@@ -287,29 +287,6 @@ impl Song {
         action_group
     }
 
-    fn setup_clickable_labels(&self) {
-        let imp = self.imp();
-        // Set pointer cursor for better discoverability
-        imp.artist_button.set_cursor_from_name(Some("pointer"));
-        imp.album_button.set_cursor_from_name(Some("pointer"));
-
-        imp.artist_button.connect_clicked(glib::clone!(
-            #[weak(rename_to = song)]
-            self,
-            move |_| {
-                song.emit_by_name::<()>("artist-clicked", &[&song.song_id()]);
-            }
-        ));
-
-        imp.album_button.connect_clicked(glib::clone!(
-            #[weak(rename_to = song)]
-            self,
-            move |_| {
-                song.emit_by_name::<()>("album-clicked", &[&song.song_id()]);
-            }
-        ));
-    }
-
     fn on_add_to_playlist(&self, playlist_id: String) {
         let song_id = self.song_id();
         let app = self.get_application();
@@ -400,11 +377,7 @@ mod imp {
         #[template_child]
         pub artist_box: TemplateChild<gtk::Box>,
         #[template_child]
-        pub artist_button: TemplateChild<gtk::Button>,
-        #[template_child]
         pub artist_label: TemplateChild<gtk::Label>,
-        #[template_child]
-        pub album_button: TemplateChild<gtk::Button>,
         #[template_child]
         pub album_label: TemplateChild<gtk::Label>,
         #[template_child]
@@ -477,7 +450,6 @@ mod imp {
         fn constructed(&self) {
             self.parent_constructed();
             self.obj().setup_menu();
-            self.obj().setup_clickable_labels();
 
             // Sadly this can't be done in the template itself
             let orientation = if self.in_queue.get() {
