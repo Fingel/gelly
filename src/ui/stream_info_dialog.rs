@@ -4,16 +4,6 @@ use gtk::Window;
 use crate::i18n::tr;
 use crate::{audio::stream_info::StreamInfo, config};
 
-fn add_to_grid(row: i32, col_offset: i32, prop: &(String, String), grid: &gtk::Grid) {
-    let key = gtk::Label::new(Some(&prop.0));
-    let value = gtk::Label::new(Some(&prop.1));
-    key.set_halign(gtk::Align::End);
-    value.set_halign(gtk::Align::Start);
-    key.add_css_class("dim-label");
-    grid.attach(&key, col_offset, row, 1, 1);
-    grid.attach(&value, col_offset + 1, row, 1, 1);
-}
-
 fn yes_no(value: Option<bool>) -> String {
     match value {
         Some(true) => tr("Yes"),
@@ -22,9 +12,28 @@ fn yes_no(value: Option<bool>) -> String {
     }
 }
 
+fn create_property_row(key: &str, value: &str) -> adw::ActionRow {
+    let row = adw::ActionRow::new();
+    row.set_title(key);
+    row.set_subtitle(value);
+    row.set_subtitle_selectable(true);
+    row.set_css_classes(&["property"]);
+    row
+}
+
+fn create_listbox(properties: &[(String, String)]) -> gtk::ListBox {
+    let list_box = gtk::ListBox::new();
+    list_box.set_css_classes(&["boxed-list"]);
+    list_box.set_selection_mode(gtk::SelectionMode::None);
+    for (key, value) in properties.iter() {
+        let row = create_property_row(key, value);
+        list_box.append(&row);
+    }
+    list_box
+}
+
 pub fn show(parent: Option<&Window>, info: StreamInfo) {
-    // Local properties
-    let mut left_props = vec![
+    let mut local_props = vec![
         (
             tr("Backend"),
             config::get_backend_type().as_str().to_string(),
@@ -41,14 +50,13 @@ pub fn show(parent: Option<&Window>, info: StreamInfo) {
         (tr("Channels"), info.channels.unwrap_or(0).to_string()),
     ];
     if let Some(bit_rate) = info.bit_rate {
-        left_props.push((tr("Bit Rate"), format!("{} kbps", bit_rate)));
+        local_props.push((tr("Bit Rate"), format!("{} kbps", bit_rate)));
     }
     if let Some(encoder) = info.encoder {
-        left_props.push((tr("Encoder"), encoder));
+        local_props.push((tr("Encoder"), encoder));
     }
 
-    // Remote properties
-    let mut right_props = vec![
+    let mut remote_props = vec![
         (
             tr("Original Codec"),
             info.original_codec.unwrap_or_else(|| tr("Unknown")),
@@ -79,38 +87,16 @@ pub fn show(parent: Option<&Window>, info: StreamInfo) {
         ),
     ];
     if let Some(original_bit_rate) = info.original_bit_rate {
-        right_props.push((
+        remote_props.push((
             tr("Original Bit Rate"),
             format!("{:.1} kbps", original_bit_rate / 1000),
         ));
     }
     if let Some(file_size) = info.file_size {
-        right_props.push((
+        remote_props.push((
             tr("File Size"),
             format!("{:.1} MB", file_size / 1024 / 1024),
         ));
-    }
-
-    let num_rows = left_props.len().max(right_props.len()) as i32;
-
-    let grid = gtk::Grid::new();
-    grid.set_column_spacing(8);
-    grid.set_row_spacing(6);
-    grid.set_margin_top(12);
-    grid.set_margin_bottom(12);
-    grid.set_margin_start(12);
-    grid.set_margin_end(12);
-
-    let sep = gtk::Separator::new(gtk::Orientation::Vertical);
-    sep.set_margin_start(4);
-    sep.set_margin_end(4);
-    grid.attach(&sep, 2, 0, 1, num_rows);
-
-    for (row, prop) in left_props.iter().enumerate() {
-        add_to_grid(row as i32, 0, prop, &grid);
-    }
-    for (row, prop) in right_props.iter().enumerate() {
-        add_to_grid(row as i32, 3, prop, &grid);
     }
 
     // Create a header bar with title
@@ -120,14 +106,35 @@ pub fn show(parent: Option<&Window>, info: StreamInfo) {
     // Create a toolbar view to combine header and content
     let toolbar_view = adw::ToolbarView::new();
     toolbar_view.add_top_bar(&header_bar);
+
+    let scrolled_window = gtk::ScrolledWindow::new();
+    scrolled_window.set_policy(gtk::PolicyType::Never, gtk::PolicyType::Automatic);
+
     let whats_in_the_box = gtk::Box::new(gtk::Orientation::Vertical, 12);
-    whats_in_the_box.append(&grid);
-    toolbar_view.set_content(Some(&whats_in_the_box));
+    whats_in_the_box.set_margin_top(12);
+    whats_in_the_box.set_margin_bottom(12);
+    whats_in_the_box.set_margin_start(12);
+    whats_in_the_box.set_margin_end(12);
+
+    scrolled_window.set_child(Some(&whats_in_the_box));
+
+    let local_list_box = create_listbox(&local_props);
+    let local_label = gtk::Label::new(Some(&tr("Local Properties")));
+    whats_in_the_box.append(&local_label);
+    whats_in_the_box.append(&local_list_box);
+
+    let remote_list_box = create_listbox(&remote_props);
+    let remote_label = gtk::Label::new(Some(&tr("Remote Properties")));
+    whats_in_the_box.append(&remote_label);
+    whats_in_the_box.append(&remote_list_box);
+
+    toolbar_view.set_content(Some(&scrolled_window));
 
     let dialog = adw::Dialog::builder()
         .can_close(true)
         .child(&toolbar_view)
         .build();
-
+    dialog.set_content_width(300);
+    dialog.set_content_height(600);
     dialog.present(parent);
 }
