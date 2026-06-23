@@ -33,7 +33,7 @@ where
 {
     // state
     fn audio_model(&self) -> &AudioModel;
-    fn lyrics_window(&self) -> &RefCell<Option<WeakRef<adw::Window>>>;
+    fn lyrics_window(&self) -> &RefCell<Option<WeakRef<adw::Dialog>>>;
     fn seek_debounce_id(&self) -> &RefCell<Option<glib::SourceId>>;
     fn position_storage(&self) -> &RefCell<u32>;
     fn duration_storage(&self) -> &RefCell<u32>;
@@ -185,32 +185,28 @@ where
             .as_ref()
             .and_then(|w| w.upgrade())
         {
-            window.present();
+            window.present(self.obj().get_gtk_window().as_ref());
         } else {
             let lyrics_widget = Lyrics::new();
             let backend = self.obj().get_application().backend();
             lyrics_widget.set_jellyfin(&backend);
             lyrics_widget.bind_to_audio_model(self.audio_model());
 
-            let window = adw::Window::new();
-            window.set_content(Some(&lyrics_widget));
-            window.set_default_size(500, 600);
-
-            if let Some(parent) = self.obj().get_gtk_window() {
-                window.set_transient_for(Some(&parent));
-            }
+            let window = adw::Dialog::new();
+            window.set_content_width(500);
+            window.set_content_height(600);
+            window.set_child(Some(&lyrics_widget));
 
             let weak = self.obj().downgrade();
-            window.connect_close_request(move |_| {
+            window.connect_closed(move |_| {
                 if let Some(obj) = weak.upgrade() {
                     obj.imp().lyrics_window().replace(None);
                 }
-                glib::Propagation::Proceed
             });
 
             self.lyrics_window()
                 .replace(Some(ObjectExt::downgrade(&window)));
-            window.present();
+            window.present(self.obj().get_gtk_window().as_ref());
 
             let item_id = self.audio_model().current_song_id();
             lyrics_widget.fetch_lyrics(&item_id);

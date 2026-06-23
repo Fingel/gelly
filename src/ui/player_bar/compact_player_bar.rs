@@ -147,7 +147,7 @@ mod imp {
         pub action_menu: TemplateChild<gtk::MenuButton>,
 
         pub audio_model: OnceCell<AudioModel>,
-        pub lyrics_window: RefCell<Option<WeakRef<adw::Window>>>,
+        pub lyrics_window: RefCell<Option<WeakRef<adw::Dialog>>>,
         pub seek_debounce_id: RefCell<Option<glib::SourceId>>,
         pub favorite_binding: RefCell<Option<glib::Binding>>,
 
@@ -194,7 +194,7 @@ mod imp {
         fn audio_model(&self) -> &AudioModel {
             self.audio_model.get().expect("AudioModel not initialized")
         }
-        fn lyrics_window(&self) -> &RefCell<Option<WeakRef<adw::Window>>> {
+        fn lyrics_window(&self) -> &RefCell<Option<WeakRef<adw::Dialog>>> {
             &self.lyrics_window
         }
         fn seek_debounce_id(&self) -> &RefCell<Option<glib::SourceId>> {
