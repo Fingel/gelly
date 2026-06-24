@@ -107,7 +107,7 @@
                 <child>
                   <object class="GtkButton" id="lyrics_button">
                     <property name="icon-name">subtitles-symbolic</property>
-                    <property name="tooltip-text">Lyrics</property>
+                    <property name="tooltip-text" translatable="yes">Lyrics</property>
                     <style>
                       <class name="flat"/>
                     </style>
@@ -117,6 +117,7 @@
                   <object class="GtkToggleButton" id="favorite_button">
                     <property name="width-request">36</property>
                     <property name="height-request">36</property>
+                    <property name="tooltip-text" translatable="yes">Favorite</property>
                     <property name="child">
                       <object class="GtkImage">
                         <property name="icon-name">non-starred-symbolic</property>

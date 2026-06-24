@@ -6,6 +6,7 @@
         <property name="focusable">True</property>
         <property name="receives_default">True</property>
         <property name="icon_name">media-playlist-consecutive-symbolic</property>
+        <property name="tooltip-text" translatable="yes">Playback Mode</property>
         <style>
           <class name="flat" />
         </style>

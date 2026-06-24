@@ -199,6 +199,7 @@
                           <object class="GtkImage">
                             <property name="icon-name">help-about-symbolic</property>
                             <property name="icon-size">1</property>
+                            <property name="tooltip-text" translatable="yes">Stream Info</property>
                           </object>
                         </property>
                         <style>
@@ -209,7 +210,7 @@
                     <child>
                       <object class="GtkButton" id="lyrics_button">
                         <property name="icon-name">subtitles-symbolic</property>
-                        <property name="tooltip-text">Lyrics</property>
+                        <property name="tooltip-text" translatable="yes">Lyrics</property>
                         <style>
                           <class name="flat"/>
                         </style>
@@ -219,6 +220,7 @@
                       <object class="GtkToggleButton" id="favorite_button">
                         <property name="width-request">36</property>
                         <property name="height-request">36</property>
+                        <property name="tooltip-text" translatable="yes">Favorite</property>
                         <property name="child">
                           <object class="GtkImage">
                             <property name="icon-name">non-starred-symbolic</property>
@@ -242,6 +244,7 @@
                     <child>
                       <object class="GtkMenuButton" id="action_menu">
                         <property name="icon-name">view-more-symbolic</property>
+                        <property name="tooltip-text" translatable="yes">Song Menu</property>
                         <style>
                           <class name="flat"/>
                         </style>
@@ -254,6 +257,7 @@
                     <child>
                       <object class="GtkScaleButton" id="volume_control">
                         <property name="orientation">horizontal</property>
+                        <property name="tooltip-text" translatable="yes">Volume</property>
                         <property name="adjustment">
                           <object class="GtkAdjustment">
                             <property name="lower">0</property>
