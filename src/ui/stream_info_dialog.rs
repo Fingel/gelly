@@ -1,5 +1,5 @@
 use adw::prelude::*;
-use gtk::Window;
+use gtk::{Window, glib};
 
 use crate::i18n::tr;
 use crate::{audio::stream_info::StreamInfo, config};
@@ -16,8 +16,19 @@ fn create_property_row(key: &str, value: &str) -> adw::ActionRow {
     let row = adw::ActionRow::new();
     row.set_title(key);
     row.set_subtitle(value);
-    row.set_subtitle_selectable(true);
     row.set_css_classes(&["property"]);
+    let copy_btn = gtk::Button::from_icon_name("edit-copy-symbolic");
+    copy_btn.set_css_classes(&["flat"]);
+    let copy_value = value.to_string();
+    copy_btn.connect_clicked(glib::clone!(
+        #[weak(rename_to = btn)]
+        row,
+        move |_| {
+            btn.clipboard().set_text(&copy_value);
+        }
+    ));
+    row.set_activatable_widget(Some(&copy_btn));
+    row.add_suffix(&copy_btn);
     row
 }
 
@@ -120,11 +131,15 @@ pub fn show(parent: Option<&Window>, info: StreamInfo) {
 
     let local_list_box = create_listbox(&local_props);
     let local_label = gtk::Label::new(Some(&tr("Local Properties")));
+    local_label.set_halign(gtk::Align::Start);
+    local_label.set_css_classes(&["heading"]);
     whats_in_the_box.append(&local_label);
     whats_in_the_box.append(&local_list_box);
 
     let remote_list_box = create_listbox(&remote_props);
     let remote_label = gtk::Label::new(Some(&tr("Remote Properties")));
+    remote_label.set_halign(gtk::Align::Start);
+    remote_label.set_css_classes(&["heading"]);
     whats_in_the_box.append(&remote_label);
     whats_in_the_box.append(&remote_list_box);
 
@@ -134,7 +149,7 @@ pub fn show(parent: Option<&Window>, info: StreamInfo) {
         .can_close(true)
         .child(&toolbar_view)
         .build();
-    dialog.set_content_width(300);
+    dialog.set_content_width(400);
     dialog.set_content_height(600);
     dialog.present(parent);
 }
