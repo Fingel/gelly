@@ -64,3 +64,7 @@ resources/ui/shortcuts_dialog.ui
 resources/ui/song.ui
 resources/ui/song_list.ui
 resources/ui/window.ui
+resources/ui/player_bar/big_player.ui
+resources/ui/player_bar/compact_player_bar.ui
+resources/ui/player_bar/full_player_bar.ui
+resources/ui/player_bar/mini_player.ui

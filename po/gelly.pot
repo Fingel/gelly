@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-22 13:44-0700\n"
+"POT-Creation-Date: 2026-06-23 19:59-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -101,15 +101,15 @@ msgstr ""
 msgid "Unknown Artist"
 msgstr ""
 
-#: src/ui/player_bar/common.rs:257 src/ui/song.rs:273
+#: src/ui/player_bar/common.rs:253 src/ui/song.rs:273
 msgid "Added song to playlist"
 msgstr ""
 
-#: src/ui/player_bar/common.rs:261 src/ui/song.rs:277
+#: src/ui/player_bar/common.rs:257 src/ui/song.rs:277
 msgid "Failed to add song to playlist"
 msgstr ""
 
-#: src/ui/player_bar/common.rs:285 src/ui/song.rs:319
+#: src/ui/player_bar/common.rs:281 src/ui/song.rs:319
 msgid "Song ID copied to clipboard"
 msgstr ""
 
@@ -240,89 +240,98 @@ msgstr ""
 msgid "Quick connect code copied to clipboard"
 msgstr ""
 
-#: src/ui/stream_info_dialog.rs:19
+#: src/ui/stream_info_dialog.rs:9
 msgid "Yes"
 msgstr ""
 
-#: src/ui/stream_info_dialog.rs:20
+#: src/ui/stream_info_dialog.rs:10
 msgid "No"
 msgstr ""
 
-#: src/ui/stream_info_dialog.rs:21 src/ui/stream_info_dialog.rs:32
-#: src/ui/stream_info_dialog.rs:54
+#: src/ui/stream_info_dialog.rs:11 src/ui/stream_info_dialog.rs:52
+#: src/ui/stream_info_dialog.rs:73
 msgid "Unknown"
 msgstr ""
 
-#: src/ui/stream_info_dialog.rs:29
+#: src/ui/stream_info_dialog.rs:49
 msgid "Backend"
 msgstr ""
 
-#: src/ui/stream_info_dialog.rs:32
+#: src/ui/stream_info_dialog.rs:52
 msgid "Codec"
 msgstr ""
 
-#: src/ui/stream_info_dialog.rs:34
+#: src/ui/stream_info_dialog.rs:54
 msgid "Container"
 msgstr ""
 
-#: src/ui/stream_info_dialog.rs:35 src/ui/stream_info_dialog.rs:58
+#: src/ui/stream_info_dialog.rs:55 src/ui/stream_info_dialog.rs:77
 msgid "None"
 msgstr ""
 
-#: src/ui/stream_info_dialog.rs:38
+#: src/ui/stream_info_dialog.rs:58
 msgid "Sample Rate"
 msgstr ""
 
-#: src/ui/stream_info_dialog.rs:41
+#: src/ui/stream_info_dialog.rs:61
 msgid "Channels"
 msgstr ""
 
-#: src/ui/stream_info_dialog.rs:44
+#: src/ui/stream_info_dialog.rs:64
 msgid "Bit Rate"
 msgstr ""
 
-#: src/ui/stream_info_dialog.rs:47
+#: src/ui/stream_info_dialog.rs:67
 msgid "Encoder"
 msgstr ""
 
-#: src/ui/stream_info_dialog.rs:53
+#: src/ui/stream_info_dialog.rs:72
 msgid "Original Codec"
 msgstr ""
 
-#: src/ui/stream_info_dialog.rs:57
+#: src/ui/stream_info_dialog.rs:76
 msgid "Original Container"
 msgstr ""
 
-#: src/ui/stream_info_dialog.rs:61
+#: src/ui/stream_info_dialog.rs:80
 msgid "Original Sample Rate"
 msgstr ""
 
-#: src/ui/stream_info_dialog.rs:65
+#: src/ui/stream_info_dialog.rs:84
 msgid "Original Channels"
 msgstr ""
 
-#: src/ui/stream_info_dialog.rs:69
+#: src/ui/stream_info_dialog.rs:88
 msgid "Supports Direct Play"
 msgstr ""
 
-#: src/ui/stream_info_dialog.rs:73
+#: src/ui/stream_info_dialog.rs:92
 msgid "Supports Direct Stream"
 msgstr ""
 
-#: src/ui/stream_info_dialog.rs:77
+#: src/ui/stream_info_dialog.rs:96
 msgid "Supports Transcoding"
 msgstr ""
 
-#: src/ui/stream_info_dialog.rs:83
+#: src/ui/stream_info_dialog.rs:102
 msgid "Original Bit Rate"
 msgstr ""
 
-#: src/ui/stream_info_dialog.rs:89
+#: src/ui/stream_info_dialog.rs:108
 msgid "File Size"
 msgstr ""
 
-#: src/ui/stream_info_dialog.rs:118
+#: src/ui/stream_info_dialog.rs:115 resources/ui/player_bar/big_player.ui:173
+#: resources/ui/player_bar/full_player_bar.ui:202
 msgid "Stream Info"
+msgstr ""
+
+#: src/ui/stream_info_dialog.rs:133
+msgid "Local Properties"
+msgstr ""
+
+#: src/ui/stream_info_dialog.rs:140
+msgid "Remote Properties"
 msgstr ""
 
 #: src/ui/window.rs:178
@@ -355,6 +364,10 @@ msgstr ""
 
 #: resources/ui/lyrics.ui:56
 msgid "No lyrics available"
+msgstr ""
+
+#: resources/ui/playback_mode.ui:9
+msgid "Playback Mode"
 msgstr ""
 
 #: resources/ui/playlist_detail.ui:127
@@ -691,4 +704,26 @@ msgstr ""
 
 #: resources/ui/window.ui:394
 msgid "Logout"
+msgstr ""
+
+#: resources/ui/player_bar/big_player.ui:184
+#: resources/ui/player_bar/compact_player_bar.ui:110
+#: resources/ui/player_bar/full_player_bar.ui:213
+msgid "Lyrics"
+msgstr ""
+
+#: resources/ui/player_bar/big_player.ui:194
+#: resources/ui/player_bar/compact_player_bar.ui:120
+#: resources/ui/player_bar/full_player_bar.ui:223
+msgid "Favorite"
+msgstr ""
+
+#: resources/ui/player_bar/big_player.ui:214
+#: resources/ui/player_bar/full_player_bar.ui:260
+msgid "Volume"
+msgstr ""
+
+#: resources/ui/player_bar/big_player.ui:229
+#: resources/ui/player_bar/full_player_bar.ui:247
+msgid "Song Menu"
 msgstr ""
