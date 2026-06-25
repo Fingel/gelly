@@ -35,15 +35,15 @@
             <property name="margin-top">9</property>
             <property name="margin-start">12</property>
             <property name="margin-end">12</property>
-            <child type="start">
+            <property name="start-widget">
               <object class="GtkButton" id="queue_position">
                 <property name="has-frame">false</property>
                 <property name="tooltip-text" translatable="yes">Jump to current song</property>
               </object>
-            </child>
-            <child type="end">
+            </property>
+            <property name="end-widget">
               <object class="GtkLabel" id="queue_duration"/>
-            </child>
+            </property>
           </object>
         </child>
       </object>
