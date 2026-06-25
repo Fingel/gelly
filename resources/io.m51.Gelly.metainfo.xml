@@ -70,6 +70,27 @@
     <color type="primary" scheme_preference="dark">#325a4a</color>
   </branding>
   <releases>
+    <release version="1.8.0" date="2026-06-25">
+      <description>
+        <ul>
+          <li>
+            Individual song artists should now display properly, while the artist list remains
+            album artist only. This was a long requested feature that should better expose metadata
+            on a per-song basis.
+          </li>
+          <li>
+            Redesign stream info and lyrics windows to be dialogs instead of separate windows.
+          </li>
+          <li>
+            Add "go to artist, album" actions to most context menus. Remove clickable labels which where awkward
+            and problematic with smaller viewports.
+          </li>
+          <li>
+            Many smaller fixes, and more translations. Thank you!
+          </li>
+        </ul>
+      </description>
+    </release>
     <release version="1.7.0" date="2026-06-17">
       <description>
         <ul>
