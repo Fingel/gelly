@@ -47,6 +47,10 @@ Gelly is available on the [aur](https://aur.archlinux.org/packages/gelly):
 
     nix-shell -p gelly
 
+### ALT Linux (Sisyphus)
+
+    sudo apt-get install gelly
+
 ## Command line interface
 
 Gelly has a few basic command line options that can be sent to the running
