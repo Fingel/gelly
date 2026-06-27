@@ -15,7 +15,7 @@ use crate::{
     jellyfin::{api::ItemType, utils::format_duration},
     models::SongModel,
     ui::{
-        music_context_menu::{ContextActions, construct_menu},
+        music_context_menu::{ContextActions, add_to_playlist_dialog, construct_menu},
         widget_ext::WidgetApplicationExt,
     },
 };
@@ -253,6 +253,7 @@ impl Song {
         add_noarg_action("copy_id", Self::on_copy_id);
         add_noarg_action("go_to_album", Self::on_go_to_album);
         add_noarg_action("go_to_artist", Self::on_go_to_artist);
+        add_noarg_action("add_to_playlist_dialog", Self::on_add_to_playlist_dialog);
 
         action_group
     }
@@ -277,6 +278,23 @@ impl Song {
                             song.toast(&tr("Failed to add song to playlist"), None);
                             warn!("Failed to add song to playlist: {}", e);
                         }
+                    }
+                }
+            ),
+        );
+    }
+
+    fn on_add_to_playlist_dialog(&self) {
+        let playlists = self.get_application().playlists().borrow().clone();
+        add_to_playlist_dialog(
+            self.get_gtk_window().as_ref(),
+            playlists,
+            glib::clone!(
+                #[weak(rename_to = song)]
+                self,
+                move |playlist_id| {
+                    if let Some(playlist_id) = playlist_id {
+                        song.on_add_to_playlist(playlist_id);
                     }
                 }
             ),

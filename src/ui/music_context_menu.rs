@@ -1,3 +1,4 @@
+use adw::prelude::{AdwDialogExt, AlertDialogExt, AlertDialogExtManual};
 use gtk::{self, gio, prelude::*};
 
 use crate::i18n::tr;
@@ -26,6 +27,44 @@ pub fn construct_menu(
         popover.set_menu_model(Some(&menu_model));
     });
     popover_menu
+}
+
+pub fn add_to_playlist_dialog(
+    window: Option<&gtk::Window>,
+    playlists: Vec<PlaylistDto>,
+    cb: impl Fn(Option<String>) + 'static,
+) -> adw::AlertDialog {
+    let dialog = adw::AlertDialog::new(Some(&tr("Add to Playlist")), None);
+    dialog.add_responses(&[("cancel", &tr("Cancel")), ("add", &tr("Add"))]);
+    dialog.set_response_appearance("add", adw::ResponseAppearance::Suggested);
+    dialog.set_default_response(Some("add"));
+    dialog.set_close_response("cancel");
+
+    let strings: Vec<&str> = playlists.iter().map(|s| s.name.as_str()).collect();
+    let model = gtk::StringList::new(&strings);
+    let expression = gtk::PropertyExpression::new(
+        gtk::StringObject::static_type(),
+        None::<gtk::Expression>,
+        "string",
+    );
+    let playlists_dropdown = gtk::DropDown::builder()
+        .model(&model)
+        .expression(&expression)
+        .enable_search(true)
+        .search_match_mode(gtk::StringFilterMatchMode::Substring)
+        .build();
+
+    dialog.set_extra_child(Some(&playlists_dropdown));
+    dialog.connect_response(Some("add"), move |_, response| {
+        if response == "add" {
+            let selected_index = playlists_dropdown.selected();
+            if let Some(selected_playlist) = playlists.get(selected_index as usize) {
+                cb(Some(selected_playlist.id.clone()));
+            }
+        }
+    });
+    dialog.present(window);
+    dialog
 }
 
 fn create_menu_model(config: &ContextActions, playlists: &[PlaylistDto]) -> gio::Menu {
@@ -68,6 +107,11 @@ fn create_menu_model(config: &ContextActions, playlists: &[PlaylistDto]) -> gio:
             Some(&format!("{}.remove_playlist", config.action_prefix)),
         );
     }
+    playlist_section.append(
+        Some(&tr("Add to Playlist...")),
+        Some(&format!("{}.add_to_playlist_dialog", config.action_prefix)),
+    );
+
     menu.append_section(None, &playlist_section);
 
     let navigation_section = gio::Menu::new();
