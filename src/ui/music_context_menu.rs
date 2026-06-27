@@ -41,18 +41,11 @@ pub fn add_to_playlist_dialog(
     dialog.set_close_response("cancel");
 
     let strings: Vec<&str> = playlists.iter().map(|s| s.name.as_str()).collect();
-    let model = gtk::StringList::new(&strings);
-    let expression = gtk::PropertyExpression::new(
-        gtk::StringObject::static_type(),
-        None::<gtk::Expression>,
-        "string",
-    );
-    let playlists_dropdown = gtk::DropDown::builder()
-        .model(&model)
-        .expression(&expression)
-        .enable_search(true)
-        .search_match_mode(gtk::StringFilterMatchMode::Substring)
-        .build();
+    let expression = gtk::StringObject::this_expression("string");
+    let playlists_dropdown = gtk::DropDown::from_strings(&strings);
+    playlists_dropdown.set_enable_search(true);
+    playlists_dropdown.set_search_match_mode(gtk::StringFilterMatchMode::Substring);
+    playlists_dropdown.set_expression(Some(&expression));
 
     dialog.set_extra_child(Some(&playlists_dropdown));
     dialog.connect_response(Some("add"), move |_, response| {
