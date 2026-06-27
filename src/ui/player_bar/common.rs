@@ -6,7 +6,7 @@ use crate::{
     ui::{
         album_art::AlbumArt,
         lyrics::Lyrics,
-        music_context_menu::{ContextActions, construct_menu},
+        music_context_menu::{ContextActions, add_to_playlist_dialog, construct_menu},
         stream_info_dialog,
         widget_ext::WidgetApplicationExt,
     },
@@ -263,6 +263,22 @@ where
         );
     }
 
+    fn on_add_to_playlist_dialog(&self) {
+        let playlists = self.obj().get_application().playlists().borrow().clone();
+        let weak = self.obj().downgrade();
+        add_to_playlist_dialog(
+            self.obj().get_gtk_window().as_ref(),
+            playlists,
+            move |playlist_id| {
+                if let Some(playlist_id) = playlist_id
+                    && let Some(player) = weak.upgrade()
+                {
+                    player.imp().on_add_to_playlist(playlist_id);
+                }
+            },
+        );
+    }
+
     fn on_queue_next(&self) {
         if let Some(song_model) = self.audio_model().current_song() {
             self.audio_model().prepend_to_queue(vec![song_model]);
@@ -334,6 +350,7 @@ where
         add_noarg_action("copy_id", Self::on_copy_id);
         add_noarg_action("go_to_album", Self::on_go_to_album);
         add_noarg_action("go_to_artist", Self::on_go_to_artist);
+        add_noarg_action("add_to_playlist_dialog", Self::on_add_to_playlist_dialog);
 
         action_group
     }
