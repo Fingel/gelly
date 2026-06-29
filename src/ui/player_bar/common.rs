@@ -305,14 +305,7 @@ where
             go_to_artist: true,
             go_to_album: true,
         };
-        let weak = self.obj().downgrade();
-        let menu = construct_menu(&options, move || {
-            if let Some(obj) = weak.upgrade() {
-                obj.get_application().playlists().borrow().clone()
-            } else {
-                Vec::new()
-            }
-        });
+        let menu = construct_menu(&options);
         self.action_menu().set_popover(Some(&menu));
         let action_group = self.create_action_group();
         self.obj()

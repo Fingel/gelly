@@ -200,15 +200,7 @@ impl Song {
             go_to_album: true,
             go_to_artist: true,
         };
-        let popover_menu = construct_menu(
-            &options,
-            glib::clone!(
-                #[weak(rename_to = song)]
-                self,
-                #[upgrade_or_default]
-                move || song.get_application().playlists().borrow().clone()
-            ),
-        );
+        let popover_menu = construct_menu(&options);
         self.imp().song_menu.set_popover(Some(&popover_menu));
         let action_group = self.create_action_group();
         self.insert_action_group(&options.action_prefix, Some(&action_group));
@@ -217,6 +209,7 @@ impl Song {
     fn create_action_group(&self) -> SimpleActionGroup {
         let action_group = SimpleActionGroup::new();
 
+        // TODO share this?
         let add_noarg_action = |name: &str, handler: fn(&Self)| {
             let action = SimpleAction::new(name, None);
             action.connect_activate(glib::clone!(
@@ -226,19 +219,6 @@ impl Song {
             ));
             action_group.add_action(&action);
         };
-
-        let add_to_playlist_action =
-            gio::SimpleAction::new("add_to_playlist", Some(glib::VariantTy::STRING));
-        add_to_playlist_action.connect_activate(glib::clone!(
-            #[weak(rename_to = song)]
-            self,
-            move |_, playlist_id| {
-                if let Some(playlist_id) = playlist_id.and_then(|id| id.get::<String>()) {
-                    song.on_add_to_playlist(playlist_id);
-                }
-            }
-        ));
-        action_group.add_action(&add_to_playlist_action);
 
         let remove_from_playlist_action = gio::SimpleAction::new("remove_playlist", None);
         remove_from_playlist_action.connect_activate(glib::clone!(

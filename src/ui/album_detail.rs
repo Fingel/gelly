@@ -4,7 +4,7 @@ use crate::{
     jellyfin::utils::format_duration,
     models::{AlbumModel, SongModel},
     ui::{
-        music_context_menu::{ContextActions, construct_menu},
+        music_context_menu::{ContextActions, add_to_playlist_dialog, construct_menu},
         page_traits::DetailPage,
         song::Song,
         song_utils::{self, connect_song_navigation},
@@ -231,15 +231,7 @@ impl AlbumDetail {
             go_to_artist: true,
             go_to_album: false,
         };
-        let popover_menu = construct_menu(
-            &options,
-            glib::clone!(
-                #[weak(rename_to = album)]
-                self,
-                #[upgrade_or_default]
-                move || album.get_application().playlists().borrow().clone()
-            ),
-        );
+        let popover_menu = construct_menu(&options);
         self.imp().action_menu.set_popover(Some(&popover_menu));
         let action_group = self.create_action_group();
         self.insert_action_group(&options.action_prefix, Some(&action_group));
@@ -248,15 +240,12 @@ impl AlbumDetail {
     fn create_action_group(&self) -> SimpleActionGroup {
         let action_group = gio::SimpleActionGroup::new();
 
-        let add_to_playlist_action =
-            gio::SimpleAction::new("add_to_playlist", Some(glib::VariantTy::STRING));
+        let add_to_playlist_action = gio::SimpleAction::new("add_to_playlist_dialog", None);
         add_to_playlist_action.connect_activate(glib::clone!(
             #[weak(rename_to = album)]
             self,
-            move |_, playlist_id| {
-                if let Some(playlist_id) = playlist_id.and_then(|id| id.get::<String>()) {
-                    album.on_add_to_playlist(playlist_id);
-                }
+            move |_, _| {
+                album.on_add_to_playlist_dialog();
             }
         ));
         action_group.add_action(&add_to_playlist_action);
@@ -327,6 +316,23 @@ impl AlbumDetail {
                             album.toast(&tr("Failed to add album to playlist"), None);
                             warn!("Failed to add album to playlist: {}", e);
                         }
+                    }
+                }
+            ),
+        );
+    }
+
+    fn on_add_to_playlist_dialog(&self) {
+        let playlists = self.get_application().playlists().borrow().clone();
+        add_to_playlist_dialog(
+            self.get_gtk_window().as_ref(),
+            playlists,
+            glib::clone!(
+                #[weak(rename_to = album)]
+                self,
+                move |playlist_id| {
+                    if let Some(playlist_id) = playlist_id {
+                        album.on_add_to_playlist(playlist_id);
                     }
                 }
             ),

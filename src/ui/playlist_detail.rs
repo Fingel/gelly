@@ -6,7 +6,7 @@ use crate::{
     library_utils::songs_for_playlist,
     models::{PlaylistModel, SongModel},
     ui::{
-        music_context_menu::{ContextActions, construct_menu},
+        music_context_menu::{ContextActions, add_to_playlist_dialog, construct_menu},
         page_traits::DetailPage,
         playlist_dialogs,
         song::{Song, SongOptions},
@@ -282,19 +282,7 @@ impl PlaylistDetail {
             go_to_album: false,
             go_to_artist: false,
         };
-        let popover_menu = construct_menu(
-            &options,
-            glib::clone!(
-                #[weak(rename_to = playlist_detail)]
-                self,
-                #[upgrade_or_default]
-                move || playlist_detail
-                    .get_application()
-                    .playlists()
-                    .borrow()
-                    .clone()
-            ),
-        );
+        let popover_menu = construct_menu(&options);
         self.imp().action_menu.set_popover(Some(&popover_menu));
         let action_group = self.create_action_group();
         self.insert_action_group(&options.action_prefix, Some(&action_group));
@@ -303,15 +291,12 @@ impl PlaylistDetail {
     fn create_action_group(&self) -> SimpleActionGroup {
         let action_group = SimpleActionGroup::new();
 
-        let add_to_playlist_action =
-            gio::SimpleAction::new("add_to_playlist", Some(glib::VariantTy::STRING));
+        let add_to_playlist_action = gio::SimpleAction::new("add_to_playlist_dialog", None);
         add_to_playlist_action.connect_activate(glib::clone!(
             #[weak(rename_to = playlist)]
             self,
-            move |_, playlist_id| {
-                if let Some(playlist_id) = playlist_id.and_then(|id| id.get::<String>()) {
-                    playlist.on_add_to_playlist(playlist_id);
-                }
+            move |_, _| {
+                playlist.on_add_to_playlist_dialog();
             }
         ));
         action_group.add_action(&add_to_playlist_action);
@@ -376,6 +361,23 @@ impl PlaylistDetail {
                             playlist.toast(&tr("Failed to add songs to playlist"), None);
                             warn!("Failed to add songs to playlist: {}", e);
                         }
+                    }
+                }
+            ),
+        );
+    }
+
+    fn on_add_to_playlist_dialog(&self) {
+        let playlists = self.get_application().playlists().borrow().clone();
+        add_to_playlist_dialog(
+            self.get_gtk_window().as_ref(),
+            playlists,
+            glib::clone!(
+                #[weak(rename_to = playlist)]
+                self,
+                move |playlist_id| {
+                    if let Some(playlist_id) = playlist_id {
+                        playlist.on_add_to_playlist(playlist_id);
                     }
                 }
             ),
