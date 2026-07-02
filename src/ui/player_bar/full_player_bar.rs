@@ -140,8 +140,6 @@ mod imp {
         #[template_child]
         pub volume_control: TemplateChild<gtk::ScaleButton>,
         #[template_child]
-        pub info_button: TemplateChild<gtk::Button>,
-        #[template_child]
         pub lyrics_button: TemplateChild<gtk::Button>,
         #[template_child]
         pub favorite_button: TemplateChild<gtk::ToggleButton>,
@@ -221,9 +219,6 @@ mod imp {
         }
         fn volume_control(&self) -> &gtk::ScaleButton {
             &self.volume_control
-        }
-        fn info_button(&self) -> &gtk::Button {
-            &self.info_button
         }
         fn position_scale(&self) -> &gtk::Scale {
             &self.position_scale

@@ -230,6 +230,7 @@ impl AlbumDetail {
             action_prefix: "album".to_string(),
             go_to_artist: true,
             go_to_album: false,
+            show_info_dialog: false,
         };
         let popover_menu = construct_menu(&options);
         self.imp().action_menu.set_popover(Some(&popover_menu));

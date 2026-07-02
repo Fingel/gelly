@@ -174,6 +174,8 @@ pub struct MediaStream {
 pub struct MediaSource {
     #[serde(deserialize_with = "deserialize_items_skip_errors")]
     pub media_streams: Vec<MediaStream>,
+    pub id: Option<String>,
+    pub path: Option<String>,
     pub container: Option<String>,
     pub size: Option<u64>,
     pub supports_direct_stream: Option<bool>,

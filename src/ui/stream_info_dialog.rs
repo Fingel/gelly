@@ -110,9 +110,14 @@ pub fn show(parent: Option<&Window>, info: StreamInfo) {
         ));
     }
 
+    let song_props = vec![
+        (tr("Id"), info.id.unwrap_or_else(|| tr("Unknown"))),
+        (tr("Path"), info.path.unwrap_or_else(|| tr("Unknown"))),
+    ];
+
     // Create a header bar with title
     let header_bar = adw::HeaderBar::new();
-    header_bar.set_title_widget(Some(&adw::WindowTitle::new(&tr("Stream Info"), "")));
+    header_bar.set_title_widget(Some(&adw::WindowTitle::new(&tr("Song Info"), "")));
 
     // Create a toolbar view to combine header and content
     let toolbar_view = adw::ToolbarView::new();
@@ -128,6 +133,13 @@ pub fn show(parent: Option<&Window>, info: StreamInfo) {
     whats_in_the_box.set_margin_end(12);
 
     scrolled_window.set_child(Some(&whats_in_the_box));
+
+    let song_list_box = create_listbox(&song_props);
+    let song_label = gtk::Label::new(Some(&tr("Song Properties")));
+    song_label.set_halign(gtk::Align::Start);
+    song_label.set_css_classes(&["heading"]);
+    whats_in_the_box.append(&song_label);
+    whats_in_the_box.append(&song_list_box);
 
     let local_list_box = create_listbox(&local_props);
     let local_label = gtk::Label::new(Some(&tr("Local Properties")));
