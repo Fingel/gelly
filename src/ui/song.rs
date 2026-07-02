@@ -11,11 +11,13 @@ use log::warn;
 
 use crate::{
     async_utils::spawn_tokio,
+    audio::stream_info::discover_stream_info,
     i18n::tr,
     jellyfin::{api::ItemType, utils::format_duration},
     models::SongModel,
     ui::{
         music_context_menu::{ContextActions, add_to_playlist_dialog, construct_menu},
+        stream_info_dialog,
         widget_ext::WidgetApplicationExt,
     },
 };
@@ -199,6 +201,7 @@ impl Song {
             action_prefix: "song".to_string(),
             go_to_album: true,
             go_to_artist: true,
+            show_info_dialog: true,
         };
         let popover_menu = construct_menu(&options);
         self.imp().song_menu.set_popover(Some(&popover_menu));
@@ -230,10 +233,10 @@ impl Song {
 
         add_noarg_action("queue_next", Self::on_queue_next);
         add_noarg_action("queue_last", Self::on_queue_last);
-        add_noarg_action("copy_id", Self::on_copy_id);
         add_noarg_action("go_to_album", Self::on_go_to_album);
         add_noarg_action("go_to_artist", Self::on_go_to_artist);
         add_noarg_action("add_to_playlist_dialog", Self::on_add_to_playlist_dialog);
+        add_noarg_action("show_info_dialog", Self::show_info_dialog);
 
         action_group
     }
@@ -281,6 +284,24 @@ impl Song {
         );
     }
 
+    fn show_info_dialog(&self) {
+        let song_id = self.song_id();
+        let backend = self.get_application().backend();
+        let uri = backend.get_stream_uri(&song_id);
+        discover_stream_info(
+            &uri,
+            &song_id,
+            &backend,
+            glib::clone!(
+                #[weak(rename_to = song)]
+                self,
+                move |stream_info| {
+                    stream_info_dialog::show(song.get_gtk_window().as_ref(), stream_info);
+                }
+            ),
+        );
+    }
+
     fn on_remove_from_playlist(&self) {
         self.emit_by_name::<()>("remove-from-playlist", &[&self.song_id()]);
     }
@@ -309,12 +330,6 @@ impl Song {
 
     fn on_go_to_artist(&self) {
         self.emit_by_name::<()>("artist-clicked", &[&self.song_id()]);
-    }
-
-    fn on_copy_id(&self) {
-        let id = self.song_id();
-        self.clipboard().set_text(&id);
-        self.toast(&tr("Song ID copied to clipboard"), None);
     }
 }
 

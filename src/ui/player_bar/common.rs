@@ -291,12 +291,6 @@ where
         }
     }
 
-    fn on_copy_id(&self) {
-        let id = self.audio_model().current_song_id();
-        self.obj().clipboard().set_text(&id);
-        self.obj().toast(&tr("Song ID copied to clipboard"), None);
-    }
-
     fn setup_menu(&self) {
         let options = ContextActions {
             can_remove_from_playlist: false,
@@ -304,6 +298,7 @@ where
             action_prefix: "song".to_string(),
             go_to_artist: true,
             go_to_album: true,
+            show_info_dialog: true,
         };
         let menu = construct_menu(&options);
         self.action_menu().set_popover(Some(&menu));
@@ -340,10 +335,10 @@ where
 
         add_noarg_action("queue_next", Self::on_queue_next);
         add_noarg_action("queue_last", Self::on_queue_last);
-        add_noarg_action("copy_id", Self::on_copy_id);
         add_noarg_action("go_to_album", Self::on_go_to_album);
         add_noarg_action("go_to_artist", Self::on_go_to_artist);
         add_noarg_action("add_to_playlist_dialog", Self::on_add_to_playlist_dialog);
+        add_noarg_action("show_info_dialog", Self::show_info_dialog);
 
         action_group
     }

@@ -11,6 +11,7 @@ pub struct ContextActions {
     pub action_prefix: String,
     pub go_to_artist: bool,
     pub go_to_album: bool,
+    pub show_info_dialog: bool,
 }
 
 pub fn construct_menu(config: &ContextActions) -> gtk::PopoverMenu {
@@ -80,7 +81,7 @@ fn create_menu_model(config: &ContextActions) -> gio::Menu {
     // Playlist section
     let playlist_section = gio::Menu::new();
     playlist_section.append(
-        Some(&tr("Add to Playlist...")),
+        Some(&tr("Add to Playlist")),
         Some(&format!("{}.add_to_playlist_dialog", config.action_prefix)),
     );
     if config.can_remove_from_playlist {
@@ -109,10 +110,17 @@ fn create_menu_model(config: &ContextActions) -> gio::Menu {
     menu.append_section(None, &navigation_section);
 
     let other_section = gio::Menu::new();
-    other_section.append(
-        Some(&tr("Copy ID")),
-        Some(&format!("{}.copy_id", config.action_prefix)),
-    );
+    if config.show_info_dialog {
+        other_section.append(
+            Some(&tr("Song Info")),
+            Some(&format!("{}.show_info_dialog", config.action_prefix)),
+        );
+    } else {
+        other_section.append(
+            Some(&tr("Copy ID")),
+            Some(&format!("{}.copy_id", config.action_prefix)),
+        )
+    }
     menu.append_section(None, &other_section);
 
     menu
