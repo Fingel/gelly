@@ -19,6 +19,9 @@ pub enum StreamInfoError {
 
 #[derive(Default, Debug)]
 pub struct StreamInfo {
+    // File properties
+    pub id: Option<String>,
+    pub path: Option<String>,
     // Gstreamer properties
     pub codec: Option<String>,
     pub sample_rate: Option<i32>,
@@ -99,6 +102,7 @@ pub fn discover_stream_info(
                     stream_info.supports_direct_play = media_source.supports_direct_play;
                     stream_info.supports_direct_stream = media_source.supports_direct_stream;
                     stream_info.supports_transcoding = media_source.supports_transcoding;
+                    stream_info.path = media_source.path.clone();
 
                     for media_stream in &media_source.media_streams {
                         if media_stream.type_ == Some("Audio".to_string()) {
@@ -110,7 +114,7 @@ pub fn discover_stream_info(
                         }
                     }
                 }
-
+                stream_info.id = Some(item_id);
                 Ok(stream_info)
             })
             .await

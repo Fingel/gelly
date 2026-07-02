@@ -656,6 +656,8 @@ impl Subsonic {
 
         let media_source = MediaSource {
             media_streams: vec![media_stream],
+            id: Some(song.id.clone()),
+            path: song.path.clone(),
             container: song.suffix,
             size: song.size,
             supports_direct_play: Some(true),
