@@ -173,9 +173,6 @@
                   <object class="GtkLabel" id="album_label"/>
                 </child>
                 <child>
-                  <object class="GtkButton" id="info_button"/>
-                </child>
-                <child>
                   <object class="GtkScaleButton" id="volume_control">
                     <property name="adjustment">
                       <object class="GtkAdjustment">

@@ -44,7 +44,6 @@ where
     fn next_button(&self) -> &gtk::Button;
     fn prev_button(&self) -> &gtk::Button;
     fn volume_control(&self) -> &gtk::ScaleButton;
-    fn info_button(&self) -> &gtk::Button;
     fn position_scale(&self) -> &gtk::Scale;
     fn position_label(&self) -> &gtk::Label;
     fn duration_label(&self) -> &gtk::Label;
@@ -400,15 +399,6 @@ where
             }
         });
         self.volume_control().add_controller(middle_click);
-
-        self.info_button().connect_clicked({
-            let weak = weak.clone();
-            move |_| {
-                if let Some(obj) = weak.upgrade() {
-                    obj.imp().show_info_dialog();
-                }
-            }
-        });
 
         self.position_scale().connect_change_value({
             let weak = weak.clone();
