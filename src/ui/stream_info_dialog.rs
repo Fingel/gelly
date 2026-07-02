@@ -117,7 +117,7 @@ pub fn show(parent: Option<&Window>, info: StreamInfo) {
 
     // Create a header bar with title
     let header_bar = adw::HeaderBar::new();
-    header_bar.set_title_widget(Some(&adw::WindowTitle::new(&tr("Stream Info"), "")));
+    header_bar.set_title_widget(Some(&adw::WindowTitle::new(&tr("Song Info"), "")));
 
     // Create a toolbar view to combine header and content
     let toolbar_view = adw::ToolbarView::new();
