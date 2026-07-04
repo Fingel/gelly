@@ -548,6 +548,8 @@ mod imp {
                 .bidirectional()
                 .build();
 
+            self.search_bar.connect_entry(&self.search_entry.get());
+
             self.sort_button
                 .bind_property("active", &self.sort_bar.get(), "search-mode-enabled")
                 .bidirectional()

@@ -157,7 +157,7 @@
                                             <child type="start">
                                               <object class="GtkToggleButton" id="search_button">
                                                 <property name="icon-name">edit-find-symbolic</property>
-                                                <property name="tooltip-text" translatable="yes">Search</property>
+                                                <property name="tooltip-text" translatable="yes">Search and Genres</property>
                                               </object>
                                             </child>
                                             <child type="start">
@@ -194,8 +194,19 @@
                                             <property name="show-close-button">true</property>
                                             <property name="search-mode-enabled">false</property>
                                             <property name="child">
-                                              <object class="GtkSearchEntry" id="search_entry">
-                                                <property name="placeholder-text" translatable="yes">Search...</property>
+                                              <object class="GtkBox">
+                                                <property name="orientation">horizontal</property>
+                                                <property name="spacing">6</property>
+                                                <child>
+                                                  <object class="GtkSearchEntry" id="search_entry">
+                                                    <property name="placeholder-text" translatable="yes">Search...</property>
+                                                  </object>
+                                                </child>
+                                                <child>
+                                                  <object class="GtkDropDown" id="genre_filter">
+                                                   <property name="enable-search">true</property>
+                                                  </object>
+                                                </child>
                                               </object>
                                             </property>
                                           </object>
@@ -235,11 +246,6 @@
                                                         <property name="name">descending</property>
                                                       </object>
                                                     </child>
-                                                  </object>
-                                                </child>
-                                                <child>
-                                                  <object class="GtkDropDown" id="genre_filter">
-                                                   <property name="enable-search">true</property>
                                                   </object>
                                                 </child>
                                               </object>
