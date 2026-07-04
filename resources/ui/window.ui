@@ -237,6 +237,11 @@
                                                     </child>
                                                   </object>
                                                 </child>
+                                                <child>
+                                                  <object class="GtkDropDown" id="genre_filter">
+                                                   <property name="enable-search">true</property>
+                                                  </object>
+                                                </child>
                                               </object>
                                             </property>
                                           </object>

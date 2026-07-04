@@ -350,6 +350,10 @@ impl Library {
     pub fn library_size(&self) -> usize {
         self.songs.borrow().len()
     }
+
+    pub fn genres(&self) -> Vec<String> {
+        self.genres.borrow().iter().cloned().collect()
+    }
 }
 
 #[cfg(test)]
