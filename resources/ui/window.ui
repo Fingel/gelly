@@ -203,8 +203,22 @@
                                                   </object>
                                                 </child>
                                                 <child>
-                                                  <object class="GtkDropDown" id="genre_filter">
-                                                   <property name="enable-search">true</property>
+                                                  <object class="GtkBox">
+                                                    <property name="orientation">horizontal</property>
+                                                    <style>
+                                                      <class name="linked"/>
+                                                    </style>
+                                                    <child>
+                                                      <object class="GtkDropDown" id="genre_filter">
+                                                      <property name="enable-search">true</property>
+                                                      </object>
+                                                    </child>
+                                                    <child>
+                                                      <object class="GtkButton" id="reset_search_button">
+                                                        <property name="icon-name">edit-clear-symbolic</property>
+                                                        <property name="tooltip-text" translatable="yes">Reset</property>
+                                                      </object>
+                                                    </child>
                                                   </object>
                                                 </child>
                                               </object>

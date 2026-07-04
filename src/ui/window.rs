@@ -427,6 +427,8 @@ mod imp {
         pub favorite_button: TemplateChild<gtk::ToggleButton>,
         #[template_child]
         pub genre_filter: TemplateChild<gtk::DropDown>,
+        #[template_child]
+        pub reset_search_button: TemplateChild<gtk::Button>,
 
         pub blur_background: BlurBackground,
         pub sort_changing: Cell<bool>,
@@ -562,6 +564,14 @@ mod imp {
                     if search_button.is_active() {
                         sort_button.set_active(false);
                     }
+                }
+            ));
+
+            self.reset_search_button.connect_clicked(glib::clone!(
+                #[weak(rename_to = window)]
+                self,
+                move |_| {
+                    window.genre_filter.set_selected(0);
                 }
             ));
 
