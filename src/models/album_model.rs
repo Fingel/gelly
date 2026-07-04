@@ -22,7 +22,7 @@ impl ItemModel for AlbumModel {
 
 /// Simple GObject to provide album data, and to convert from the API response from jellyfin.
 impl AlbumModel {
-    pub fn new(dto: &MusicDto, favorite: bool, play_count: u64) -> Self {
+    pub fn new(dto: &MusicDto, favorite: bool, play_count: u64, genres: Vec<String>) -> Self {
         let artists: Vec<String> = dto
             .album_artists
             .iter()
@@ -43,6 +43,7 @@ impl AlbumModel {
             .property("artists-string", artists_string)
             .property("play-count", play_count)
             .property("favorite", favorite)
+            .property("genres", genres)
             .build()
     }
 
@@ -131,6 +132,9 @@ mod imp {
 
         #[property(get, set)]
         pub favorite: Cell<bool>,
+
+        #[property(get, set)]
+        pub genres: RefCell<Vec<String>>,
 
         pub image_data: RefCell<Vec<u8>>,
     }

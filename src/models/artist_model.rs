@@ -22,12 +22,13 @@ impl ItemModel for ArtistModel {
 }
 
 impl ArtistModel {
-    pub fn new(dto: &ArtistItemsDto, favorite: bool, play_count: u64) -> Self {
+    pub fn new(dto: &ArtistItemsDto, favorite: bool, play_count: u64, genres: Vec<String>) -> Self {
         Object::builder()
             .property("name", &dto.name)
             .property("id", &dto.id)
             .property("play-count", play_count)
             .property("favorite", favorite)
+            .property("genres", genres)
             .build()
     }
 
@@ -93,6 +94,8 @@ mod imp {
         pub play_count: Cell<u64>,
         #[property(get, set)]
         pub favorite: Cell<bool>,
+        #[property(get, set)]
+        pub genres: RefCell<Vec<String>>,
         pub image_data: RefCell<Vec<u8>>,
     }
 

@@ -25,6 +25,13 @@ impl SongModel {
             .property("normalization-gain", dto.normalization_gain.unwrap_or(0.0))
             .property("date-created", date_created)
             .property("favorite", favorite)
+            .property(
+                "genres",
+                dto.genres
+                    .iter()
+                    .map(|genre| genre.to_lowercase())
+                    .collect::<Vec<_>>(),
+            )
             .build()
     }
 
@@ -95,6 +102,9 @@ mod imp {
 
         #[property(get, set)]
         pub favorite: Cell<bool>,
+
+        #[property(get, set)]
+        pub genres: RefCell<Vec<String>>,
     }
 
     #[glib::object_subclass]

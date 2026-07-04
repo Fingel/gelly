@@ -37,6 +37,10 @@ impl TopPage for PlaylistList {
         true
     }
 
+    fn has_genres(&self) -> bool {
+        false
+    }
+
     fn play_selected(&self) {
         if let Some(selection) = self.imp().grid_view.model()
             && let Some(single_selection) = selection.downcast_ref::<gtk::SingleSelection>()
@@ -78,6 +82,10 @@ impl TopPage for PlaylistList {
     fn search_changed(&self, query: &str) {
         let search = if query.is_empty() { None } else { Some(query) };
         self.imp().name_filter.get().unwrap().set_search(search);
+    }
+
+    fn genre_changed(&self, _genre: Option<&str>) {
+        // No-op, playlists don't have genres
     }
 
     fn create_new(&self) {

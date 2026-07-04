@@ -55,11 +55,13 @@ pub trait DetailPage {
 
 pub trait TopPage {
     fn can_new(&self) -> bool;
+    fn has_genres(&self) -> bool;
     fn play_selected(&self);
     fn create_new(&self) {
         warn!("New not implemented for this type");
     }
     fn search_changed(&self, query: &str);
+    fn genre_changed(&self, genre: Option<&str>);
     fn sort_options(&self) -> &[SortType];
     fn current_sort_by(&self) -> u32;
     fn current_sort_direction(&self) -> u32;

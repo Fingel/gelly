@@ -349,6 +349,7 @@ impl Subsonic {
             // there's no eqvivalent to that except for doing another API call
             // so it'll be `true` and just show an empty window for the time being
             has_lyrics: true,
+            genres: song.genre.into_iter().collect(),
         }
     }
 

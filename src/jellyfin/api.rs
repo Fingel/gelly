@@ -84,6 +84,7 @@ pub struct MusicDto {
     pub parent_index_number: Option<u32>,
     pub user_data: UserDataDto,
     pub has_lyrics: bool,
+    pub genres: Vec<String>,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
