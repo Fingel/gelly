@@ -65,9 +65,7 @@ impl Library {
             for artist in &dto.album_artists {
                 *artist_counts.entry(artist.id.clone()).or_insert(0) += dto.user_data.play_count;
             }
-            self.genres
-                .borrow_mut()
-                .extend(dto.genres.iter().map(|g| g.to_lowercase()));
+            self.genres.borrow_mut().extend(dto.effective_genres());
         }
         self.album_play_counts.replace(album_counts);
         self.artist_play_counts.replace(artist_counts);
@@ -113,7 +111,7 @@ impl Library {
             genres
                 .entry(id.clone())
                 .or_default()
-                .extend(dto.genres.iter().map(|g| g.to_lowercase()));
+                .extend(dto.effective_genres());
             if seen_album_ids.insert(id) {
                 album_dtos.push(dto);
             }
@@ -153,7 +151,7 @@ impl Library {
                 genres
                     .entry(artist.id.clone())
                     .or_default()
-                    .extend(song.genres.iter().map(|g| g.to_lowercase()));
+                    .extend(song.effective_genres());
                 if seen_artist_ids.insert(artist.id.clone()) {
                     artist_dtos.push(artist);
                 }
