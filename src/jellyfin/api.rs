@@ -84,6 +84,8 @@ pub struct MusicDto {
     pub parent_index_number: Option<u32>,
     pub user_data: UserDataDto,
     pub has_lyrics: bool,
+    #[serde(deserialize_with = "deserialize_items_skip_errors")]
+    pub genres: Vec<String>,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -263,6 +265,23 @@ impl MusicDto {
                 format!("{NO_ALBUM_ID}{artist_id}")
             }
         }
+    }
+
+    /// Although both Jellyfin and Subsonic return genres as a list of strings,
+    /// sometimes those strings are themselves comma-separated, semi-colon separated,
+    /// or even slash-separated. This function attempts to flatten those into a single
+    /// list of genres, lowercased and trimmed.
+    pub fn effective_genres(&self) -> Vec<String> {
+        self.genres
+            .iter()
+            .flat_map(|genre| {
+                genre
+                    .split(&[',', ';', '/'])
+                    .map(|s| s.trim().to_lowercase())
+                    .filter(|s| !s.is_empty())
+                    .collect::<Vec<_>>()
+            })
+            .collect()
     }
 }
 

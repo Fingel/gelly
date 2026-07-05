@@ -1,13 +1,13 @@
 use std::{
     cell::RefCell,
-    collections::{HashMap, HashSet},
+    collections::{BTreeSet, HashMap, HashSet},
     rc::Rc,
 };
 
 use rand::prelude::*;
 
 use crate::{
-    jellyfin::api::{FavoriteDto, ItemType, MusicDto},
+    jellyfin::api::{ArtistItemsDto, FavoriteDto, ItemType, MusicDto},
     models::{AlbumModel, ArtistModel, SongModel},
 };
 
@@ -40,6 +40,7 @@ pub struct Library {
     favorites: Rc<RefCell<Favorites>>,
     album_play_counts: Rc<RefCell<HashMap<String, u64>>>,
     artist_play_counts: Rc<RefCell<HashMap<String, u64>>>,
+    genres: Rc<RefCell<BTreeSet<String>>>,
 }
 
 impl Library {
@@ -49,12 +50,15 @@ impl Library {
             favorites: Rc::new(RefCell::new(Favorites::default())),
             album_play_counts: Rc::new(RefCell::new(HashMap::new())),
             artist_play_counts: Rc::new(RefCell::new(HashMap::new())),
+            genres: Rc::new(RefCell::new(BTreeSet::new())),
         }
     }
 
     pub fn update_songs(&self, songs: Vec<MusicDto>) {
         let mut album_counts = HashMap::new();
         let mut artist_counts = HashMap::new();
+        let mut genres = self.genres.borrow_mut();
+        genres.clear();
         for dto in songs.iter() {
             if dto.album.is_some() {
                 *album_counts.entry(dto.effective_album_id()).or_insert(0) +=
@@ -63,6 +67,7 @@ impl Library {
             for artist in &dto.album_artists {
                 *artist_counts.entry(artist.id.clone()).or_insert(0) += dto.user_data.play_count;
             }
+            genres.extend(dto.effective_genres());
         }
         self.album_play_counts.replace(album_counts);
         self.artist_play_counts.replace(artist_counts);
@@ -97,19 +102,36 @@ impl Library {
     pub fn albums_from_library(&self) -> Vec<AlbumModel> {
         let play_counts = self.album_play_counts.borrow();
         let favorites = self.favorites.borrow();
+        let songs = self.songs.borrow();
+
         let mut seen_album_ids = HashSet::<String>::new();
-        let mut albums: Vec<AlbumModel> = self
-            .songs
-            .borrow()
+        let mut album_dtos: Vec<&MusicDto> = Vec::new();
+        let mut genres = HashMap::<String, BTreeSet<String>>::new();
+
+        for dto in songs.iter().filter(|dto| dto.album.is_some()) {
+            let id = dto.effective_album_id();
+            genres
+                .entry(id.clone())
+                .or_default()
+                .extend(dto.effective_genres());
+            if seen_album_ids.insert(id) {
+                album_dtos.push(dto);
+            }
+        }
+
+        let mut albums: Vec<AlbumModel> = album_dtos
             .iter()
-            .filter(|dto| dto.album.is_some())
-            .filter(|dto| seen_album_ids.insert(dto.effective_album_id()))
             .map(|dto| {
                 let id = dto.effective_album_id();
+                let album_genres = genres
+                    .get(&id)
+                    .map(|set| set.iter().cloned().collect::<Vec<_>>())
+                    .unwrap_or_default();
                 AlbumModel::new(
                     dto,
                     favorites.contains_album(&id),
                     play_counts.get(&id).copied().unwrap_or(0),
+                    album_genres,
                 )
             })
             .collect();
@@ -120,17 +142,33 @@ impl Library {
     pub fn artists_from_library(&self) -> Vec<ArtistModel> {
         let play_counts = self.artist_play_counts.borrow();
         let favorites = self.favorites.borrow();
+        let songs = self.songs.borrow();
+
         let mut seen_artist_ids = HashSet::new();
-        let mut artists: Vec<ArtistModel> = self
-            .songs
-            .borrow()
+        let mut artist_dtos: Vec<&ArtistItemsDto> = Vec::new();
+        let mut genres = HashMap::<String, BTreeSet<String>>::new();
+
+        for song in songs.iter() {
+            for artist in &song.album_artists {
+                genres
+                    .entry(artist.id.clone())
+                    .or_default()
+                    .extend(song.effective_genres());
+                if seen_artist_ids.insert(artist.id.clone()) {
+                    artist_dtos.push(artist);
+                }
+            }
+        }
+        let mut artists: Vec<ArtistModel> = artist_dtos
             .iter()
-            .flat_map(|dto| &dto.album_artists)
-            .filter(|artist| seen_artist_ids.insert(&artist.id))
             .map(|dto| {
+                let artist_genres = genres
+                    .get(&dto.id)
+                    .map(|set| set.iter().cloned().collect::<Vec<_>>())
+                    .unwrap_or_default();
                 let play_count = play_counts.get(&dto.id).copied().unwrap_or(0);
                 let favorite = favorites.contains_artist(&dto.id);
-                ArtistModel::new(dto, favorite, play_count)
+                ArtistModel::new(dto, favorite, play_count, artist_genres)
             })
             .collect();
         artists.sort_by_key(|artist| artist.name().to_lowercase());
@@ -172,6 +210,7 @@ impl Library {
                     dto,
                     favorites.contains_album(&id),
                     play_counts.get(&id).copied().unwrap_or(0),
+                    Vec::new(), // Don't need this as we aren't filtering by genre here
                 )
             })
             .collect();
@@ -269,7 +308,7 @@ impl Library {
                 dto.album_artists.first().map(|artist| {
                     let play_count = play_counts.get(&artist.id).copied().unwrap_or(0);
                     let favorite = favorites.contains_artist(&artist.id);
-                    ArtistModel::new(artist, favorite, play_count)
+                    ArtistModel::new(artist, favorite, play_count, Vec::new())
                 })
             })
     }
@@ -287,6 +326,7 @@ impl Library {
                     dto,
                     favorites.contains_album(&id),
                     play_counts.get(&id).copied().unwrap_or(0),
+                    Vec::new(),
                 )
             })
     }
@@ -309,6 +349,10 @@ impl Library {
 
     pub fn library_size(&self) -> usize {
         self.songs.borrow().len()
+    }
+
+    pub fn genres(&self) -> Vec<String> {
+        self.genres.borrow().iter().cloned().collect()
     }
 }
 
@@ -346,6 +390,7 @@ mod tests {
             parent_index_number,
             has_lyrics: false,
             user_data: UserDataDto { play_count: 1 },
+            genres: vec![],
         }
     }
 
@@ -377,6 +422,7 @@ mod tests {
             parent_index_number: Some(1),
             has_lyrics: false,
             user_data: UserDataDto { play_count: 1 },
+            genres: vec![],
         }
     }
 
@@ -399,6 +445,7 @@ mod tests {
             index_number: Some(1),
             parent_index_number: Some(1),
             has_lyrics: false,
+            genres: vec![],
         }
     }
 

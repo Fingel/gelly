@@ -95,6 +95,8 @@ impl Window {
         let imp = self.imp();
         imp.main_navigation.replace(&[imp.main_window.get()]);
         imp.new_button.set_visible(page.can_new());
+        imp.genre_filter.set_visible(page.has_genres());
+        imp.reset_genre_button.set_visible(page.has_genres());
         let sort_model = gtk::StringList::new(
             &page
                 .sort_options()
@@ -299,6 +301,16 @@ impl Window {
         }
         imp.blur_background.update(blurred);
     }
+
+    fn refresh_genre_dropdown(&self) {
+        let mut genres = self.get_application().library().genres();
+        let mut items = Vec::with_capacity(genres.len() + 1);
+        items.push(tr("all genres").clone());
+        items.append(&mut genres);
+        let item_refs: Vec<&str> = items.iter().map(String::as_str).collect();
+        let model = gtk::StringList::new(&item_refs);
+        self.imp().genre_filter.set_model(Some(&model));
+    }
 }
 
 mod imp {
@@ -395,6 +407,10 @@ mod imp {
         pub search_entry: TemplateChild<gtk::SearchEntry>,
         #[template_child]
         pub favorite_button: TemplateChild<gtk::ToggleButton>,
+        #[template_child]
+        pub genre_filter: TemplateChild<gtk::DropDown>,
+        #[template_child]
+        pub reset_genre_button: TemplateChild<gtk::Button>,
 
         pub blur_background: BlurBackground,
         pub sort_changing: Cell<bool>,
@@ -516,6 +532,8 @@ mod imp {
                 .bidirectional()
                 .build();
 
+            self.search_bar.connect_entry(&self.search_entry.get());
+
             self.sort_button
                 .bind_property("active", &self.sort_bar.get(), "search-mode-enabled")
                 .bidirectional()
@@ -528,6 +546,14 @@ mod imp {
                     if search_button.is_active() {
                         sort_button.set_active(false);
                     }
+                }
+            ));
+
+            self.reset_genre_button.connect_clicked(glib::clone!(
+                #[weak(rename_to = window)]
+                self,
+                move |_| {
+                    window.genre_filter.set_selected(0);
                 }
             ));
 
@@ -580,6 +606,10 @@ mod imp {
             self.artist_list.connect_favorite(&self.favorite_button);
             self.playlist_list.connect_favorite(&self.favorite_button);
             self.song_list.connect_favorite(&self.favorite_button);
+
+            self.album_list.connect_genre_filter(&self.genre_filter);
+            self.artist_list.connect_genre_filter(&self.genre_filter);
+            self.song_list.connect_genre_filter(&self.genre_filter);
 
             let action_new = ActionEntry::builder("new")
                 .activate(glib::clone!(
@@ -735,6 +765,7 @@ mod imp {
                                     #[weak]
                                     window,
                                     async move {
+                                        window.refresh_genre_dropdown();
                                         window.toast(
                                             &format!("{} items added to library", total_record_count),
                                             Some(2),

@@ -182,7 +182,7 @@ impl Jellyfin {
             ("sortBy", "DateCreated"),
             ("sortOrder", "Descending"),
             ("recursive", "true"),
-            ("fields", "DateCreated"),
+            ("fields", "DateCreated,Genres"),
             ("ImageTypeLimit", "1"),
             ("EnableImageTypes", "Primary"),
             ("StartIndex", &start_index),

@@ -26,6 +26,7 @@
     <file compressed="true" preprocess="xml-stripblanks">ui/preferences.ui</file>
     <file compressed="true" preprocess="xml-stripblanks">ui/lyrics.ui</file>
     <file compressed="true" preprocess="xml-stripblanks">ui/playback_mode.ui</file>
+    <file compressed="true" preprocess="xml-stripblanks">ui/ellipsize_dropdown_factory.ui</file>
     <file compressed="true" preprocess="xml-stripblanks">icons/audio-x-generic-symbolic.svg</file>
     <file compressed="true" preprocess="xml-stripblanks">icons/list-drag-handle-symbolic.svg</file>
     <file compressed="true" preprocess="xml-stripblanks">icons/media-optical-cd-audio-symbolic.svg</file>

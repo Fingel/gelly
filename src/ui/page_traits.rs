@@ -55,11 +55,13 @@ pub trait DetailPage {
 
 pub trait TopPage {
     fn can_new(&self) -> bool;
+    fn has_genres(&self) -> bool;
     fn play_selected(&self);
     fn create_new(&self) {
         warn!("New not implemented for this type");
     }
     fn search_changed(&self, query: &str);
+    fn genre_changed(&self, genre: Option<&str>);
     fn sort_options(&self) -> &[SortType];
     fn current_sort_by(&self) -> u32;
     fn current_sort_direction(&self) -> u32;
@@ -72,6 +74,27 @@ pub trait TopPage {
         search_entry.connect_search_changed(move |entry| {
             if let Some(list_view) = weak_self.upgrade() {
                 list_view.search_changed(&entry.text());
+                list_view.reset_position();
+            }
+        });
+    }
+    fn connect_genre_filter(&self, genre_filter: &gtk::DropDown)
+    where
+        Self: gtk::prelude::ObjectType,
+    {
+        let weak_self = self.downgrade();
+        genre_filter.connect_selected_notify(move |combo| {
+            if let Some(list_view) = weak_self.upgrade() {
+                let selected = combo.selected();
+                let genre = if selected == gtk::INVALID_LIST_POSITION || selected == 0 {
+                    None
+                } else {
+                    combo
+                        .selected_item()
+                        .and_downcast::<gtk::StringObject>()
+                        .map(|s| s.string().to_string())
+                };
+                list_view.genre_changed(genre.as_deref());
                 list_view.reset_position();
             }
         });

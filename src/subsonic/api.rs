@@ -173,6 +173,7 @@ pub struct Song {
     pub channel_count: Option<u32>,
     pub replay_gain: Option<ReplayGain>,
     pub path: Option<String>,
+    pub genre: Option<String>,
 }
 
 #[derive(Debug, Clone, Deserialize)]

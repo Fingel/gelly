@@ -28,6 +28,9 @@ impl TopPage for AlbumList {
     fn can_new(&self) -> bool {
         false
     }
+    fn has_genres(&self) -> bool {
+        true
+    }
 
     fn play_selected(&self) {
         if let Some(selection) = self.imp().grid_view.model()
@@ -44,6 +47,20 @@ impl TopPage for AlbumList {
         let imp = self.imp();
         imp.name_filter.get().unwrap().set_search(search);
         imp.artists_filter.get().unwrap().set_search(search);
+    }
+
+    fn genre_changed(&self, genre: Option<&str>) {
+        let filter = self.imp().genre_filter.get().unwrap();
+        match genre.map(str::trim).filter(|g| !g.is_empty()) {
+            Some(selected) => {
+                let selected = selected.to_lowercase();
+                filter.set_filter_func(move |obj| {
+                    obj.downcast_ref::<AlbumModel>()
+                        .is_some_and(|m| m.genres().iter().any(|g| g == &selected))
+                });
+            }
+            None => filter.unset_filter_func(),
+        }
     }
 
     fn sort_options(&self) -> &[SortType] {
@@ -178,8 +195,11 @@ impl AlbumList {
         search_filter.append(artists_filter.clone());
         let search_model = gtk::FilterListModel::new(Some(fav_model), Some(search_filter));
 
+        let genre_filter = gtk::CustomFilter::new(|_| true);
+        let genre_model = gtk::FilterListModel::new(Some(search_model), Some(genre_filter.clone()));
+
         let sorter = self.build_sorter();
-        let sort_model = gtk::SortListModel::new(Some(search_model), Some(sorter.clone()));
+        let sort_model = gtk::SortListModel::new(Some(genre_model), Some(sorter.clone()));
         let selection = gtk::SingleSelection::new(Some(sort_model));
 
         selection.connect_items_changed(glib::clone!(
@@ -229,6 +249,7 @@ impl AlbumList {
         imp.favorites_filter.set(favorites_filter).unwrap();
         imp.name_filter.set(name_filter).unwrap();
         imp.artists_filter.set(artists_filter).unwrap();
+        imp.genre_filter.set(genre_filter).unwrap();
         imp.sorter.set(sorter).unwrap();
     }
 
@@ -269,6 +290,7 @@ mod imp {
         pub favorites_filter: OnceCell<gtk::CustomFilter>,
         pub name_filter: OnceCell<gtk::StringFilter>,
         pub artists_filter: OnceCell<gtk::StringFilter>,
+        pub genre_filter: OnceCell<gtk::CustomFilter>,
         pub sorter: OnceCell<gtk::CustomSorter>,
         pub sort_state: Rc<Cell<(u32, u32)>>,
 

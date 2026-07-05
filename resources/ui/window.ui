@@ -157,7 +157,7 @@
                                             <child type="start">
                                               <object class="GtkToggleButton" id="search_button">
                                                 <property name="icon-name">edit-find-symbolic</property>
-                                                <property name="tooltip-text" translatable="yes">Search</property>
+                                                <property name="tooltip-text" translatable="yes">Search and Genres</property>
                                               </object>
                                             </child>
                                             <child type="start">
@@ -194,8 +194,47 @@
                                             <property name="show-close-button">true</property>
                                             <property name="search-mode-enabled">false</property>
                                             <property name="child">
-                                              <object class="GtkSearchEntry" id="search_entry">
-                                                <property name="placeholder-text" translatable="yes">Search...</property>
+                                              <object class="AdwClamp">
+                                                <property name="maximum-size">500</property>
+                                                <property name="tightening-threshold">300</property>
+                                                <property name="child">
+                                                  <object class="GtkBox">
+                                                    <property name="orientation">horizontal</property>
+                                                    <property name="spacing">6</property>
+                                                    <property name="homogeneous">true</property>
+                                                    <child>
+                                                      <object class="GtkSearchEntry" id="search_entry">
+                                                        <property name="hexpand">true</property>
+                                                        <property name="placeholder-text" translatable="yes">Search...</property>
+                                                      </object>
+                                                    </child>
+                                                    <child>
+                                                      <object class="GtkBox">
+                                                        <property name="orientation">horizontal</property>
+                                                        <property name="hexpand">true</property>
+                                                        <style>
+                                                          <class name="linked"/>
+                                                        </style>
+                                                        <child>
+                                                          <object class="GtkDropDown" id="genre_filter">
+                                                            <property name="hexpand">true</property>
+                                                            <property name="factory">
+                                                              <object class="GtkBuilderListItemFactory">
+                                                                <property name="resource">/io/m51/Gelly/ui/ellipsize_dropdown_factory.ui</property>
+                                                              </object>
+                                                            </property>
+                                                          </object>
+                                                        </child>
+                                                        <child>
+                                                          <object class="GtkButton" id="reset_genre_button">
+                                                            <property name="icon-name">edit-clear-symbolic</property>
+                                                            <property name="tooltip-text" translatable="yes">Reset</property>
+                                                          </object>
+                                                        </child>
+                                                      </object>
+                                                    </child>
+                                                  </object>
+                                                </property>
                                               </object>
                                             </property>
                                           </object>
