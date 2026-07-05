@@ -96,6 +96,7 @@ impl Window {
         imp.main_navigation.replace(&[imp.main_window.get()]);
         imp.new_button.set_visible(page.can_new());
         imp.genre_filter.set_visible(page.has_genres());
+        imp.reset_genre_button.set_visible(page.has_genres());
         let sort_model = gtk::StringList::new(
             &page
                 .sort_options()
@@ -302,28 +303,13 @@ impl Window {
     }
 
     fn refresh_genre_dropdown(&self) {
-        let imp = self.imp();
-
-        let selected_genre = imp
-            .genre_filter
-            .selected_item()
-            .and_downcast::<gtk::StringObject>()
-            .map(|s| s.string().to_string());
-
         let mut genres = self.get_application().library().genres();
         let mut items = Vec::with_capacity(genres.len() + 1);
         items.push(tr("all genres").clone());
         items.append(&mut genres);
         let item_refs: Vec<&str> = items.iter().map(String::as_str).collect();
         let model = gtk::StringList::new(&item_refs);
-        imp.genre_filter.set_model(Some(&model));
-
-        let selected_index = selected_genre
-            .and_then(|current| genres.iter().position(|g| g == &current))
-            .map(|i| i as u32)
-            .unwrap_or(0);
-
-        imp.genre_filter.set_selected(selected_index);
+        self.imp().genre_filter.set_model(Some(&model));
     }
 }
 
@@ -424,7 +410,7 @@ mod imp {
         #[template_child]
         pub genre_filter: TemplateChild<gtk::DropDown>,
         #[template_child]
-        pub reset_search_button: TemplateChild<gtk::Button>,
+        pub reset_genre_button: TemplateChild<gtk::Button>,
 
         pub blur_background: BlurBackground,
         pub sort_changing: Cell<bool>,
@@ -563,7 +549,7 @@ mod imp {
                 }
             ));
 
-            self.reset_search_button.connect_clicked(glib::clone!(
+            self.reset_genre_button.connect_clicked(glib::clone!(
                 #[weak(rename_to = window)]
                 self,
                 move |_| {

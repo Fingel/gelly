@@ -201,7 +201,6 @@
                                                   <object class="GtkBox">
                                                     <property name="orientation">horizontal</property>
                                                     <property name="spacing">6</property>
-                                                    <property name="homogeneous">true</property>
                                                     <child>
                                                       <object class="GtkSearchEntry" id="search_entry">
                                                         <property name="hexpand">true</property>
@@ -226,7 +225,7 @@
                                                           </object>
                                                         </child>
                                                         <child>
-                                                          <object class="GtkButton" id="reset_search_button">
+                                                          <object class="GtkButton" id="reset_genre_button">
                                                             <property name="icon-name">edit-clear-symbolic</property>
                                                             <property name="tooltip-text" translatable="yes">Reset</property>
                                                           </object>

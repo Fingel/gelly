@@ -57,6 +57,8 @@ impl Library {
     pub fn update_songs(&self, songs: Vec<MusicDto>) {
         let mut album_counts = HashMap::new();
         let mut artist_counts = HashMap::new();
+        let mut genres = self.genres.borrow_mut();
+        genres.clear();
         for dto in songs.iter() {
             if dto.album.is_some() {
                 *album_counts.entry(dto.effective_album_id()).or_insert(0) +=
@@ -65,7 +67,7 @@ impl Library {
             for artist in &dto.album_artists {
                 *artist_counts.entry(artist.id.clone()).or_insert(0) += dto.user_data.play_count;
             }
-            self.genres.borrow_mut().extend(dto.effective_genres());
+            genres.extend(dto.effective_genres());
         }
         self.album_play_counts.replace(album_counts);
         self.artist_play_counts.replace(artist_counts);
