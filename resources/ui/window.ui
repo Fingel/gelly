@@ -201,6 +201,7 @@
                                                   <object class="GtkBox">
                                                     <property name="orientation">horizontal</property>
                                                     <property name="spacing">6</property>
+                                                    <property name="homogeneous">true</property>
                                                     <child>
                                                       <object class="GtkSearchEntry" id="search_entry">
                                                         <property name="hexpand">true</property>
