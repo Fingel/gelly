@@ -70,6 +70,23 @@
     <color type="primary" scheme_preference="dark">#325a4a</color>
   </branding>
   <releases>
+    <release version="1.9.0" date="2026-07-05">
+      <description>
+        <ul>
+          <li>
+            The search bar now has a dropdown for genres. Note that the list is built from all genres present in all songs in the library.
+            If your metadata isn't super clean (like mine!) you will have a lot of genres to choose from, some probably redundant.
+            Another good reason to keep metadata up to date an clean!
+          </li>
+          <li>
+            Added a song info context action for each song, not just the currently playing one. Added some new items in it too.
+          </li>
+          <li>
+            The "add to playlist" action has been converted to a dialog, fixing ux when the number of playlists is very large.
+          </li>
+        </ul>
+      </description>
+    </release>
     <release version="1.8.0" date="2026-06-25">
       <description>
         <ul>
