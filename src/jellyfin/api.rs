@@ -84,6 +84,7 @@ pub struct MusicDto {
     pub parent_index_number: Option<u32>,
     pub user_data: UserDataDto,
     pub has_lyrics: bool,
+    #[serde(deserialize_with = "deserialize_items_skip_errors")]
     pub genres: Vec<String>,
 }
 
