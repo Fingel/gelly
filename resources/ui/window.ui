@@ -210,7 +210,12 @@
                                                     </style>
                                                     <child>
                                                       <object class="GtkDropDown" id="genre_filter">
-                                                      <property name="enable-search">true</property>
+                                                        <property name="width-request">140</property>
+                                                        <property name="factory">
+                                                            <object class="GtkBuilderListItemFactory">
+                                                              <property name="resource">/io/m51/Gelly/ui/ellipsize_dropdown_factory.ui</property>
+                                                            </object>
+                                                        </property>
                                                       </object>
                                                     </child>
                                                     <child>

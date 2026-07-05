@@ -315,12 +315,8 @@ impl Window {
         items.push(tr("all genres").clone());
         items.append(&mut genres);
         let item_refs: Vec<&str> = items.iter().map(String::as_str).collect();
-        let expression = gtk::StringObject::this_expression("string");
         let model = gtk::StringList::new(&item_refs);
         imp.genre_filter.set_model(Some(&model));
-        imp.genre_filter
-            .set_search_match_mode(gtk::StringFilterMatchMode::Substring);
-        imp.genre_filter.set_expression(Some(&expression));
 
         let selected_index = selected_genre
             .and_then(|current| genres.iter().position(|g| g == &current))
