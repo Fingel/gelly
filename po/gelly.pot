@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-23 19:59-0700\n"
+"POT-Creation-Date: 2026-07-06 08:45-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -23,94 +23,108 @@ msgid "N/A"
 msgstr ""
 
 #: src/ui/album_detail.rs:169 src/ui/album_detail.rs:179
-#: src/ui/album_detail.rs:203 src/ui/artist_detail.rs:238 src/ui/playlist.rs:53
-#: src/ui/playlist_detail.rs:517 src/ui/playlist_detail.rs:527
-#: src/ui/playlist_detail.rs:551 src/ui/song_list.rs:141
+#: src/ui/album_detail.rs:203 src/ui/artist_detail.rs:245 src/ui/playlist.rs:53
+#: src/ui/playlist_detail.rs:520 src/ui/playlist_detail.rs:530
+#: src/ui/playlist_detail.rs:554 src/ui/song_list.rs:159
 msgid "Audio model not initialized, please restart"
 msgstr ""
 
-#: src/ui/album_detail.rs:195 src/ui/artist_detail.rs:230
-#: src/ui/playlist_detail.rs:543
+#: src/ui/album_detail.rs:195 src/ui/artist_detail.rs:237
+#: src/ui/playlist_detail.rs:546
 msgid "1 song added to queue"
 msgid_plural "{} songs added to queue"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/ui/album_detail.rs:287
+#: src/ui/album_detail.rs:277
 msgid "Album ID copied to clipboard"
 msgstr ""
 
-#: src/ui/album_detail.rs:323
+#: src/ui/album_detail.rs:313
 msgid "Added album to playlist"
 msgstr ""
 
-#: src/ui/album_detail.rs:327
+#: src/ui/album_detail.rs:317
 msgid "Failed to add album to playlist"
 msgstr ""
 
-#: src/ui/artist_detail.rs:174
+#: src/ui/artist_detail.rs:164
 msgid "Artist ID copied to clipboard"
 msgstr ""
 
-#: src/ui/artist_detail.rs:202
+#: src/ui/artist_detail.rs:192
 msgid "Added artist to playlist"
 msgstr ""
 
-#: src/ui/artist_detail.rs:206
+#: src/ui/artist_detail.rs:196
 msgid "Failed to add artist to playlist"
 msgstr ""
 
-#: src/ui/music_context_menu.rs:37
-msgid "Queue Next"
-msgstr ""
-
-#: src/ui/music_context_menu.rs:41
-msgid "Queue Last"
-msgstr ""
-
-#: src/ui/music_context_menu.rs:63
+#: src/ui/music_context_menu.rs:33 src/ui/music_context_menu.rs:84
 msgid "Add to Playlist"
 msgstr ""
 
-#: src/ui/music_context_menu.rs:67
-msgid "Remove from Playlist"
+#: src/ui/music_context_menu.rs:34 src/ui/playlist_dialogs.rs:20
+#: src/ui/playlist_dialogs.rs:59 resources/ui/setup.ui:123
+#: resources/ui/setup.ui:186
+msgid "Cancel"
+msgstr ""
+
+#: src/ui/music_context_menu.rs:34
+msgid "Add"
+msgstr ""
+
+#: src/ui/music_context_menu.rs:59
+msgid "No playlists available. Please create a playlist first."
+msgstr ""
+
+#: src/ui/music_context_menu.rs:72
+msgid "Queue Next"
 msgstr ""
 
 #: src/ui/music_context_menu.rs:76
+msgid "Queue Last"
+msgstr ""
+
+#: src/ui/music_context_menu.rs:89
+msgid "Remove from Playlist"
+msgstr ""
+
+#: src/ui/music_context_menu.rs:99
 msgid "Go to Album"
 msgstr ""
 
-#: src/ui/music_context_menu.rs:83
+#: src/ui/music_context_menu.rs:106
 msgid "Go to Artist"
 msgstr ""
 
-#: src/ui/music_context_menu.rs:91
+#: src/ui/music_context_menu.rs:115 src/ui/stream_info_dialog.rs:120
+msgid "Song Info"
+msgstr ""
+
+#: src/ui/music_context_menu.rs:120
 msgid "Copy ID"
 msgstr ""
 
-#: src/ui/player_bar/common.rs:79
+#: src/ui/player_bar/common.rs:78
 msgid "Pause"
 msgstr ""
 
-#: src/ui/player_bar/common.rs:82 resources/ui/album_detail.ui:119
+#: src/ui/player_bar/common.rs:81 resources/ui/album_detail.ui:119
 #: resources/ui/artist_detail.ui:52 resources/ui/playlist_detail.ui:101
 msgid "Play"
 msgstr ""
 
-#: src/ui/player_bar/common.rs:92
+#: src/ui/player_bar/common.rs:91
 msgid "Unknown Artist"
 msgstr ""
 
-#: src/ui/player_bar/common.rs:253 src/ui/song.rs:273
+#: src/ui/player_bar/common.rs:252 src/ui/song.rs:257
 msgid "Added song to playlist"
 msgstr ""
 
-#: src/ui/player_bar/common.rs:257 src/ui/song.rs:277
+#: src/ui/player_bar/common.rs:256 src/ui/song.rs:261
 msgid "Failed to add song to playlist"
-msgstr ""
-
-#: src/ui/player_bar/common.rs:281 src/ui/song.rs:319
-msgid "Song ID copied to clipboard"
 msgstr ""
 
 #: src/ui/playlist.rs:26
@@ -131,39 +145,39 @@ msgstr ""
 msgid "Unable to load playlist"
 msgstr ""
 
-#: src/ui/playlist_detail.rs:260 src/ui/playlist_list.rs:68
+#: src/ui/playlist_detail.rs:260 src/ui/playlist_list.rs:72
 msgid "Could not load playlist, please try again."
 msgstr ""
 
-#: src/ui/playlist_detail.rs:343
+#: src/ui/playlist_detail.rs:329
 msgid "Playlist ID copied to clipboard"
 msgstr ""
 
-#: src/ui/playlist_detail.rs:372
+#: src/ui/playlist_detail.rs:358
 msgid "Added songs to playlist"
 msgstr ""
 
-#: src/ui/playlist_detail.rs:376
+#: src/ui/playlist_detail.rs:362
 msgid "Failed to add songs to playlist"
 msgstr ""
 
-#: src/ui/playlist_detail.rs:455
+#: src/ui/playlist_detail.rs:458
 msgid "Failed to save playlist order."
 msgstr ""
 
-#: src/ui/playlist_detail.rs:501
+#: src/ui/playlist_detail.rs:504
 msgid "Failed to modify playlist."
 msgstr ""
 
-#: src/ui/playlist_detail.rs:569
+#: src/ui/playlist_detail.rs:572
 msgid "Smart playlists cannot be deleted"
 msgstr ""
 
-#: src/ui/playlist_detail.rs:602
+#: src/ui/playlist_detail.rs:605
 msgid "Playlist deleted"
 msgstr ""
 
-#: src/ui/playlist_detail.rs:605
+#: src/ui/playlist_detail.rs:608
 msgid "Failed to delete playlist"
 msgstr ""
 
@@ -173,11 +187,6 @@ msgstr ""
 
 #: src/ui/playlist_dialogs.rs:16
 msgid "New Playlist"
-msgstr ""
-
-#: src/ui/playlist_dialogs.rs:20 src/ui/playlist_dialogs.rs:59
-#: resources/ui/setup.ui:123 resources/ui/setup.ui:186
-msgid "Cancel"
 msgstr ""
 
 #: src/ui/playlist_dialogs.rs:20
@@ -192,15 +201,15 @@ msgstr ""
 msgid "Delete"
 msgstr ""
 
-#: src/ui/playlist_list.rs:62
+#: src/ui/playlist_list.rs:66
 msgid "No audio model found, please restart."
 msgstr ""
 
-#: src/ui/playlist_list.rs:166 src/ui/queue.rs:125
+#: src/ui/playlist_list.rs:174 src/ui/queue.rs:125
 msgid "Playlist created"
 msgstr ""
 
-#: src/ui/playlist_list.rs:169 src/ui/queue.rs:128
+#: src/ui/playlist_list.rs:177 src/ui/queue.rs:128
 msgid "Failed to create playlist"
 msgstr ""
 
@@ -249,7 +258,8 @@ msgid "No"
 msgstr ""
 
 #: src/ui/stream_info_dialog.rs:11 src/ui/stream_info_dialog.rs:52
-#: src/ui/stream_info_dialog.rs:73
+#: src/ui/stream_info_dialog.rs:73 src/ui/stream_info_dialog.rs:114
+#: src/ui/stream_info_dialog.rs:115
 msgid "Unknown"
 msgstr ""
 
@@ -321,21 +331,32 @@ msgstr ""
 msgid "File Size"
 msgstr ""
 
-#: src/ui/stream_info_dialog.rs:115 resources/ui/player_bar/big_player.ui:173
-#: resources/ui/player_bar/full_player_bar.ui:202
-msgid "Stream Info"
+#: src/ui/stream_info_dialog.rs:114
+msgid "Id"
 msgstr ""
 
-#: src/ui/stream_info_dialog.rs:133
+#: src/ui/stream_info_dialog.rs:115
+msgid "Path"
+msgstr ""
+
+#: src/ui/stream_info_dialog.rs:138
+msgid "Song Properties"
+msgstr ""
+
+#: src/ui/stream_info_dialog.rs:145
 msgid "Local Properties"
 msgstr ""
 
-#: src/ui/stream_info_dialog.rs:140
+#: src/ui/stream_info_dialog.rs:152
 msgid "Remote Properties"
 msgstr ""
 
-#: src/ui/window.rs:178
+#: src/ui/window.rs:180
 msgid "Logged out"
+msgstr ""
+
+#: src/ui/window.rs:308
+msgid "all genres"
 msgstr ""
 
 #: resources/ui/album_art.ui:33
@@ -459,7 +480,7 @@ msgstr ""
 msgid "A value of 0 means no limit."
 msgstr ""
 
-#: resources/ui/preferences.ui:90 resources/ui/window.ui:274
+#: resources/ui/preferences.ui:90 resources/ui/window.ui:313
 msgid "Playlists"
 msgstr ""
 
@@ -550,7 +571,7 @@ msgstr ""
 msgid "Enter the code on the Jellyfin web page to complete authentication."
 msgstr ""
 
-#: resources/ui/shortcuts_dialog.ui:9 resources/ui/window.ui:372
+#: resources/ui/shortcuts_dialog.ui:9 resources/ui/window.ui:411
 msgid "Refresh Library"
 msgstr ""
 
@@ -566,7 +587,7 @@ msgstr ""
 msgid "Ask Jellyfin to rescan the library for new or modified files"
 msgstr ""
 
-#: resources/ui/shortcuts_dialog.ui:23 resources/ui/window.ui:160
+#: resources/ui/shortcuts_dialog.ui:23
 msgid "Search"
 msgstr ""
 
@@ -574,15 +595,15 @@ msgstr ""
 msgid "Show Favorites"
 msgstr ""
 
-#: resources/ui/shortcuts_dialog.ui:35 resources/ui/window.ui:382
+#: resources/ui/shortcuts_dialog.ui:35 resources/ui/window.ui:421
 msgid "Preferences"
 msgstr ""
 
-#: resources/ui/shortcuts_dialog.ui:41 resources/ui/window.ui:386
+#: resources/ui/shortcuts_dialog.ui:41 resources/ui/window.ui:425
 msgid "Keyboard Shortcuts"
 msgstr ""
 
-#: resources/ui/shortcuts_dialog.ui:47 resources/ui/window.ui:398
+#: resources/ui/shortcuts_dialog.ui:47 resources/ui/window.ui:437
 msgid "Quit"
 msgstr ""
 
@@ -642,6 +663,10 @@ msgstr ""
 msgid "Show Queue"
 msgstr ""
 
+#: resources/ui/window.ui:160
+msgid "Search and Genres"
+msgstr ""
+
 #: resources/ui/window.ui:166
 msgid "Sort"
 msgstr ""
@@ -650,80 +675,84 @@ msgstr ""
 msgid "New"
 msgstr ""
 
-#: resources/ui/window.ui:198
+#: resources/ui/window.ui:208
 msgid "Search..."
 msgstr ""
 
-#: resources/ui/window.ui:214
+#: resources/ui/window.ui:231
+msgid "Reset"
+msgstr ""
+
+#: resources/ui/window.ui:253
 msgid "Favorites"
 msgstr ""
 
-#: resources/ui/window.ui:227
+#: resources/ui/window.ui:266
 msgid "Ascending"
 msgstr ""
 
-#: resources/ui/window.ui:234
+#: resources/ui/window.ui:273
 msgid "Descending"
 msgstr ""
 
-#: resources/ui/window.ui:250
+#: resources/ui/window.ui:289
 msgid "Albums"
 msgstr ""
 
-#: resources/ui/window.ui:262
+#: resources/ui/window.ui:301
 msgid "Artists"
 msgstr ""
 
-#: resources/ui/window.ui:286
+#: resources/ui/window.ui:325
 msgid "Songs"
 msgstr ""
 
-#: resources/ui/window.ui:331
+#: resources/ui/window.ui:370
 msgid "Hide Queue"
 msgstr ""
 
-#: resources/ui/window.ui:340
+#: resources/ui/window.ui:379
 msgid "Clear Queue"
 msgstr ""
 
-#: resources/ui/window.ui:347
+#: resources/ui/window.ui:386
 msgid "Save As Playlist"
 msgstr ""
 
-#: resources/ui/window.ui:368
+#: resources/ui/window.ui:407
 msgid "Request Rescan"
 msgstr ""
 
-#: resources/ui/window.ui:376
+#: resources/ui/window.ui:415
 msgid "Clear Image Cache"
 msgstr ""
 
-#: resources/ui/window.ui:390
+#: resources/ui/window.ui:429
 msgid "About Gelly"
 msgstr ""
 
-#: resources/ui/window.ui:394
+#: resources/ui/window.ui:433
 msgid "Logout"
 msgstr ""
 
-#: resources/ui/player_bar/big_player.ui:184
+#: resources/ui/player_bar/big_player.ui:169
 #: resources/ui/player_bar/compact_player_bar.ui:110
-#: resources/ui/player_bar/full_player_bar.ui:213
+#: resources/ui/player_bar/full_player_bar.ui:198
 msgid "Lyrics"
 msgstr ""
 
-#: resources/ui/player_bar/big_player.ui:194
+#: resources/ui/player_bar/big_player.ui:179
 #: resources/ui/player_bar/compact_player_bar.ui:120
-#: resources/ui/player_bar/full_player_bar.ui:223
+#: resources/ui/player_bar/full_player_bar.ui:208
 msgid "Favorite"
 msgstr ""
 
-#: resources/ui/player_bar/big_player.ui:214
-#: resources/ui/player_bar/full_player_bar.ui:260
+#: resources/ui/player_bar/big_player.ui:199
+#: resources/ui/player_bar/full_player_bar.ui:245
 msgid "Volume"
 msgstr ""
 
-#: resources/ui/player_bar/big_player.ui:229
-#: resources/ui/player_bar/full_player_bar.ui:247
+#: resources/ui/player_bar/big_player.ui:214
+#: resources/ui/player_bar/full_player_bar.ui:232
 msgid "Song Menu"
 msgstr ""
