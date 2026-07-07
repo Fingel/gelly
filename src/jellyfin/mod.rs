@@ -235,8 +235,9 @@ impl Jellyfin {
         &self,
         playlist_id: &str,
     ) -> Result<PlaylistItems, BackendError> {
+        let params = vec![("fields", "DateCreated,Genres")];
         let path = format!("Playlists/{}/Items", playlist_id);
-        let response = self.get(&path, None).await?;
+        let response = self.get(&path, Some(&params)).await?;
         let body = self.handle_response(response).await?;
         Ok(serde_json::from_str(&body)?)
     }
