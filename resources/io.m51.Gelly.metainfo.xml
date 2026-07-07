@@ -70,6 +70,15 @@
     <color type="primary" scheme_preference="dark">#325a4a</color>
   </branding>
   <releases>
+    <release version="1.9.1" date="2026-07-07">
+      <description>
+        <ul>
+          <li>
+            Fixes a bug deserializing Jellyfin playlists.
+          </li>
+        </ul>
+      </description>
+    </release>
     <release version="1.9.0" date="2026-07-05">
       <description>
         <ul>
