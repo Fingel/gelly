@@ -7,11 +7,11 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-31 16:21-0700\n"
+"POT-Creation-Date: 2026-07-06 08:45-0700\n"
 "PO-Revision-Date: 2026-06-02 17:40+0000\n"
 "Last-Translator: Antonio Caria <ant8.caria@gmail.com>\n"
-"Language-Team: Italian <https://hosted.weblate.org/projects/gelly/gelly/it/>"
-"\n"
+"Language-Team: Italian <https://hosted.weblate.org/projects/gelly/gelly/it/"
+">\n"
 "Language: it\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -19,34 +19,437 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 "X-Generator: Weblate 2026.6\n"
 
-#: src/ui/album_detail.rs:195 src/ui/artist_detail.rs:225
-#: src/ui/playlist_detail.rs:538
-#, rust-format
+#: src/ui/album_detail.rs:40
+msgid "N/A"
+msgstr ""
+
+#: src/ui/album_detail.rs:169 src/ui/album_detail.rs:179
+#: src/ui/album_detail.rs:203 src/ui/artist_detail.rs:245 src/ui/playlist.rs:53
+#: src/ui/playlist_detail.rs:520 src/ui/playlist_detail.rs:530
+#: src/ui/playlist_detail.rs:554 src/ui/song_list.rs:159
+msgid "Audio model not initialized, please restart"
+msgstr ""
+
+#: src/ui/album_detail.rs:195 src/ui/artist_detail.rs:237
+#: src/ui/playlist_detail.rs:546
 msgid "1 song added to queue"
 msgid_plural "{} songs added to queue"
 msgstr[0] "1 canzone aggiunta alla coda"
 msgstr[1] "{} canzoni aggiunte alla coda"
 
-#: src/ui/playlist.rs:27
-#, rust-format
+#: src/ui/album_detail.rs:277
+msgid "Album ID copied to clipboard"
+msgstr ""
+
+#: src/ui/album_detail.rs:313
+msgid "Added album to playlist"
+msgstr ""
+
+#: src/ui/album_detail.rs:317
+msgid "Failed to add album to playlist"
+msgstr ""
+
+#: src/ui/artist_detail.rs:164
+msgid "Artist ID copied to clipboard"
+msgstr ""
+
+#: src/ui/artist_detail.rs:192
+#, fuzzy
+#| msgid "Smart playlist"
+msgid "Added artist to playlist"
+msgstr "Playlist smart"
+
+#: src/ui/artist_detail.rs:196
+msgid "Failed to add artist to playlist"
+msgstr ""
+
+#: src/ui/music_context_menu.rs:33 src/ui/music_context_menu.rs:84
+#, fuzzy
+#| msgid "Smart Playlists"
+msgid "Add to Playlist"
+msgstr "Playlist Smart"
+
+#: src/ui/music_context_menu.rs:34 src/ui/playlist_dialogs.rs:20
+#: src/ui/playlist_dialogs.rs:59 resources/ui/setup.ui:123
+#: resources/ui/setup.ui:186
+msgid "Cancel"
+msgstr ""
+
+#: src/ui/music_context_menu.rs:34
+msgid "Add"
+msgstr ""
+
+#: src/ui/music_context_menu.rs:59
+msgid "No playlists available. Please create a playlist first."
+msgstr ""
+
+#: src/ui/music_context_menu.rs:72
+msgid "Queue Next"
+msgstr ""
+
+#: src/ui/music_context_menu.rs:76
+msgid "Queue Last"
+msgstr ""
+
+#: src/ui/music_context_menu.rs:89
+#, fuzzy
+#| msgid "Save As Playlist"
+msgid "Remove from Playlist"
+msgstr "Salva Come Playlist"
+
+#: src/ui/music_context_menu.rs:99
+msgid "Go to Album"
+msgstr ""
+
+#: src/ui/music_context_menu.rs:106
+#, fuzzy
+#| msgid "Artists"
+msgid "Go to Artist"
+msgstr "Artisti"
+
+#: src/ui/music_context_menu.rs:115 src/ui/stream_info_dialog.rs:120
+msgid "Song Info"
+msgstr ""
+
+#: src/ui/music_context_menu.rs:120
+msgid "Copy ID"
+msgstr ""
+
+#: src/ui/player_bar/common.rs:78
+msgid "Pause"
+msgstr ""
+
+#: src/ui/player_bar/common.rs:81 resources/ui/album_detail.ui:119
+#: resources/ui/artist_detail.ui:52 resources/ui/playlist_detail.ui:101
+#, fuzzy
+#| msgid "Playback"
+msgid "Play"
+msgstr "Riproduzione"
+
+#: src/ui/player_bar/common.rs:91
+msgid "Unknown Artist"
+msgstr ""
+
+#: src/ui/player_bar/common.rs:252 src/ui/song.rs:257
+msgid "Added song to playlist"
+msgstr ""
+
+#: src/ui/player_bar/common.rs:256 src/ui/song.rs:261
+msgid "Failed to add song to playlist"
+msgstr ""
+
+#: src/ui/playlist.rs:26
 msgid "1 song"
 msgid_plural "{} songs"
 msgstr[0] "1 canzone"
 msgstr[1] "{} canzoni"
 
-#: src/ui/playlist.rs:30
+#: src/ui/playlist.rs:29
 msgid "Smart playlist"
 msgstr "Playlist smart"
 
-#: src/ui/playlist.rs:32
+#: src/ui/playlist.rs:31
 msgid "Empty playlist"
 msgstr "Playlist vuota"
+
+#: src/ui/playlist.rs:77
+#, fuzzy
+#| msgid "Most Played Playlist"
+msgid "Unable to load playlist"
+msgstr "Playlist Canzoni Più Ascoltate"
+
+#: src/ui/playlist_detail.rs:260 src/ui/playlist_list.rs:72
+msgid "Could not load playlist, please try again."
+msgstr ""
+
+#: src/ui/playlist_detail.rs:329
+msgid "Playlist ID copied to clipboard"
+msgstr ""
+
+#: src/ui/playlist_detail.rs:358
+msgid "Added songs to playlist"
+msgstr ""
+
+#: src/ui/playlist_detail.rs:362
+msgid "Failed to add songs to playlist"
+msgstr ""
+
+#: src/ui/playlist_detail.rs:458
+msgid "Failed to save playlist order."
+msgstr ""
+
+#: src/ui/playlist_detail.rs:504
+msgid "Failed to modify playlist."
+msgstr ""
+
+#: src/ui/playlist_detail.rs:572
+msgid "Smart playlists cannot be deleted"
+msgstr ""
+
+#: src/ui/playlist_detail.rs:605
+#, fuzzy
+#| msgid "Playlist Detail"
+msgid "Playlist deleted"
+msgstr "Dettaglio Playlist"
+
+#: src/ui/playlist_detail.rs:608
+msgid "Failed to delete playlist"
+msgstr ""
+
+#: src/ui/playlist_dialogs.rs:7
+#, fuzzy
+#| msgid "Playlists"
+msgid "Playlist name"
+msgstr "Playlist"
+
+#: src/ui/playlist_dialogs.rs:16
+#, fuzzy
+#| msgid "Playlists"
+msgid "New Playlist"
+msgstr "Playlist"
+
+#: src/ui/playlist_dialogs.rs:20
+msgid "Create"
+msgstr ""
+
+#: src/ui/playlist_dialogs.rs:56
+#, fuzzy
+#| msgid "Smart playlist"
+msgid "Delete playlist?"
+msgstr "Playlist smart"
+
+#: src/ui/playlist_dialogs.rs:59
+msgid "Delete"
+msgstr ""
+
+#: src/ui/playlist_list.rs:66
+msgid "No audio model found, please restart."
+msgstr ""
+
+#: src/ui/playlist_list.rs:174 src/ui/queue.rs:125
+#, fuzzy
+#| msgid "Playlist Detail"
+msgid "Playlist created"
+msgstr "Dettaglio Playlist"
+
+#: src/ui/playlist_list.rs:177 src/ui/queue.rs:128
+#, fuzzy
+#| msgid "Smart playlist"
+msgid "Failed to create playlist"
+msgstr "Playlist smart"
+
+#: src/ui/setup.rs:153 src/ui/setup.rs:168 src/ui/setup.rs:398
+msgid "Credentials could not be saved. Do you have a keyring daemon running?"
+msgstr ""
+
+#: src/ui/setup.rs:218
+msgid "Connection error. Please supply a full URL (http://example.com:8096)"
+msgstr ""
+
+#: src/ui/setup.rs:232
+msgid "Invalid credentials"
+msgstr ""
+
+#: src/ui/setup.rs:242
+msgid "Could not authenticate with Jellyfin or Subsonic"
+msgstr ""
+
+#: src/ui/setup.rs:287
+msgid "Failed to load libraries"
+msgstr ""
+
+#: src/ui/setup.rs:317
+msgid "Failed to initiate quick connect. Is the host valid?"
+msgstr ""
+
+#: src/ui/setup.rs:372
+msgid "Error during quick connect"
+msgstr ""
+
+#: src/ui/setup.rs:408
+msgid "Failed to authenticate with quick connect"
+msgstr ""
+
+#: src/ui/setup.rs:418
+msgid "Quick connect code copied to clipboard"
+msgstr ""
+
+#: src/ui/stream_info_dialog.rs:9
+msgid "Yes"
+msgstr ""
+
+#: src/ui/stream_info_dialog.rs:10
+msgid "No"
+msgstr ""
+
+#: src/ui/stream_info_dialog.rs:11 src/ui/stream_info_dialog.rs:52
+#: src/ui/stream_info_dialog.rs:73 src/ui/stream_info_dialog.rs:114
+#: src/ui/stream_info_dialog.rs:115
+msgid "Unknown"
+msgstr ""
+
+#: src/ui/stream_info_dialog.rs:49
+msgid "Backend"
+msgstr ""
+
+#: src/ui/stream_info_dialog.rs:52
+msgid "Codec"
+msgstr ""
+
+#: src/ui/stream_info_dialog.rs:54
+msgid "Container"
+msgstr ""
+
+#: src/ui/stream_info_dialog.rs:55 src/ui/stream_info_dialog.rs:77
+msgid "None"
+msgstr ""
+
+#: src/ui/stream_info_dialog.rs:58
+msgid "Sample Rate"
+msgstr ""
+
+#: src/ui/stream_info_dialog.rs:61
+msgid "Channels"
+msgstr ""
+
+#: src/ui/stream_info_dialog.rs:64
+msgid "Bit Rate"
+msgstr ""
+
+#: src/ui/stream_info_dialog.rs:67
+msgid "Encoder"
+msgstr ""
+
+#: src/ui/stream_info_dialog.rs:72
+msgid "Original Codec"
+msgstr ""
+
+#: src/ui/stream_info_dialog.rs:76
+msgid "Original Container"
+msgstr ""
+
+#: src/ui/stream_info_dialog.rs:80
+msgid "Original Sample Rate"
+msgstr ""
+
+#: src/ui/stream_info_dialog.rs:84
+msgid "Original Channels"
+msgstr ""
+
+#: src/ui/stream_info_dialog.rs:88
+msgid "Supports Direct Play"
+msgstr ""
+
+#: src/ui/stream_info_dialog.rs:92
+msgid "Supports Direct Stream"
+msgstr ""
+
+#: src/ui/stream_info_dialog.rs:96
+#, fuzzy
+#| msgid "Transcoding"
+msgid "Supports Transcoding"
+msgstr "Transcodifica"
+
+#: src/ui/stream_info_dialog.rs:102
+msgid "Original Bit Rate"
+msgstr ""
+
+#: src/ui/stream_info_dialog.rs:108
+msgid "File Size"
+msgstr ""
+
+#: src/ui/stream_info_dialog.rs:114
+msgid "Id"
+msgstr ""
+
+#: src/ui/stream_info_dialog.rs:115
+msgid "Path"
+msgstr ""
+
+#: src/ui/stream_info_dialog.rs:138
+msgid "Song Properties"
+msgstr ""
+
+#: src/ui/stream_info_dialog.rs:145
+msgid "Local Properties"
+msgstr ""
+
+#: src/ui/stream_info_dialog.rs:152
+msgid "Remote Properties"
+msgstr ""
+
+#: src/ui/window.rs:180
+msgid "Logged out"
+msgstr ""
+
+#: src/ui/window.rs:308
+msgid "all genres"
+msgstr ""
 
 #: resources/ui/album_art.ui:33
 msgid "Missing album art"
 msgstr "Copertina album mancante"
 
+#: resources/ui/album_detail.ui:82 resources/ui/playlist_detail.ui:66
+msgid "tracks"
+msgstr ""
+
+#: resources/ui/album_detail.ui:145 resources/ui/artist_detail.ui:79
+msgid "More Actions"
+msgstr ""
+
+#: resources/ui/album_list.ui:8
+#, fuzzy
+#| msgid "Albums"
+msgid "No Albums"
+msgstr "Album"
+
+#: resources/ui/artist_detail.ui:41
+#, fuzzy
+#| msgid "Artist Detail"
+msgid "Artist Name"
+msgstr "Dettaglio Artista"
+
+#: resources/ui/artist_list.ui:8
+#, fuzzy
+#| msgid "Artists"
+msgid "No Artists"
+msgstr "Artisti"
+
+#: resources/ui/lyrics.ui:56
+msgid "No lyrics available"
+msgstr ""
+
+#: resources/ui/playback_mode.ui:9
+#, fuzzy
+#| msgid "Playback"
+msgid "Playback Mode"
+msgstr "Riproduzione"
+
+#: resources/ui/playlist_detail.ui:127
+msgid "More actions"
+msgstr ""
+
+#: resources/ui/playlist_detail.ui:138
+#, fuzzy
+#| msgid "Smart playlist"
+msgid "Delete playlist"
+msgstr "Playlist smart"
+
+#: resources/ui/playlist_detail.ui:152
+#, fuzzy
+#| msgid "Playlists"
+msgid "Playlist is Empty"
+msgstr "Playlist"
+
+#: resources/ui/playlist_list.ui:8
+#, fuzzy
+#| msgid "Playlists"
+msgid "No Playlists"
+msgstr "Playlist"
+
 #: resources/ui/preferences.ui:9 resources/ui/preferences.ui:12
+#: resources/ui/shortcuts_dialog.ui:6
 msgid "General"
 msgstr "Generale"
 
@@ -58,83 +461,93 @@ msgstr "Aggiorna libreria all'avvio"
 msgid "The library can be refreshed using ctrl+r or the menu."
 msgstr "La libreria può essere aggiornata usando ctrl+r o il menù."
 
-#: resources/ui/preferences.ui:28
+#: resources/ui/preferences.ui:21
 msgid "Extra eye candy"
 msgstr "Sfondo immersivo"
 
-#: resources/ui/preferences.ui:29
+#: resources/ui/preferences.ui:22
 msgid "Utilizes transparency, blurred backgrounds, etc."
 msgstr "Utilizza trasparenza, sfondi sfocati, ecc."
 
-#: resources/ui/preferences.ui:36
+#: resources/ui/preferences.ui:27
+msgid "Compact Mode"
+msgstr ""
+
+#: resources/ui/preferences.ui:28
+msgid "Use smaller UI elements regardless of window size."
+msgstr ""
+
+#: resources/ui/preferences.ui:35 resources/ui/shortcuts_dialog.ui:84
 msgid "Playback"
 msgstr "Riproduzione"
 
-#: resources/ui/preferences.ui:39
+#: resources/ui/preferences.ui:38
 msgid "Normalize Audio"
 msgstr "Normalizza Audio"
 
-#: resources/ui/preferences.ui:40
+#: resources/ui/preferences.ui:39
 msgid "May require backend plugins."
 msgstr "Potrebbe richiedere componenti aggiuntive nel backend."
 
-#: resources/ui/preferences.ui:52
+#: resources/ui/preferences.ui:44
 msgid "Inhibit Suspend"
 msgstr "Inibizione della Sospensione"
 
-#: resources/ui/preferences.ui:53
+#: resources/ui/preferences.ui:45
 msgid "Prevents the system from suspending while playing"
 msgstr "Impedisce la sospensione del sistema durante la riproduzione"
 
-#: resources/ui/preferences.ui:67
+#: resources/ui/preferences.ui:52
 msgid "Transcoding"
 msgstr "Transcodifica"
 
-#: resources/ui/preferences.ui:68
-msgid ""
-"Transcoding reduces stream quality and bandwidth at the expense of "
-"processing power on the server. Note that Subsonic backends cannot seek "
-"transcoded streams."
+#: resources/ui/preferences.ui:53
+msgid "Currently Subsonic backends cannot seek transcoded streams."
 msgstr ""
-"La transcodifica riduce la qualità e la dimensione del flusso dati a spese "
-"della potenza di calcolo del server. Nota che non è possibile scorrere "
-"flussi transcodificati su backend Subsonic."
 
-#: resources/ui/preferences.ui:71
+#: resources/ui/preferences.ui:56
 msgid "Transcoding Profile"
 msgstr "Profilo di Transcodifica"
 
-#: resources/ui/preferences.ui:72
+#: resources/ui/preferences.ui:57
 msgid "Only used when direct play is not available."
 msgstr "Usa solo quando la riproduzione diretta non è disponibile."
 
-#: resources/ui/preferences.ui:85
+#: resources/ui/preferences.ui:70
 msgid "Maximum Bitrate (kbps)"
 msgstr "Bitrate Massimo (kbps)"
 
-#: resources/ui/preferences.ui:86
+#: resources/ui/preferences.ui:71
 msgid "A value of 0 means no limit."
 msgstr "Un valore di 0 significa nessun limite."
 
-#: resources/ui/preferences.ui:105 resources/ui/window.ui:275
+#: resources/ui/preferences.ui:90 resources/ui/window.ui:313
 msgid "Playlists"
 msgstr "Playlist"
 
-#: resources/ui/preferences.ui:108
+#: resources/ui/preferences.ui:93
 msgid "Smart Playlists"
 msgstr "Playlist Smart"
 
-#: resources/ui/preferences.ui:111
+#: resources/ui/preferences.ui:96
 msgid "Favorite Mix Playlist"
 msgstr "Playlist Mix Preferiti"
 
-#: resources/ui/preferences.ui:123
+#: resources/ui/preferences.ui:101
 msgid "Shuffled Playlist"
 msgstr "Playlist Rirpoduzione Casuale"
 
-#: resources/ui/preferences.ui:135
+#: resources/ui/preferences.ui:106
 msgid "Most Played Playlist"
 msgstr "Playlist Canzoni Più Ascoltate"
+
+#: resources/ui/queue.ui:8
+msgid "Nothing Playing"
+msgstr ""
+
+#: resources/ui/queue.ui:41
+msgid "Jump to current song"
+msgstr ""
 
 #: resources/ui/setup.ui:10
 msgid "Servers"
@@ -154,114 +567,267 @@ msgstr ""
 "del server, inclusi protocollo e porta. Per Jellyfin quest'ultima è "
 "solitamente 8096, Navidrome usa 4533."
 
-#: resources/ui/setup.ui:82
+#: resources/ui/setup.ui:35
+msgid "Host URL"
+msgstr ""
+
+#: resources/ui/setup.ui:42
+msgid "Username"
+msgstr ""
+
+#: resources/ui/setup.ui:47
+msgid "Password"
+msgstr ""
+
+#: resources/ui/setup.ui:54
+msgid "Connect"
+msgstr ""
+
+#: resources/ui/setup.ui:65 resources/ui/setup.ui:150
+msgid "Jellyfin Quick Connect"
+msgstr ""
+
+#: resources/ui/setup.ui:80
+#, fuzzy
+#| msgid "Library"
+msgid "Choose Library"
+msgstr "Libreria"
+
+#: resources/ui/setup.ui:89
 msgid "Select Library"
 msgstr "Seleziona Libreria"
 
-#: resources/ui/setup.ui:83
+#: resources/ui/setup.ui:90
 msgid "Choose which library Gelly will use to load your music."
 msgstr "Scegli quale libreria Gelly utilizzerà per caricare la tua musica."
 
-#: resources/ui/setup.ui:98
+#: resources/ui/setup.ui:105
 msgid "Library"
 msgstr "Libreria"
 
-#: resources/ui/window.ui:57
-msgid "Album Detail"
-msgstr "Dettaglio Album"
+#: resources/ui/setup.ui:112
+#, fuzzy
+#| msgid "About Gelly"
+msgid "Launch Gelly"
+msgstr "A proposito di Gelly"
 
-#: resources/ui/window.ui:90
-msgid "Artist Detail"
-msgstr "Dettaglio Artista"
+#: resources/ui/setup.ui:141
+msgid "Quick Connect"
+msgstr ""
 
-#: resources/ui/window.ui:122
-msgid "Playlist Detail"
-msgstr "Dettaglio Playlist"
+#: resources/ui/setup.ui:151
+msgid "Enter the code on the Jellyfin web page to complete authentication."
+msgstr ""
 
-#: resources/ui/window.ui:145
-msgid "Main"
-msgstr "Principale"
-
-#: resources/ui/window.ui:154
-msgid "Show Queue"
-msgstr "Mostra Coda"
-
-#: resources/ui/window.ui:161
-msgid "Search"
-msgstr "Cerca"
-
-#: resources/ui/window.ui:167
-msgid "Sort"
-msgstr "Ordina"
-
-#: resources/ui/window.ui:174
-msgid "New"
-msgstr "Nuovo"
-
-#: resources/ui/window.ui:215
-msgid "Favorites"
-msgstr "Preferiti"
-
-#: resources/ui/window.ui:228
-msgid "Ascending"
-msgstr "Ascendente"
-
-#: resources/ui/window.ui:235
-msgid "Descending"
-msgstr "Discendente"
-
-#: resources/ui/window.ui:251
-msgid "Albums"
-msgstr "Album"
-
-#: resources/ui/window.ui:263
-msgid "Artists"
-msgstr "Artisti"
-
-#: resources/ui/window.ui:287
-msgid "Songs"
-msgstr "Canzoni"
-
-#: resources/ui/window.ui:332
-msgid "Hide Queue"
-msgstr "Nascondi Coda"
-
-#: resources/ui/window.ui:341
-msgid "Clear Queue"
-msgstr "Svuota Coda"
-
-#: resources/ui/window.ui:348
-msgid "Save As Playlist"
-msgstr "Salva Come Playlist"
-
-#: resources/ui/window.ui:369
-msgid "Request Rescan"
-msgstr "Richiedi Nuova Scansione"
-
-#: resources/ui/window.ui:373
+#: resources/ui/shortcuts_dialog.ui:9 resources/ui/window.ui:411
 msgid "Refresh Library"
 msgstr "Aggiorna Libreria"
 
-#: resources/ui/window.ui:377
-msgid "Clear Image Cache"
-msgstr "Svuota Cache Immagini"
+#: resources/ui/shortcuts_dialog.ui:10
+msgid "Re-downloads the music library"
+msgstr ""
 
-#: resources/ui/window.ui:383
+#: resources/ui/shortcuts_dialog.ui:16
+#, fuzzy
+#| msgid "Request Rescan"
+msgid "Request Library Rescan"
+msgstr "Richiedi Nuova Scansione"
+
+#: resources/ui/shortcuts_dialog.ui:17
+msgid "Ask Jellyfin to rescan the library for new or modified files"
+msgstr ""
+
+#: resources/ui/shortcuts_dialog.ui:23
+msgid "Search"
+msgstr "Cerca"
+
+#: resources/ui/shortcuts_dialog.ui:29
+#, fuzzy
+#| msgid "Favorites"
+msgid "Show Favorites"
+msgstr "Preferiti"
+
+#: resources/ui/shortcuts_dialog.ui:35 resources/ui/window.ui:421
 msgid "Preferences"
 msgstr "Preferenze"
 
-#: resources/ui/window.ui:387
+#: resources/ui/shortcuts_dialog.ui:41 resources/ui/window.ui:425
 msgid "Keyboard Shortcuts"
 msgstr "Scorciatoie da Tastiera"
 
-#: resources/ui/window.ui:391
+#: resources/ui/shortcuts_dialog.ui:47 resources/ui/window.ui:437
+msgid "Quit"
+msgstr "Esci"
+
+#: resources/ui/shortcuts_dialog.ui:55
+msgid "Navigation"
+msgstr ""
+
+#: resources/ui/shortcuts_dialog.ui:58
+#, fuzzy
+#| msgid "Albums"
+msgid "Focus Albums"
+msgstr "Album"
+
+#: resources/ui/shortcuts_dialog.ui:64
+#, fuzzy
+#| msgid "Artists"
+msgid "Focus Artists"
+msgstr "Artisti"
+
+#: resources/ui/shortcuts_dialog.ui:70
+#, fuzzy
+#| msgid "Playlists"
+msgid "Focus Playlist"
+msgstr "Playlist"
+
+#: resources/ui/shortcuts_dialog.ui:76
+msgid "Focus Song List"
+msgstr ""
+
+#: resources/ui/shortcuts_dialog.ui:87
+msgid "Play Selected"
+msgstr ""
+
+#: resources/ui/shortcuts_dialog.ui:88
+msgid "Play the currently selected item in the list"
+msgstr ""
+
+#: resources/ui/song_list.ui:8
+#, fuzzy
+#| msgid "Songs"
+msgid "No Songs"
+msgstr "Canzoni"
+
+#: resources/ui/song_list.ui:35
+#, fuzzy
+#| msgid "Songs"
+msgid "songs"
+msgstr "Canzoni"
+
+#: resources/ui/window.ui:56
+msgid "Album Detail"
+msgstr "Dettaglio Album"
+
+#: resources/ui/window.ui:89
+msgid "Artist Detail"
+msgstr "Dettaglio Artista"
+
+#: resources/ui/window.ui:121
+msgid "Playlist Detail"
+msgstr "Dettaglio Playlist"
+
+#: resources/ui/window.ui:144
+msgid "Main"
+msgstr "Principale"
+
+#: resources/ui/window.ui:153
+msgid "Show Queue"
+msgstr "Mostra Coda"
+
+#: resources/ui/window.ui:160
+msgid "Search and Genres"
+msgstr ""
+
+#: resources/ui/window.ui:166
+msgid "Sort"
+msgstr "Ordina"
+
+#: resources/ui/window.ui:173
+msgid "New"
+msgstr "Nuovo"
+
+#: resources/ui/window.ui:208
+#, fuzzy
+#| msgid "Search"
+msgid "Search..."
+msgstr "Cerca"
+
+#: resources/ui/window.ui:231
+msgid "Reset"
+msgstr ""
+
+#: resources/ui/window.ui:253
+msgid "Favorites"
+msgstr "Preferiti"
+
+#: resources/ui/window.ui:266
+msgid "Ascending"
+msgstr "Ascendente"
+
+#: resources/ui/window.ui:273
+msgid "Descending"
+msgstr "Discendente"
+
+#: resources/ui/window.ui:289
+msgid "Albums"
+msgstr "Album"
+
+#: resources/ui/window.ui:301
+msgid "Artists"
+msgstr "Artisti"
+
+#: resources/ui/window.ui:325
+msgid "Songs"
+msgstr "Canzoni"
+
+#: resources/ui/window.ui:370
+msgid "Hide Queue"
+msgstr "Nascondi Coda"
+
+#: resources/ui/window.ui:379
+msgid "Clear Queue"
+msgstr "Svuota Coda"
+
+#: resources/ui/window.ui:386
+msgid "Save As Playlist"
+msgstr "Salva Come Playlist"
+
+#: resources/ui/window.ui:407
+msgid "Request Rescan"
+msgstr "Richiedi Nuova Scansione"
+
+#: resources/ui/window.ui:415
+msgid "Clear Image Cache"
+msgstr "Svuota Cache Immagini"
+
+#: resources/ui/window.ui:429
 msgid "About Gelly"
 msgstr "A proposito di Gelly"
 
-#: resources/ui/window.ui:395
+#: resources/ui/window.ui:433
 msgid "Logout"
 msgstr "Logout"
 
-#: resources/ui/window.ui:399
-msgid "Quit"
-msgstr "Esci"
+#: resources/ui/player_bar/big_player.ui:169
+#: resources/ui/player_bar/compact_player_bar.ui:110
+#: resources/ui/player_bar/full_player_bar.ui:198
+msgid "Lyrics"
+msgstr ""
+
+#: resources/ui/player_bar/big_player.ui:179
+#: resources/ui/player_bar/compact_player_bar.ui:120
+#: resources/ui/player_bar/full_player_bar.ui:208
+#, fuzzy
+#| msgid "Favorites"
+msgid "Favorite"
+msgstr "Preferiti"
+
+#: resources/ui/player_bar/big_player.ui:199
+#: resources/ui/player_bar/full_player_bar.ui:245
+msgid "Volume"
+msgstr ""
+
+#: resources/ui/player_bar/big_player.ui:214
+#: resources/ui/player_bar/full_player_bar.ui:232
+msgid "Song Menu"
+msgstr ""
+
+#~ msgid ""
+#~ "Transcoding reduces stream quality and bandwidth at the expense of "
+#~ "processing power on the server. Note that Subsonic backends cannot seek "
+#~ "transcoded streams."
+#~ msgstr ""
+#~ "La transcodifica riduce la qualità e la dimensione del flusso dati a "
+#~ "spese della potenza di calcolo del server. Nota che non è possibile "
+#~ "scorrere flussi transcodificati su backend Subsonic."
