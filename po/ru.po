@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-19 22:49+1100\n"
+"POT-Creation-Date: 2026-07-06 08:45-0700\n"
 "PO-Revision-Date: 2026-06-19 22:57+1100\n"
 "Last-Translator: Aleksandr Shamaraev <shad@altlinux.org>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/gelly/gelly/ru/"
@@ -27,76 +27,116 @@ msgid "N/A"
 msgstr "-"
 
 #: src/ui/album_detail.rs:169 src/ui/album_detail.rs:179
-#: src/ui/album_detail.rs:203 src/ui/artist_detail.rs:236 src/ui/playlist.rs:53
-#: src/ui/playlist_detail.rs:515 src/ui/playlist_detail.rs:525
-#: src/ui/playlist_detail.rs:549 src/ui/song_list.rs:141
+#: src/ui/album_detail.rs:203 src/ui/artist_detail.rs:245 src/ui/playlist.rs:53
+#: src/ui/playlist_detail.rs:520 src/ui/playlist_detail.rs:530
+#: src/ui/playlist_detail.rs:554 src/ui/song_list.rs:159
 msgid "Audio model not initialized, please restart"
 msgstr "Аудиомодель не инициализирована, пожалуйста, перезапустите систему"
 
-#: src/ui/album_detail.rs:195 src/ui/artist_detail.rs:228
-#: src/ui/playlist_detail.rs:541
+#: src/ui/album_detail.rs:195 src/ui/artist_detail.rs:237
+#: src/ui/playlist_detail.rs:546
 msgid "1 song added to queue"
 msgid_plural "{} songs added to queue"
 msgstr[0] "В очередь добавлен {} трек"
 msgstr[1] "В очередь добавлено {} трека"
 msgstr[2] "В очередь добавлено {} треков"
 
-#: src/ui/album_detail.rs:276
+#: src/ui/album_detail.rs:277
 msgid "Album ID copied to clipboard"
 msgstr "ID альбома скопирован в буфер обмена"
 
-#: src/ui/album_detail.rs:304
+#: src/ui/album_detail.rs:313
 msgid "Added album to playlist"
 msgstr "Альбом добавлен в плейлист"
 
-#: src/ui/album_detail.rs:308
+#: src/ui/album_detail.rs:317
 msgid "Failed to add album to playlist"
 msgstr "Не удалось добавить альбом в плейлист"
 
-#: src/ui/artist_detail.rs:172
+#: src/ui/artist_detail.rs:164
 msgid "Artist ID copied to clipboard"
 msgstr "ID исполнителя скопирован в буфер обмена."
 
-#: src/ui/artist_detail.rs:200
+#: src/ui/artist_detail.rs:192
 msgid "Added artist to playlist"
 msgstr "Исполнитель добавлен в плейлист"
 
-#: src/ui/artist_detail.rs:204
+#: src/ui/artist_detail.rs:196
 msgid "Failed to add artist to playlist"
 msgstr "Не удалось добавить исполнителя в плейлист"
 
-#: src/ui/music_context_menu.rs:35
-msgid "Queue Next"
-msgstr "Следующая очередь"
-
-#: src/ui/music_context_menu.rs:39
-msgid "Queue Last"
-msgstr "Последняя очередь"
-
-#: src/ui/music_context_menu.rs:61
+#: src/ui/music_context_menu.rs:33 src/ui/music_context_menu.rs:84
 msgid "Add to Playlist"
 msgstr "Добавить в плейлист"
 
-#: src/ui/music_context_menu.rs:65
+#: src/ui/music_context_menu.rs:34 src/ui/playlist_dialogs.rs:20
+#: src/ui/playlist_dialogs.rs:59 resources/ui/setup.ui:123
+#: resources/ui/setup.ui:186
+msgid "Cancel"
+msgstr "Отменить"
+
+#: src/ui/music_context_menu.rs:34
+msgid "Add"
+msgstr ""
+
+#: src/ui/music_context_menu.rs:59
+msgid "No playlists available. Please create a playlist first."
+msgstr ""
+
+#: src/ui/music_context_menu.rs:72
+msgid "Queue Next"
+msgstr "Следующая очередь"
+
+#: src/ui/music_context_menu.rs:76
+msgid "Queue Last"
+msgstr "Последняя очередь"
+
+#: src/ui/music_context_menu.rs:89
 msgid "Remove from Playlist"
 msgstr "Удалить из плейлиста"
 
-#: src/ui/music_context_menu.rs:73
+#: src/ui/music_context_menu.rs:99
+#, fuzzy
+#| msgid "No Albums"
+msgid "Go to Album"
+msgstr "Нет альбомов"
+
+#: src/ui/music_context_menu.rs:106
+#, fuzzy
+#| msgid "No Artists"
+msgid "Go to Artist"
+msgstr "Нет исполнителя"
+
+#: src/ui/music_context_menu.rs:115 src/ui/stream_info_dialog.rs:120
+#, fuzzy
+#| msgid "Stream Info"
+msgid "Song Info"
+msgstr "Информация о потоке"
+
+#: src/ui/music_context_menu.rs:120
 msgid "Copy ID"
 msgstr "Копировать ID"
 
-#: src/ui/player_bar/common.rs:73
+#: src/ui/player_bar/common.rs:78
 msgid "Pause"
 msgstr "Пауза"
 
-#: src/ui/player_bar/common.rs:76 resources/ui/album_detail.ui:119
+#: src/ui/player_bar/common.rs:81 resources/ui/album_detail.ui:119
 #: resources/ui/artist_detail.ui:52 resources/ui/playlist_detail.ui:101
 msgid "Play"
 msgstr "Играть"
 
-#: src/ui/player_bar/common.rs:86
+#: src/ui/player_bar/common.rs:91
 msgid "Unknown Artist"
 msgstr "Неизвестный артист"
+
+#: src/ui/player_bar/common.rs:252 src/ui/song.rs:257
+msgid "Added song to playlist"
+msgstr "Песня добавлена ​​в плейлист"
+
+#: src/ui/player_bar/common.rs:256 src/ui/song.rs:261
+msgid "Failed to add song to playlist"
+msgstr "Не удалось добавить песню в плейлист."
 
 #: src/ui/playlist.rs:26
 msgid "1 song"
@@ -117,39 +157,39 @@ msgstr "Пустой плейлист"
 msgid "Unable to load playlist"
 msgstr "Не удалось загрузить плейлист"
 
-#: src/ui/playlist_detail.rs:260 src/ui/playlist_list.rs:68
+#: src/ui/playlist_detail.rs:260 src/ui/playlist_list.rs:72
 msgid "Could not load playlist, please try again."
 msgstr "Не удалось загрузить плейлист, пожалуйста, попробуйте еще раз."
 
-#: src/ui/playlist_detail.rs:341
+#: src/ui/playlist_detail.rs:329
 msgid "Playlist ID copied to clipboard"
 msgstr "ID плейлиста скопирован в буфер обмена"
 
-#: src/ui/playlist_detail.rs:370
+#: src/ui/playlist_detail.rs:358
 msgid "Added songs to playlist"
 msgstr "Песни добавлены в плейлист"
 
-#: src/ui/playlist_detail.rs:374
+#: src/ui/playlist_detail.rs:362
 msgid "Failed to add songs to playlist"
 msgstr "Не удалось добавить песни в плейлист"
 
-#: src/ui/playlist_detail.rs:453
+#: src/ui/playlist_detail.rs:458
 msgid "Failed to save playlist order."
 msgstr "Не удалось сохранить порядок плейлиста."
 
-#: src/ui/playlist_detail.rs:499
+#: src/ui/playlist_detail.rs:504
 msgid "Failed to modify playlist."
 msgstr "Не удалось изменить плейлист."
 
-#: src/ui/playlist_detail.rs:567
+#: src/ui/playlist_detail.rs:572
 msgid "Smart playlists cannot be deleted"
 msgstr "Умные плейлисты удалить нельзя"
 
-#: src/ui/playlist_detail.rs:600
+#: src/ui/playlist_detail.rs:605
 msgid "Playlist deleted"
 msgstr "Плейлист удален"
 
-#: src/ui/playlist_detail.rs:603
+#: src/ui/playlist_detail.rs:608
 msgid "Failed to delete playlist"
 msgstr "Не удалось удалить плейлист"
 
@@ -160,11 +200,6 @@ msgstr "Название плейлиста"
 #: src/ui/playlist_dialogs.rs:16
 msgid "New Playlist"
 msgstr "Новый плейлист"
-
-#: src/ui/playlist_dialogs.rs:20 src/ui/playlist_dialogs.rs:59
-#: resources/ui/setup.ui:123 resources/ui/setup.ui:186
-msgid "Cancel"
-msgstr "Отменить"
 
 #: src/ui/playlist_dialogs.rs:20
 msgid "Create"
@@ -178,15 +213,15 @@ msgstr "Удалить плейлист?"
 msgid "Delete"
 msgstr "Удалить"
 
-#: src/ui/playlist_list.rs:62
+#: src/ui/playlist_list.rs:66
 msgid "No audio model found, please restart."
 msgstr "Аудиомодель не найдена. Пожалуйста, перезапустите программу."
 
-#: src/ui/playlist_list.rs:166 src/ui/queue.rs:125
+#: src/ui/playlist_list.rs:174 src/ui/queue.rs:125
 msgid "Playlist created"
 msgstr "Плейлист создан"
 
-#: src/ui/playlist_list.rs:169 src/ui/queue.rs:128
+#: src/ui/playlist_list.rs:177 src/ui/queue.rs:128
 msgid "Failed to create playlist"
 msgstr "Не удалось создать плейлист"
 
@@ -230,106 +265,115 @@ msgstr "Не удалось пройти проверку подлинности
 msgid "Quick connect code copied to clipboard"
 msgstr "Код скопирован в буфер обмена"
 
-#: src/ui/song.rs:262
-msgid "Song ID copied to clipboard"
-msgstr "ID песни скопирован в буфер обмена"
-
-#: src/ui/song.rs:306
-msgid "Added song to playlist"
-msgstr "Песня добавлена ​​в плейлист"
-
-#: src/ui/song.rs:310
-msgid "Failed to add song to playlist"
-msgstr "Не удалось добавить песню в плейлист."
-
-#: src/ui/stream_info_dialog.rs:19
+#: src/ui/stream_info_dialog.rs:9
 msgid "Yes"
 msgstr "Да"
 
-#: src/ui/stream_info_dialog.rs:20
+#: src/ui/stream_info_dialog.rs:10
 msgid "No"
 msgstr "Нет"
 
-#: src/ui/stream_info_dialog.rs:21 src/ui/stream_info_dialog.rs:32
-#: src/ui/stream_info_dialog.rs:54
+#: src/ui/stream_info_dialog.rs:11 src/ui/stream_info_dialog.rs:52
+#: src/ui/stream_info_dialog.rs:73 src/ui/stream_info_dialog.rs:114
+#: src/ui/stream_info_dialog.rs:115
 msgid "Unknown"
 msgstr "Неизвестный"
 
-#: src/ui/stream_info_dialog.rs:29
+#: src/ui/stream_info_dialog.rs:49
 msgid "Backend"
 msgstr "Бэкенд"
 
-#: src/ui/stream_info_dialog.rs:32
+#: src/ui/stream_info_dialog.rs:52
 msgid "Codec"
 msgstr "Кодек"
 
-#: src/ui/stream_info_dialog.rs:34
+#: src/ui/stream_info_dialog.rs:54
 msgid "Container"
 msgstr "Контейнер"
 
-#: src/ui/stream_info_dialog.rs:35 src/ui/stream_info_dialog.rs:58
+#: src/ui/stream_info_dialog.rs:55 src/ui/stream_info_dialog.rs:77
 msgid "None"
 msgstr "Нет"
 
-#: src/ui/stream_info_dialog.rs:38
+#: src/ui/stream_info_dialog.rs:58
 msgid "Sample Rate"
 msgstr "Частота дискретизации"
 
-#: src/ui/stream_info_dialog.rs:41
+#: src/ui/stream_info_dialog.rs:61
 msgid "Channels"
 msgstr "Каналы"
 
-#: src/ui/stream_info_dialog.rs:44
+#: src/ui/stream_info_dialog.rs:64
 msgid "Bit Rate"
 msgstr "Битрейт"
 
-#: src/ui/stream_info_dialog.rs:47
+#: src/ui/stream_info_dialog.rs:67
 msgid "Encoder"
 msgstr "Кодировщик"
 
-#: src/ui/stream_info_dialog.rs:53
+#: src/ui/stream_info_dialog.rs:72
 msgid "Original Codec"
 msgstr "Оригинальный кодек"
 
-#: src/ui/stream_info_dialog.rs:57
+#: src/ui/stream_info_dialog.rs:76
 msgid "Original Container"
 msgstr "Оригинальный контейнер"
 
-#: src/ui/stream_info_dialog.rs:61
+#: src/ui/stream_info_dialog.rs:80
 msgid "Original Sample Rate"
 msgstr "Исходная частота дискретизации"
 
-#: src/ui/stream_info_dialog.rs:65
+#: src/ui/stream_info_dialog.rs:84
 msgid "Original Channels"
 msgstr "Оригинальные каналы"
 
-#: src/ui/stream_info_dialog.rs:69
+#: src/ui/stream_info_dialog.rs:88
 msgid "Supports Direct Play"
 msgstr "Поддерживает прямое воспроизведение"
 
-#: src/ui/stream_info_dialog.rs:73
+#: src/ui/stream_info_dialog.rs:92
 msgid "Supports Direct Stream"
 msgstr "Поддерживает прямой поток"
 
-#: src/ui/stream_info_dialog.rs:77
+#: src/ui/stream_info_dialog.rs:96
 msgid "Supports Transcoding"
 msgstr "Поддерживает транскодирование"
 
-#: src/ui/stream_info_dialog.rs:83
+#: src/ui/stream_info_dialog.rs:102
 msgid "Original Bit Rate"
 msgstr "Исходная скорость передачи данных в битах"
 
-#: src/ui/stream_info_dialog.rs:89
+#: src/ui/stream_info_dialog.rs:108
 msgid "File Size"
 msgstr "Размер файла"
 
-#: src/ui/stream_info_dialog.rs:118
-msgid "Stream Info"
-msgstr "Информация о потоке"
+#: src/ui/stream_info_dialog.rs:114
+msgid "Id"
+msgstr ""
 
-#: src/ui/window.rs:178
+#: src/ui/stream_info_dialog.rs:115
+msgid "Path"
+msgstr ""
+
+#: src/ui/stream_info_dialog.rs:138
+msgid "Song Properties"
+msgstr ""
+
+#: src/ui/stream_info_dialog.rs:145
+msgid "Local Properties"
+msgstr ""
+
+#: src/ui/stream_info_dialog.rs:152
+msgid "Remote Properties"
+msgstr ""
+
+#: src/ui/window.rs:180
 msgid "Logged out"
 msgstr "Вышел из системы"
+
+#: src/ui/window.rs:308
+msgid "all genres"
+msgstr ""
 
 #: resources/ui/album_art.ui:33
 msgid "Missing album art"
@@ -358,6 +402,12 @@ msgstr "Нет исполнителя"
 #: resources/ui/lyrics.ui:56
 msgid "No lyrics available"
 msgstr "Текст песни отсутствует"
+
+#: resources/ui/playback_mode.ui:9
+#, fuzzy
+#| msgid "Playback"
+msgid "Playback Mode"
+msgstr "Воспроизведение"
 
 #: resources/ui/playlist_detail.ui:127
 msgid "More actions"
@@ -452,7 +502,7 @@ msgstr "Максимальный битрейт (кбит/с)"
 msgid "A value of 0 means no limit."
 msgstr "Если указать 0, ограничения не будет."
 
-#: resources/ui/preferences.ui:90 resources/ui/window.ui:274
+#: resources/ui/preferences.ui:90 resources/ui/window.ui:313
 msgid "Playlists"
 msgstr "Плейлисты"
 
@@ -548,7 +598,7 @@ msgstr "Быстрый вход"
 msgid "Enter the code on the Jellyfin web page to complete authentication."
 msgstr "Введите код на веб-странице Jellyfin, чтобы завершить аутентификацию."
 
-#: resources/ui/shortcuts_dialog.ui:9 resources/ui/window.ui:372
+#: resources/ui/shortcuts_dialog.ui:9 resources/ui/window.ui:411
 msgid "Refresh Library"
 msgstr "Обновить медиатеку"
 
@@ -566,7 +616,7 @@ msgstr ""
 "Попросите Jellyfin повторно просканировать библиотеку на наличие новых или "
 "измененных файлов"
 
-#: resources/ui/shortcuts_dialog.ui:23 resources/ui/window.ui:160
+#: resources/ui/shortcuts_dialog.ui:23
 msgid "Search"
 msgstr "Поиск"
 
@@ -574,15 +624,15 @@ msgstr "Поиск"
 msgid "Show Favorites"
 msgstr "Показать избранное"
 
-#: resources/ui/shortcuts_dialog.ui:35 resources/ui/window.ui:382
+#: resources/ui/shortcuts_dialog.ui:35 resources/ui/window.ui:421
 msgid "Preferences"
 msgstr "Настройки"
 
-#: resources/ui/shortcuts_dialog.ui:41 resources/ui/window.ui:386
+#: resources/ui/shortcuts_dialog.ui:41 resources/ui/window.ui:425
 msgid "Keyboard Shortcuts"
 msgstr "Горячие клавиши"
 
-#: resources/ui/shortcuts_dialog.ui:47 resources/ui/window.ui:398
+#: resources/ui/shortcuts_dialog.ui:47 resources/ui/window.ui:437
 msgid "Quit"
 msgstr "Выход"
 
@@ -642,6 +692,10 @@ msgstr "Главный"
 msgid "Show Queue"
 msgstr "Показать очередь"
 
+#: resources/ui/window.ui:160
+msgid "Search and Genres"
+msgstr ""
+
 #: resources/ui/window.ui:166
 msgid "Sort"
 msgstr "Сортировка"
@@ -650,61 +704,92 @@ msgstr "Сортировка"
 msgid "New"
 msgstr "Новый"
 
-#: resources/ui/window.ui:198
+#: resources/ui/window.ui:208
 msgid "Search..."
 msgstr "Поиск..."
 
-#: resources/ui/window.ui:214
+#: resources/ui/window.ui:231
+msgid "Reset"
+msgstr ""
+
+#: resources/ui/window.ui:253
 msgid "Favorites"
 msgstr "Избранное"
 
-#: resources/ui/window.ui:227
+#: resources/ui/window.ui:266
 msgid "Ascending"
 msgstr "По возрастанию"
 
-#: resources/ui/window.ui:234
+#: resources/ui/window.ui:273
 msgid "Descending"
 msgstr "По убыванию"
 
-#: resources/ui/window.ui:250
+#: resources/ui/window.ui:289
 msgid "Albums"
 msgstr "Альбомы"
 
-#: resources/ui/window.ui:262
+#: resources/ui/window.ui:301
 msgid "Artists"
 msgstr "Исполнители"
 
-#: resources/ui/window.ui:286
+#: resources/ui/window.ui:325
 msgid "Songs"
 msgstr "Треки"
 
-#: resources/ui/window.ui:331
+#: resources/ui/window.ui:370
 msgid "Hide Queue"
 msgstr "Скрыть очередь"
 
-#: resources/ui/window.ui:340
+#: resources/ui/window.ui:379
 msgid "Clear Queue"
 msgstr "Очистить очередь"
 
-#: resources/ui/window.ui:347
+#: resources/ui/window.ui:386
 msgid "Save As Playlist"
 msgstr "Сохранить как плейлист"
 
-#: resources/ui/window.ui:368
+#: resources/ui/window.ui:407
 msgid "Request Rescan"
 msgstr "Запросить повторное сканирование"
 
-#: resources/ui/window.ui:376
+#: resources/ui/window.ui:415
 msgid "Clear Image Cache"
 msgstr "Очистить кеш изображений"
 
-#: resources/ui/window.ui:390
+#: resources/ui/window.ui:429
 msgid "About Gelly"
 msgstr "Об Gelly"
 
-#: resources/ui/window.ui:394
+#: resources/ui/window.ui:433
 msgid "Logout"
 msgstr "Выйти"
+
+#: resources/ui/player_bar/big_player.ui:169
+#: resources/ui/player_bar/compact_player_bar.ui:110
+#: resources/ui/player_bar/full_player_bar.ui:198
+msgid "Lyrics"
+msgstr ""
+
+#: resources/ui/player_bar/big_player.ui:179
+#: resources/ui/player_bar/compact_player_bar.ui:120
+#: resources/ui/player_bar/full_player_bar.ui:208
+#, fuzzy
+#| msgid "Favorites"
+msgid "Favorite"
+msgstr "Избранное"
+
+#: resources/ui/player_bar/big_player.ui:199
+#: resources/ui/player_bar/full_player_bar.ui:245
+msgid "Volume"
+msgstr ""
+
+#: resources/ui/player_bar/big_player.ui:214
+#: resources/ui/player_bar/full_player_bar.ui:232
+msgid "Song Menu"
+msgstr ""
+
+#~ msgid "Song ID copied to clipboard"
+#~ msgstr "ID песни скопирован в буфер обмена"
 
 #~ msgid ""
 #~ "Transcoding reduces stream quality and bandwidth at the expense of "
