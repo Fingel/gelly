@@ -213,6 +213,7 @@ impl Jellyfin {
     }
 
     pub async fn get_favorites(&self) -> Result<FavoriteDtoList, BackendError> {
+        // TODO: This is run on startup, should be conditional
         let params = vec![
             ("IncludeItemTypes", "Playlist,Audio,MusicAlbum,MusicArtist"),
             ("sortBy", "DateCreated"),
@@ -360,6 +361,13 @@ impl Jellyfin {
                 &format!("Items/{}/Images/{}", item_id, image_type.as_str()),
                 Some(&params),
             )
+            .await?;
+        self.handle_binary_response(response).await
+    }
+
+    pub async fn get_media(&self, item_id: &str) -> Result<Vec<u8>, BackendError> {
+        let response = self
+            .get(&format!("Items/{}/Download", item_id), None)
             .await?;
         self.handle_binary_response(response).await
     }

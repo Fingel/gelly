@@ -589,20 +589,17 @@ impl Subsonic {
         params.push(("id".to_string(), item_id.to_string()));
 
         let response = self.client.get(url).query(&params).send().await?;
-        let status = response.status();
+        self.handle_binary_response(response).await
+    }
 
-        if status.is_success() {
-            Ok(response.bytes().await?.to_vec())
-        } else if status == StatusCode::UNAUTHORIZED {
-            Err(BackendError::AuthenticationFailed {
-                message: response.text().await?,
-            })
-        } else {
-            Err(BackendError::Http {
-                status,
-                message: response.text().await?,
-            })
-        }
+    pub async fn get_media(&self, item_id: &str) -> Result<Vec<u8>, BackendError> {
+        debug!("Subsonic::get_media(item_id={item_id})");
+        let url = self.rest_url("download");
+        let mut params = self.auth_params();
+        params.retain(|(k, _)| k != "f");
+        params.push(("id".to_string(), item_id.to_string()));
+        let response = self.client.get(url).query(&params).send().await?;
+        self.handle_binary_response(response).await
     }
 
     // https://github.com/opensubsonic/open-subsonic-api/blob/main/content/en/docs/Endpoints/stream.md
@@ -822,6 +819,22 @@ impl Subsonic {
             Err(BackendError::Http {
                 status,
                 message: body,
+            })
+        }
+    }
+
+    async fn handle_binary_response(&self, response: Response) -> Result<Vec<u8>, BackendError> {
+        let status = response.status();
+        if status.is_success() {
+            Ok(response.bytes().await?.to_vec())
+        } else if status == StatusCode::UNAUTHORIZED {
+            Err(BackendError::AuthenticationFailed {
+                message: response.text().await?,
+            })
+        } else {
+            Err(BackendError::Http {
+                status,
+                message: response.text().await?,
             })
         }
     }

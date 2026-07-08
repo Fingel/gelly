@@ -169,6 +169,13 @@ impl Backend {
         }
     }
 
+    pub async fn get_media(&self, item_id: &str) -> Result<Vec<u8>, BackendError> {
+        match self {
+            Self::Jellyfin(jellyfin) => jellyfin.get_media(item_id).await,
+            Self::Subsonic(subsonic) => subsonic.get_media(item_id).await,
+        }
+    }
+
     pub fn get_stream_uri(&self, item_id: &str) -> String {
         match self {
             Self::Jellyfin(jellyfin) => jellyfin.get_stream_uri(item_id),
