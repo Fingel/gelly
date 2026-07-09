@@ -336,7 +336,7 @@ impl Song {
         if let Some(cache) = cache
             && !cache.is_present(&song_id)
         {
-            spawn_tokio(
+            self.get_application().http_with_loading(
                 async move { cache.get_media(&song_id, &backend).await },
                 glib::clone!(
                     #[weak(rename_to = song)]
@@ -346,7 +346,7 @@ impl Song {
                             Ok(_) => {
                                 song.get_application()
                                     .emit_by_name::<()>("downloads-updated", &[]);
-                                song.toast(&tr("Song downloaded"), None);
+                                song.toast(&tr("Song downloaded"), Some(1));
                             }
                             Err(err) => {
                                 warn!("Failed to download song: {err}");
@@ -362,9 +362,32 @@ impl Song {
     }
 
     fn delete_local_song(&self) {
-        self.get_application()
-            .emit_by_name::<()>("downloads-updated", &[]);
-        unimplemented!("Implement this");
+        let song_id = self.song_id();
+        let cache = self.get_application().media_cache();
+        if let Some(cache) = cache
+            && cache.is_present(&song_id)
+        {
+            spawn_tokio(
+                async move { cache.remove_media(&song_id).await },
+                glib::clone!(
+                    #[weak(rename_to = song)]
+                    self,
+                    move |result: Result<(), CacheError>| {
+                        match result {
+                            Ok(_) => {
+                                song.get_application()
+                                    .emit_by_name::<()>("downloads-updated", &[]);
+                                song.toast(&tr("Song deleted"), None);
+                            }
+                            Err(err) => {
+                                warn!("Failed to delete song: {err}");
+                                song.toast(&tr("Failed to delete song"), None);
+                            }
+                        }
+                    }
+                ),
+            );
+        }
     }
 
     fn on_remove_from_playlist(&self) {

@@ -246,6 +246,18 @@ impl MediaCache {
             Ok(data)
         }
     }
+
+    pub async fn remove_media(&self, item_id: &str) -> Result<(), CacheError> {
+        let path = self.get_cache_file_path(item_id);
+        if path.exists() {
+            tokio::fs::remove_file(path).await?;
+            self.medias
+                .write()
+                .expect("Write lock on medias HashSet")
+                .remove(item_id);
+        }
+        Ok(())
+    }
 }
 
 type TextureCache = LruCache<String, gdk::Texture>;
