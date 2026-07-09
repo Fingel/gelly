@@ -103,15 +103,27 @@ pub enum CacheError {
     Decode(String),
 }
 
-fn get_cache_directory(name: &str) -> Result<PathBuf, CacheError> {
-    let cache_dir = if let Ok(xdg_cache) = std::env::var("XDG_CACHE_HOME") {
-        PathBuf::from(xdg_cache)
-    } else if let Ok(home) = std::env::var("HOME") {
-        PathBuf::from(home).join(".cache")
-    } else {
-        PathBuf::from("/tmp")
-    };
-    Ok(cache_dir.join(APP_ID).join(name))
+enum CacheFolder {
+    Library,
+    AlbumArt,
+    Media,
+}
+
+impl CacheFolder {
+    fn as_path(&self) -> PathBuf {
+        let cache_dir = if let Ok(xdg_cache) = std::env::var("XDG_CACHE_HOME") {
+            PathBuf::from(xdg_cache)
+        } else if let Ok(home) = std::env::var("HOME") {
+            PathBuf::from(home).join(".cache")
+        } else {
+            PathBuf::from("/tmp")
+        };
+        match self {
+            CacheFolder::Library => cache_dir.join(APP_ID).join("library"),
+            CacheFolder::AlbumArt => cache_dir.join(APP_ID).join("album-art"),
+            CacheFolder::Media => cache_dir.join(APP_ID).join("media"),
+        }
+    }
 }
 
 #[derive(Debug, Clone)]
@@ -121,7 +133,7 @@ pub struct LibraryCache {
 
 impl LibraryCache {
     pub fn new() -> Result<Self, CacheError> {
-        let cache_dir = get_cache_directory("library")?;
+        let cache_dir = CacheFolder::Library.as_path();
         fs::create_dir_all(&cache_dir)?;
         Ok(Self { cache_dir })
     }
@@ -157,6 +169,60 @@ impl LibraryCache {
     }
 }
 
+#[derive(Debug, Clone)]
+pub struct MediaCache {
+    cache_dir: PathBuf,
+}
+
+impl MediaCache {
+    pub fn new() -> Result<Self, CacheError> {
+        let cache_dir = CacheFolder::Media.as_path();
+        fs::create_dir_all(&cache_dir)?;
+        Ok(Self { cache_dir })
+    }
+
+    pub fn get_cache_file_path(&self, item_id: &str) -> PathBuf {
+        self.cache_dir.join(item_id)
+    }
+
+    pub fn clear(&self) -> Result<(), CacheError> {
+        fs::remove_dir_all(&self.cache_dir)?;
+        fs::create_dir_all(&self.cache_dir)?;
+        Ok(())
+    }
+
+    pub async fn save_to_disk(&self, item_id: &str, data: &[u8]) -> Result<(), CacheError> {
+        let path = self.get_cache_file_path(item_id);
+        tokio::fs::write(path, data).await?;
+        Ok(())
+    }
+
+    pub async fn load_from_disk(&self, item_id: &str) -> Result<Vec<u8>, CacheError> {
+        let path = self.get_cache_file_path(item_id);
+        Ok(tokio::fs::read(path).await?)
+    }
+
+    pub fn is_present(&self, item_id: &str) -> bool {
+        let path = self.get_cache_file_path(item_id);
+        path.exists()
+    }
+
+    pub async fn get_media(&self, item_id: &str, backend: &Backend) -> Result<Vec<u8>, CacheError> {
+        if self.is_present(item_id) {
+            self.load_from_disk(item_id).await
+        } else {
+            let data = run_on_tokio({
+                let item_id = item_id.to_string();
+                let backend = backend.clone();
+                async move { backend.get_media(&item_id).await }
+            })
+            .await?;
+            self.save_to_disk(item_id, &data).await?;
+            Ok(data)
+        }
+    }
+}
+
 type TextureCache = LruCache<String, gdk::Texture>;
 
 #[derive(Debug, Clone)]
@@ -174,7 +240,7 @@ impl ImageCache {
         const MAX_CONCURRENT_DOWNLOADS: usize = 4;
         const MAX_CONCURRENT_DECODES: usize = 4;
         const MAX_TEXTURE_CACHE_ENTRIES: usize = 10_000;
-        let cache_dir = get_cache_directory("album-art")?;
+        let cache_dir = CacheFolder::AlbumArt.as_path();
         fs::create_dir_all(&cache_dir)?;
         Ok(Self {
             pending_requests: Arc::new(Mutex::new(HashSet::new())),

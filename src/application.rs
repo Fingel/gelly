@@ -8,7 +8,7 @@ use crate::async_utils::spawn_tokio;
 use crate::audio::model::AudioModel;
 use crate::backend::Backend;
 use crate::backend::BackendError;
-use crate::cache::{Cacheable, ImageCache, LibraryCache};
+use crate::cache::{Cacheable, ImageCache, LibraryCache, MediaCache};
 use crate::cli::add_cli_options;
 use crate::config::{
     self, BackendType, retrieve_jellyfin_api_token, retrieve_subsonic_password, settings,
@@ -38,6 +38,7 @@ impl Application {
         app.initialize_backend();
         app.initialize_library_cache();
         app.initialize_image_cache();
+        app.initialize_media_cache();
         app.initialize_audio_model();
         app.initialize_cli();
         app
@@ -96,6 +97,18 @@ impl Application {
                 // App can technically still function
                 self.imp().image_cache.replace(None);
                 error!("Failed to initialize image cache: {}", err);
+            }
+        }
+    }
+
+    pub fn initialize_media_cache(&self) {
+        match MediaCache::new() {
+            Ok(cache) => {
+                self.imp().media_cache.replace(Some(cache));
+            }
+            Err(err) => {
+                self.imp().media_cache.replace(None);
+                error!("Failed to initialize media cache: {}", err);
             }
         }
     }
@@ -192,6 +205,10 @@ impl Application {
 
     pub fn image_cache(&self) -> Option<ImageCache> {
         self.imp().image_cache.borrow().clone()
+    }
+
+    pub fn media_cache(&self) -> Option<MediaCache> {
+        self.imp().media_cache.borrow().clone()
     }
 
     pub fn audio_model(&self) -> Option<AudioModel> {
@@ -453,6 +470,7 @@ mod imp {
 
     use crate::audio::model::AudioModel;
     use crate::backend::Backend;
+    use crate::cache::MediaCache;
     use crate::cache::{ImageCache, LibraryCache};
     use crate::jellyfin::api::PlaylistDto;
     use crate::library::Library;
@@ -465,6 +483,7 @@ mod imp {
         pub library_id: RefCell<String>,
         pub library_cache: RefCell<Option<LibraryCache>>, // TODO: remove these Option<> types
         pub image_cache: RefCell<Option<ImageCache>>,
+        pub media_cache: RefCell<Option<MediaCache>>,
         pub audio_model: RefCell<Option<AudioModel>>,
         pub http_request_count: AtomicU32,
         pub inhibit_cookie: Cell<u32>,

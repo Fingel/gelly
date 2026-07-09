@@ -7,11 +7,12 @@ use gtk::{
     prelude::*,
     subclass::prelude::*,
 };
-use log::warn;
+use log::{debug, warn};
 
 use crate::{
     async_utils::spawn_tokio,
     audio::stream_info::discover_stream_info,
+    cache::CacheError,
     i18n::tr,
     jellyfin::{api::ItemType, utils::format_duration},
     models::SongModel,
@@ -207,6 +208,25 @@ impl Song {
         self.imp().song_menu.set_popover(Some(&popover_menu));
         let action_group = self.create_action_group();
         self.insert_action_group(&options.action_prefix, Some(&action_group));
+
+        popover_menu.connect_show(glib::clone!(
+            #[weak(rename_to = song)]
+            self,
+            #[strong]
+            action_group,
+            move |_| {
+                let application = song.get_application();
+                let cache = application.media_cache();
+                let song_id = song.song_id();
+                if let Some(cache) = cache
+                    && let Some(action) = action_group
+                        .lookup_action("download")
+                        .and_then(|a| a.downcast::<SimpleAction>().ok())
+                {
+                    action.set_enabled(!cache.is_present(&song_id));
+                }
+            }
+        ));
     }
 
     fn create_action_group(&self) -> SimpleActionGroup {
@@ -237,6 +257,7 @@ impl Song {
         add_noarg_action("go_to_artist", Self::on_go_to_artist);
         add_noarg_action("add_to_playlist_dialog", Self::on_add_to_playlist_dialog);
         add_noarg_action("show_info_dialog", Self::show_info_dialog);
+        add_noarg_action("download", Self::download_song);
 
         action_group
     }
@@ -300,6 +321,38 @@ impl Song {
                 }
             ),
         );
+    }
+
+    fn download_song(&self) {
+        let song_id = self.song_id();
+        let backend = self.get_application().backend();
+        let cache = self.get_application().media_cache();
+        if let Some(cache) = cache
+            && !cache.is_present(&song_id)
+        {
+            spawn_tokio(
+                async move { cache.get_media(&song_id, &backend).await },
+                glib::clone!(
+                    #[weak(rename_to = song)]
+                    self,
+                    move |result: Result<Vec<u8>, CacheError>| {
+                        match result {
+                            Ok(_) => {
+                                let song_id = song.song_id();
+                                song.toast(&tr("Song downloaded"), None);
+                                debug!("Downloaded song: {}", song_id);
+                            }
+                            Err(err) => {
+                                warn!("Failed to download song: {err}");
+                                song.toast(&tr("Failed to download song"), None);
+                            }
+                        }
+                    }
+                ),
+            );
+        } else {
+            self.toast(&tr("Song already downloaded"), None);
+        }
     }
 
     fn on_remove_from_playlist(&self) {

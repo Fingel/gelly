@@ -110,6 +110,11 @@ fn create_menu_model(config: &ContextActions) -> gio::Menu {
     menu.append_section(None, &navigation_section);
 
     let other_section = gio::Menu::new();
+    other_section.append(
+        Some(&tr("Download")),
+        Some(&format!("{}.download", config.action_prefix)),
+    );
+
     if config.show_info_dialog {
         other_section.append(
             Some(&tr("Song Info")),
