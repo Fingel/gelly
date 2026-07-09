@@ -8,141 +8,131 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-07-06 08:45-0700\n"
-"PO-Revision-Date: 2026-06-02 17:40+0000\n"
-"Last-Translator: Antonio Caria <ant8.caria@gmail.com>\n"
-"Language-Team: Italian <https://hosted.weblate.org/projects/gelly/gelly/it/"
-">\n"
+"PO-Revision-Date: 2026-07-10 21:01+0000\n"
+"Last-Translator: \"Riccardo B.\" <riccardoberbeglia03@gmail.com>\n"
+"Language-Team: Italian <https://hosted.weblate.org/projects/gelly/gelly/it/>"
+"\n"
 "Language: it\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 2026.6\n"
+"X-Generator: Weblate 2026.7.1.dev0\n"
 
 #: src/ui/album_detail.rs:40
 msgid "N/A"
-msgstr ""
+msgstr "N/A"
 
 #: src/ui/album_detail.rs:169 src/ui/album_detail.rs:179
 #: src/ui/album_detail.rs:203 src/ui/artist_detail.rs:245 src/ui/playlist.rs:53
 #: src/ui/playlist_detail.rs:520 src/ui/playlist_detail.rs:530
 #: src/ui/playlist_detail.rs:554 src/ui/song_list.rs:159
 msgid "Audio model not initialized, please restart"
-msgstr ""
+msgstr "Modello audio non inizializzato, riavviare il programma"
 
 #: src/ui/album_detail.rs:195 src/ui/artist_detail.rs:237
 #: src/ui/playlist_detail.rs:546
 msgid "1 song added to queue"
 msgid_plural "{} songs added to queue"
-msgstr[0] "1 canzone aggiunta alla coda"
-msgstr[1] "{} canzoni aggiunte alla coda"
+msgstr[0] "1 brano aggiunto alla coda"
+msgstr[1] "{} brani aggiunti alla coda"
 
 #: src/ui/album_detail.rs:277
 msgid "Album ID copied to clipboard"
-msgstr ""
+msgstr "ID album copiato negli appunti"
 
 #: src/ui/album_detail.rs:313
 msgid "Added album to playlist"
-msgstr ""
+msgstr "Album aggiunto alla playlist"
 
 #: src/ui/album_detail.rs:317
 msgid "Failed to add album to playlist"
-msgstr ""
+msgstr "Impossibile aggiungere l'album alla playlist"
 
 #: src/ui/artist_detail.rs:164
 msgid "Artist ID copied to clipboard"
-msgstr ""
+msgstr "ID artista copiato negli appunti"
 
 #: src/ui/artist_detail.rs:192
-#, fuzzy
-#| msgid "Smart playlist"
 msgid "Added artist to playlist"
-msgstr "Playlist smart"
+msgstr "Artista aggiunto alla playlist"
 
 #: src/ui/artist_detail.rs:196
 msgid "Failed to add artist to playlist"
-msgstr ""
+msgstr "Impossibile aggiungere l'artista alla playlist"
 
 #: src/ui/music_context_menu.rs:33 src/ui/music_context_menu.rs:84
-#, fuzzy
-#| msgid "Smart Playlists"
 msgid "Add to Playlist"
-msgstr "Playlist Smart"
+msgstr "Aggiungi alla Playlist"
 
 #: src/ui/music_context_menu.rs:34 src/ui/playlist_dialogs.rs:20
 #: src/ui/playlist_dialogs.rs:59 resources/ui/setup.ui:123
 #: resources/ui/setup.ui:186
 msgid "Cancel"
-msgstr ""
+msgstr "Annulla"
 
 #: src/ui/music_context_menu.rs:34
 msgid "Add"
-msgstr ""
+msgstr "Aggiungi"
 
 #: src/ui/music_context_menu.rs:59
 msgid "No playlists available. Please create a playlist first."
-msgstr ""
+msgstr "Nessuna playlist disponibile. Creare prima una playlist."
 
 #: src/ui/music_context_menu.rs:72
 msgid "Queue Next"
-msgstr ""
+msgstr "Aggiungi come successivo"
 
 #: src/ui/music_context_menu.rs:76
 msgid "Queue Last"
-msgstr ""
+msgstr "Aggiungi in fondo"
 
 #: src/ui/music_context_menu.rs:89
-#, fuzzy
-#| msgid "Save As Playlist"
 msgid "Remove from Playlist"
-msgstr "Salva Come Playlist"
+msgstr "Rimuovi dalla Playlist"
 
 #: src/ui/music_context_menu.rs:99
 msgid "Go to Album"
-msgstr ""
+msgstr "Vai all'album"
 
 #: src/ui/music_context_menu.rs:106
-#, fuzzy
-#| msgid "Artists"
 msgid "Go to Artist"
-msgstr "Artisti"
+msgstr "Vai all'artista"
 
 #: src/ui/music_context_menu.rs:115 src/ui/stream_info_dialog.rs:120
 msgid "Song Info"
-msgstr ""
+msgstr "Informazioni Brano"
 
 #: src/ui/music_context_menu.rs:120
 msgid "Copy ID"
-msgstr ""
+msgstr "Copia ID"
 
 #: src/ui/player_bar/common.rs:78
 msgid "Pause"
-msgstr ""
+msgstr "Pausa"
 
 #: src/ui/player_bar/common.rs:81 resources/ui/album_detail.ui:119
 #: resources/ui/artist_detail.ui:52 resources/ui/playlist_detail.ui:101
-#, fuzzy
-#| msgid "Playback"
 msgid "Play"
-msgstr "Riproduzione"
+msgstr "Riproduci"
 
 #: src/ui/player_bar/common.rs:91
 msgid "Unknown Artist"
-msgstr ""
+msgstr "Artista Sconosciuto"
 
 #: src/ui/player_bar/common.rs:252 src/ui/song.rs:257
 msgid "Added song to playlist"
-msgstr ""
+msgstr "Brano aggiunto alla playlist"
 
 #: src/ui/player_bar/common.rs:256 src/ui/song.rs:261
 msgid "Failed to add song to playlist"
-msgstr ""
+msgstr "Impossibile aggiungere il brano alla playlist"
 
 #: src/ui/playlist.rs:26
 msgid "1 song"
 msgid_plural "{} songs"
-msgstr[0] "1 canzone"
-msgstr[1] "{} canzoni"
+msgstr[0] "1 brano"
+msgstr[1] "{} brani"
 
 #: src/ui/playlist.rs:29
 msgid "Smart playlist"
@@ -153,238 +143,223 @@ msgid "Empty playlist"
 msgstr "Playlist vuota"
 
 #: src/ui/playlist.rs:77
-#, fuzzy
-#| msgid "Most Played Playlist"
 msgid "Unable to load playlist"
-msgstr "Playlist Canzoni Più Ascoltate"
+msgstr "Impossibile caricare la playlist"
 
 #: src/ui/playlist_detail.rs:260 src/ui/playlist_list.rs:72
 msgid "Could not load playlist, please try again."
-msgstr ""
+msgstr "Impossibile caricare la playlist, riprova."
 
 #: src/ui/playlist_detail.rs:329
 msgid "Playlist ID copied to clipboard"
-msgstr ""
+msgstr "ID Playlist copiato negli appunti"
 
 #: src/ui/playlist_detail.rs:358
 msgid "Added songs to playlist"
-msgstr ""
+msgstr "Brani aggiunti alla playlist"
 
 #: src/ui/playlist_detail.rs:362
 msgid "Failed to add songs to playlist"
-msgstr ""
+msgstr "Impossibile aggiungere i brani alla playlist"
 
 #: src/ui/playlist_detail.rs:458
 msgid "Failed to save playlist order."
-msgstr ""
+msgstr "Impossibile salvare l'ordine della playlist."
 
 #: src/ui/playlist_detail.rs:504
 msgid "Failed to modify playlist."
-msgstr ""
+msgstr "Impossibile modificare playlist."
 
 #: src/ui/playlist_detail.rs:572
 msgid "Smart playlists cannot be deleted"
-msgstr ""
+msgstr "Playlist smart non possono essere cancellate"
 
 #: src/ui/playlist_detail.rs:605
-#, fuzzy
-#| msgid "Playlist Detail"
 msgid "Playlist deleted"
-msgstr "Dettaglio Playlist"
+msgstr "Playlist eliminata"
 
 #: src/ui/playlist_detail.rs:608
 msgid "Failed to delete playlist"
-msgstr ""
+msgstr "Impossibile eliminare playlist"
 
 #: src/ui/playlist_dialogs.rs:7
-#, fuzzy
-#| msgid "Playlists"
 msgid "Playlist name"
-msgstr "Playlist"
+msgstr "Nome playlist"
 
 #: src/ui/playlist_dialogs.rs:16
-#, fuzzy
-#| msgid "Playlists"
 msgid "New Playlist"
-msgstr "Playlist"
+msgstr "Nuova Playlist"
 
 #: src/ui/playlist_dialogs.rs:20
 msgid "Create"
-msgstr ""
+msgstr "Crea"
 
 #: src/ui/playlist_dialogs.rs:56
-#, fuzzy
-#| msgid "Smart playlist"
 msgid "Delete playlist?"
-msgstr "Playlist smart"
+msgstr "Eliminare playlist?"
 
 #: src/ui/playlist_dialogs.rs:59
 msgid "Delete"
-msgstr ""
+msgstr "Elimina"
 
 #: src/ui/playlist_list.rs:66
 msgid "No audio model found, please restart."
-msgstr ""
+msgstr "Nessun modello audio trovato, si prega di riavviare."
 
 #: src/ui/playlist_list.rs:174 src/ui/queue.rs:125
-#, fuzzy
-#| msgid "Playlist Detail"
 msgid "Playlist created"
-msgstr "Dettaglio Playlist"
+msgstr "Playlist creata"
 
 #: src/ui/playlist_list.rs:177 src/ui/queue.rs:128
-#, fuzzy
-#| msgid "Smart playlist"
 msgid "Failed to create playlist"
-msgstr "Playlist smart"
+msgstr "Impossibile creare la playlist"
 
 #: src/ui/setup.rs:153 src/ui/setup.rs:168 src/ui/setup.rs:398
 msgid "Credentials could not be saved. Do you have a keyring daemon running?"
-msgstr ""
+msgstr "Impossibile salvare le credenziali. È in esecuzione un keyring daemon?"
 
 #: src/ui/setup.rs:218
 msgid "Connection error. Please supply a full URL (http://example.com:8096)"
 msgstr ""
+"Errore di connessione. Specifica un URL completo (http://example.com:8096)"
 
 #: src/ui/setup.rs:232
 msgid "Invalid credentials"
-msgstr ""
+msgstr "Credenziali non valide"
 
 #: src/ui/setup.rs:242
 msgid "Could not authenticate with Jellyfin or Subsonic"
-msgstr ""
+msgstr "Impossibile autenticarsi con Jellyfin o Subsonic"
 
 #: src/ui/setup.rs:287
 msgid "Failed to load libraries"
-msgstr ""
+msgstr "Impossibile caricare le librerie"
 
 #: src/ui/setup.rs:317
 msgid "Failed to initiate quick connect. Is the host valid?"
-msgstr ""
+msgstr "Impossibile avviare il quick connect. L'host è valido?"
 
 #: src/ui/setup.rs:372
 msgid "Error during quick connect"
-msgstr ""
+msgstr "Errore durante il quick connect"
 
 #: src/ui/setup.rs:408
 msgid "Failed to authenticate with quick connect"
-msgstr ""
+msgstr "Impossibile autenticarsi con Quick Connect"
 
 #: src/ui/setup.rs:418
 msgid "Quick connect code copied to clipboard"
-msgstr ""
+msgstr "Codice Quick Connect copiato negli appunti"
 
 #: src/ui/stream_info_dialog.rs:9
 msgid "Yes"
-msgstr ""
+msgstr "Si"
 
 #: src/ui/stream_info_dialog.rs:10
 msgid "No"
-msgstr ""
+msgstr "No"
 
 #: src/ui/stream_info_dialog.rs:11 src/ui/stream_info_dialog.rs:52
 #: src/ui/stream_info_dialog.rs:73 src/ui/stream_info_dialog.rs:114
 #: src/ui/stream_info_dialog.rs:115
 msgid "Unknown"
-msgstr ""
+msgstr "Sconosciuto"
 
 #: src/ui/stream_info_dialog.rs:49
 msgid "Backend"
-msgstr ""
+msgstr "Backend"
 
 #: src/ui/stream_info_dialog.rs:52
 msgid "Codec"
-msgstr ""
+msgstr "Codec"
 
 #: src/ui/stream_info_dialog.rs:54
 msgid "Container"
-msgstr ""
+msgstr "Container"
 
 #: src/ui/stream_info_dialog.rs:55 src/ui/stream_info_dialog.rs:77
 msgid "None"
-msgstr ""
+msgstr "Nessuno"
 
 #: src/ui/stream_info_dialog.rs:58
 msgid "Sample Rate"
-msgstr ""
+msgstr "Frequenza di campionamento"
 
 #: src/ui/stream_info_dialog.rs:61
 msgid "Channels"
-msgstr ""
+msgstr "Canali"
 
 #: src/ui/stream_info_dialog.rs:64
 msgid "Bit Rate"
-msgstr ""
+msgstr "Bit Rate"
 
 #: src/ui/stream_info_dialog.rs:67
 msgid "Encoder"
-msgstr ""
+msgstr "Encoder"
 
 #: src/ui/stream_info_dialog.rs:72
 msgid "Original Codec"
-msgstr ""
+msgstr "Codec originale"
 
 #: src/ui/stream_info_dialog.rs:76
 msgid "Original Container"
-msgstr ""
+msgstr "Container originale"
 
 #: src/ui/stream_info_dialog.rs:80
 msgid "Original Sample Rate"
-msgstr ""
+msgstr "Frequenza di campionamento originale"
 
 #: src/ui/stream_info_dialog.rs:84
 msgid "Original Channels"
-msgstr ""
+msgstr "Canali originali"
 
 #: src/ui/stream_info_dialog.rs:88
 msgid "Supports Direct Play"
-msgstr ""
+msgstr "Supporta Direct Play"
 
 #: src/ui/stream_info_dialog.rs:92
 msgid "Supports Direct Stream"
-msgstr ""
+msgstr "Supporta Direct Stream"
 
 #: src/ui/stream_info_dialog.rs:96
-#, fuzzy
-#| msgid "Transcoding"
 msgid "Supports Transcoding"
-msgstr "Transcodifica"
+msgstr "Supporta Transcodifica"
 
 #: src/ui/stream_info_dialog.rs:102
 msgid "Original Bit Rate"
-msgstr ""
+msgstr "Bit Rate originale"
 
 #: src/ui/stream_info_dialog.rs:108
 msgid "File Size"
-msgstr ""
+msgstr "Dimensione del file"
 
 #: src/ui/stream_info_dialog.rs:114
 msgid "Id"
-msgstr ""
+msgstr "Id"
 
 #: src/ui/stream_info_dialog.rs:115
 msgid "Path"
-msgstr ""
+msgstr "Percorso"
 
 #: src/ui/stream_info_dialog.rs:138
 msgid "Song Properties"
-msgstr ""
+msgstr "Proprietà del brano"
 
 #: src/ui/stream_info_dialog.rs:145
 msgid "Local Properties"
-msgstr ""
+msgstr "Proprietà locali"
 
 #: src/ui/stream_info_dialog.rs:152
 msgid "Remote Properties"
-msgstr ""
+msgstr "Proprietà remote"
 
 #: src/ui/window.rs:180
 msgid "Logged out"
-msgstr ""
+msgstr "Disconnesso"
 
 #: src/ui/window.rs:308
 msgid "all genres"
-msgstr ""
+msgstr "tutti i generi"
 
 #: resources/ui/album_art.ui:33
 msgid "Missing album art"
@@ -392,61 +367,47 @@ msgstr "Copertina album mancante"
 
 #: resources/ui/album_detail.ui:82 resources/ui/playlist_detail.ui:66
 msgid "tracks"
-msgstr ""
+msgstr "brani"
 
 #: resources/ui/album_detail.ui:145 resources/ui/artist_detail.ui:79
 msgid "More Actions"
-msgstr ""
+msgstr "Altre Azioni"
 
 #: resources/ui/album_list.ui:8
-#, fuzzy
-#| msgid "Albums"
 msgid "No Albums"
-msgstr "Album"
+msgstr "Nessun Album"
 
 #: resources/ui/artist_detail.ui:41
-#, fuzzy
-#| msgid "Artist Detail"
 msgid "Artist Name"
-msgstr "Dettaglio Artista"
+msgstr "Nome Artista"
 
 #: resources/ui/artist_list.ui:8
-#, fuzzy
-#| msgid "Artists"
 msgid "No Artists"
-msgstr "Artisti"
+msgstr "Nessun Artista"
 
 #: resources/ui/lyrics.ui:56
 msgid "No lyrics available"
-msgstr ""
+msgstr "Testo non disponibile"
 
 #: resources/ui/playback_mode.ui:9
-#, fuzzy
-#| msgid "Playback"
 msgid "Playback Mode"
-msgstr "Riproduzione"
+msgstr "Modalità di Riproduzione"
 
 #: resources/ui/playlist_detail.ui:127
 msgid "More actions"
-msgstr ""
+msgstr "Altre azioni"
 
 #: resources/ui/playlist_detail.ui:138
-#, fuzzy
-#| msgid "Smart playlist"
 msgid "Delete playlist"
-msgstr "Playlist smart"
+msgstr "Elimina playlist"
 
 #: resources/ui/playlist_detail.ui:152
-#, fuzzy
-#| msgid "Playlists"
 msgid "Playlist is Empty"
-msgstr "Playlist"
+msgstr "La Playlist è vuota"
 
 #: resources/ui/playlist_list.ui:8
-#, fuzzy
-#| msgid "Playlists"
 msgid "No Playlists"
-msgstr "Playlist"
+msgstr "Nessuna Playlist"
 
 #: resources/ui/preferences.ui:9 resources/ui/preferences.ui:12
 #: resources/ui/shortcuts_dialog.ui:6
@@ -463,7 +424,7 @@ msgstr "La libreria può essere aggiornata usando ctrl+r o il menù."
 
 #: resources/ui/preferences.ui:21
 msgid "Extra eye candy"
-msgstr "Sfondo immersivo"
+msgstr "Effetti decorativi aggiuntivi"
 
 #: resources/ui/preferences.ui:22
 msgid "Utilizes transparency, blurred backgrounds, etc."
@@ -471,11 +432,13 @@ msgstr "Utilizza trasparenza, sfondi sfocati, ecc."
 
 #: resources/ui/preferences.ui:27
 msgid "Compact Mode"
-msgstr ""
+msgstr "Modalità Compatta"
 
 #: resources/ui/preferences.ui:28
 msgid "Use smaller UI elements regardless of window size."
 msgstr ""
+"Usa elementi dell'interfaccia più piccoli indipendentemente dalla dimensione "
+"della finestra."
 
 #: resources/ui/preferences.ui:35 resources/ui/shortcuts_dialog.ui:84
 msgid "Playback"
@@ -491,7 +454,7 @@ msgstr "Potrebbe richiedere componenti aggiuntive nel backend."
 
 #: resources/ui/preferences.ui:44
 msgid "Inhibit Suspend"
-msgstr "Inibizione della Sospensione"
+msgstr "Inibisci Sospensione"
 
 #: resources/ui/preferences.ui:45
 msgid "Prevents the system from suspending while playing"
@@ -504,6 +467,8 @@ msgstr "Transcodifica"
 #: resources/ui/preferences.ui:53
 msgid "Currently Subsonic backends cannot seek transcoded streams."
 msgstr ""
+"Attualmente i backend Subsonic non possono eseguire il seek negli stream "
+"transcodificati."
 
 #: resources/ui/preferences.ui:56
 msgid "Transcoding Profile"
@@ -539,15 +504,15 @@ msgstr "Playlist Rirpoduzione Casuale"
 
 #: resources/ui/preferences.ui:106
 msgid "Most Played Playlist"
-msgstr "Playlist Canzoni Più Ascoltate"
+msgstr "Playlist Brani Più Ascoltati"
 
 #: resources/ui/queue.ui:8
 msgid "Nothing Playing"
-msgstr ""
+msgstr "Niente in riproduzione"
 
 #: resources/ui/queue.ui:41
 msgid "Jump to current song"
-msgstr ""
+msgstr "Vai al brano corrente"
 
 #: resources/ui/setup.ui:10
 msgid "Servers"
@@ -569,29 +534,27 @@ msgstr ""
 
 #: resources/ui/setup.ui:35
 msgid "Host URL"
-msgstr ""
+msgstr "URL Host"
 
 #: resources/ui/setup.ui:42
 msgid "Username"
-msgstr ""
+msgstr "Username"
 
 #: resources/ui/setup.ui:47
 msgid "Password"
-msgstr ""
+msgstr "Password"
 
 #: resources/ui/setup.ui:54
 msgid "Connect"
-msgstr ""
+msgstr "Connetti"
 
 #: resources/ui/setup.ui:65 resources/ui/setup.ui:150
 msgid "Jellyfin Quick Connect"
-msgstr ""
+msgstr "Quick Connect Jellyfin"
 
 #: resources/ui/setup.ui:80
-#, fuzzy
-#| msgid "Library"
 msgid "Choose Library"
-msgstr "Libreria"
+msgstr "Scegli Libreria"
 
 #: resources/ui/setup.ui:89
 msgid "Select Library"
@@ -606,18 +569,18 @@ msgid "Library"
 msgstr "Libreria"
 
 #: resources/ui/setup.ui:112
-#, fuzzy
-#| msgid "About Gelly"
 msgid "Launch Gelly"
-msgstr "A proposito di Gelly"
+msgstr "Avvia Gelly"
 
 #: resources/ui/setup.ui:141
 msgid "Quick Connect"
-msgstr ""
+msgstr "Quick Connect"
 
 #: resources/ui/setup.ui:151
 msgid "Enter the code on the Jellyfin web page to complete authentication."
 msgstr ""
+"Inserisci il codice nella pagina web di Jellyfin per concludere "
+"l'autenticazione."
 
 #: resources/ui/shortcuts_dialog.ui:9 resources/ui/window.ui:411
 msgid "Refresh Library"
@@ -625,27 +588,24 @@ msgstr "Aggiorna Libreria"
 
 #: resources/ui/shortcuts_dialog.ui:10
 msgid "Re-downloads the music library"
-msgstr ""
+msgstr "Riscarica la libreria musicale"
 
 #: resources/ui/shortcuts_dialog.ui:16
-#, fuzzy
-#| msgid "Request Rescan"
 msgid "Request Library Rescan"
-msgstr "Richiedi Nuova Scansione"
+msgstr "Richiedi nuova scansione"
 
 #: resources/ui/shortcuts_dialog.ui:17
 msgid "Ask Jellyfin to rescan the library for new or modified files"
 msgstr ""
+"Chiedi a Jellyfin di riscansionare la libreria per file nuovi o modificati"
 
 #: resources/ui/shortcuts_dialog.ui:23
 msgid "Search"
 msgstr "Cerca"
 
 #: resources/ui/shortcuts_dialog.ui:29
-#, fuzzy
-#| msgid "Favorites"
 msgid "Show Favorites"
-msgstr "Preferiti"
+msgstr "Mostra Preferiti"
 
 #: resources/ui/shortcuts_dialog.ui:35 resources/ui/window.ui:421
 msgid "Preferences"
@@ -661,49 +621,39 @@ msgstr "Esci"
 
 #: resources/ui/shortcuts_dialog.ui:55
 msgid "Navigation"
-msgstr ""
+msgstr "Navigazione"
 
 #: resources/ui/shortcuts_dialog.ui:58
-#, fuzzy
-#| msgid "Albums"
 msgid "Focus Albums"
-msgstr "Album"
+msgstr "Focus Album"
 
 #: resources/ui/shortcuts_dialog.ui:64
-#, fuzzy
-#| msgid "Artists"
 msgid "Focus Artists"
-msgstr "Artisti"
+msgstr "Focus Artisti"
 
 #: resources/ui/shortcuts_dialog.ui:70
-#, fuzzy
-#| msgid "Playlists"
 msgid "Focus Playlist"
-msgstr "Playlist"
+msgstr "Vai alla Playlist"
 
 #: resources/ui/shortcuts_dialog.ui:76
 msgid "Focus Song List"
-msgstr ""
+msgstr "Vai ai Brani"
 
 #: resources/ui/shortcuts_dialog.ui:87
 msgid "Play Selected"
-msgstr ""
+msgstr "Riproduci Selezionato"
 
 #: resources/ui/shortcuts_dialog.ui:88
 msgid "Play the currently selected item in the list"
-msgstr ""
+msgstr "Riproduci l'elemento attualmente selezionato nell'elenco"
 
 #: resources/ui/song_list.ui:8
-#, fuzzy
-#| msgid "Songs"
 msgid "No Songs"
-msgstr "Canzoni"
+msgstr "Nessun Brano"
 
 #: resources/ui/song_list.ui:35
-#, fuzzy
-#| msgid "Songs"
 msgid "songs"
-msgstr "Canzoni"
+msgstr "Brani"
 
 #: resources/ui/window.ui:56
 msgid "Album Detail"
@@ -727,7 +677,7 @@ msgstr "Mostra Coda"
 
 #: resources/ui/window.ui:160
 msgid "Search and Genres"
-msgstr ""
+msgstr "Ricerca e Generi"
 
 #: resources/ui/window.ui:166
 msgid "Sort"
@@ -738,14 +688,12 @@ msgid "New"
 msgstr "Nuovo"
 
 #: resources/ui/window.ui:208
-#, fuzzy
-#| msgid "Search"
 msgid "Search..."
-msgstr "Cerca"
+msgstr "Cerca..."
 
 #: resources/ui/window.ui:231
 msgid "Reset"
-msgstr ""
+msgstr "Reset"
 
 #: resources/ui/window.ui:253
 msgid "Favorites"
@@ -769,7 +717,7 @@ msgstr "Artisti"
 
 #: resources/ui/window.ui:325
 msgid "Songs"
-msgstr "Canzoni"
+msgstr "Brani"
 
 #: resources/ui/window.ui:370
 msgid "Hide Queue"
@@ -803,25 +751,23 @@ msgstr "Logout"
 #: resources/ui/player_bar/compact_player_bar.ui:110
 #: resources/ui/player_bar/full_player_bar.ui:198
 msgid "Lyrics"
-msgstr ""
+msgstr "Testo"
 
 #: resources/ui/player_bar/big_player.ui:179
 #: resources/ui/player_bar/compact_player_bar.ui:120
 #: resources/ui/player_bar/full_player_bar.ui:208
-#, fuzzy
-#| msgid "Favorites"
 msgid "Favorite"
-msgstr "Preferiti"
+msgstr "Preferito"
 
 #: resources/ui/player_bar/big_player.ui:199
 #: resources/ui/player_bar/full_player_bar.ui:245
 msgid "Volume"
-msgstr ""
+msgstr "Volume"
 
 #: resources/ui/player_bar/big_player.ui:214
 #: resources/ui/player_bar/full_player_bar.ui:232
 msgid "Song Menu"
-msgstr ""
+msgstr "Menu Brano"
 
 #~ msgid ""
 #~ "Transcoding reduces stream quality and bandwidth at the expense of "
