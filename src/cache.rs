@@ -212,11 +212,11 @@ impl MediaCache {
 
     async fn save_to_disk(&self, item_id: &str, data: &[u8]) -> Result<(), CacheError> {
         let path = self.get_cache_file_path(item_id);
+        tokio::fs::write(path, data).await?;
         self.medias
             .write()
             .expect("Write lock on medias HashSet")
             .insert(item_id.to_string());
-        tokio::fs::write(path, data).await?;
         Ok(())
     }
 
