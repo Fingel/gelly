@@ -1,5 +1,11 @@
 use std::{
-    collections::HashSet, fs, num::NonZeroUsize, os::unix, path::PathBuf, sync::Arc, time::Duration,
+    collections::HashSet,
+    fs,
+    num::NonZeroUsize,
+    os::unix,
+    path::PathBuf,
+    sync::{Arc, RwLock},
+    time::Duration,
 };
 
 use gtk::gdk;
@@ -172,39 +178,58 @@ impl LibraryCache {
 #[derive(Debug, Clone)]
 pub struct MediaCache {
     cache_dir: PathBuf,
+    medias: Arc<RwLock<HashSet<String>>>,
 }
 
 impl MediaCache {
     pub fn new() -> Result<Self, CacheError> {
         let cache_dir = CacheFolder::Media.as_path();
         fs::create_dir_all(&cache_dir)?;
-        Ok(Self { cache_dir })
+
+        let entries = fs::read_dir(&cache_dir)?
+            .filter_map(Result::ok)
+            .filter_map(|entry| entry.file_name().into_string().ok())
+            .collect::<HashSet<String>>();
+        Ok(Self {
+            cache_dir,
+            medias: Arc::new(RwLock::new(entries)),
+        })
     }
 
-    pub fn get_cache_file_path(&self, item_id: &str) -> PathBuf {
+    fn get_cache_file_path(&self, item_id: &str) -> PathBuf {
         self.cache_dir.join(item_id)
     }
 
     pub fn clear(&self) -> Result<(), CacheError> {
         fs::remove_dir_all(&self.cache_dir)?;
         fs::create_dir_all(&self.cache_dir)?;
+        self.medias
+            .write()
+            .expect("Write lock on medias HashSet")
+            .clear();
         Ok(())
     }
 
-    pub async fn save_to_disk(&self, item_id: &str, data: &[u8]) -> Result<(), CacheError> {
+    async fn save_to_disk(&self, item_id: &str, data: &[u8]) -> Result<(), CacheError> {
         let path = self.get_cache_file_path(item_id);
+        self.medias
+            .write()
+            .expect("Write lock on medias HashSet")
+            .insert(item_id.to_string());
         tokio::fs::write(path, data).await?;
         Ok(())
     }
 
-    pub async fn load_from_disk(&self, item_id: &str) -> Result<Vec<u8>, CacheError> {
+    async fn load_from_disk(&self, item_id: &str) -> Result<Vec<u8>, CacheError> {
         let path = self.get_cache_file_path(item_id);
         Ok(tokio::fs::read(path).await?)
     }
 
     pub fn is_present(&self, item_id: &str) -> bool {
-        let path = self.get_cache_file_path(item_id);
-        path.exists()
+        self.medias
+            .read()
+            .expect("Read lock on medias HashSet")
+            .contains(item_id)
     }
 
     pub async fn get_media(&self, item_id: &str, backend: &Backend) -> Result<Vec<u8>, CacheError> {
