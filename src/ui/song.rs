@@ -203,6 +203,7 @@ impl Song {
             go_to_album: true,
             go_to_artist: true,
             show_info_dialog: true,
+            can_download: true,
         };
         let popover_menu = construct_menu(&options);
         self.imp().song_menu.set_popover(Some(&popover_menu));
@@ -215,15 +216,19 @@ impl Song {
             #[strong]
             action_group,
             move |_| {
-                let application = song.get_application();
-                let cache = application.media_cache();
-                let song_id = song.song_id();
-                if let Some(cache) = cache
-                    && let Some(action) = action_group
+                if let Some(song_model) = song.imp().song_model.borrow().clone() {
+                    if let Some(action) = action_group
+                        .lookup_action("delete_local")
+                        .and_then(|a| a.downcast::<SimpleAction>().ok())
+                    {
+                        action.set_enabled(song_model.downloaded());
+                    }
+                    if let Some(action) = action_group
                         .lookup_action("download")
                         .and_then(|a| a.downcast::<SimpleAction>().ok())
-                {
-                    action.set_enabled(!cache.is_present(&song_id));
+                    {
+                        action.set_enabled(!song_model.downloaded());
+                    }
                 }
             }
         ));
@@ -232,7 +237,7 @@ impl Song {
     fn create_action_group(&self) -> SimpleActionGroup {
         let action_group = SimpleActionGroup::new();
 
-        // TODO share this?
+        // TODO just make add_noarg_action take a reference to the group instead
         let add_noarg_action = |name: &str, handler: fn(&Self)| {
             let action = SimpleAction::new(name, None);
             action.connect_activate(glib::clone!(
@@ -258,6 +263,7 @@ impl Song {
         add_noarg_action("add_to_playlist_dialog", Self::on_add_to_playlist_dialog);
         add_noarg_action("show_info_dialog", Self::show_info_dialog);
         add_noarg_action("download", Self::download_song);
+        add_noarg_action("delete_local", Self::delete_local_song);
 
         action_group
     }
@@ -353,6 +359,12 @@ impl Song {
         } else {
             self.toast(&tr("Song already downloaded"), None);
         }
+    }
+
+    fn delete_local_song(&self) {
+        self.get_application()
+            .emit_by_name::<()>("downloads-updated", &[]);
+        unimplemented!("Implement this");
     }
 
     fn on_remove_from_playlist(&self) {

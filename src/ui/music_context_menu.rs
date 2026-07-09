@@ -1,5 +1,5 @@
 use adw::prelude::{AdwDialogExt, AlertDialogExt, AlertDialogExtManual};
-use gtk::{self, gio, prelude::*};
+use gtk::{self, gio, glib, prelude::*};
 
 use crate::i18n::tr;
 use crate::jellyfin::api::PlaylistDto;
@@ -12,6 +12,7 @@ pub struct ContextActions {
     pub go_to_artist: bool,
     pub go_to_album: bool,
     pub show_info_dialog: bool,
+    pub can_download: bool,
 }
 
 pub fn construct_menu(config: &ContextActions) -> gtk::PopoverMenu {
@@ -110,10 +111,23 @@ fn create_menu_model(config: &ContextActions) -> gio::Menu {
     menu.append_section(None, &navigation_section);
 
     let other_section = gio::Menu::new();
-    other_section.append(
-        Some(&tr("Download")),
-        Some(&format!("{}.download", config.action_prefix)),
-    );
+    if config.can_download {
+        let download_item = gio::MenuItem::new(
+            Some(&tr("Download")),
+            Some(&format!("{}.download", config.action_prefix)),
+        );
+        download_item
+            .set_attribute_value("hidden-when", Some(&glib::Variant::from("action-disabled")));
+        other_section.append_item(&download_item);
+
+        let delete_item = gio::MenuItem::new(
+            Some(&tr("Delete Local")),
+            Some(&format!("{}.delete_local", config.action_prefix)),
+        );
+        delete_item
+            .set_attribute_value("hidden-when", Some(&glib::Variant::from("action-disabled")));
+        other_section.append_item(&delete_item);
+    }
 
     if config.show_info_dialog {
         other_section.append(

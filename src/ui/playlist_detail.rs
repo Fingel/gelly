@@ -288,6 +288,7 @@ impl PlaylistDetail {
             go_to_album: false,
             go_to_artist: false,
             show_info_dialog: false,
+            can_download: false,
         };
         let popover_menu = construct_menu(&options);
         self.imp().action_menu.set_popover(Some(&popover_menu));

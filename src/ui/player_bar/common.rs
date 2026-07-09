@@ -298,6 +298,7 @@ where
             go_to_artist: true,
             go_to_album: true,
             show_info_dialog: true,
+            can_download: false,
         };
         let menu = construct_menu(&options);
         self.action_menu().set_popover(Some(&menu));
