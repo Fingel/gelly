@@ -1,5 +1,6 @@
 use crate::{
     async_utils::spawn_tokio,
+    cache::CacheError,
     i18n::{ngettext, tr},
     jellyfin::utils::format_duration,
     models::{AlbumModel, SongModel},
@@ -220,6 +221,76 @@ impl AlbumDetail {
         }
     }
 
+    fn song_ids(&self) -> Vec<String> {
+        self.imp()
+            .songs
+            .borrow()
+            .iter()
+            .map(|song| song.id())
+            .collect::<Vec<_>>()
+    }
+
+    fn on_delete_local(&self) {
+        self.song_ids().into_iter().for_each(|song_id| {
+            let cache = self.get_application().media_cache();
+            if let Some(cache) = cache
+                && cache.is_present(&song_id)
+            {
+                spawn_tokio(
+                    async move { cache.remove_media(&song_id).await },
+                    glib::clone!(
+                        #[weak (rename_to = album)]
+                        self,
+                        move |result: Result<(), CacheError>| {
+                            match result {
+                                Ok(_) => {
+                                    album
+                                        .get_application()
+                                        .emit_by_name::<()>("downloads-updated", &[]);
+                                }
+                                Err(err) => {
+                                    warn!("Failed to delete song: {err}");
+                                    album.toast(&tr("Failed to delete song"), None);
+                                }
+                            }
+                        }
+                    ),
+                );
+            }
+        });
+    }
+
+    fn on_download(&self) {
+        self.song_ids().into_iter().for_each(|song_id| {
+            let backend = self.get_application().backend();
+            let cache = self.get_application().media_cache();
+            if let Some(cache) = cache
+                && !cache.is_present(&song_id)
+            {
+                self.get_application().http_with_loading(
+                    async move { cache.get_media(&song_id, &backend).await },
+                    glib::clone!(
+                        #[weak (rename_to = album)]
+                        self,
+                        move |result: Result<Vec<u8>, CacheError>| {
+                            match result {
+                                Ok(_) => {
+                                    album
+                                        .get_application()
+                                        .emit_by_name::<()>("downloads-updated", &[]);
+                                }
+                                Err(err) => {
+                                    warn!("Failed to download song: {err}");
+                                    album.toast(&tr("Failed to download song"), None);
+                                }
+                            }
+                        }
+                    ),
+                );
+            }
+        });
+    }
+
     fn update_track_metadata(&self) {
         let songs = self.imp().songs.borrow();
         self.imp().track_count.set_text(&songs.len().to_string());
@@ -237,7 +308,7 @@ impl AlbumDetail {
             go_to_artist: true,
             go_to_album: false,
             show_info_dialog: false,
-            can_download: false,
+            can_download: true,
         };
         let popover_menu = construct_menu(&options);
         self.imp().action_menu.set_popover(Some(&popover_menu));
@@ -293,6 +364,22 @@ impl AlbumDetail {
             move |_, _| album.on_go_to_artist()
         ));
         action_group.add_action(&on_go_to_artist_action);
+
+        let on_download_action = gio::SimpleAction::new("download", None);
+        on_download_action.connect_activate(glib::clone!(
+            #[weak(rename_to = album)]
+            self,
+            move |_, _| album.on_download()
+        ));
+        action_group.add_action(&on_download_action);
+
+        let on_delete_action = gio::SimpleAction::new("delete_local", None);
+        on_delete_action.connect_activate(glib::clone!(
+            #[weak(rename_to = album)]
+            self,
+            move |_, _| album.on_delete_local()
+        ));
+        action_group.add_action(&on_delete_action);
 
         action_group
     }

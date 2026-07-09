@@ -179,6 +179,8 @@ impl LibraryCache {
 pub struct MediaCache {
     cache_dir: PathBuf,
     medias: Arc<RwLock<HashSet<String>>>,
+    pending_requests: Arc<Mutex<HashSet<String>>>,
+    download_semaphore: Arc<Semaphore>,
 }
 
 impl MediaCache {
@@ -193,6 +195,8 @@ impl MediaCache {
         Ok(Self {
             cache_dir,
             medias: Arc::new(RwLock::new(entries)),
+            pending_requests: Arc::new(Mutex::new(HashSet::new())),
+            download_semaphore: Arc::new(Semaphore::new(2)),
         })
     }
 
@@ -233,17 +237,33 @@ impl MediaCache {
     }
 
     pub async fn get_media(&self, item_id: &str, backend: &Backend) -> Result<Vec<u8>, CacheError> {
-        if self.is_present(item_id) {
-            self.load_from_disk(item_id).await
-        } else {
+        loop {
+            if self.is_present(item_id) {
+                return self.load_from_disk(item_id).await;
+            }
+            {
+                let mut pending = self.pending_requests.lock().await;
+                if pending.contains(item_id) {
+                    drop(pending);
+                    tokio::time::sleep(Duration::from_millis(100)).await;
+                    continue;
+                }
+                pending.insert(item_id.to_string());
+            }
+            let _permit = self.download_semaphore.acquire().await.unwrap();
             let data = run_on_tokio({
                 let item_id = item_id.to_string();
                 let backend = backend.clone();
                 async move { backend.get_media(&item_id).await }
             })
             .await?;
+            {
+                let mut pending = self.pending_requests.lock().await;
+                pending.remove(item_id);
+            }
             self.save_to_disk(item_id, &data).await?;
-            Ok(data)
+
+            return Ok(data);
         }
     }
 
