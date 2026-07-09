@@ -300,9 +300,15 @@ impl SongList {
                     .expect("Child has to be Song");
 
                 song_widget.set_song_data(&song_model);
+                // TODO: this is where the download status should be set or handled.
 
                 song_utils::connect_playing_indicator(&song_widget, &song_model, &audio_model);
                 song_utils::connect_favorite_indicator(
+                    &song_widget,
+                    &song_model,
+                    &song_list.get_application(),
+                );
+                song_utils::connect_download_indicator(
                     &song_widget,
                     &song_model,
                     &song_list.get_application(),
@@ -328,6 +334,7 @@ impl SongList {
 
                 song_utils::disconnect_playing_indicator(&song_widget, &audio_model);
                 song_utils::disconnect_favorite_indicator(&song_widget);
+                song_utils::disconnect_download_indicator(&song_widget);
                 song_utils::disconnect_signal_handlers(&song_widget);
             }
         ));

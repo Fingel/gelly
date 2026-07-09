@@ -101,6 +101,13 @@
             <property name="spacing">6</property>
             <property name="visible" bind-source="GellySong" bind-property="in-queue" bind-flags="invert-boolean"/>
             <child>
+              <object class="GtkImage" id="download_icon">
+                <property name="icon-name">folder-download-symbolic</property>
+                <property name="visible">false</property>
+                <property name="icon-size">1</property>
+              </object>
+            </child>
+            <child>
               <object class="GtkLabel" id="duration_label">
                 <property name="focusable">False</property>
                 <property name="halign">end</property>

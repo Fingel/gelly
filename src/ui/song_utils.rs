@@ -92,7 +92,7 @@ pub fn connect_favorite_indicator(song_widget: &Song, song_model: &SongModel, ap
             move |app: Application| {
                 let is_fav = app.library().song_is_favorite(&song_model.id());
                 song_model.set_favorite(is_fav);
-                song_widget.set_starred(is_fav);
+                song_widget.set_starred(is_fav); // TODO this should be handled via a sync?
             }
         ),
     );
@@ -108,6 +108,57 @@ pub fn disconnect_favorite_indicator(song_widget: &Song) {
         && let Some(app) = app_weak.upgrade()
     {
         app.disconnect(handler_id);
+    }
+}
+
+pub fn connect_download_indicator(song_widget: &Song, song_model: &SongModel, app: &Application) {
+    let s_downloaded = |song_model: &SongModel, app: &Application| {
+        app.media_cache()
+            .is_some_and(|cache| cache.is_present(&song_model.id()))
+    };
+    song_model.set_downloaded(s_downloaded(song_model, app));
+
+    let handler_id = app.connect_closure(
+        "downloads-updated",
+        false,
+        glib::closure_local!(
+            #[weak]
+            song_model,
+            move |app: Application| {
+                song_model.set_downloaded(s_downloaded(&song_model, &app));
+            }
+        ),
+    );
+
+    song_widget
+        .imp()
+        .download_indicator_handler
+        .replace(Some((handler_id, app.downgrade())));
+
+    let binding = song_model
+        .bind_property(
+            "downloaded",
+            &song_widget.imp().download_icon.get(),
+            "visible",
+        )
+        .sync_create()
+        .build();
+
+    song_widget
+        .imp()
+        .download_indicator_binding
+        .replace(Some(binding));
+}
+
+pub fn disconnect_download_indicator(song_widget: &Song) {
+    if let Some((handler_id, app_weak)) = song_widget.imp().download_indicator_handler.take()
+        && let Some(app) = app_weak.upgrade()
+    {
+        app.disconnect(handler_id);
+    }
+
+    if let Some(binding) = song_widget.imp().download_indicator_binding.take() {
+        binding.unbind();
     }
 }
 

@@ -7,7 +7,7 @@ use gtk::{
     prelude::*,
     subclass::prelude::*,
 };
-use log::{debug, warn};
+use log::warn;
 
 use crate::{
     async_utils::spawn_tokio,
@@ -338,9 +338,9 @@ impl Song {
                     move |result: Result<Vec<u8>, CacheError>| {
                         match result {
                             Ok(_) => {
-                                let song_id = song.song_id();
+                                song.get_application()
+                                    .emit_by_name::<()>("downloads-updated", &[]);
                                 song.toast(&tr("Song downloaded"), None);
-                                debug!("Downloaded song: {}", song_id);
                             }
                             Err(err) => {
                                 warn!("Failed to download song: {err}");
@@ -434,12 +434,17 @@ mod imp {
         pub song_star: TemplateChild<gtk::ToggleButton>,
         #[template_child]
         pub star_icon: TemplateChild<gtk::Image>,
+        #[template_child]
+        pub download_icon: TemplateChild<gtk::Image>,
 
         #[property(get, set)]
         pub position: Cell<i32>,
         pub song_model: RefCell<Option<SongModel>>,
         pub favorite_indicator_handler:
             RefCell<Option<(glib::SignalHandlerId, WeakRef<Application>)>>,
+        pub download_indicator_handler:
+            RefCell<Option<(glib::SignalHandlerId, WeakRef<Application>)>>,
+        pub download_indicator_binding: RefCell<Option<glib::Binding>>,
         #[property(get, construct_only, name = "in-playlist", default = false)]
         pub in_playlist: Cell<bool>,
         #[property(get, construct_only, name = "in-queue", default = false)]

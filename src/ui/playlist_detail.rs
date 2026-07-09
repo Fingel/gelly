@@ -150,6 +150,11 @@ impl PlaylistDetail {
                     &song_model,
                     &playlist_detail.get_application(),
                 );
+                song_utils::connect_download_indicator(
+                    &song_widget,
+                    &song_model,
+                    &playlist_detail.get_application(),
+                );
 
                 let mut handlers = Vec::new();
                 let nav_handlers =
@@ -209,6 +214,7 @@ impl PlaylistDetail {
 
                 song_utils::disconnect_playing_indicator(&song_widget, &audio_model);
                 song_utils::disconnect_favorite_indicator(&song_widget);
+                song_utils::disconnect_download_indicator(&song_widget);
                 song_utils::disconnect_signal_handlers(&song_widget);
             }
         ));

@@ -508,6 +508,7 @@ mod imp {
                         .param_types([u64::static_type()])
                         .build(),
                     Signal::builder("favorites-updated").build(),
+                    Signal::builder("downloads-updated").build(),
                     Signal::builder("library-rescan-requested").build(),
                     Signal::builder("force-logout").build(),
                     Signal::builder("global-error")

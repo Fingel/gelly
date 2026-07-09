@@ -26,6 +26,7 @@ impl SongModel {
             .property("date-created", date_created)
             .property("favorite", favorite)
             .property("genres", dto.effective_genres())
+            .property("downloaded", false)
             .build()
     }
 
@@ -99,6 +100,9 @@ mod imp {
 
         #[property(get, set)]
         pub genres: RefCell<Vec<String>>,
+
+        #[property(get, set)]
+        pub downloaded: Cell<bool>,
     }
 
     #[glib::object_subclass]
