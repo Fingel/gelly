@@ -105,6 +105,25 @@ impl TopPage for AlbumList {
         }
     }
 
+    fn filter_downloaded(&self, active: bool) {
+        let filter = self.imp().downloaded_filter.get().unwrap();
+        let application = self.get_application();
+        if active {
+            filter.set_filter_func(move |obj| {
+                obj.downcast_ref::<AlbumModel>().is_some_and(|m| {
+                    // This is extremely inefficient. The media cache should also cache
+                    // album IDs and then we can just check is the album is present here.
+                    let songs = application.library().songs_for_album(&m.id());
+                    application
+                        .media_cache()
+                        .is_some_and(|cache| songs.iter().any(|s| cache.is_present(&s.id())))
+                })
+            });
+        } else {
+            filter.unset_filter_func();
+        }
+    }
+
     fn reset_position(&self) {
         let imp = self.imp();
         if imp.grid_view.model().is_some_and(|m| m.n_items() > 0) {
@@ -288,6 +307,7 @@ mod imp {
 
         pub store: OnceCell<gio::ListStore>,
         pub favorites_filter: OnceCell<gtk::CustomFilter>,
+        pub downloaded_filter: OnceCell<gtk::CustomFilter>,
         pub name_filter: OnceCell<gtk::StringFilter>,
         pub artists_filter: OnceCell<gtk::StringFilter>,
         pub genre_filter: OnceCell<gtk::CustomFilter>,

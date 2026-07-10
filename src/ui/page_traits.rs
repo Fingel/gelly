@@ -115,5 +115,18 @@ pub trait TopPage {
             }
         });
     }
+    fn filter_downloaded(&self, active: bool);
+    fn connect_download(&self, download_button: &gtk::ToggleButton)
+    where
+        Self: gtk::prelude::ObjectType,
+    {
+        let weak_self = self.downgrade();
+        download_button.connect_toggled(move |button| {
+            if let Some(list_view) = weak_self.upgrade() {
+                list_view.filter_downloaded(button.is_active());
+                list_view.reset_position();
+            }
+        });
+    }
     fn reset_position(&self);
 }

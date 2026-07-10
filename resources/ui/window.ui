@@ -254,6 +254,12 @@
                                                   </object>
                                                 </child>
                                                 <child>
+                                                  <object class="GtkToggleButton" id="download_button">
+                                                    <property name="icon-name">folder-download-symbolic</property>
+                                                    <property name="tooltip-text" translatable="yes">Downloaded</property>
+                                                  </object>
+                                                </child>
+                                                <child>
                                                   <object class="GtkDropDown" id="sort_dropdown">
                                                   </object>
                                                 </child>
