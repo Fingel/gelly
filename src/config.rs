@@ -130,18 +130,12 @@ pub fn retrieve_jellyfin_api_token(host: &str, user_id: &str) -> Option<String> 
         .search_items(HashMap::from([("host", host), ("user-id", user_id)]))
         .unwrap();
 
-    let item = match search_items.unlocked.first() {
-        Some(item) => item,
-        None => {
-            // if there aren't any, try to unlock them
-            if let Some(locked_item) = search_items.locked.first() {
-                locked_item.unlock().unwrap();
-                locked_item
-            } else {
-                return None;
-            }
-        }
-    };
+    let item = search_items.unlocked.first().or_else(|| {
+        // if there aren't any, try to unlock one
+        let locked_item = search_items.locked.first()?;
+        locked_item.unlock().unwrap();
+        Some(locked_item)
+    })?;
 
     let secret = item
         .get_secret()
@@ -198,18 +192,12 @@ pub fn retrieve_subsonic_password(host: &str, username: &str) -> Option<String> 
         ]))
         .unwrap();
 
-    let item = match search_items.unlocked.first() {
-        Some(item) => item,
-        None => {
-            // if there aren't any, try to unlock them
-            if let Some(locked_item) = search_items.locked.first() {
-                locked_item.unlock().unwrap();
-                locked_item
-            } else {
-                return None;
-            }
-        }
-    };
+    let item = search_items.unlocked.first().or_else(|| {
+        // if there aren't any, try to unlock one
+        let locked_item = search_items.locked.first()?;
+        locked_item.unlock().unwrap();
+        Some(locked_item)
+    })?;
 
     let secret = item
         .get_secret()
