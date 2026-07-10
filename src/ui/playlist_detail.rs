@@ -632,7 +632,9 @@ impl PlaylistDetail {
                 #[weak(rename_to = playlist_detail)]
                 self,
                 move |_app: Application, _cnt: u64| {
-                    playlist_detail.pull_tracks();
+                    if playlist_detail.get_model().is_some() {
+                        playlist_detail.pull_tracks();
+                    }
                 }
             ),
         );
