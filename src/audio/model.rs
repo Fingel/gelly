@@ -113,9 +113,14 @@ impl AudioModel {
                         obj.apply_volume();
                     }
                     PlayerEvent::EndOfStream => {
-                        obj.emit_by_name::<()>("song-finished", &[]);
-                        obj.stop();
-                        obj.emit_by_name::<()>("queue-finished", &[]);
+                        if obj.imp().gapless_playback_active.get() {
+                            obj.emit_by_name::<()>("song-finished", &[]);
+                            obj.stop();
+                            obj.emit_by_name::<()>("queue-finished", &[]);
+                        } else {
+                            obj.next();
+                            obj.emit_by_name::<()>("song-finished", &[]);
+                        }
                     }
                 }
             }
@@ -322,6 +327,9 @@ impl AudioModel {
     }
 
     fn update_current_song(&self, index: i32, song: SongModel, uri: Option<String>) {
+        self.imp()
+            .gapless_playback_active
+            .set(config::get_gapless_playback_enabled());
         self.imp().uri.replace(uri);
         self.set_queue_index(index);
         self.set_property("position", 0u32);
@@ -338,6 +346,10 @@ impl AudioModel {
     }
 
     fn prefetch_next_uri(&self) {
+        if !self.imp().gapless_playback_active.get() {
+            return;
+        }
+
         if let Some(next_index) = self.peek_next_index()
             && let Some(song) = self
                 .imp()
@@ -627,6 +639,7 @@ mod imp {
         pub prefetched_next_index: Cell<Option<i32>>,
         pub prefetched_next_uri: RefCell<Option<String>>,
         pub track_transition_in_progress: Cell<bool>,
+        pub gapless_playback_active: Cell<bool>,
     }
 
     impl Default for AudioModel {
@@ -653,6 +666,7 @@ mod imp {
                 prefetched_next_index: Cell::new(None),
                 prefetched_next_uri: RefCell::new(None),
                 track_transition_in_progress: Cell::new(false),
+                gapless_playback_active: Cell::new(true),
             }
         }
     }

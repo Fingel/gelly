@@ -40,6 +40,12 @@
               </object>
             </child>
             <child>
+              <object class="AdwSwitchRow" id="gapless_playback_row">
+                <property name="title" translatable="yes">Gapless Playback</property>
+                <property name="subtitle" translatable="yes">Uninterrupted playback of consecutive tracks.</property>
+              </object>
+            </child>
+            <child>
               <object class="AdwSwitchRow" id="inhibit_suspend_row">
                 <property name="title" translatable="yes">Inhibit Suspend</property>
                 <property name="subtitle" translatable="yes">Prevents the system from suspending while playing</property>

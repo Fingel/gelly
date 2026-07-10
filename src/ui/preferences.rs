@@ -43,6 +43,11 @@ impl Preferences {
             .bind("normalize-audio", &*imp.normalize_audio_row, "active")
             .build();
 
+        // Gapless Playback
+        settings
+            .bind("gapless-playback", &*imp.gapless_playback_row, "active")
+            .build();
+
         settings
             .bind("inhibit-suspend", &*imp.inhibit_suspend_row, "active")
             .build();
@@ -122,6 +127,8 @@ mod imp {
         pub compact_mode_row: TemplateChild<adw::SwitchRow>,
         #[template_child]
         pub normalize_audio_row: TemplateChild<adw::SwitchRow>,
+        #[template_child]
+        pub gapless_playback_row: TemplateChild<adw::SwitchRow>,
         #[template_child]
         pub inhibit_suspend_row: TemplateChild<adw::SwitchRow>,
         #[template_child]

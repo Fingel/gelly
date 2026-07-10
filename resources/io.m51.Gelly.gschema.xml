@@ -65,6 +65,10 @@
       <default>true</default>
       <summary>Normalize audio volume between tracks</summary>
     </key>
+    <key name="gapless-playback" type="b">
+      <default>true</default>
+      <summary>Uninterrupted playback of consecutive tracks</summary>
+    </key>
     <key name="inhibit-suspend" type="b">
       <default>false</default>
       <summary>Inhibit suspend while playing</summary>

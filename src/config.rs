@@ -266,6 +266,10 @@ pub fn get_normalize_audio_enabled() -> bool {
     settings().boolean("normalize-audio")
 }
 
+pub fn get_gapless_playback_enabled() -> bool {
+    settings().boolean("gapless-playback")
+}
+
 pub fn get_inhibit_suspend_enabled() -> bool {
     settings().boolean("inhibit-suspend")
 }
