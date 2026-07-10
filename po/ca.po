@@ -7,11 +7,11 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-06 08:45-0700\n"
+"POT-Creation-Date: 2026-07-10 13:31-0700\n"
 "PO-Revision-Date: 2026-07-09 00:01+0000\n"
 "Last-Translator: \"Ícar N. S.\" <icar.nin@pm.me>\n"
-"Language-Team: Catalan <https://hosted.weblate.org/projects/gelly/gelly/ca/>"
-"\n"
+"Language-Team: Catalan <https://hosted.weblate.org/projects/gelly/gelly/ca/"
+">\n"
 "Language: ca\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -25,13 +25,13 @@ msgstr "No disponible"
 
 #: src/ui/album_detail.rs:169 src/ui/album_detail.rs:179
 #: src/ui/album_detail.rs:203 src/ui/artist_detail.rs:245 src/ui/playlist.rs:53
-#: src/ui/playlist_detail.rs:520 src/ui/playlist_detail.rs:530
-#: src/ui/playlist_detail.rs:554 src/ui/song_list.rs:159
+#: src/ui/playlist_detail.rs:521 src/ui/playlist_detail.rs:531
+#: src/ui/playlist_detail.rs:555 src/ui/song_list.rs:159
 msgid "Audio model not initialized, please restart"
 msgstr "El model d'àudio no està inicialitzat, si us plau, reinicieu"
 
 #: src/ui/album_detail.rs:195 src/ui/artist_detail.rs:237
-#: src/ui/playlist_detail.rs:546
+#: src/ui/playlist_detail.rs:547
 msgid "1 song added to queue"
 msgid_plural "{} songs added to queue"
 msgstr[0] "una cançó afegida a la cua"
@@ -146,41 +146,41 @@ msgstr "Llista de reproducció buida"
 msgid "Unable to load playlist"
 msgstr "No s'ha pogut carregar la llista de reproducció"
 
-#: src/ui/playlist_detail.rs:260 src/ui/playlist_list.rs:72
+#: src/ui/playlist_detail.rs:261 src/ui/playlist_list.rs:72
 msgid "Could not load playlist, please try again."
 msgstr ""
 "No s'ha pogut carregar la llista de producció, si us plau torneu-ho a "
 "intentar."
 
-#: src/ui/playlist_detail.rs:329
+#: src/ui/playlist_detail.rs:330
 msgid "Playlist ID copied to clipboard"
 msgstr "L'identificador de la llista de producció s'ha copiat al porta-retalls"
 
-#: src/ui/playlist_detail.rs:358
+#: src/ui/playlist_detail.rs:359
 msgid "Added songs to playlist"
 msgstr "Les cançons s'han afegit a la llista de reproducció"
 
-#: src/ui/playlist_detail.rs:362
+#: src/ui/playlist_detail.rs:363
 msgid "Failed to add songs to playlist"
 msgstr "Ha fallat afegir les cançons a la llista de reproducció"
 
-#: src/ui/playlist_detail.rs:458
+#: src/ui/playlist_detail.rs:459
 msgid "Failed to save playlist order."
 msgstr "Ha fallat desar l'ordre de la llista de reproducció."
 
-#: src/ui/playlist_detail.rs:504
+#: src/ui/playlist_detail.rs:505
 msgid "Failed to modify playlist."
 msgstr "No s'ha pogut modificar la llista de reproducció."
 
-#: src/ui/playlist_detail.rs:572
+#: src/ui/playlist_detail.rs:573
 msgid "Smart playlists cannot be deleted"
 msgstr "Les llistes de reproducció intel·ligents no poder ser suprimides"
 
-#: src/ui/playlist_detail.rs:605
+#: src/ui/playlist_detail.rs:606
 msgid "Playlist deleted"
 msgstr "S'ha suprimit la llista de reproducció"
 
-#: src/ui/playlist_detail.rs:608
+#: src/ui/playlist_detail.rs:609
 msgid "Failed to delete playlist"
 msgstr "No s'ha pogut suprimir la llista de reproducció"
 
@@ -357,11 +357,11 @@ msgstr "Propietats locals"
 msgid "Remote Properties"
 msgstr "Propietats remotes"
 
-#: src/ui/window.rs:180
+#: src/ui/window.rs:181
 msgid "Logged out"
 msgstr "Sessió tancada"
 
-#: src/ui/window.rs:308
+#: src/ui/window.rs:309
 msgid "all genres"
 msgstr "tots els gèneres"
 
@@ -457,56 +457,66 @@ msgid "May require backend plugins."
 msgstr "Podria requerir complements del dorsal."
 
 #: resources/ui/preferences.ui:44
+#, fuzzy
+#| msgid "Playback"
+msgid "Gapless Playback"
+msgstr "Reproducció"
+
+#: resources/ui/preferences.ui:45
+msgid "Uninterrupted playback of consecutive tracks."
+msgstr ""
+
+#: resources/ui/preferences.ui:50
 msgid "Inhibit Suspend"
 msgstr "Inhibeix la suspensió"
 
-#: resources/ui/preferences.ui:45
+#: resources/ui/preferences.ui:51
 msgid "Prevents the system from suspending while playing"
 msgstr "Evita que el sistema entri en suspensió durant la reproducció"
 
-#: resources/ui/preferences.ui:52
+#: resources/ui/preferences.ui:58
 msgid "Transcoding"
 msgstr "Transcodificació"
 
-#: resources/ui/preferences.ui:53
+#: resources/ui/preferences.ui:59
 msgid "Currently Subsonic backends cannot seek transcoded streams."
 msgstr ""
 "Actualment el servei Subsonic no suporta el desplaçament amb transmissions "
 "transcodificades."
 
-#: resources/ui/preferences.ui:56
+#: resources/ui/preferences.ui:62
 msgid "Transcoding Profile"
 msgstr "Perfil de transcodificació"
 
-#: resources/ui/preferences.ui:57
+#: resources/ui/preferences.ui:63
 msgid "Only used when direct play is not available."
 msgstr "Només s'usa quan la reproducció directa no està disponible."
 
-#: resources/ui/preferences.ui:70
+#: resources/ui/preferences.ui:76
 msgid "Maximum Bitrate (kbps)"
 msgstr "Tasa de bits màxima (kbps)"
 
-#: resources/ui/preferences.ui:71
+#: resources/ui/preferences.ui:77
 msgid "A value of 0 means no limit."
 msgstr "Un valor de 0 significa sense límit."
 
-#: resources/ui/preferences.ui:90 resources/ui/window.ui:313
+#: resources/ui/preferences.ui:96 resources/ui/window.ui:313
 msgid "Playlists"
 msgstr "Llistes de reproducció"
 
-#: resources/ui/preferences.ui:93
+#: resources/ui/preferences.ui:99
 msgid "Smart Playlists"
 msgstr "Llistes de reproducció intel·ligents"
 
-#: resources/ui/preferences.ui:96
+#: resources/ui/preferences.ui:102
 msgid "Favorite Mix Playlist"
 msgstr "Llista de reproducció dels preferits barrejats"
 
-#: resources/ui/preferences.ui:101
+#: resources/ui/preferences.ui:107
 msgid "Shuffled Playlist"
 msgstr "Llista de reproducció de barreja"
 
-#: resources/ui/preferences.ui:106
+#: resources/ui/preferences.ui:112
 msgid "Most Played Playlist"
 msgstr "Llista de reproducció de les més reproduïdes"
 

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-06 08:45-0700\n"
+"POT-Creation-Date: 2026-07-10 13:31-0700\n"
 "PO-Revision-Date: 2026-06-19 18:01+0000\n"
 "Last-Translator: Jeffrey van Altena <jeffrey2107@outlook.com>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/gelly/gelly/nl/>\n"
@@ -24,13 +24,13 @@ msgstr ""
 
 #: src/ui/album_detail.rs:169 src/ui/album_detail.rs:179
 #: src/ui/album_detail.rs:203 src/ui/artist_detail.rs:245 src/ui/playlist.rs:53
-#: src/ui/playlist_detail.rs:520 src/ui/playlist_detail.rs:530
-#: src/ui/playlist_detail.rs:554 src/ui/song_list.rs:159
+#: src/ui/playlist_detail.rs:521 src/ui/playlist_detail.rs:531
+#: src/ui/playlist_detail.rs:555 src/ui/song_list.rs:159
 msgid "Audio model not initialized, please restart"
 msgstr ""
 
 #: src/ui/album_detail.rs:195 src/ui/artist_detail.rs:237
-#: src/ui/playlist_detail.rs:546
+#: src/ui/playlist_detail.rs:547
 msgid "1 song added to queue"
 msgid_plural "{} songs added to queue"
 msgstr[0] "1 nummer toegevoegd aan wachtrij"
@@ -157,41 +157,41 @@ msgstr "Lege afspeellijst"
 msgid "Unable to load playlist"
 msgstr "Meest Gespeelde Afspeellijst"
 
-#: src/ui/playlist_detail.rs:260 src/ui/playlist_list.rs:72
+#: src/ui/playlist_detail.rs:261 src/ui/playlist_list.rs:72
 msgid "Could not load playlist, please try again."
 msgstr ""
 
-#: src/ui/playlist_detail.rs:329
+#: src/ui/playlist_detail.rs:330
 msgid "Playlist ID copied to clipboard"
 msgstr ""
 
-#: src/ui/playlist_detail.rs:358
+#: src/ui/playlist_detail.rs:359
 msgid "Added songs to playlist"
 msgstr ""
 
-#: src/ui/playlist_detail.rs:362
+#: src/ui/playlist_detail.rs:363
 msgid "Failed to add songs to playlist"
 msgstr ""
 
-#: src/ui/playlist_detail.rs:458
+#: src/ui/playlist_detail.rs:459
 msgid "Failed to save playlist order."
 msgstr ""
 
-#: src/ui/playlist_detail.rs:504
+#: src/ui/playlist_detail.rs:505
 msgid "Failed to modify playlist."
 msgstr ""
 
-#: src/ui/playlist_detail.rs:572
+#: src/ui/playlist_detail.rs:573
 msgid "Smart playlists cannot be deleted"
 msgstr ""
 
-#: src/ui/playlist_detail.rs:605
+#: src/ui/playlist_detail.rs:606
 #, fuzzy
 #| msgid "Playlist Detail"
 msgid "Playlist deleted"
 msgstr "Afspeellijst Detail"
 
-#: src/ui/playlist_detail.rs:608
+#: src/ui/playlist_detail.rs:609
 msgid "Failed to delete playlist"
 msgstr ""
 
@@ -377,11 +377,11 @@ msgstr ""
 msgid "Remote Properties"
 msgstr ""
 
-#: src/ui/window.rs:180
+#: src/ui/window.rs:181
 msgid "Logged out"
 msgstr ""
 
-#: src/ui/window.rs:308
+#: src/ui/window.rs:309
 msgid "all genres"
 msgstr ""
 
@@ -490,54 +490,64 @@ msgid "May require backend plugins."
 msgstr "Kan backend plugins nodig hebben."
 
 #: resources/ui/preferences.ui:44
+#, fuzzy
+#| msgid "Playback"
+msgid "Gapless Playback"
+msgstr "Afspelen"
+
+#: resources/ui/preferences.ui:45
+msgid "Uninterrupted playback of consecutive tracks."
+msgstr ""
+
+#: resources/ui/preferences.ui:50
 msgid "Inhibit Suspend"
 msgstr "Voorkom slaapstand"
 
-#: resources/ui/preferences.ui:45
+#: resources/ui/preferences.ui:51
 msgid "Prevents the system from suspending while playing"
 msgstr "Voorkomt dat het systeem in slaapstand gaat tijdens het afspelen"
 
-#: resources/ui/preferences.ui:52
+#: resources/ui/preferences.ui:58
 msgid "Transcoding"
 msgstr "Transcoderen"
 
-#: resources/ui/preferences.ui:53
+#: resources/ui/preferences.ui:59
 msgid "Currently Subsonic backends cannot seek transcoded streams."
 msgstr ""
 
-#: resources/ui/preferences.ui:56
+#: resources/ui/preferences.ui:62
 msgid "Transcoding Profile"
 msgstr "Transcoding Instelling"
 
-#: resources/ui/preferences.ui:57
+#: resources/ui/preferences.ui:63
 msgid "Only used when direct play is not available."
 msgstr "Enkel gebruiken wanneer direct play niet beschikbaar is."
 
-#: resources/ui/preferences.ui:70
+#: resources/ui/preferences.ui:76
 msgid "Maximum Bitrate (kbps)"
 msgstr "Maximale bitrate (kbps)"
 
-#: resources/ui/preferences.ui:71
+#: resources/ui/preferences.ui:77
 msgid "A value of 0 means no limit."
 msgstr "De waarde 0 betekent geen limiet."
 
-#: resources/ui/preferences.ui:90 resources/ui/window.ui:313
+#: resources/ui/preferences.ui:96 resources/ui/window.ui:313
 msgid "Playlists"
 msgstr "Afspeellijsten"
 
-#: resources/ui/preferences.ui:93
+#: resources/ui/preferences.ui:99
 msgid "Smart Playlists"
 msgstr "Slimme afspeellijsten"
 
-#: resources/ui/preferences.ui:96
+#: resources/ui/preferences.ui:102
 msgid "Favorite Mix Playlist"
 msgstr "Favoriete Mix Afspeellijst"
 
-#: resources/ui/preferences.ui:101
+#: resources/ui/preferences.ui:107
 msgid "Shuffled Playlist"
 msgstr "Shuffled Afspeellijst"
 
-#: resources/ui/preferences.ui:106
+#: resources/ui/preferences.ui:112
 msgid "Most Played Playlist"
 msgstr "Meest Gespeelde Afspeellijst"
 

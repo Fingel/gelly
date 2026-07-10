@@ -7,11 +7,11 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-06 08:45-0700\n"
+"POT-Creation-Date: 2026-07-10 13:31-0700\n"
 "PO-Revision-Date: 2026-07-10 21:01+0000\n"
 "Last-Translator: \"Riccardo B.\" <riccardoberbeglia03@gmail.com>\n"
-"Language-Team: Italian <https://hosted.weblate.org/projects/gelly/gelly/it/>"
-"\n"
+"Language-Team: Italian <https://hosted.weblate.org/projects/gelly/gelly/it/"
+">\n"
 "Language: it\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -25,13 +25,13 @@ msgstr "N/A"
 
 #: src/ui/album_detail.rs:169 src/ui/album_detail.rs:179
 #: src/ui/album_detail.rs:203 src/ui/artist_detail.rs:245 src/ui/playlist.rs:53
-#: src/ui/playlist_detail.rs:520 src/ui/playlist_detail.rs:530
-#: src/ui/playlist_detail.rs:554 src/ui/song_list.rs:159
+#: src/ui/playlist_detail.rs:521 src/ui/playlist_detail.rs:531
+#: src/ui/playlist_detail.rs:555 src/ui/song_list.rs:159
 msgid "Audio model not initialized, please restart"
 msgstr "Modello audio non inizializzato, riavviare il programma"
 
 #: src/ui/album_detail.rs:195 src/ui/artist_detail.rs:237
-#: src/ui/playlist_detail.rs:546
+#: src/ui/playlist_detail.rs:547
 msgid "1 song added to queue"
 msgid_plural "{} songs added to queue"
 msgstr[0] "1 brano aggiunto alla coda"
@@ -146,39 +146,39 @@ msgstr "Playlist vuota"
 msgid "Unable to load playlist"
 msgstr "Impossibile caricare la playlist"
 
-#: src/ui/playlist_detail.rs:260 src/ui/playlist_list.rs:72
+#: src/ui/playlist_detail.rs:261 src/ui/playlist_list.rs:72
 msgid "Could not load playlist, please try again."
 msgstr "Impossibile caricare la playlist, riprova."
 
-#: src/ui/playlist_detail.rs:329
+#: src/ui/playlist_detail.rs:330
 msgid "Playlist ID copied to clipboard"
 msgstr "ID Playlist copiato negli appunti"
 
-#: src/ui/playlist_detail.rs:358
+#: src/ui/playlist_detail.rs:359
 msgid "Added songs to playlist"
 msgstr "Brani aggiunti alla playlist"
 
-#: src/ui/playlist_detail.rs:362
+#: src/ui/playlist_detail.rs:363
 msgid "Failed to add songs to playlist"
 msgstr "Impossibile aggiungere i brani alla playlist"
 
-#: src/ui/playlist_detail.rs:458
+#: src/ui/playlist_detail.rs:459
 msgid "Failed to save playlist order."
 msgstr "Impossibile salvare l'ordine della playlist."
 
-#: src/ui/playlist_detail.rs:504
+#: src/ui/playlist_detail.rs:505
 msgid "Failed to modify playlist."
 msgstr "Impossibile modificare playlist."
 
-#: src/ui/playlist_detail.rs:572
+#: src/ui/playlist_detail.rs:573
 msgid "Smart playlists cannot be deleted"
 msgstr "Playlist smart non possono essere cancellate"
 
-#: src/ui/playlist_detail.rs:605
+#: src/ui/playlist_detail.rs:606
 msgid "Playlist deleted"
 msgstr "Playlist eliminata"
 
-#: src/ui/playlist_detail.rs:608
+#: src/ui/playlist_detail.rs:609
 msgid "Failed to delete playlist"
 msgstr "Impossibile eliminare playlist"
 
@@ -353,11 +353,11 @@ msgstr "Proprietà locali"
 msgid "Remote Properties"
 msgstr "Proprietà remote"
 
-#: src/ui/window.rs:180
+#: src/ui/window.rs:181
 msgid "Logged out"
 msgstr "Disconnesso"
 
-#: src/ui/window.rs:308
+#: src/ui/window.rs:309
 msgid "all genres"
 msgstr "tutti i generi"
 
@@ -453,56 +453,66 @@ msgid "May require backend plugins."
 msgstr "Potrebbe richiedere componenti aggiuntive nel backend."
 
 #: resources/ui/preferences.ui:44
+#, fuzzy
+#| msgid "Playback"
+msgid "Gapless Playback"
+msgstr "Riproduzione"
+
+#: resources/ui/preferences.ui:45
+msgid "Uninterrupted playback of consecutive tracks."
+msgstr ""
+
+#: resources/ui/preferences.ui:50
 msgid "Inhibit Suspend"
 msgstr "Inibisci Sospensione"
 
-#: resources/ui/preferences.ui:45
+#: resources/ui/preferences.ui:51
 msgid "Prevents the system from suspending while playing"
 msgstr "Impedisce la sospensione del sistema durante la riproduzione"
 
-#: resources/ui/preferences.ui:52
+#: resources/ui/preferences.ui:58
 msgid "Transcoding"
 msgstr "Transcodifica"
 
-#: resources/ui/preferences.ui:53
+#: resources/ui/preferences.ui:59
 msgid "Currently Subsonic backends cannot seek transcoded streams."
 msgstr ""
 "Attualmente i backend Subsonic non possono eseguire il seek negli stream "
 "transcodificati."
 
-#: resources/ui/preferences.ui:56
+#: resources/ui/preferences.ui:62
 msgid "Transcoding Profile"
 msgstr "Profilo di Transcodifica"
 
-#: resources/ui/preferences.ui:57
+#: resources/ui/preferences.ui:63
 msgid "Only used when direct play is not available."
 msgstr "Usa solo quando la riproduzione diretta non è disponibile."
 
-#: resources/ui/preferences.ui:70
+#: resources/ui/preferences.ui:76
 msgid "Maximum Bitrate (kbps)"
 msgstr "Bitrate Massimo (kbps)"
 
-#: resources/ui/preferences.ui:71
+#: resources/ui/preferences.ui:77
 msgid "A value of 0 means no limit."
 msgstr "Un valore di 0 significa nessun limite."
 
-#: resources/ui/preferences.ui:90 resources/ui/window.ui:313
+#: resources/ui/preferences.ui:96 resources/ui/window.ui:313
 msgid "Playlists"
 msgstr "Playlist"
 
-#: resources/ui/preferences.ui:93
+#: resources/ui/preferences.ui:99
 msgid "Smart Playlists"
 msgstr "Playlist Smart"
 
-#: resources/ui/preferences.ui:96
+#: resources/ui/preferences.ui:102
 msgid "Favorite Mix Playlist"
 msgstr "Playlist Mix Preferiti"
 
-#: resources/ui/preferences.ui:101
+#: resources/ui/preferences.ui:107
 msgid "Shuffled Playlist"
 msgstr "Playlist Rirpoduzione Casuale"
 
-#: resources/ui/preferences.ui:106
+#: resources/ui/preferences.ui:112
 msgid "Most Played Playlist"
 msgstr "Playlist Brani Più Ascoltati"
 

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-06 08:45-0700\n"
+"POT-Creation-Date: 2026-07-10 13:31-0700\n"
 "PO-Revision-Date: 2026-06-13 19:01+0000\n"
 "Last-Translator: Tuan Dat Pham <tuandatdavid@proton.me>\n"
 "Language-Team: Czech <https://hosted.weblate.org/projects/gelly/gelly/cs/>\n"
@@ -24,13 +24,13 @@ msgstr "—"
 
 #: src/ui/album_detail.rs:169 src/ui/album_detail.rs:179
 #: src/ui/album_detail.rs:203 src/ui/artist_detail.rs:245 src/ui/playlist.rs:53
-#: src/ui/playlist_detail.rs:520 src/ui/playlist_detail.rs:530
-#: src/ui/playlist_detail.rs:554 src/ui/song_list.rs:159
+#: src/ui/playlist_detail.rs:521 src/ui/playlist_detail.rs:531
+#: src/ui/playlist_detail.rs:555 src/ui/song_list.rs:159
 msgid "Audio model not initialized, please restart"
 msgstr "Audio model neinicializován, prosím zrestartujte aplikaci"
 
 #: src/ui/album_detail.rs:195 src/ui/artist_detail.rs:237
-#: src/ui/playlist_detail.rs:546
+#: src/ui/playlist_detail.rs:547
 msgid "1 song added to queue"
 msgid_plural "{} songs added to queue"
 msgstr[0] "1 písnička přidána do fronty"
@@ -165,45 +165,45 @@ msgstr "Prázdný playlist"
 msgid "Unable to load playlist"
 msgstr "Smazat playlist"
 
-#: src/ui/playlist_detail.rs:260 src/ui/playlist_list.rs:72
+#: src/ui/playlist_detail.rs:261 src/ui/playlist_list.rs:72
 msgid "Could not load playlist, please try again."
 msgstr ""
 
-#: src/ui/playlist_detail.rs:329
+#: src/ui/playlist_detail.rs:330
 #, fuzzy
 #| msgid "Quick connect code copied to clipboard"
 msgid "Playlist ID copied to clipboard"
 msgstr "Kód pro rychlé připojení zkopírováno do schránky"
 
-#: src/ui/playlist_detail.rs:358
+#: src/ui/playlist_detail.rs:359
 #, fuzzy
 #| msgid "Add to Playlist"
 msgid "Added songs to playlist"
 msgstr "Přidat do playlistu"
 
-#: src/ui/playlist_detail.rs:362
+#: src/ui/playlist_detail.rs:363
 msgid "Failed to add songs to playlist"
 msgstr ""
 
-#: src/ui/playlist_detail.rs:458
+#: src/ui/playlist_detail.rs:459
 msgid "Failed to save playlist order."
 msgstr ""
 
-#: src/ui/playlist_detail.rs:504
+#: src/ui/playlist_detail.rs:505
 msgid "Failed to modify playlist."
 msgstr ""
 
-#: src/ui/playlist_detail.rs:572
+#: src/ui/playlist_detail.rs:573
 msgid "Smart playlists cannot be deleted"
 msgstr "Dynamické playlisty se nedají smazat"
 
-#: src/ui/playlist_detail.rs:605
+#: src/ui/playlist_detail.rs:606
 #, fuzzy
 #| msgid "Play Selected"
 msgid "Playlist deleted"
 msgstr "Přehrát vybrané"
 
-#: src/ui/playlist_detail.rs:608
+#: src/ui/playlist_detail.rs:609
 #, fuzzy
 #| msgid "Delete playlist"
 msgid "Failed to delete playlist"
@@ -388,11 +388,11 @@ msgstr ""
 msgid "Remote Properties"
 msgstr ""
 
-#: src/ui/window.rs:180
+#: src/ui/window.rs:181
 msgid "Logged out"
 msgstr "Jste odhlášen/a"
 
-#: src/ui/window.rs:308
+#: src/ui/window.rs:309
 msgid "all genres"
 msgstr ""
 
@@ -489,55 +489,65 @@ msgid "May require backend plugins."
 msgstr "Je možné, že vyžaduje backend pluginy."
 
 #: resources/ui/preferences.ui:44
+#, fuzzy
+#| msgid "Playback"
+msgid "Gapless Playback"
+msgstr "Přehrávání"
+
+#: resources/ui/preferences.ui:45
+msgid "Uninterrupted playback of consecutive tracks."
+msgstr ""
+
+#: resources/ui/preferences.ui:50
 msgid "Inhibit Suspend"
 msgstr "Blokovat uspání"
 
-#: resources/ui/preferences.ui:45
+#: resources/ui/preferences.ui:51
 msgid "Prevents the system from suspending while playing"
 msgstr "Blokuje uspání systému při přehrávání"
 
-#: resources/ui/preferences.ui:52
+#: resources/ui/preferences.ui:58
 msgid "Transcoding"
 msgstr "Transkódování"
 
-#: resources/ui/preferences.ui:53
+#: resources/ui/preferences.ui:59
 msgid "Currently Subsonic backends cannot seek transcoded streams."
 msgstr ""
 "Aktuální subsonic servery nemohou vyhledávat transkódované datové proudy."
 
-#: resources/ui/preferences.ui:56
+#: resources/ui/preferences.ui:62
 msgid "Transcoding Profile"
 msgstr "Profil pro transkódování"
 
-#: resources/ui/preferences.ui:57
+#: resources/ui/preferences.ui:63
 msgid "Only used when direct play is not available."
 msgstr "Pouze se používá, když není dostupné přímé přehrávání (direct play)."
 
-#: resources/ui/preferences.ui:70
+#: resources/ui/preferences.ui:76
 msgid "Maximum Bitrate (kbps)"
 msgstr "Maximální přenosová rychlost (kbps)"
 
-#: resources/ui/preferences.ui:71
+#: resources/ui/preferences.ui:77
 msgid "A value of 0 means no limit."
 msgstr "Hodnota 0 znamená, že je to bez limitu."
 
-#: resources/ui/preferences.ui:90 resources/ui/window.ui:313
+#: resources/ui/preferences.ui:96 resources/ui/window.ui:313
 msgid "Playlists"
 msgstr "Playlisty"
 
-#: resources/ui/preferences.ui:93
+#: resources/ui/preferences.ui:99
 msgid "Smart Playlists"
 msgstr "Dynamické playlisty"
 
-#: resources/ui/preferences.ui:96
+#: resources/ui/preferences.ui:102
 msgid "Favorite Mix Playlist"
 msgstr "Oblíbený mix playlist"
 
-#: resources/ui/preferences.ui:101
+#: resources/ui/preferences.ui:107
 msgid "Shuffled Playlist"
 msgstr "Playlist v náhodném pořadí"
 
-#: resources/ui/preferences.ui:106
+#: resources/ui/preferences.ui:112
 msgid "Most Played Playlist"
 msgstr "Nejvíc hrané písničky"
 
