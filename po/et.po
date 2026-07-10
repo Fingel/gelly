@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-06 08:45-0700\n"
-"PO-Revision-Date: 2026-06-06 21:01+0000\n"
+"POT-Creation-Date: 2026-07-10 13:31-0700\n"
+"PO-Revision-Date: 2026-07-10 21:01+0000\n"
 "Last-Translator: Priit Jõerüüt <jrthwlate@users.noreply.hosted.weblate.org>\n"
 "Language-Team: Estonian <https://hosted.weblate.org/projects/gelly/gelly/et/"
 ">\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 2026.6\n"
+"X-Generator: Weblate 2026.7.1.dev0\n"
 
 #: src/ui/album_detail.rs:40
 msgid "N/A"
@@ -25,49 +25,41 @@ msgstr "pole saadaval"
 
 #: src/ui/album_detail.rs:169 src/ui/album_detail.rs:179
 #: src/ui/album_detail.rs:203 src/ui/artist_detail.rs:245 src/ui/playlist.rs:53
-#: src/ui/playlist_detail.rs:520 src/ui/playlist_detail.rs:530
-#: src/ui/playlist_detail.rs:554 src/ui/song_list.rs:159
+#: src/ui/playlist_detail.rs:521 src/ui/playlist_detail.rs:531
+#: src/ui/playlist_detail.rs:555 src/ui/song_list.rs:159
 msgid "Audio model not initialized, please restart"
 msgstr "Helimudel pole valmendatud, palun käivita uuesti"
 
 #: src/ui/album_detail.rs:195 src/ui/artist_detail.rs:237
-#: src/ui/playlist_detail.rs:546
+#: src/ui/playlist_detail.rs:547
 msgid "1 song added to queue"
 msgid_plural "{} songs added to queue"
 msgstr[0] "1 lugu on lisatud esitusjärjekorda"
 msgstr[1] "{} lugu on lisatud esitusjärjekorda"
 
 #: src/ui/album_detail.rs:277
-#, fuzzy
-#| msgid "Quick connect code copied to clipboard"
 msgid "Album ID copied to clipboard"
-msgstr "Kiirühendamise kood on kopeeritud lõikelauale"
+msgstr "Albumi tunnus on kopeeritud lõikelauale"
 
 #: src/ui/album_detail.rs:313
-#, fuzzy
-#| msgid "Add to Playlist"
 msgid "Added album to playlist"
-msgstr "Lisa esitusloendisse"
+msgstr "Album on esitusloendisse lisatud"
 
 #: src/ui/album_detail.rs:317
 msgid "Failed to add album to playlist"
-msgstr ""
+msgstr "Albumi esitusloendisse lisamine ei õnnestunud"
 
 #: src/ui/artist_detail.rs:164
-#, fuzzy
-#| msgid "Quick connect code copied to clipboard"
 msgid "Artist ID copied to clipboard"
-msgstr "Kiirühendamise kood on kopeeritud lõikelauale"
+msgstr "Esitaja tunnus on kopeeritud lõikelauale"
 
 #: src/ui/artist_detail.rs:192
-#, fuzzy
-#| msgid "Add to Playlist"
 msgid "Added artist to playlist"
-msgstr "Lisa esitusloendisse"
+msgstr "Esitaja on lisatud esitusloendisse"
 
 #: src/ui/artist_detail.rs:196
 msgid "Failed to add artist to playlist"
-msgstr ""
+msgstr "Esitaja lisamine esitusloendisse ei õnnestunud"
 
 #: src/ui/music_context_menu.rs:33 src/ui/music_context_menu.rs:84
 msgid "Add to Playlist"
@@ -81,11 +73,11 @@ msgstr "Katkesta"
 
 #: src/ui/music_context_menu.rs:34
 msgid "Add"
-msgstr ""
+msgstr "Lisa"
 
 #: src/ui/music_context_menu.rs:59
 msgid "No playlists available. Please create a playlist first."
-msgstr ""
+msgstr "Ühtegi esitusloendit pole saadaval. Palun esmalt koosta mõni."
 
 #: src/ui/music_context_menu.rs:72
 msgid "Queue Next"
@@ -100,22 +92,16 @@ msgid "Remove from Playlist"
 msgstr "Eemalda esitusloendist"
 
 #: src/ui/music_context_menu.rs:99
-#, fuzzy
-#| msgid "No Albums"
 msgid "Go to Album"
-msgstr "Albumeid ei leidu"
+msgstr "Vaata albumit"
 
 #: src/ui/music_context_menu.rs:106
-#, fuzzy
-#| msgid "No Artists"
 msgid "Go to Artist"
-msgstr "Esitajaid ei leidu"
+msgstr "Vaata esitajat"
 
 #: src/ui/music_context_menu.rs:115 src/ui/stream_info_dialog.rs:120
-#, fuzzy
-#| msgid "Stream Info"
 msgid "Song Info"
-msgstr "Voogesituse teave"
+msgstr "Loo teave"
 
 #: src/ui/music_context_menu.rs:120
 msgid "Copy ID"
@@ -135,14 +121,12 @@ msgid "Unknown Artist"
 msgstr "Tundmatu esitaja"
 
 #: src/ui/player_bar/common.rs:252 src/ui/song.rs:257
-#, fuzzy
-#| msgid "Add to Playlist"
 msgid "Added song to playlist"
-msgstr "Lisa esitusloendisse"
+msgstr "Lugu on esitusloendisse lisatud"
 
 #: src/ui/player_bar/common.rs:256 src/ui/song.rs:261
 msgid "Failed to add song to playlist"
-msgstr ""
+msgstr "Loo lisamine esitusloendisse ei õnnestunud"
 
 #: src/ui/playlist.rs:26
 msgid "1 song"
@@ -159,54 +143,44 @@ msgid "Empty playlist"
 msgstr "Tühi esitusloend"
 
 #: src/ui/playlist.rs:77
-#, fuzzy
-#| msgid "Delete playlist"
 msgid "Unable to load playlist"
-msgstr "Kustuta esitusloend"
+msgstr "Esitusloendi laadimine ei õnnestunud"
 
-#: src/ui/playlist_detail.rs:260 src/ui/playlist_list.rs:72
+#: src/ui/playlist_detail.rs:261 src/ui/playlist_list.rs:72
 msgid "Could not load playlist, please try again."
-msgstr ""
+msgstr "Esitusloendi laadimine ei õnnestu, palun proovi uuesti."
 
-#: src/ui/playlist_detail.rs:329
-#, fuzzy
-#| msgid "Quick connect code copied to clipboard"
+#: src/ui/playlist_detail.rs:330
 msgid "Playlist ID copied to clipboard"
-msgstr "Kiirühendamise kood on kopeeritud lõikelauale"
+msgstr "Esitusloendi tunnus on kopeeritud lõikelauale"
 
-#: src/ui/playlist_detail.rs:358
-#, fuzzy
-#| msgid "Add to Playlist"
+#: src/ui/playlist_detail.rs:359
 msgid "Added songs to playlist"
-msgstr "Lisa esitusloendisse"
+msgstr "Lood on esitusloendisse lisatud"
 
-#: src/ui/playlist_detail.rs:362
+#: src/ui/playlist_detail.rs:363
 msgid "Failed to add songs to playlist"
-msgstr ""
+msgstr "Lugude lisamine esitusloendisse ei õnnestunud"
 
-#: src/ui/playlist_detail.rs:458
+#: src/ui/playlist_detail.rs:459
 msgid "Failed to save playlist order."
-msgstr ""
+msgstr "Esitlusloendi järjestuse salvestamine ei õnnestunud."
 
-#: src/ui/playlist_detail.rs:504
+#: src/ui/playlist_detail.rs:505
 msgid "Failed to modify playlist."
-msgstr ""
+msgstr "Esitlusloendi muutmine ei õnnestunud."
 
-#: src/ui/playlist_detail.rs:572
+#: src/ui/playlist_detail.rs:573
 msgid "Smart playlists cannot be deleted"
 msgstr "Nutikate esitusloendite kustutamine pole võimalik"
 
-#: src/ui/playlist_detail.rs:605
-#, fuzzy
-#| msgid "Play Selected"
+#: src/ui/playlist_detail.rs:606
 msgid "Playlist deleted"
-msgstr "Esita valituid"
+msgstr "Esitusloend on kustutatud"
 
-#: src/ui/playlist_detail.rs:608
-#, fuzzy
-#| msgid "Delete playlist"
+#: src/ui/playlist_detail.rs:609
 msgid "Failed to delete playlist"
-msgstr "Kustuta esitusloend"
+msgstr "Esitusloendi kustutamine ei õnnestunud"
 
 #: src/ui/playlist_dialogs.rs:7
 msgid "Playlist name"
@@ -229,26 +203,22 @@ msgid "Delete"
 msgstr "Kustuta"
 
 #: src/ui/playlist_list.rs:66
-#, fuzzy
-#| msgid "Audio model not initialized, please restart"
 msgid "No audio model found, please restart."
-msgstr "Helimudel pole valmendatud, palun käivita uuesti"
+msgstr "Helimudelit ei leidu, palun käivita uuesti."
 
 #: src/ui/playlist_list.rs:174 src/ui/queue.rs:125
-#, fuzzy
-#| msgid "Playlist name"
 msgid "Playlist created"
-msgstr "Esitusloendi nimi"
+msgstr "Esitusloend on loodud"
 
 #: src/ui/playlist_list.rs:177 src/ui/queue.rs:128
-#, fuzzy
-#| msgid "Delete playlist"
 msgid "Failed to create playlist"
-msgstr "Kustuta esitusloend"
+msgstr "Esitusloendi loomine ei õnnestunud"
 
 #: src/ui/setup.rs:153 src/ui/setup.rs:168 src/ui/setup.rs:398
 msgid "Credentials could not be saved. Do you have a keyring daemon running?"
 msgstr ""
+"Kasutajanime/salasõna salvestamine ei õnnestunud. Kas võtmerõnga "
+"taustateenus ikka töötab?"
 
 #: src/ui/setup.rs:218
 msgid "Connection error. Please supply a full URL (http://example.com:8096)"
@@ -266,21 +236,20 @@ msgstr "Jellyfiniga või Subsonicuga autentimine ei õnnestunud"
 
 #: src/ui/setup.rs:287
 msgid "Failed to load libraries"
-msgstr ""
+msgstr "Teekide laadimine ei õnnestunud"
 
 #: src/ui/setup.rs:317
 msgid "Failed to initiate quick connect. Is the host valid?"
 msgstr ""
+"Kiirühenduse algatamine ei õnnestunud. Kas serveri aadress on ikka õige?"
 
 #: src/ui/setup.rs:372
 msgid "Error during quick connect"
-msgstr ""
+msgstr "Viga kiirühenduse kasutamisel"
 
 #: src/ui/setup.rs:408
-#, fuzzy
-#| msgid "Could not authenticate with Jellyfin or Subsonic"
 msgid "Failed to authenticate with quick connect"
-msgstr "Jellyfiniga või Subsonicuga autentimine ei õnnestunud"
+msgstr "Kiirühenduse abil autentimine ei õnnestunud"
 
 #: src/ui/setup.rs:418
 msgid "Quick connect code copied to clipboard"
@@ -370,31 +339,31 @@ msgstr "Faili suurus"
 
 #: src/ui/stream_info_dialog.rs:114
 msgid "Id"
-msgstr ""
+msgstr "Tunnus"
 
 #: src/ui/stream_info_dialog.rs:115
 msgid "Path"
-msgstr ""
+msgstr "Asukoht"
 
 #: src/ui/stream_info_dialog.rs:138
 msgid "Song Properties"
-msgstr ""
+msgstr "Loo omadused"
 
 #: src/ui/stream_info_dialog.rs:145
 msgid "Local Properties"
-msgstr ""
+msgstr "Omadused kohalikus seadmes"
 
 #: src/ui/stream_info_dialog.rs:152
 msgid "Remote Properties"
-msgstr ""
+msgstr "Omadused kaugseadmes"
 
-#: src/ui/window.rs:180
+#: src/ui/window.rs:181
 msgid "Logged out"
 msgstr "Väljalogitud"
 
-#: src/ui/window.rs:308
+#: src/ui/window.rs:309
 msgid "all genres"
-msgstr ""
+msgstr "kõik žanrid"
 
 #: resources/ui/album_art.ui:33
 msgid "Missing album art"
@@ -425,10 +394,8 @@ msgid "No lyrics available"
 msgstr "Laulusõnu pole saadaval"
 
 #: resources/ui/playback_mode.ui:9
-#, fuzzy
-#| msgid "Playback"
 msgid "Playback Mode"
-msgstr "Taasesitus"
+msgstr "Taasesitusrežiim"
 
 #: resources/ui/playlist_detail.ui:127
 msgid "More actions"
@@ -489,55 +456,65 @@ msgid "May require backend plugins."
 msgstr "Kasutatav taustateenus võib vajada lisamooduleid."
 
 #: resources/ui/preferences.ui:44
+#, fuzzy
+#| msgid "Playback"
+msgid "Gapless Playback"
+msgstr "Taasesitus"
+
+#: resources/ui/preferences.ui:45
+msgid "Uninterrupted playback of consecutive tracks."
+msgstr ""
+
+#: resources/ui/preferences.ui:50
 msgid "Inhibit Suspend"
 msgstr "Seadme uninumise keelamine"
 
-#: resources/ui/preferences.ui:45
+#: resources/ui/preferences.ui:51
 msgid "Prevents the system from suspending while playing"
 msgstr "Takistab seadme uinumist muusika esitamise ajal"
 
-#: resources/ui/preferences.ui:52
+#: resources/ui/preferences.ui:58
 msgid "Transcoding"
 msgstr "Kodeeringu muutmine"
 
-#: resources/ui/preferences.ui:53
+#: resources/ui/preferences.ui:59
 msgid "Currently Subsonic backends cannot seek transcoded streams."
 msgstr ""
 "Hetkel Subsonicu taustateenused ei oska muudetud kodeeringuga lugusid kerida."
 
-#: resources/ui/preferences.ui:56
+#: resources/ui/preferences.ui:62
 msgid "Transcoding Profile"
 msgstr "Kodeeringu muutmise profiil"
 
-#: resources/ui/preferences.ui:57
+#: resources/ui/preferences.ui:63
 msgid "Only used when direct play is not available."
 msgstr "Kasutusel vaid siis, kui otseesitus pole saadaval."
 
-#: resources/ui/preferences.ui:70
+#: resources/ui/preferences.ui:76
 msgid "Maximum Bitrate (kbps)"
 msgstr "Maksimaalne bitikiirus (kbps)"
 
-#: resources/ui/preferences.ui:71
+#: resources/ui/preferences.ui:77
 msgid "A value of 0 means no limit."
 msgstr "0 tähendab piirangu puudumist."
 
-#: resources/ui/preferences.ui:90 resources/ui/window.ui:313
+#: resources/ui/preferences.ui:96 resources/ui/window.ui:313
 msgid "Playlists"
 msgstr "Esitusloendid"
 
-#: resources/ui/preferences.ui:93
+#: resources/ui/preferences.ui:99
 msgid "Smart Playlists"
 msgstr "Nutikad esitusloendid"
 
-#: resources/ui/preferences.ui:96
+#: resources/ui/preferences.ui:102
 msgid "Favorite Mix Playlist"
 msgstr "Esitusloend: Miks lemmikutest"
 
-#: resources/ui/preferences.ui:101
+#: resources/ui/preferences.ui:107
 msgid "Shuffled Playlist"
 msgstr "Segatud esitusloend"
 
-#: resources/ui/preferences.ui:106
+#: resources/ui/preferences.ui:112
 msgid "Most Played Playlist"
 msgstr "Esitusloend: Enimesitatud lood"
 
@@ -547,7 +524,7 @@ msgstr "Mitte midagi pole esitamisel"
 
 #: resources/ui/queue.ui:41
 msgid "Jump to current song"
-msgstr ""
+msgstr "Mine praeguse loo juurde"
 
 #: resources/ui/setup.ui:10
 msgid "Servers"
@@ -711,7 +688,7 @@ msgstr "Näita esitusjärjekorda"
 
 #: resources/ui/window.ui:160
 msgid "Search and Genres"
-msgstr ""
+msgstr "Otsing ja žanrid"
 
 #: resources/ui/window.ui:166
 msgid "Sort"
@@ -727,7 +704,7 @@ msgstr "Otsi…"
 
 #: resources/ui/window.ui:231
 msgid "Reset"
-msgstr ""
+msgstr "Lähtesta"
 
 #: resources/ui/window.ui:253
 msgid "Favorites"
@@ -785,22 +762,20 @@ msgstr "Logi välja"
 #: resources/ui/player_bar/compact_player_bar.ui:110
 #: resources/ui/player_bar/full_player_bar.ui:198
 msgid "Lyrics"
-msgstr ""
+msgstr "Laulusõnad"
 
 #: resources/ui/player_bar/big_player.ui:179
 #: resources/ui/player_bar/compact_player_bar.ui:120
 #: resources/ui/player_bar/full_player_bar.ui:208
-#, fuzzy
-#| msgid "Favorites"
 msgid "Favorite"
-msgstr "Lemmikud"
+msgstr "Lemmik"
 
 #: resources/ui/player_bar/big_player.ui:199
 #: resources/ui/player_bar/full_player_bar.ui:245
 msgid "Volume"
-msgstr ""
+msgstr "Helivaljus"
 
 #: resources/ui/player_bar/big_player.ui:214
 #: resources/ui/player_bar/full_player_bar.ui:232
 msgid "Song Menu"
-msgstr ""
+msgstr "Loo menüü"
