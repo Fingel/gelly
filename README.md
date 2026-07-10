@@ -139,5 +139,15 @@ See [CONTRIBUTING.md](CONTRIBUTING.md)
 
 @dstapp for the Subsonic backend
 
+## Writings
+I write about developing Gelly on my blog occasionally
+
+[Self Hosted Jukebox with NFC Cards](https://www.pedaldrivenprogramming.com/2026/05/self-hosted-jukebox-with-nfc-cards/")
+
+[Gelly 1.2 and The Most Cursed Cache Bug](https://www.pedaldrivenprogramming.com/2026/04/gelly-12-and-the-most-cursed-cache-bug/)
+
+[A GTK Dropdown with Ellipsized Items](https://www.pedaldrivenprogramming.com/2026/07/a-gtk-dropdown-with-ellipsized-items/)
+
+
 ## Contact
 I hang out on [libera.chat](https://libera.chat/) in [#gelly](irc://irc.libera.chat:6667/%23gelly)
