@@ -1,4 +1,5 @@
 use crate::{
+    application::Application,
     async_utils::spawn_tokio,
     backend::BackendError,
     i18n::{ngettext, tr},
@@ -620,6 +621,21 @@ impl PlaylistDetail {
         };
         let app = self.get_application();
         model.toggle_favorite(is_favorite, &app);
+    }
+
+    pub fn setup_library_connection(&self) {
+        let app = self.get_application();
+        app.connect_closure(
+            "playlists-refreshed",
+            false,
+            glib::closure_local!(
+                #[weak(rename_to = playlist_detail)]
+                self,
+                move |_app: Application, _cnt: u64| {
+                    playlist_detail.pull_tracks();
+                }
+            ),
+        );
     }
 }
 
