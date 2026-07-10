@@ -24,7 +24,7 @@
             <property name="width_request">24</property>
             <property name="focusable">False</property>
             <property name="homogeneous">True</property>
-            <property name="visible" bind-source="GellySong" bind-property="in-queue" bind-flags="invert-boolean"/>
+            <property name="visible" bind-source="GellySong" bind-property="show-number" />
             <child>
               <object class="GtkLabel" id="number_label">
                 <property name="focusable">False</property>

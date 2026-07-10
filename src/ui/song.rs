@@ -391,6 +391,9 @@ mod imp {
         pub in_playlist: Cell<bool>,
         #[property(get, construct_only, name = "in-queue", default = false)]
         pub in_queue: Cell<bool>,
+        // only used as a derived property to hide numbers in the queue and playlists
+        #[property(get, name = "show-number", default = true)]
+        pub show_number: Cell<bool>,
 
         #[property(get, construct_only, name = "is-ghost", default = false)]
         pub is_ghost: Cell<bool>,
@@ -439,6 +442,10 @@ mod imp {
         fn constructed(&self) {
             self.parent_constructed();
             self.obj().setup_menu();
+
+            let show_number = !self.in_queue.get() && !self.in_playlist.get();
+            self.show_number.set(show_number);
+            self.obj().notify("show-number");
 
             // Sadly this can't be done in the template itself
             let orientation = if self.in_queue.get() {
