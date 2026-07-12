@@ -8,10 +8,10 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-07-10 13:31-0700\n"
-"PO-Revision-Date: 2026-07-09 00:01+0000\n"
+"PO-Revision-Date: 2026-07-13 11:01+0000\n"
 "Last-Translator: \"Ícar N. S.\" <icar.nin@pm.me>\n"
-"Language-Team: Catalan <https://hosted.weblate.org/projects/gelly/gelly/ca/"
-">\n"
+"Language-Team: Catalan <https://hosted.weblate.org/projects/gelly/gelly/ca/>"
+"\n"
 "Language: ca\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -457,14 +457,12 @@ msgid "May require backend plugins."
 msgstr "Podria requerir complements del dorsal."
 
 #: resources/ui/preferences.ui:44
-#, fuzzy
-#| msgid "Playback"
 msgid "Gapless Playback"
-msgstr "Reproducció"
+msgstr "Reproducció sense buits"
 
 #: resources/ui/preferences.ui:45
 msgid "Uninterrupted playback of consecutive tracks."
-msgstr ""
+msgstr "Reproducció ininterrompuda de pistes consecutives."
 
 #: resources/ui/preferences.ui:50
 msgid "Inhibit Suspend"
