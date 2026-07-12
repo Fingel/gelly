@@ -8,10 +8,10 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-07-10 13:31-0700\n"
-"PO-Revision-Date: 2026-07-10 21:01+0000\n"
+"PO-Revision-Date: 2026-07-11 22:01+0000\n"
 "Last-Translator: Priit Jõerüüt <jrthwlate@users.noreply.hosted.weblate.org>\n"
-"Language-Team: Estonian <https://hosted.weblate.org/projects/gelly/gelly/et/"
-">\n"
+"Language-Team: Estonian <https://hosted.weblate.org/projects/gelly/gelly/et/>"
+"\n"
 "Language: et\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -456,14 +456,12 @@ msgid "May require backend plugins."
 msgstr "Kasutatav taustateenus võib vajada lisamooduleid."
 
 #: resources/ui/preferences.ui:44
-#, fuzzy
-#| msgid "Playback"
 msgid "Gapless Playback"
-msgstr "Taasesitus"
+msgstr "Lünkadeta taasesitus"
 
 #: resources/ui/preferences.ui:45
 msgid "Uninterrupted playback of consecutive tracks."
-msgstr ""
+msgstr "Järjest lugude esitus ilma vahepausideta."
 
 #: resources/ui/preferences.ui:50
 msgid "Inhibit Suspend"
