@@ -45,6 +45,22 @@
       <default>0</default>
       <summary>Maximum Bitrate</summary>
     </key>
+    <key name="album-art-size" type="i">
+      <default>256</default>
+      <summary>Album art size</summary>
+    </key>
+    <key name="backdrop-width" type="i">
+      <default>1920</default>
+      <summary>Backdrop width</summary>
+    </key>
+    <key name="backdrop-height" type="i">
+      <default>300</default>
+      <summary>Backdrop height</summary>
+    </key>
+    <key name="image-quality" type="i">
+      <default>96</default>
+      <summary>Image quality</summary>
+    </key>
     <key name="refresh-on-startup" type="b">
       <default>false</default>
       <summary>Refresh the library on startup</summary>

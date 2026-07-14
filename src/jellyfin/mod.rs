@@ -342,16 +342,21 @@ impl Jellyfin {
         item_id: &str,
         image_type: ImageType,
     ) -> Result<Vec<u8>, BackendError> {
+        let image_size = config::get_album_art_size().to_string();
+        let backdrop_height = config::get_backdrop_height().to_string();
+        let backdrop_width = config::get_backdrop_width().to_string();
+        let quality = config::get_image_quality().to_string();
+
         let params = match image_type {
             ImageType::Backdrop => vec![
-                ("maxWidth", "1920"),
-                ("maxHeight", "300"),
-                ("quality", "96"),
+                ("maxWidth", backdrop_width.as_str()),
+                ("maxHeight", backdrop_height.as_str()),
+                ("quality", quality.as_str()),
             ],
             _ => vec![
-                ("fillWidth", "200"),
-                ("fillHeight", "200"),
-                ("quality", "96"),
+                ("fillWidth", image_size.as_str()),
+                ("fillHeight", image_size.as_str()),
+                ("quality", quality.as_str()),
             ],
         };
         let response = self

@@ -258,6 +258,22 @@ pub fn get_max_bitrate() -> Option<i32> {
     }
 }
 
+pub fn get_album_art_size() -> i32 {
+    settings().int("album-art-size")
+}
+
+pub fn get_backdrop_width() -> i32 {
+    settings().int("backdrop-width")
+}
+
+pub fn get_backdrop_height() -> i32 {
+    settings().int("backdrop-height")
+}
+
+pub fn get_image_quality() -> i32 {
+    settings().int("image-quality")
+}
+
 pub fn get_refresh_on_startup() -> bool {
     settings().boolean("refresh-on-startup")
 }

@@ -583,7 +583,7 @@ impl Subsonic {
         let mut params = self.auth_params();
         params.retain(|(k, _)| k != "f");
         if !matches!(image_type, ImageType::Backdrop) {
-            params.push(("size".to_string(), "200".to_string()));
+            params.push(("size".to_string(), config::get_album_art_size().to_string()));
         }
         params.push(("id".to_string(), item_id.to_string()));
 

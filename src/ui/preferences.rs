@@ -77,6 +77,20 @@ impl Preferences {
             )
             .build();
 
+        // Images
+        settings
+            .bind("album-art-size", &*imp.album_art_size_row, "value")
+            .build();
+        settings
+            .bind("backdrop-width", &*imp.backdrop_width_row, "value")
+            .build();
+        settings
+            .bind("backdrop-height", &*imp.backdrop_height_row, "value")
+            .build();
+        settings
+            .bind("image-quality", &*imp.image_quality_row, "value")
+            .build();
+
         // Transcoding Profile
         imp.transcoding_profile_row
             .set_model(Some(&TranscodingProfile::as_string_list()));
@@ -132,6 +146,14 @@ mod imp {
         pub playlist_most_played_enabled_row: TemplateChild<adw::SwitchRow>,
         #[template_child]
         pub album_art_background_row: TemplateChild<adw::SwitchRow>,
+        #[template_child]
+        pub album_art_size_row: TemplateChild<adw::SpinRow>,
+        #[template_child]
+        pub backdrop_width_row: TemplateChild<adw::SpinRow>,
+        #[template_child]
+        pub backdrop_height_row: TemplateChild<adw::SpinRow>,
+        #[template_child]
+        pub image_quality_row: TemplateChild<adw::SpinRow>,
     }
 
     #[glib::object_subclass]
