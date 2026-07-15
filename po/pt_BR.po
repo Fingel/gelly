@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-07-10 13:31-0700\n"
-"PO-Revision-Date: 2026-06-03 07:17+0000\n"
-"Last-Translator: Matheus <cybercountry@proton.me>\n"
+"PO-Revision-Date: 2026-07-16 15:01+0000\n"
+"Last-Translator: mifares <vserafim_o@outlook.com>\n"
 "Language-Team: Portuguese (Brazil) <https://hosted.weblate.org/projects/"
 "gelly/gelly/pt_BR/>\n"
 "Language: pt_BR\n"
@@ -17,18 +17,18 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 2026.6\n"
+"X-Generator: Weblate 2026.8.dev0\n"
 
 #: src/ui/album_detail.rs:40
 msgid "N/A"
-msgstr ""
+msgstr "N/A"
 
 #: src/ui/album_detail.rs:169 src/ui/album_detail.rs:179
 #: src/ui/album_detail.rs:203 src/ui/artist_detail.rs:245 src/ui/playlist.rs:53
 #: src/ui/playlist_detail.rs:521 src/ui/playlist_detail.rs:531
 #: src/ui/playlist_detail.rs:555 src/ui/song_list.rs:159
 msgid "Audio model not initialized, please restart"
-msgstr ""
+msgstr "Modelo de áudio não inicializado, por favor reinicie"
 
 #: src/ui/album_detail.rs:195 src/ui/artist_detail.rs:237
 #: src/ui/playlist_detail.rs:547
@@ -38,40 +38,32 @@ msgstr[0] "1 música adicionada à fila"
 msgstr[1] "{} músicas adicionadas à fila"
 
 #: src/ui/album_detail.rs:277
-#, fuzzy
-#| msgid "Quick connect code copied to clipboard"
 msgid "Album ID copied to clipboard"
-msgstr "Código de conexão rápida copiado"
+msgstr "ID do Album copiado"
 
 #: src/ui/album_detail.rs:313
 msgid "Added album to playlist"
-msgstr ""
+msgstr "Álbum adicionado a playlist"
 
 #: src/ui/album_detail.rs:317
 msgid "Failed to add album to playlist"
-msgstr ""
+msgstr "Falha ao adicionar álbum a playlist"
 
 #: src/ui/artist_detail.rs:164
-#, fuzzy
-#| msgid "Quick connect code copied to clipboard"
 msgid "Artist ID copied to clipboard"
-msgstr "Código de conexão rápida copiado"
+msgstr "ID do Artista copiado"
 
 #: src/ui/artist_detail.rs:192
-#, fuzzy
-#| msgid "Smart playlist"
 msgid "Added artist to playlist"
-msgstr "Playlist inteligente"
+msgstr "Artista adicionado a playlist"
 
 #: src/ui/artist_detail.rs:196
 msgid "Failed to add artist to playlist"
-msgstr ""
+msgstr "Falha ao adicionar artista a playlist"
 
 #: src/ui/music_context_menu.rs:33 src/ui/music_context_menu.rs:84
-#, fuzzy
-#| msgid "Smart Playlists"
 msgid "Add to Playlist"
-msgstr "Playlists inteligentes"
+msgstr "Adicione a playlist"
 
 #: src/ui/music_context_menu.rs:34 src/ui/playlist_dialogs.rs:20
 #: src/ui/playlist_dialogs.rs:59 resources/ui/setup.ui:123
@@ -81,66 +73,60 @@ msgstr "Cancelar"
 
 #: src/ui/music_context_menu.rs:34
 msgid "Add"
-msgstr ""
+msgstr "Adicionar"
 
 #: src/ui/music_context_menu.rs:59
 msgid "No playlists available. Please create a playlist first."
-msgstr ""
+msgstr "Sem playlists disponíveis. Por favor, crie uma playlist primeiro."
 
 #: src/ui/music_context_menu.rs:72
 msgid "Queue Next"
-msgstr ""
+msgstr "Fila a seguir"
 
 #: src/ui/music_context_menu.rs:76
 msgid "Queue Last"
-msgstr ""
+msgstr "Última Fila"
 
 #: src/ui/music_context_menu.rs:89
-#, fuzzy
-#| msgid "Save As Playlist"
 msgid "Remove from Playlist"
-msgstr "Salvar como Playlist"
+msgstr "Remover da Playlist"
 
 #: src/ui/music_context_menu.rs:99
 msgid "Go to Album"
-msgstr ""
+msgstr "Ir para o Álbum"
 
 #: src/ui/music_context_menu.rs:106
-#, fuzzy
-#| msgid "Artists"
 msgid "Go to Artist"
-msgstr "Artistas"
+msgstr "Ir para o Artistas"
 
 #: src/ui/music_context_menu.rs:115 src/ui/stream_info_dialog.rs:120
 msgid "Song Info"
-msgstr ""
+msgstr "Informações da música"
 
 #: src/ui/music_context_menu.rs:120
 msgid "Copy ID"
-msgstr ""
+msgstr "Copiar ID"
 
 #: src/ui/player_bar/common.rs:78
 msgid "Pause"
-msgstr ""
+msgstr "Pause"
 
 #: src/ui/player_bar/common.rs:81 resources/ui/album_detail.ui:119
 #: resources/ui/artist_detail.ui:52 resources/ui/playlist_detail.ui:101
-#, fuzzy
-#| msgid "Playback"
 msgid "Play"
-msgstr "Reprodução"
+msgstr "Tocar"
 
 #: src/ui/player_bar/common.rs:91
 msgid "Unknown Artist"
-msgstr ""
+msgstr "Artista desconhecido"
 
 #: src/ui/player_bar/common.rs:252 src/ui/song.rs:257
 msgid "Added song to playlist"
-msgstr ""
+msgstr "Música adicionada a playlist"
 
 #: src/ui/player_bar/common.rs:256 src/ui/song.rs:261
 msgid "Failed to add song to playlist"
-msgstr ""
+msgstr "Falha ao adicionar música a playlist"
 
 #: src/ui/playlist.rs:26
 msgid "1 song"
@@ -157,20 +143,16 @@ msgid "Empty playlist"
 msgstr "Playlist vazia"
 
 #: src/ui/playlist.rs:77
-#, fuzzy
-#| msgid "Most Played Playlist"
 msgid "Unable to load playlist"
-msgstr "Playlist de mais tocadas"
+msgstr "Incapaz de carregar a playlist"
 
 #: src/ui/playlist_detail.rs:261 src/ui/playlist_list.rs:72
 msgid "Could not load playlist, please try again."
-msgstr ""
+msgstr "Não foi possível carregar a playlist, por favor, tente novamente."
 
 #: src/ui/playlist_detail.rs:330
-#, fuzzy
-#| msgid "Quick connect code copied to clipboard"
 msgid "Playlist ID copied to clipboard"
-msgstr "Código de conexão rápida copiado"
+msgstr "ID da playlist copiada"
 
 #: src/ui/playlist_detail.rs:359
 msgid "Added songs to playlist"
