@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-10 13:31-0700\n"
+"POT-Creation-Date: 2026-07-16 16:10-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -65,7 +65,7 @@ msgid "Add to Playlist"
 msgstr ""
 
 #: src/ui/music_context_menu.rs:34 src/ui/playlist_dialogs.rs:20
-#: src/ui/playlist_dialogs.rs:59 resources/ui/setup.ui:123
+#: src/ui/playlist_dialogs.rs:59 src/ui/song.rs:291 resources/ui/setup.ui:123
 #: resources/ui/setup.ui:186
 msgid "Cancel"
 msgstr ""
@@ -119,11 +119,11 @@ msgstr ""
 msgid "Unknown Artist"
 msgstr ""
 
-#: src/ui/player_bar/common.rs:252 src/ui/song.rs:257
+#: src/ui/player_bar/common.rs:252 src/ui/song.rs:255
 msgid "Added song to playlist"
 msgstr ""
 
-#: src/ui/player_bar/common.rs:256 src/ui/song.rs:261
+#: src/ui/player_bar/common.rs:256 src/ui/song.rs:259
 msgid "Failed to add song to playlist"
 msgstr ""
 
@@ -247,6 +247,14 @@ msgstr ""
 
 #: src/ui/setup.rs:418
 msgid "Quick connect code copied to clipboard"
+msgstr ""
+
+#: src/ui/song.rs:289
+msgid "Song already in playlist"
+msgstr ""
+
+#: src/ui/song.rs:292
+msgid "Add Anyway"
 msgstr ""
 
 #: src/ui/stream_info_dialog.rs:9
