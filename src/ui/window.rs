@@ -741,6 +741,11 @@ mod imp {
                 self.obj(),
                 move |_| {
                     let app = window.get_application();
+
+                    let scale = window.surface().map(|s| s.scale() as f32)
+                        .unwrap_or(window.scale_factor() as f32);
+                    app.set_image_cache_scale(scale);
+
                     app.connect_closure(
                         "global-error",
                         false,

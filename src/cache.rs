@@ -1,5 +1,11 @@
 use std::{
-    collections::HashSet, fs, num::NonZeroUsize, os::unix, path::PathBuf, sync::Arc, time::Duration,
+    collections::HashSet,
+    fs,
+    num::NonZeroUsize,
+    os::unix,
+    path::PathBuf,
+    sync::{Arc, Mutex as StdMutex},
+    time::Duration,
 };
 
 use gtk::gdk;
@@ -164,8 +170,9 @@ pub struct ImageCache {
     pending_requests: Arc<Mutex<HashSet<String>>>,
     download_semaphore: Arc<Semaphore>,
     decode_semaphore: Arc<Semaphore>,
-    texture_cache: Arc<std::sync::Mutex<TextureCache>>,
+    texture_cache: Arc<StdMutex<TextureCache>>,
     cache_dir: PathBuf,
+    scale: Arc<StdMutex<f32>>,
 }
 
 impl ImageCache {
@@ -180,11 +187,25 @@ impl ImageCache {
             pending_requests: Arc::new(Mutex::new(HashSet::new())),
             download_semaphore: Arc::new(Semaphore::new(MAX_CONCURRENT_DOWNLOADS)),
             decode_semaphore: Arc::new(Semaphore::new(MAX_CONCURRENT_DECODES)),
-            texture_cache: Arc::new(std::sync::Mutex::new(LruCache::new(
+            texture_cache: Arc::new(StdMutex::new(LruCache::new(
                 NonZeroUsize::new(MAX_TEXTURE_CACHE_ENTRIES).unwrap(),
             ))),
             cache_dir,
+            scale: Arc::new(StdMutex::new(1.0)),
         })
+    }
+
+    pub fn set_scale(&self, scale: f32) {
+        let scale = if scale.is_finite() {
+            scale.max(1.0)
+        } else {
+            1.0
+        };
+        *self.scale.lock().unwrap() = scale;
+    }
+
+    pub fn scale(&self) -> f32 {
+        *self.scale.lock().unwrap()
     }
 
     /// Retrieve the main album art for an item.
@@ -263,7 +284,9 @@ impl ImageCache {
         jellyfin: &Backend,
     ) -> Result<Vec<u8>, CacheError> {
         debug!("Downloading album art for {}", item_id);
-        let image_data = jellyfin.get_image(item_id, image_type).await?;
+        let image_data = jellyfin
+            .get_image(item_id, image_type, self.scale())
+            .await?;
 
         if let Err(e) = self.save_to_disk(item_id, image_type, &image_data).await {
             warn!("Failed to save image to disk cache: {}", e);

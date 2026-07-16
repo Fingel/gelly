@@ -194,6 +194,12 @@ impl Application {
         self.imp().image_cache.borrow().clone()
     }
 
+    pub fn set_image_cache_scale(&self, scale: f32) {
+        if let Some(image_cache) = self.image_cache() {
+            image_cache.set_scale(scale);
+        }
+    }
+
     pub fn audio_model(&self) -> Option<AudioModel> {
         self.imp().audio_model.borrow().clone()
     }

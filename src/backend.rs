@@ -162,10 +162,11 @@ impl Backend {
         &self,
         item_id: &str,
         image_type: ImageType,
+        scale: f32,
     ) -> Result<Vec<u8>, BackendError> {
         match self {
-            Self::Jellyfin(jellyfin) => jellyfin.get_image(item_id, image_type).await,
-            Self::Subsonic(subsonic) => subsonic.get_image(item_id, image_type).await,
+            Self::Jellyfin(jellyfin) => jellyfin.get_image(item_id, image_type, scale).await,
+            Self::Subsonic(subsonic) => subsonic.get_image(item_id, image_type, scale).await,
         }
     }
 

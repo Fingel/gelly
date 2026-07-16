@@ -342,16 +342,23 @@ impl Jellyfin {
         &self,
         item_id: &str,
         image_type: ImageType,
+        scale: f32,
     ) -> Result<Vec<u8>, BackendError> {
+        let (base_w, base_h) = match image_type {
+            ImageType::Backdrop => (1920.0, 300.0),
+            _ => (200.0, 200.0),
+        };
+        let width = ((base_w * scale).round() as u32).max(1).to_string();
+        let height = ((base_h * scale).round() as u32).max(1).to_string();
         let params = match image_type {
             ImageType::Backdrop => vec![
-                ("maxWidth", "1920"),
-                ("maxHeight", "300"),
+                ("maxWidth", width.as_str()),
+                ("maxHeight", height.as_str()),
                 ("quality", "96"),
             ],
             _ => vec![
-                ("fillWidth", "200"),
-                ("fillHeight", "200"),
+                ("fillWidth", width.as_str()),
+                ("fillHeight", height.as_str()),
                 ("quality", "96"),
             ],
         };

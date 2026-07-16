@@ -574,6 +574,7 @@ impl Subsonic {
         &self,
         item_id: &str,
         image_type: ImageType,
+        scale: f32,
     ) -> Result<Vec<u8>, BackendError> {
         debug!(
             "Subsonic::get_image(item_id={item_id}, image_type={})",
@@ -584,7 +585,8 @@ impl Subsonic {
         let mut params = self.auth_params();
         params.retain(|(k, _)| k != "f");
         if !matches!(image_type, ImageType::Backdrop) {
-            params.push(("size".to_string(), "200".to_string()));
+            let size = ((200.0 * scale).round() as u32).max(1);
+            params.push(("size".to_string(), size.to_string()));
         }
         params.push(("id".to_string(), item_id.to_string()));
 
