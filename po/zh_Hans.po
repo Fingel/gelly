@@ -8,520 +8,520 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-07-10 13:31-0700\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
+"PO-Revision-Date: 2026-07-16 15:01+0000\n"
+"Last-Translator: sendevia <me@sendevia.top>\n"
+"Language-Team: Chinese (Simplified Han script) <https://hosted.weblate.org/"
+"projects/gelly/gelly/zh_Hans/>\n"
 "Language: zh_Hans\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 2026.8.dev0\n"
 
 #: src/ui/album_detail.rs:40
 msgid "N/A"
-msgstr ""
+msgstr "N/A"
 
 #: src/ui/album_detail.rs:169 src/ui/album_detail.rs:179
 #: src/ui/album_detail.rs:203 src/ui/artist_detail.rs:245 src/ui/playlist.rs:53
 #: src/ui/playlist_detail.rs:521 src/ui/playlist_detail.rs:531
 #: src/ui/playlist_detail.rs:555 src/ui/song_list.rs:159
 msgid "Audio model not initialized, please restart"
-msgstr ""
+msgstr "音频模型未初始化，请重新启动"
 
 #: src/ui/album_detail.rs:195 src/ui/artist_detail.rs:237
 #: src/ui/playlist_detail.rs:547
 msgid "1 song added to queue"
 msgid_plural "{} songs added to queue"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "已添加 {} 首歌曲到队列"
 
 #: src/ui/album_detail.rs:277
 msgid "Album ID copied to clipboard"
-msgstr ""
+msgstr "已复制专辑 ID 到剪贴板"
 
 #: src/ui/album_detail.rs:313
 msgid "Added album to playlist"
-msgstr ""
+msgstr "专辑已添加到歌单"
 
 #: src/ui/album_detail.rs:317
 msgid "Failed to add album to playlist"
-msgstr ""
+msgstr "无法将专辑添加到歌单"
 
 #: src/ui/artist_detail.rs:164
 msgid "Artist ID copied to clipboard"
-msgstr ""
+msgstr "已复制艺术家 ID 到剪贴板"
 
 #: src/ui/artist_detail.rs:192
 msgid "Added artist to playlist"
-msgstr ""
+msgstr "艺术家已添加到歌单"
 
 #: src/ui/artist_detail.rs:196
 msgid "Failed to add artist to playlist"
-msgstr ""
+msgstr "无法将艺术家添加到歌单"
 
 #: src/ui/music_context_menu.rs:33 src/ui/music_context_menu.rs:84
 msgid "Add to Playlist"
-msgstr ""
+msgstr "添加到歌单"
 
 #: src/ui/music_context_menu.rs:34 src/ui/playlist_dialogs.rs:20
 #: src/ui/playlist_dialogs.rs:59 resources/ui/setup.ui:123
 #: resources/ui/setup.ui:186
 msgid "Cancel"
-msgstr ""
+msgstr "取消"
 
 #: src/ui/music_context_menu.rs:34
 msgid "Add"
-msgstr ""
+msgstr "添加"
 
 #: src/ui/music_context_menu.rs:59
 msgid "No playlists available. Please create a playlist first."
-msgstr ""
+msgstr "没有歌单，请先创建一个。"
 
 #: src/ui/music_context_menu.rs:72
 msgid "Queue Next"
-msgstr ""
+msgstr "队列下一首"
 
 #: src/ui/music_context_menu.rs:76
 msgid "Queue Last"
-msgstr ""
+msgstr "队列末尾"
 
 #: src/ui/music_context_menu.rs:89
 msgid "Remove from Playlist"
-msgstr ""
+msgstr "从歌单移除"
 
 #: src/ui/music_context_menu.rs:99
 msgid "Go to Album"
-msgstr ""
+msgstr "前往专辑"
 
 #: src/ui/music_context_menu.rs:106
 msgid "Go to Artist"
-msgstr ""
+msgstr "前往艺术家"
 
 #: src/ui/music_context_menu.rs:115 src/ui/stream_info_dialog.rs:120
 msgid "Song Info"
-msgstr ""
+msgstr "歌曲信息"
 
 #: src/ui/music_context_menu.rs:120
 msgid "Copy ID"
-msgstr ""
+msgstr "复制 ID"
 
 #: src/ui/player_bar/common.rs:78
 msgid "Pause"
-msgstr ""
+msgstr "暂停"
 
 #: src/ui/player_bar/common.rs:81 resources/ui/album_detail.ui:119
 #: resources/ui/artist_detail.ui:52 resources/ui/playlist_detail.ui:101
 msgid "Play"
-msgstr ""
+msgstr "播放"
 
 #: src/ui/player_bar/common.rs:91
 msgid "Unknown Artist"
-msgstr ""
+msgstr "未知艺术家"
 
 #: src/ui/player_bar/common.rs:252 src/ui/song.rs:257
 msgid "Added song to playlist"
-msgstr ""
+msgstr "歌曲已添加到歌单"
 
 #: src/ui/player_bar/common.rs:256 src/ui/song.rs:261
 msgid "Failed to add song to playlist"
-msgstr ""
+msgstr "无法将歌曲添加到歌单"
 
 #: src/ui/playlist.rs:26
 msgid "1 song"
 msgid_plural "{} songs"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "{} 首歌曲"
 
 #: src/ui/playlist.rs:29
 msgid "Smart playlist"
-msgstr ""
+msgstr "智能列表"
 
 #: src/ui/playlist.rs:31
 msgid "Empty playlist"
-msgstr ""
+msgstr "空歌单"
 
 #: src/ui/playlist.rs:77
 msgid "Unable to load playlist"
-msgstr ""
+msgstr "无法加载歌单"
 
 #: src/ui/playlist_detail.rs:261 src/ui/playlist_list.rs:72
 msgid "Could not load playlist, please try again."
-msgstr ""
+msgstr "不能加载歌单，请重试。"
 
 #: src/ui/playlist_detail.rs:330
 msgid "Playlist ID copied to clipboard"
-msgstr ""
+msgstr "已复制歌单 ID 到剪贴板"
 
 #: src/ui/playlist_detail.rs:359
 msgid "Added songs to playlist"
-msgstr ""
+msgstr "歌曲已添加到歌单"
 
 #: src/ui/playlist_detail.rs:363
 msgid "Failed to add songs to playlist"
-msgstr ""
+msgstr "无法将歌曲添加到歌单"
 
 #: src/ui/playlist_detail.rs:459
 msgid "Failed to save playlist order."
-msgstr ""
+msgstr "无法保存歌单排序。"
 
 #: src/ui/playlist_detail.rs:505
 msgid "Failed to modify playlist."
-msgstr ""
+msgstr "无法修改歌单。"
 
 #: src/ui/playlist_detail.rs:573
 msgid "Smart playlists cannot be deleted"
-msgstr ""
+msgstr "智能列表不能删除"
 
 #: src/ui/playlist_detail.rs:606
 msgid "Playlist deleted"
-msgstr ""
+msgstr "歌单已删除"
 
 #: src/ui/playlist_detail.rs:609
 msgid "Failed to delete playlist"
-msgstr ""
+msgstr "无法删除歌单"
 
 #: src/ui/playlist_dialogs.rs:7
 msgid "Playlist name"
-msgstr ""
+msgstr "歌单名称"
 
 #: src/ui/playlist_dialogs.rs:16
 msgid "New Playlist"
-msgstr ""
+msgstr "新歌单"
 
 #: src/ui/playlist_dialogs.rs:20
 msgid "Create"
-msgstr ""
+msgstr "创建"
 
 #: src/ui/playlist_dialogs.rs:56
 msgid "Delete playlist?"
-msgstr ""
+msgstr "删除歌单？"
 
 #: src/ui/playlist_dialogs.rs:59
 msgid "Delete"
-msgstr ""
+msgstr "删除"
 
 #: src/ui/playlist_list.rs:66
 msgid "No audio model found, please restart."
-msgstr ""
+msgstr "未找到音频模型，请重新启动。"
 
 #: src/ui/playlist_list.rs:174 src/ui/queue.rs:125
 msgid "Playlist created"
-msgstr ""
+msgstr "已创建歌单"
 
 #: src/ui/playlist_list.rs:177 src/ui/queue.rs:128
 msgid "Failed to create playlist"
-msgstr ""
+msgstr "无法创建歌单"
 
 #: src/ui/setup.rs:153 src/ui/setup.rs:168 src/ui/setup.rs:398
 msgid "Credentials could not be saved. Do you have a keyring daemon running?"
-msgstr ""
+msgstr "无法保存认证信息。你的密钥环守护进程在运行吗？"
 
 #: src/ui/setup.rs:218
 msgid "Connection error. Please supply a full URL (http://example.com:8096)"
-msgstr ""
+msgstr "连接错误。请提供完整的 URL (http://example.com:8096)"
 
 #: src/ui/setup.rs:232
 msgid "Invalid credentials"
-msgstr ""
+msgstr "无效认证信息"
 
 #: src/ui/setup.rs:242
 msgid "Could not authenticate with Jellyfin or Subsonic"
-msgstr ""
+msgstr "无法与 Jellyfin 或 Subsonic 进行身份验证"
 
 #: src/ui/setup.rs:287
 msgid "Failed to load libraries"
-msgstr ""
+msgstr "无法加载音乐库"
 
 #: src/ui/setup.rs:317
 msgid "Failed to initiate quick connect. Is the host valid?"
-msgstr ""
+msgstr "无法发起快速连接。主机是否有效？"
 
 #: src/ui/setup.rs:372
 msgid "Error during quick connect"
-msgstr ""
+msgstr "在快速连接中发生错误"
 
 #: src/ui/setup.rs:408
 msgid "Failed to authenticate with quick connect"
-msgstr ""
+msgstr "无法在快速连接中进行身份验证"
 
 #: src/ui/setup.rs:418
 msgid "Quick connect code copied to clipboard"
-msgstr ""
+msgstr "已复制快速连接代码到剪贴板"
 
 #: src/ui/stream_info_dialog.rs:9
 msgid "Yes"
-msgstr ""
+msgstr "是"
 
 #: src/ui/stream_info_dialog.rs:10
 msgid "No"
-msgstr ""
+msgstr "否"
 
 #: src/ui/stream_info_dialog.rs:11 src/ui/stream_info_dialog.rs:52
 #: src/ui/stream_info_dialog.rs:73 src/ui/stream_info_dialog.rs:114
 #: src/ui/stream_info_dialog.rs:115
 msgid "Unknown"
-msgstr ""
+msgstr "未知"
 
 #: src/ui/stream_info_dialog.rs:49
 msgid "Backend"
-msgstr ""
+msgstr "后端"
 
 #: src/ui/stream_info_dialog.rs:52
 msgid "Codec"
-msgstr ""
+msgstr "编码"
 
 #: src/ui/stream_info_dialog.rs:54
 msgid "Container"
-msgstr ""
+msgstr "容器"
 
 #: src/ui/stream_info_dialog.rs:55 src/ui/stream_info_dialog.rs:77
 msgid "None"
-msgstr ""
+msgstr "无"
 
 #: src/ui/stream_info_dialog.rs:58
 msgid "Sample Rate"
-msgstr ""
+msgstr "采样率"
 
 #: src/ui/stream_info_dialog.rs:61
 msgid "Channels"
-msgstr ""
+msgstr "通道"
 
 #: src/ui/stream_info_dialog.rs:64
 msgid "Bit Rate"
-msgstr ""
+msgstr "比特率"
 
 #: src/ui/stream_info_dialog.rs:67
 msgid "Encoder"
-msgstr ""
+msgstr "编码器"
 
 #: src/ui/stream_info_dialog.rs:72
 msgid "Original Codec"
-msgstr ""
+msgstr "原始编码"
 
 #: src/ui/stream_info_dialog.rs:76
 msgid "Original Container"
-msgstr ""
+msgstr "原始容器"
 
 #: src/ui/stream_info_dialog.rs:80
 msgid "Original Sample Rate"
-msgstr ""
+msgstr "原始采样率"
 
 #: src/ui/stream_info_dialog.rs:84
 msgid "Original Channels"
-msgstr ""
+msgstr "原始通道"
 
 #: src/ui/stream_info_dialog.rs:88
 msgid "Supports Direct Play"
-msgstr ""
+msgstr "支持直接播放"
 
 #: src/ui/stream_info_dialog.rs:92
 msgid "Supports Direct Stream"
-msgstr ""
+msgstr "支持直接串流"
 
 #: src/ui/stream_info_dialog.rs:96
 msgid "Supports Transcoding"
-msgstr ""
+msgstr "支持转码"
 
 #: src/ui/stream_info_dialog.rs:102
 msgid "Original Bit Rate"
-msgstr ""
+msgstr "原始比特率"
 
 #: src/ui/stream_info_dialog.rs:108
 msgid "File Size"
-msgstr ""
+msgstr "文件大小"
 
 #: src/ui/stream_info_dialog.rs:114
 msgid "Id"
-msgstr ""
+msgstr "Id"
 
 #: src/ui/stream_info_dialog.rs:115
 msgid "Path"
-msgstr ""
+msgstr "目录"
 
 #: src/ui/stream_info_dialog.rs:138
 msgid "Song Properties"
-msgstr ""
+msgstr "歌曲属性"
 
 #: src/ui/stream_info_dialog.rs:145
 msgid "Local Properties"
-msgstr ""
+msgstr "本地属性"
 
 #: src/ui/stream_info_dialog.rs:152
 msgid "Remote Properties"
-msgstr ""
+msgstr "远程属性"
 
 #: src/ui/window.rs:181
 msgid "Logged out"
-msgstr ""
+msgstr "登出"
 
 #: src/ui/window.rs:309
 msgid "all genres"
-msgstr ""
+msgstr "所有类型"
 
 #: resources/ui/album_art.ui:33
 msgid "Missing album art"
-msgstr ""
+msgstr "缺少专辑图片"
 
 #: resources/ui/album_detail.ui:82 resources/ui/playlist_detail.ui:66
 msgid "tracks"
-msgstr ""
+msgstr "曲目"
 
 #: resources/ui/album_detail.ui:145 resources/ui/artist_detail.ui:79
 msgid "More Actions"
-msgstr ""
+msgstr "更多操作"
 
 #: resources/ui/album_list.ui:8
 msgid "No Albums"
-msgstr ""
+msgstr "无专辑"
 
 #: resources/ui/artist_detail.ui:41
 msgid "Artist Name"
-msgstr ""
+msgstr "艺术家名称"
 
 #: resources/ui/artist_list.ui:8
 msgid "No Artists"
-msgstr ""
+msgstr "无艺术家"
 
 #: resources/ui/lyrics.ui:56
 msgid "No lyrics available"
-msgstr ""
+msgstr "歌词不可用"
 
 #: resources/ui/playback_mode.ui:9
 msgid "Playback Mode"
-msgstr ""
+msgstr "播放模式"
 
 #: resources/ui/playlist_detail.ui:127
 msgid "More actions"
-msgstr ""
+msgstr "更多操作"
 
 #: resources/ui/playlist_detail.ui:138
 msgid "Delete playlist"
-msgstr ""
+msgstr "删除歌单"
 
 #: resources/ui/playlist_detail.ui:152
 msgid "Playlist is Empty"
-msgstr ""
+msgstr "歌单为空"
 
 #: resources/ui/playlist_list.ui:8
 msgid "No Playlists"
-msgstr ""
+msgstr "无歌单"
 
 #: resources/ui/preferences.ui:9 resources/ui/preferences.ui:12
 #: resources/ui/shortcuts_dialog.ui:6
 msgid "General"
-msgstr ""
+msgstr "通用"
 
 #: resources/ui/preferences.ui:15
 msgid "Refresh library on startup"
-msgstr ""
+msgstr "在启动时刷新音乐库"
 
 #: resources/ui/preferences.ui:16
 msgid "The library can be refreshed using ctrl+r or the menu."
-msgstr ""
+msgstr "可以在目录中或使用 ctrl+r 刷新音乐库。"
 
 #: resources/ui/preferences.ui:21
 msgid "Extra eye candy"
-msgstr ""
+msgstr "额外的视觉体验"
 
 #: resources/ui/preferences.ui:22
 msgid "Utilizes transparency, blurred backgrounds, etc."
-msgstr ""
+msgstr "运用了透明度、背景模糊等效果。"
 
 #: resources/ui/preferences.ui:27
 msgid "Compact Mode"
-msgstr ""
+msgstr "紧凑模式"
 
 #: resources/ui/preferences.ui:28
 msgid "Use smaller UI elements regardless of window size."
-msgstr ""
+msgstr "无论窗口大小如何，均使用较小的 UI 元素。"
 
 #: resources/ui/preferences.ui:35 resources/ui/shortcuts_dialog.ui:84
 msgid "Playback"
-msgstr ""
+msgstr "播放"
 
 #: resources/ui/preferences.ui:38
 msgid "Normalize Audio"
-msgstr ""
+msgstr "音量平衡"
 
 #: resources/ui/preferences.ui:39
 msgid "May require backend plugins."
-msgstr ""
+msgstr "可能需要后端插件支持。"
 
 #: resources/ui/preferences.ui:44
 msgid "Gapless Playback"
-msgstr ""
+msgstr "无缝播放"
 
 #: resources/ui/preferences.ui:45
 msgid "Uninterrupted playback of consecutive tracks."
-msgstr ""
+msgstr "连续曲目不间断播放。"
 
 #: resources/ui/preferences.ui:50
 msgid "Inhibit Suspend"
-msgstr ""
+msgstr "阻止挂起"
 
 #: resources/ui/preferences.ui:51
 msgid "Prevents the system from suspending while playing"
-msgstr ""
+msgstr "防止系统在播放期间进入待机状态"
 
 #: resources/ui/preferences.ui:58
 msgid "Transcoding"
-msgstr ""
+msgstr "转码"
 
 #: resources/ui/preferences.ui:59
 msgid "Currently Subsonic backends cannot seek transcoded streams."
-msgstr ""
+msgstr "目前，Subsonic 后端无法对转码流进行跳转播放。"
 
 #: resources/ui/preferences.ui:62
 msgid "Transcoding Profile"
-msgstr ""
+msgstr "转码配置"
 
 #: resources/ui/preferences.ui:63
 msgid "Only used when direct play is not available."
-msgstr ""
+msgstr "仅在无法直接播放时使用。"
 
 #: resources/ui/preferences.ui:76
 msgid "Maximum Bitrate (kbps)"
-msgstr ""
+msgstr "最大比特率（kbps）"
 
 #: resources/ui/preferences.ui:77
 msgid "A value of 0 means no limit."
-msgstr ""
+msgstr "设为 0 则代表无限制。"
 
 #: resources/ui/preferences.ui:96 resources/ui/window.ui:313
 msgid "Playlists"
-msgstr ""
+msgstr "歌单"
 
 #: resources/ui/preferences.ui:99
 msgid "Smart Playlists"
-msgstr ""
+msgstr "智能列表"
 
 #: resources/ui/preferences.ui:102
 msgid "Favorite Mix Playlist"
-msgstr ""
+msgstr "精选混合歌单"
 
 #: resources/ui/preferences.ui:107
 msgid "Shuffled Playlist"
-msgstr ""
+msgstr "随机播放的歌单"
 
 #: resources/ui/preferences.ui:112
 msgid "Most Played Playlist"
-msgstr ""
+msgstr "播放次数最多的歌单"
 
 #: resources/ui/queue.ui:8
 msgid "Nothing Playing"
-msgstr ""
+msgstr "未播放任何内容"
 
 #: resources/ui/queue.ui:41
 msgid "Jump to current song"
-msgstr ""
+msgstr "跳转到当前歌曲"
 
 #: resources/ui/setup.ui:10
 msgid "Servers"
-msgstr ""
+msgstr "服务器"
 
 #: resources/ui/setup.ui:19
 msgid "Connect to Server"
-msgstr ""
+msgstr "连接到服务器"
 
 #: resources/ui/setup.ui:20
 msgid ""
@@ -529,237 +529,239 @@ msgid ""
 "including protocol and port. For Jellyfin this is usually 8096, Navidrome "
 "uses 4533."
 msgstr ""
+"Gelly 支持 Jellyfin 和 Subsonic/Navidrome。请输入包含协议和端口在内的完整服务"
+"器 URL。对于 Jellyfin，端口通常为 8096；Navidrome 则使用 4533。"
 
 #: resources/ui/setup.ui:35
 msgid "Host URL"
-msgstr ""
+msgstr "主机地址"
 
 #: resources/ui/setup.ui:42
 msgid "Username"
-msgstr ""
+msgstr "用户名"
 
 #: resources/ui/setup.ui:47
 msgid "Password"
-msgstr ""
+msgstr "密码"
 
 #: resources/ui/setup.ui:54
 msgid "Connect"
-msgstr ""
+msgstr "连接"
 
 #: resources/ui/setup.ui:65 resources/ui/setup.ui:150
 msgid "Jellyfin Quick Connect"
-msgstr ""
+msgstr "Jellyfin 快速连接"
 
 #: resources/ui/setup.ui:80
 msgid "Choose Library"
-msgstr ""
+msgstr "选择音乐库"
 
 #: resources/ui/setup.ui:89
 msgid "Select Library"
-msgstr ""
+msgstr "选择音乐库"
 
 #: resources/ui/setup.ui:90
 msgid "Choose which library Gelly will use to load your music."
-msgstr ""
+msgstr "选择 Gelly 用于加载音乐的库。"
 
 #: resources/ui/setup.ui:105
 msgid "Library"
-msgstr ""
+msgstr "音乐库"
 
 #: resources/ui/setup.ui:112
 msgid "Launch Gelly"
-msgstr ""
+msgstr "启动 Gelly"
 
 #: resources/ui/setup.ui:141
 msgid "Quick Connect"
-msgstr ""
+msgstr "快速连接"
 
 #: resources/ui/setup.ui:151
 msgid "Enter the code on the Jellyfin web page to complete authentication."
-msgstr ""
+msgstr "在 Jellyfin 网页上输入代码以完成验证。"
 
 #: resources/ui/shortcuts_dialog.ui:9 resources/ui/window.ui:411
 msgid "Refresh Library"
-msgstr ""
+msgstr "刷新音乐库"
 
 #: resources/ui/shortcuts_dialog.ui:10
 msgid "Re-downloads the music library"
-msgstr ""
+msgstr "重新下载音乐库"
 
 #: resources/ui/shortcuts_dialog.ui:16
 msgid "Request Library Rescan"
-msgstr ""
+msgstr "请求重新扫描音乐库"
 
 #: resources/ui/shortcuts_dialog.ui:17
 msgid "Ask Jellyfin to rescan the library for new or modified files"
-msgstr ""
+msgstr "让 Jellyfin 重新扫描音乐库，以查找新增或修改的文件"
 
 #: resources/ui/shortcuts_dialog.ui:23
 msgid "Search"
-msgstr ""
+msgstr "搜索"
 
 #: resources/ui/shortcuts_dialog.ui:29
 msgid "Show Favorites"
-msgstr ""
+msgstr "显示精选"
 
 #: resources/ui/shortcuts_dialog.ui:35 resources/ui/window.ui:421
 msgid "Preferences"
-msgstr ""
+msgstr "偏好设置"
 
 #: resources/ui/shortcuts_dialog.ui:41 resources/ui/window.ui:425
 msgid "Keyboard Shortcuts"
-msgstr ""
+msgstr "键盘快捷键"
 
 #: resources/ui/shortcuts_dialog.ui:47 resources/ui/window.ui:437
 msgid "Quit"
-msgstr ""
+msgstr "退出"
 
 #: resources/ui/shortcuts_dialog.ui:55
 msgid "Navigation"
-msgstr ""
+msgstr "导航"
 
 #: resources/ui/shortcuts_dialog.ui:58
 msgid "Focus Albums"
-msgstr ""
+msgstr "聚焦专辑页"
 
 #: resources/ui/shortcuts_dialog.ui:64
 msgid "Focus Artists"
-msgstr ""
+msgstr "聚焦艺术家页"
 
 #: resources/ui/shortcuts_dialog.ui:70
 msgid "Focus Playlist"
-msgstr ""
+msgstr "聚焦歌单页"
 
 #: resources/ui/shortcuts_dialog.ui:76
 msgid "Focus Song List"
-msgstr ""
+msgstr "聚焦歌曲页"
 
 #: resources/ui/shortcuts_dialog.ui:87
 msgid "Play Selected"
-msgstr ""
+msgstr "播放选中"
 
 #: resources/ui/shortcuts_dialog.ui:88
 msgid "Play the currently selected item in the list"
-msgstr ""
+msgstr "在列表中播放当前选择的歌曲"
 
 #: resources/ui/song_list.ui:8
 msgid "No Songs"
-msgstr ""
+msgstr "无歌曲"
 
 #: resources/ui/song_list.ui:35
 msgid "songs"
-msgstr ""
+msgstr "歌曲"
 
 #: resources/ui/window.ui:56
 msgid "Album Detail"
-msgstr ""
+msgstr "专辑详情"
 
 #: resources/ui/window.ui:89
 msgid "Artist Detail"
-msgstr ""
+msgstr "艺术家详情"
 
 #: resources/ui/window.ui:121
 msgid "Playlist Detail"
-msgstr ""
+msgstr "歌单详情"
 
 #: resources/ui/window.ui:144
 msgid "Main"
-msgstr ""
+msgstr "主要"
 
 #: resources/ui/window.ui:153
 msgid "Show Queue"
-msgstr ""
+msgstr "显示队列"
 
 #: resources/ui/window.ui:160
 msgid "Search and Genres"
-msgstr ""
+msgstr "搜索与类型"
 
 #: resources/ui/window.ui:166
 msgid "Sort"
-msgstr ""
+msgstr "排序"
 
 #: resources/ui/window.ui:173
 msgid "New"
-msgstr ""
+msgstr "新添加"
 
 #: resources/ui/window.ui:208
 msgid "Search..."
-msgstr ""
+msgstr "搜索..."
 
 #: resources/ui/window.ui:231
 msgid "Reset"
-msgstr ""
+msgstr "重置"
 
 #: resources/ui/window.ui:253
 msgid "Favorites"
-msgstr ""
+msgstr "精选"
 
 #: resources/ui/window.ui:266
 msgid "Ascending"
-msgstr ""
+msgstr "升序"
 
 #: resources/ui/window.ui:273
 msgid "Descending"
-msgstr ""
+msgstr "降序"
 
 #: resources/ui/window.ui:289
 msgid "Albums"
-msgstr ""
+msgstr "专辑"
 
 #: resources/ui/window.ui:301
 msgid "Artists"
-msgstr ""
+msgstr "艺术家"
 
 #: resources/ui/window.ui:325
 msgid "Songs"
-msgstr ""
+msgstr "歌曲"
 
 #: resources/ui/window.ui:370
 msgid "Hide Queue"
-msgstr ""
+msgstr "隐藏队列"
 
 #: resources/ui/window.ui:379
 msgid "Clear Queue"
-msgstr ""
+msgstr "清除队列"
 
 #: resources/ui/window.ui:386
 msgid "Save As Playlist"
-msgstr ""
+msgstr "保存为歌单"
 
 #: resources/ui/window.ui:407
 msgid "Request Rescan"
-msgstr ""
+msgstr "请求重新扫描"
 
 #: resources/ui/window.ui:415
 msgid "Clear Image Cache"
-msgstr ""
+msgstr "清除图像缓存"
 
 #: resources/ui/window.ui:429
 msgid "About Gelly"
-msgstr ""
+msgstr "关于 Gelly"
 
 #: resources/ui/window.ui:433
 msgid "Logout"
-msgstr ""
+msgstr "登出"
 
 #: resources/ui/player_bar/big_player.ui:169
 #: resources/ui/player_bar/compact_player_bar.ui:110
 #: resources/ui/player_bar/full_player_bar.ui:198
 msgid "Lyrics"
-msgstr ""
+msgstr "歌词"
 
 #: resources/ui/player_bar/big_player.ui:179
 #: resources/ui/player_bar/compact_player_bar.ui:120
 #: resources/ui/player_bar/full_player_bar.ui:208
 msgid "Favorite"
-msgstr ""
+msgstr "精选"
 
 #: resources/ui/player_bar/big_player.ui:199
 #: resources/ui/player_bar/full_player_bar.ui:245
 msgid "Volume"
-msgstr ""
+msgstr "音量"
 
 #: resources/ui/player_bar/big_player.ui:214
 #: resources/ui/player_bar/full_player_bar.ui:232
 msgid "Song Menu"
-msgstr ""
+msgstr "歌曲目录"
