@@ -1,10 +1,10 @@
+use adw::prelude::*;
 use glib::Object;
 use gtk::{
     DragSource, DropTarget,
     gdk::{ContentProvider, Drag, DragAction},
     gio::{self, SimpleAction, SimpleActionGroup},
     glib,
-    prelude::*,
     subclass::prelude::*,
 };
 use log::warn;
@@ -241,11 +241,9 @@ impl Song {
         action_group
     }
 
-    fn on_add_to_playlist(&self, playlist_id: String) {
-        let song_id = self.song_id();
+    fn add_song_to_playlist(&self, playlist_id: String, song_id: String) {
         let app = self.get_application();
         let backend = app.backend();
-        let playlist_id = playlist_id.to_string();
         spawn_tokio(
             async move { backend.add_playlist_items(&playlist_id, &[song_id]).await },
             glib::clone!(
@@ -261,6 +259,60 @@ impl Song {
                             song.toast(&tr("Failed to add song to playlist"), None);
                             warn!("Failed to add song to playlist: {}", e);
                         }
+                    }
+                }
+            ),
+        );
+    }
+
+    fn on_add_to_playlist(&self, playlist_id: String) {
+        let song_id = self.song_id();
+        let backend = self.get_application().backend();
+        let playlist_id = playlist_id.to_string();
+        let playlist_id_for_check = playlist_id.clone();
+        let song_id_for_check = song_id.clone();
+
+        spawn_tokio(
+            async move {
+                backend
+                    .get_playlist_items(&playlist_id_for_check)
+                    .await
+                    .map(|items| items.items.iter().any(|item| item.id == song_id_for_check))
+            },
+            glib::clone!(
+                #[weak(rename_to = song)]
+                self,
+                move |result| match result {
+                    Ok(false) => song.add_song_to_playlist(playlist_id.clone(), song_id.clone()),
+                    Ok(true) => {
+                        let dialog =
+                            adw::AlertDialog::new(Some(&tr("Song already in playlist")), None);
+                        dialog.add_responses(&[
+                            ("cancel", &tr("Cancel")),
+                            ("add", &tr("Add Anyway")),
+                        ]);
+                        dialog.set_default_response(Some("add"));
+                        dialog.set_close_response("cancel");
+                        dialog.connect_response(
+                            Some("add"),
+                            glib::clone!(
+                                #[weak(rename_to = song)]
+                                song,
+                                move |_, response| {
+                                    if response == "add" {
+                                        song.add_song_to_playlist(
+                                            playlist_id.clone(),
+                                            song_id.clone(),
+                                        );
+                                    }
+                                }
+                            ),
+                        );
+                        dialog.present(song.get_gtk_window().as_ref());
+                    }
+                    Err(e) => {
+                        warn!("Failed to check playlist contents: {}", e);
+                        song.add_song_to_playlist(playlist_id.clone(), song_id.clone());
                     }
                 }
             ),
