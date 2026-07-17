@@ -909,7 +909,7 @@ dependencies = [
 
 [[package]]
 name = "gelly"
-version = "1.9.2"
+version = "1.9.3"
 dependencies = [
  "async-channel",
  "dbus-secret-service",

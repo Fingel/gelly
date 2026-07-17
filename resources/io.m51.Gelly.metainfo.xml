@@ -70,6 +70,30 @@
     <color type="primary" scheme_preference="dark">#325a4a</color>
   </branding>
   <releases>
+    <release version="1.9.3" date="2026-07-16">
+      <description>
+        <ul>
+          <li>
+            Adapt downloaded album art size to fit the display scale. Should increase artwork
+            quality for those using Gelly on displays with > 100% scale.
+          </li>
+          <li>
+            Add a setting to disable gapless playback.
+          </li>
+          <li>
+            Disable kinetic scrolling for large list views to hopefully improve performance
+            on touch screens.
+          </li>
+          <li>
+            Add a confirmation dialog when adding a song to a playlist that already contains
+            that song.
+          </li>
+          <li>
+            Updated translations.
+          </li>
+        </ul>
+      </description>
+    </release>
     <release version="1.9.2" date="2026-07-09">
       <description>
         <ul>
