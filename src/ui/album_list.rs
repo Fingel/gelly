@@ -235,6 +235,12 @@ impl AlbumList {
             let album_widget = list_item.child().and_downcast::<Album>().unwrap();
             album_widget.set_album_model(&album_model);
         });
+        factory.connect_unbind(move |_, list_item| {
+            let list_item = list_item.downcast_ref::<gtk::ListItem>().unwrap();
+            if let Some(album) = list_item.child().and_downcast::<Album>() {
+                album.unbind();
+            }
+        });
         factory.connect_teardown(move |_, list_item| {
             let list_item = list_item.downcast_ref::<gtk::ListItem>().unwrap();
             if let Some(w) = list_item.child().and_downcast::<Album>() {

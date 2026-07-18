@@ -28,6 +28,10 @@ impl Artist {
         }
     }
 
+    pub fn unbind(&self) {
+        self.imp().media_card.unbind_image();
+    }
+
     pub fn toggle_favorite(&self, is_favorite: bool) {
         let Some(artist_model) = self.imp().artist_model.borrow().clone() else {
             return;

@@ -29,8 +29,8 @@ impl AlbumArt {
         }
         let current_item_id = self.imp().item_id.borrow().clone();
         if current_item_id != item_id {
+            self.cancel_loading();
             self.imp().is_loaded.set(false);
-            self.imp().is_loading.set(false);
             self.imp().item_id.replace(item_id.to_string());
             if self.get_gtk_window().is_some() {
                 self.load_image();
@@ -52,6 +52,20 @@ impl AlbumArt {
         self.set_loading(false);
         self.imp().error_icon.set_visible(true);
         self.imp().album_image.set_opacity(0.0);
+    }
+
+    pub fn cancel_loading(&self) {
+        if let Some(task) = self.imp().load_task.borrow_mut().take() {
+            task.abort();
+        }
+        self.set_loading(false);
+    }
+
+    pub fn unbind(&self) {
+        self.cancel_loading();
+        self.imp().item_id.borrow_mut().clear();
+        self.imp().fallback_image.replace(None);
+        self.imp().is_loaded.set(false);
     }
 
     pub fn load_image(&self) {
@@ -77,7 +91,7 @@ impl AlbumArt {
         let backend = self.get_application().backend();
         self.set_loading(true);
 
-        glib::spawn_future_local(glib::clone!(
+        let task = glib::spawn_future_local(glib::clone!(
             #[weak(rename_to = album_art)]
             self,
             async move {
@@ -101,6 +115,7 @@ impl AlbumArt {
                 }
             }
         ));
+        self.imp().load_task.replace(Some(task));
     }
 }
 
@@ -139,6 +154,7 @@ mod imp {
         pub is_loading: Cell<bool>,
         pub is_loaded: Cell<bool>,
         pub fallback_image: RefCell<Option<String>>,
+        pub load_task: RefCell<Option<glib::JoinHandle<()>>>,
     }
 
     #[glib::object_subclass]

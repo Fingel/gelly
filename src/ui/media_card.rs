@@ -27,6 +27,10 @@ impl MediaCard {
         self.imp().image.set_item_id(id, None);
     }
 
+    pub fn unbind_image(&self) {
+        self.imp().image.unbind();
+    }
+
     pub fn set_static_icon(&self, icon_name: &str) {
         self.imp().static_icon.set_icon_name(Some(icon_name));
     }

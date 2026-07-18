@@ -217,6 +217,12 @@ impl ArtistList {
             let artist_widget = list_item.child().and_downcast::<Artist>().unwrap();
             artist_widget.set_artist_model(&artist_model);
         });
+        factory.connect_unbind(move |_, list_item| {
+            let list_item = list_item.downcast_ref::<gtk::ListItem>().unwrap();
+            if let Some(artist) = list_item.child().and_downcast::<Artist>() {
+                artist.unbind();
+            }
+        });
         factory.connect_teardown(move |_, list_item| {
             let list_item = list_item.downcast_ref::<gtk::ListItem>().unwrap();
             if let Some(w) = list_item.child().and_downcast::<Artist>() {
