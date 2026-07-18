@@ -46,7 +46,6 @@
               <object class="GtkScrolledWindow">
                 <property name="hscrollbar-policy">never</property>
                 <property name="vscrollbar-policy">automatic</property>
-                <property name="propagate-natural-height">true</property>
                 <property name="has-frame">false</property>
                 <property name="vexpand">true</property>
                 <property name="kinetic-scrolling">false</property>
