@@ -179,8 +179,8 @@ impl ImageCache {
     // TODO: move the jellyfin logic into an image service or something
     pub fn new() -> Result<Self, CacheError> {
         const MAX_CONCURRENT_DOWNLOADS: usize = 4;
-        const MAX_CONCURRENT_DECODES: usize = 4;
-        const MAX_TEXTURE_CACHE_ENTRIES: usize = 10_000;
+        const MAX_CONCURRENT_DECODES: usize = 2;
+        const MAX_TEXTURE_CACHE_ENTRIES: usize = 1_000;
         let cache_dir = get_cache_directory("album-art")?;
         fs::create_dir_all(&cache_dir)?;
         Ok(Self {
