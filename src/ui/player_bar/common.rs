@@ -6,7 +6,9 @@ use crate::{
     ui::{
         album_art::AlbumArt,
         lyrics::Lyrics,
-        music_context_menu::{ContextActions, add_to_playlist_dialog, construct_menu},
+        music_context_menu::{
+            ContextActions, add_to_playlist_dialog, add_to_playlist_dup_check, construct_menu,
+        },
         stream_info_dialog,
         widget_ext::WidgetApplicationExt,
     },
@@ -238,8 +240,7 @@ where
         }
     }
 
-    fn on_add_to_playlist(&self, playlist_id: String) {
-        let song_id = self.audio_model().current_song_id();
+    fn add_song_to_playlist(&self, playlist_id: String, song_id: String) {
         let app = self.obj().get_application();
         let backend = app.backend();
         let weak = self.obj().downgrade();
@@ -257,6 +258,24 @@ where
                             warn!("Failed to add song to playlist: {}", e);
                         }
                     }
+                }
+            },
+        );
+    }
+
+    fn on_add_to_playlist(&self, playlist_id: String) {
+        let song_id = self.audio_model().current_song_id();
+        let backend = self.obj().get_application().backend();
+        let weak = self.obj().downgrade();
+
+        add_to_playlist_dup_check(
+            backend,
+            playlist_id,
+            song_id,
+            self.obj().get_gtk_window(),
+            move |playlist_id, song_id| {
+                if let Some(player) = weak.upgrade() {
+                    player.imp().add_song_to_playlist(playlist_id, song_id);
                 }
             },
         );

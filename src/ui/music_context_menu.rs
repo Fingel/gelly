@@ -1,8 +1,8 @@
 use adw::prelude::{AdwDialogExt, AlertDialogExt, AlertDialogExtManual};
 use gtk::{self, gio, prelude::*};
+use log::warn;
 
-use crate::i18n::tr;
-use crate::jellyfin::api::PlaylistDto;
+use crate::{async_utils::spawn_tokio, backend::Backend, i18n::tr, jellyfin::api::PlaylistDto};
 
 #[derive(Debug, Clone)]
 pub struct ContextActions {
@@ -61,6 +61,46 @@ pub fn add_to_playlist_dialog(
     }
     dialog.present(window);
     dialog
+}
+
+pub fn add_to_playlist_dup_check(
+    backend: Backend,
+    playlist_id: String,
+    song_id: String,
+    window: Option<gtk::Window>,
+    on_add: impl Fn(String, String) + 'static,
+) {
+    let playlist_id_for_check = playlist_id.clone();
+    let song_id_for_check = song_id.clone();
+
+    spawn_tokio(
+        async move {
+            backend
+                .get_playlist_items(&playlist_id_for_check)
+                .await
+                .map(|items| items.items.iter().any(|item| item.id == song_id_for_check))
+        },
+        move |result| match result {
+            Ok(false) => on_add(playlist_id.clone(), song_id.clone()),
+            Ok(true) => {
+                let dialog = adw::AlertDialog::new(Some(&tr("Song already in playlist")), None);
+                dialog.add_responses(&[("cancel", &tr("Cancel")), ("add", &tr("Add Anyway"))]);
+                dialog.set_default_response(Some("add"));
+                dialog.set_close_response("cancel");
+                dialog.connect_response(Some("add"), move |_, response| {
+                    if response == "add" {
+                        on_add(playlist_id.clone(), song_id.clone());
+                    }
+                });
+
+                dialog.present(window.as_ref());
+            }
+            Err(e) => {
+                warn!("Failed to check playlist contents: {}", e);
+                on_add(playlist_id.clone(), song_id.clone());
+            }
+        },
+    );
 }
 
 fn create_menu_model(config: &ContextActions) -> gio::Menu {

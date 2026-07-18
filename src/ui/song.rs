@@ -16,7 +16,9 @@ use crate::{
     jellyfin::{api::ItemType, utils::format_duration},
     models::SongModel,
     ui::{
-        music_context_menu::{ContextActions, add_to_playlist_dialog, construct_menu},
+        music_context_menu::{
+            ContextActions, add_to_playlist_dialog, add_to_playlist_dup_check, construct_menu,
+        },
         stream_info_dialog,
         widget_ext::WidgetApplicationExt,
     },
@@ -268,54 +270,18 @@ impl Song {
     fn on_add_to_playlist(&self, playlist_id: String) {
         let song_id = self.song_id();
         let backend = self.get_application().backend();
-        let playlist_id = playlist_id.to_string();
-        let playlist_id_for_check = playlist_id.clone();
-        let song_id_for_check = song_id.clone();
+        let weak = self.downgrade();
 
-        spawn_tokio(
-            async move {
-                backend
-                    .get_playlist_items(&playlist_id_for_check)
-                    .await
-                    .map(|items| items.items.iter().any(|item| item.id == song_id_for_check))
-            },
-            glib::clone!(
-                #[weak(rename_to = song)]
-                self,
-                move |result| match result {
-                    Ok(false) => song.add_song_to_playlist(playlist_id.clone(), song_id.clone()),
-                    Ok(true) => {
-                        let dialog =
-                            adw::AlertDialog::new(Some(&tr("Song already in playlist")), None);
-                        dialog.add_responses(&[
-                            ("cancel", &tr("Cancel")),
-                            ("add", &tr("Add Anyway")),
-                        ]);
-                        dialog.set_default_response(Some("add"));
-                        dialog.set_close_response("cancel");
-                        dialog.connect_response(
-                            Some("add"),
-                            glib::clone!(
-                                #[weak(rename_to = song)]
-                                song,
-                                move |_, response| {
-                                    if response == "add" {
-                                        song.add_song_to_playlist(
-                                            playlist_id.clone(),
-                                            song_id.clone(),
-                                        );
-                                    }
-                                }
-                            ),
-                        );
-                        dialog.present(song.get_gtk_window().as_ref());
-                    }
-                    Err(e) => {
-                        warn!("Failed to check playlist contents: {}", e);
-                        song.add_song_to_playlist(playlist_id.clone(), song_id.clone());
-                    }
+        add_to_playlist_dup_check(
+            backend,
+            playlist_id,
+            song_id,
+            self.get_gtk_window(),
+            move |playlist_id, song_id| {
+                if let Some(song) = weak.upgrade() {
+                    song.add_song_to_playlist(playlist_id, song_id);
                 }
-            ),
+            },
         );
     }
 
