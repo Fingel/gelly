@@ -48,7 +48,6 @@
                 <property name="vscrollbar-policy">automatic</property>
                 <property name="has-frame">false</property>
                 <property name="vexpand">true</property>
-                <property name="kinetic-scrolling">false</property>
                 <property name="child">
                   <object class="GtkListView" id="track_list">
                     <property name="width-request">300</property>
