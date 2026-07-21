@@ -70,6 +70,22 @@
     <color type="primary" scheme_preference="dark">#325a4a</color>
   </branding>
   <releases>
+    <release version="1.9.4" date="2026-07-16">
+      <description>
+        <ul>
+          <li>
+            Indicate that library download may take some time for large libraries on first
+            startup.
+          </li>
+          <li>
+            Revert disabling kinetic scrolling for touch devices: makes the problem worse.
+          </li>
+          <li>
+            More large library performance optimizations.
+          </li>
+        </ul>
+      </description>
+    </release>
     <release version="1.9.3" date="2026-07-16">
       <description>
         <ul>
