@@ -148,6 +148,19 @@ impl AlbumList {
                 self,
                 move |_app: Application, _total_record_count: u64| {
                     album_list.pull_albums();
+                    album_list.set_is_loading(false);
+                }
+            ),
+        );
+
+        app.connect_closure(
+            "library-refresh-requested",
+            false,
+            glib::closure_local!(
+                #[weak(rename_to = album_list)]
+                self,
+                move |_app: Application| {
+                    album_list.set_is_loading(true);
                 }
             ),
         );
@@ -302,6 +315,8 @@ mod imp {
 
         #[property(get, set, default = false)]
         pub compact_mode: Cell<bool>,
+        #[property(get, set, default = false)]
+        pub is_loading: Cell<bool>,
     }
 
     #[glib::object_subclass]

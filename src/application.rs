@@ -218,6 +218,7 @@ impl Application {
     }
 
     pub fn refresh_library(&self, refresh_cache: bool) {
+        self.emit_by_name::<()>("library-refresh-requested", &[]);
         if !refresh_cache && let Some(cache) = self.library_cache() {
             match cache.load::<MusicDtoList>() {
                 Ok(library) => {
@@ -488,6 +489,7 @@ mod imp {
             static SIGNALS: OnceLock<Vec<Signal>> = OnceLock::new();
             SIGNALS.get_or_init(|| {
                 vec![
+                    Signal::builder("library-refresh-requested").build(),
                     Signal::builder("library-refreshed")
                         .param_types([u64::static_type()])
                         .build(),

@@ -8,6 +8,12 @@
         <property name="title" translatable="yes">No Albums</property>
         <property name="icon-name">audio-x-generic-symbolic</property>
         <property name="visible">true</property>
+        <property name="child">
+          <object class="GtkLabel" id="loading_label">
+            <property name="visible" bind-source="GellyAlbumList" bind-property="is-loading" />
+            <property name="label" translatable="yes">Performing initial library download, this may take a moment. The library will be cached for subsequent use.</property>
+          </object>
+        </property>
       </object>
     </child>
     <child>

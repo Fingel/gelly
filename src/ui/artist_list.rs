@@ -141,6 +141,19 @@ impl ArtistList {
                 self,
                 move |_app: Application, _total_record_count: u64| {
                     artist_list.pull_artists();
+                    artist_list.set_is_loading(false);
+                }
+            ),
+        );
+
+        app.connect_closure(
+            "library-refresh-requested",
+            false,
+            glib::closure_local!(
+                #[weak(rename_to = artist_list)]
+                self,
+                move |_app: Application| {
+                    artist_list.set_is_loading(true);
                 }
             ),
         );
@@ -282,6 +295,8 @@ mod imp {
 
         #[property(get, set, default = false)]
         pub compact_mode: Cell<bool>,
+        #[property(get, set, default = false)]
+        pub is_loading: Cell<bool>,
     }
 
     #[glib::object_subclass]
