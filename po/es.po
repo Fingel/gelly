@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-10 13:31-0700\n"
+"POT-Creation-Date: 2026-07-20 22:57-0700\n"
 "PO-Revision-Date: 2026-06-04 06:31+0000\n"
 "Last-Translator: Lian Cabrera Rodríguez <socialnetw99arie@gmail.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/gelly/gelly/es/"
@@ -67,15 +67,15 @@ msgstr "Lista de reproducción inteligente"
 msgid "Failed to add artist to playlist"
 msgstr ""
 
-#: src/ui/music_context_menu.rs:33 src/ui/music_context_menu.rs:84
+#: src/ui/music_context_menu.rs:33 src/ui/music_context_menu.rs:124
 #, fuzzy
 #| msgid "Smart Playlists"
 msgid "Add to Playlist"
 msgstr "Listas de reproducción inteligentes"
 
-#: src/ui/music_context_menu.rs:34 src/ui/playlist_dialogs.rs:20
-#: src/ui/playlist_dialogs.rs:59 resources/ui/setup.ui:123
-#: resources/ui/setup.ui:186
+#: src/ui/music_context_menu.rs:34 src/ui/music_context_menu.rs:87
+#: src/ui/playlist_dialogs.rs:20 src/ui/playlist_dialogs.rs:59
+#: resources/ui/setup.ui:123 resources/ui/setup.ui:186
 msgid "Cancel"
 msgstr "Cancelar"
 
@@ -87,58 +87,68 @@ msgstr ""
 msgid "No playlists available. Please create a playlist first."
 msgstr ""
 
-#: src/ui/music_context_menu.rs:72
+#: src/ui/music_context_menu.rs:86
+#, fuzzy
+#| msgid "Most Played Playlist"
+msgid "Song already in playlist"
+msgstr "Lista de reproducción más escuchada"
+
+#: src/ui/music_context_menu.rs:87
+msgid "Add Anyway"
+msgstr ""
+
+#: src/ui/music_context_menu.rs:112
 msgid "Queue Next"
 msgstr ""
 
-#: src/ui/music_context_menu.rs:76
+#: src/ui/music_context_menu.rs:116
 msgid "Queue Last"
 msgstr ""
 
-#: src/ui/music_context_menu.rs:89
+#: src/ui/music_context_menu.rs:129
 #, fuzzy
 #| msgid "Save As Playlist"
 msgid "Remove from Playlist"
 msgstr "Guardar como lista de reproducción"
 
-#: src/ui/music_context_menu.rs:99
+#: src/ui/music_context_menu.rs:139
 msgid "Go to Album"
 msgstr ""
 
-#: src/ui/music_context_menu.rs:106
+#: src/ui/music_context_menu.rs:146
 #, fuzzy
 #| msgid "Artists"
 msgid "Go to Artist"
 msgstr "Artistas"
 
-#: src/ui/music_context_menu.rs:115 src/ui/stream_info_dialog.rs:120
+#: src/ui/music_context_menu.rs:155 src/ui/stream_info_dialog.rs:120
 msgid "Song Info"
 msgstr ""
 
-#: src/ui/music_context_menu.rs:120
+#: src/ui/music_context_menu.rs:160
 msgid "Copy ID"
 msgstr ""
 
-#: src/ui/player_bar/common.rs:78
+#: src/ui/player_bar/common.rs:80
 msgid "Pause"
 msgstr ""
 
-#: src/ui/player_bar/common.rs:81 resources/ui/album_detail.ui:119
+#: src/ui/player_bar/common.rs:83 resources/ui/album_detail.ui:119
 #: resources/ui/artist_detail.ui:52 resources/ui/playlist_detail.ui:101
 #, fuzzy
 #| msgid "Playback"
 msgid "Play"
 msgstr "Reproducción"
 
-#: src/ui/player_bar/common.rs:91
+#: src/ui/player_bar/common.rs:93
 msgid "Unknown Artist"
 msgstr ""
 
-#: src/ui/player_bar/common.rs:252 src/ui/song.rs:257
+#: src/ui/player_bar/common.rs:253 src/ui/song.rs:257
 msgid "Added song to playlist"
 msgstr ""
 
-#: src/ui/player_bar/common.rs:256 src/ui/song.rs:261
+#: src/ui/player_bar/common.rs:257 src/ui/song.rs:261
 msgid "Failed to add song to playlist"
 msgstr ""
 
@@ -413,6 +423,12 @@ msgstr ""
 #| msgid "Albums"
 msgid "No Albums"
 msgstr "Álbumes"
+
+#: resources/ui/album_list.ui:14 resources/ui/artist_list.ui:14
+msgid ""
+"Performing initial library download, this may take a moment. The library "
+"will be cached for subsequent use."
+msgstr ""
 
 #: resources/ui/artist_detail.ui:41
 #, fuzzy

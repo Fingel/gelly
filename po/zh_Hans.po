@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-10 13:31-0700\n"
+"POT-Creation-Date: 2026-07-20 22:57-0700\n"
 "PO-Revision-Date: 2026-07-16 15:01+0000\n"
 "Last-Translator: sendevia <me@sendevia.top>\n"
 "Language-Team: Chinese (Simplified Han script) <https://hosted.weblate.org/"
@@ -60,13 +60,13 @@ msgstr "艺术家已添加到歌单"
 msgid "Failed to add artist to playlist"
 msgstr "无法将艺术家添加到歌单"
 
-#: src/ui/music_context_menu.rs:33 src/ui/music_context_menu.rs:84
+#: src/ui/music_context_menu.rs:33 src/ui/music_context_menu.rs:124
 msgid "Add to Playlist"
 msgstr "添加到歌单"
 
-#: src/ui/music_context_menu.rs:34 src/ui/playlist_dialogs.rs:20
-#: src/ui/playlist_dialogs.rs:59 resources/ui/setup.ui:123
-#: resources/ui/setup.ui:186
+#: src/ui/music_context_menu.rs:34 src/ui/music_context_menu.rs:87
+#: src/ui/playlist_dialogs.rs:20 src/ui/playlist_dialogs.rs:59
+#: resources/ui/setup.ui:123 resources/ui/setup.ui:186
 msgid "Cancel"
 msgstr "取消"
 
@@ -78,52 +78,62 @@ msgstr "添加"
 msgid "No playlists available. Please create a playlist first."
 msgstr "没有歌单，请先创建一个。"
 
-#: src/ui/music_context_menu.rs:72
+#: src/ui/music_context_menu.rs:86
+#, fuzzy
+#| msgid "Unable to load playlist"
+msgid "Song already in playlist"
+msgstr "无法加载歌单"
+
+#: src/ui/music_context_menu.rs:87
+msgid "Add Anyway"
+msgstr ""
+
+#: src/ui/music_context_menu.rs:112
 msgid "Queue Next"
 msgstr "队列下一首"
 
-#: src/ui/music_context_menu.rs:76
+#: src/ui/music_context_menu.rs:116
 msgid "Queue Last"
 msgstr "队列末尾"
 
-#: src/ui/music_context_menu.rs:89
+#: src/ui/music_context_menu.rs:129
 msgid "Remove from Playlist"
 msgstr "从歌单移除"
 
-#: src/ui/music_context_menu.rs:99
+#: src/ui/music_context_menu.rs:139
 msgid "Go to Album"
 msgstr "前往专辑"
 
-#: src/ui/music_context_menu.rs:106
+#: src/ui/music_context_menu.rs:146
 msgid "Go to Artist"
 msgstr "前往艺术家"
 
-#: src/ui/music_context_menu.rs:115 src/ui/stream_info_dialog.rs:120
+#: src/ui/music_context_menu.rs:155 src/ui/stream_info_dialog.rs:120
 msgid "Song Info"
 msgstr "歌曲信息"
 
-#: src/ui/music_context_menu.rs:120
+#: src/ui/music_context_menu.rs:160
 msgid "Copy ID"
 msgstr "复制 ID"
 
-#: src/ui/player_bar/common.rs:78
+#: src/ui/player_bar/common.rs:80
 msgid "Pause"
 msgstr "暂停"
 
-#: src/ui/player_bar/common.rs:81 resources/ui/album_detail.ui:119
+#: src/ui/player_bar/common.rs:83 resources/ui/album_detail.ui:119
 #: resources/ui/artist_detail.ui:52 resources/ui/playlist_detail.ui:101
 msgid "Play"
 msgstr "播放"
 
-#: src/ui/player_bar/common.rs:91
+#: src/ui/player_bar/common.rs:93
 msgid "Unknown Artist"
 msgstr "未知艺术家"
 
-#: src/ui/player_bar/common.rs:252 src/ui/song.rs:257
+#: src/ui/player_bar/common.rs:253 src/ui/song.rs:257
 msgid "Added song to playlist"
 msgstr "歌曲已添加到歌单"
 
-#: src/ui/player_bar/common.rs:256 src/ui/song.rs:261
+#: src/ui/player_bar/common.rs:257 src/ui/song.rs:261
 msgid "Failed to add song to playlist"
 msgstr "无法将歌曲添加到歌单"
 
@@ -373,6 +383,12 @@ msgstr "更多操作"
 #: resources/ui/album_list.ui:8
 msgid "No Albums"
 msgstr "无专辑"
+
+#: resources/ui/album_list.ui:14 resources/ui/artist_list.ui:14
+msgid ""
+"Performing initial library download, this may take a moment. The library "
+"will be cached for subsequent use."
+msgstr ""
 
 #: resources/ui/artist_detail.ui:41
 msgid "Artist Name"
