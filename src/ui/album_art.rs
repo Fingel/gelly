@@ -1,7 +1,7 @@
 use crate::{jellyfin::api::NO_ALBUM_ID, ui::widget_ext::WidgetApplicationExt};
 use glib::Object;
 use gtk::{
-    gio,
+    gdk, gio,
     glib::{self, object::ObjectExt},
     prelude::WidgetExt,
     subclass::prelude::*,
@@ -66,6 +66,9 @@ impl AlbumArt {
         self.imp().item_id.borrow_mut().clear();
         self.imp().fallback_image.replace(None);
         self.imp().is_loaded.set(false);
+        self.imp()
+            .album_image
+            .set_paintable(None::<&gdk::Paintable>);
     }
 
     pub fn load_image(&self) {
@@ -196,8 +199,10 @@ mod imp {
             self.album_image.connect_paintable_notify(glib::clone!(
                 #[weak(rename_to = this)]
                 self,
-                move |_| {
-                    this.obj().emit_by_name::<()>("album-art-changed", &[&true]);
+                move |image| {
+                    let has_album_art = image.paintable().is_some();
+                    this.obj()
+                        .emit_by_name::<()>("album-art-changed", &[&has_album_art]);
                 }
             ));
         }

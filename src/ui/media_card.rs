@@ -16,11 +16,11 @@ impl MediaCard {
     }
 
     pub fn set_primary_text(&self, text: &str) {
-        self.imp().primary_label.set_text(text);
+        self.imp().primary_label.set_text(Some(text));
     }
 
     pub fn set_secondary_text(&self, text: &str) {
-        self.imp().secondary_label.set_text(text);
+        self.imp().secondary_label.set_text(Some(text));
     }
 
     pub fn set_image_id(&self, id: &str) {
@@ -71,13 +71,13 @@ mod imp {
     #[properties(wrapper_type = super::MediaCard)]
     pub struct MediaCard {
         #[template_child]
-        pub primary_label: TemplateChild<gtk::Label>,
+        pub primary_label: TemplateChild<gtk::Inscription>,
         #[template_child]
         pub image: TemplateChild<AlbumArt>,
 
         //potentially hidden
         #[template_child]
-        pub secondary_label: TemplateChild<gtk::Label>,
+        pub secondary_label: TemplateChild<gtk::Inscription>,
         #[template_child]
         pub play_revealer: TemplateChild<gtk::Revealer>,
         #[template_child]
