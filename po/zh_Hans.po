@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-07-20 22:57-0700\n"
-"PO-Revision-Date: 2026-07-16 15:01+0000\n"
+"PO-Revision-Date: 2026-07-28 08:01+0000\n"
 "Last-Translator: sendevia <me@sendevia.top>\n"
 "Language-Team: Chinese (Simplified Han script) <https://hosted.weblate.org/"
 "projects/gelly/gelly/zh_Hans/>\n"
@@ -79,14 +79,12 @@ msgid "No playlists available. Please create a playlist first."
 msgstr "没有歌单，请先创建一个。"
 
 #: src/ui/music_context_menu.rs:86
-#, fuzzy
-#| msgid "Unable to load playlist"
 msgid "Song already in playlist"
-msgstr "无法加载歌单"
+msgstr "歌曲已在歌单中"
 
 #: src/ui/music_context_menu.rs:87
 msgid "Add Anyway"
-msgstr ""
+msgstr "仍要添加"
 
 #: src/ui/music_context_menu.rs:112
 msgid "Queue Next"
@@ -388,7 +386,7 @@ msgstr "无专辑"
 msgid ""
 "Performing initial library download, this may take a moment. The library "
 "will be cached for subsequent use."
-msgstr ""
+msgstr "正在下载初始曲库，这可能需要一些时间。下载的曲库将被缓存以供后续使用。"
 
 #: resources/ui/artist_detail.ui:41
 msgid "Artist Name"
@@ -429,11 +427,11 @@ msgstr "通用"
 
 #: resources/ui/preferences.ui:15
 msgid "Refresh library on startup"
-msgstr "在启动时刷新音乐库"
+msgstr "在启动时刷新曲库"
 
 #: resources/ui/preferences.ui:16
 msgid "The library can be refreshed using ctrl+r or the menu."
-msgstr "可以在目录中或使用 ctrl+r 刷新音乐库。"
+msgstr "可以在目录中或使用 ctrl+r 刷新曲库。"
 
 #: resources/ui/preferences.ui:21
 msgid "Extra eye candy"
@@ -570,11 +568,11 @@ msgstr "Jellyfin 快速连接"
 
 #: resources/ui/setup.ui:80
 msgid "Choose Library"
-msgstr "选择音乐库"
+msgstr "选择曲库"
 
 #: resources/ui/setup.ui:89
 msgid "Select Library"
-msgstr "选择音乐库"
+msgstr "选择曲库"
 
 #: resources/ui/setup.ui:90
 msgid "Choose which library Gelly will use to load your music."
@@ -582,7 +580,7 @@ msgstr "选择 Gelly 用于加载音乐的库。"
 
 #: resources/ui/setup.ui:105
 msgid "Library"
-msgstr "音乐库"
+msgstr "曲库"
 
 #: resources/ui/setup.ui:112
 msgid "Launch Gelly"
@@ -598,19 +596,19 @@ msgstr "在 Jellyfin 网页上输入代码以完成验证。"
 
 #: resources/ui/shortcuts_dialog.ui:9 resources/ui/window.ui:411
 msgid "Refresh Library"
-msgstr "刷新音乐库"
+msgstr "刷新曲库"
 
 #: resources/ui/shortcuts_dialog.ui:10
 msgid "Re-downloads the music library"
-msgstr "重新下载音乐库"
+msgstr "重新下载曲库"
 
 #: resources/ui/shortcuts_dialog.ui:16
 msgid "Request Library Rescan"
-msgstr "请求重新扫描音乐库"
+msgstr "请求重新扫描曲库"
 
 #: resources/ui/shortcuts_dialog.ui:17
 msgid "Ask Jellyfin to rescan the library for new or modified files"
-msgstr "让 Jellyfin 重新扫描音乐库，以查找新增或修改的文件"
+msgstr "让 Jellyfin 重新扫描曲库，以查找新增或修改的文件"
 
 #: resources/ui/shortcuts_dialog.ui:23
 msgid "Search"
