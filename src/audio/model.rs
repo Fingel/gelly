@@ -333,7 +333,7 @@ impl AudioModel {
         self.imp().uri.replace(uri);
         self.set_queue_index(index);
         self.set_property("position", 0u32);
-        self.set_property("duration", 0u32);
+        self.set_property("duration", song.duration_seconds() as u32);
         self.emit_by_name::<()>("song-changed", &[&song.id()]);
         let queue_len = self.queue_len();
         self.report_event(PlaybackEvent::TrackChanged {
