@@ -33,6 +33,13 @@ impl BackendType {
             _ => BackendType::Jellyfin,
         }
     }
+
+    pub fn id_key(self) -> &'static str {
+        match self {
+            BackendType::Jellyfin => "user-id",
+            BackendType::Subsonic => "subsonic-username",
+        }
+    }
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -82,17 +89,14 @@ pub fn set_backend_type(backend_type: BackendType) {
         .expect("Failed to set backend type");
 }
 
-/// Sets jellyfin settings to blank values and clears the API token
 pub fn logout() -> Result<(), Error> {
-    let clear_res = clear_jellyfin_api_token(
-        settings().string("hostname").as_str(),
-        settings().string("user-id").as_str(),
-    );
+    let clear_res = clear_credentials(get_backend_type());
+
     settings()
-        .set_string("user-id", "")
+        .set_string(BackendType::Jellyfin.id_key(), "")
         .expect("Failed to clear user-id");
     settings()
-        .set_string("subsonic-username", "")
+        .set_string(BackendType::Subsonic.id_key(), "")
         .expect("Failed to clear subsonic-username");
     settings()
         .set_string("library-id", "")
@@ -101,16 +105,17 @@ pub fn logout() -> Result<(), Error> {
         .set_string("backend-type", BackendType::Jellyfin.as_str())
         .expect("Failed to reset backend-type");
 
-    clear_res
+    clear_res?;
+    Ok(())
 }
 
 pub fn store_jellyfin_api_token(host: &str, user_id: &str, api_token: &str) -> Result<(), Error> {
     async_io::block_on(async {
         let keyring = Keyring::new().await?;
         keyring.unlock().await?;
-        let attributes = &[("host", host), ("user-id", user_id)];
+        let attributes = &[("host", host), (BackendType::Jellyfin.id_key(), user_id)];
         keyring
-            .create_item("Jellyfin API Token", attributes, api_token.as_bytes(), true)
+            .create_item("Jellyfin API Token", attributes, api_token, true)
             .await
     })
 }
@@ -119,23 +124,13 @@ pub fn retrieve_jellyfin_api_token(host: &str, user_id: &str) -> Option<String> 
     retrieve_credentials(host, user_id, BackendType::Jellyfin)
 }
 
-pub fn clear_jellyfin_api_token(host: &str, user_id: &str) -> Result<(), Error> {
-    async_io::block_on(async {
-        let keyring = Keyring::new().await?;
-        keyring.unlock().await?;
-        let attributes = &[("host", host), ("user-id", user_id)];
-        keyring.delete(attributes).await?;
-        Ok(())
-    })
-}
-
 pub fn store_subsonic_password(host: &str, username: &str, password: &str) -> Result<(), Error> {
     async_io::block_on(async {
         let keyring = Keyring::new().await?;
         keyring.unlock().await?;
-        let attributes = &[("host", host), ("subsonic-username", username)];
+        let attributes = &[("host", host), (BackendType::Subsonic.id_key(), username)];
         keyring
-            .create_item("Subsonic Password", attributes, password.as_bytes(), true)
+            .create_item("Subsonic Password", attributes, password, true)
             .await?;
         Ok(())
     })
@@ -145,15 +140,23 @@ pub fn retrieve_subsonic_password(host: &str, username: &str) -> Option<String> 
     retrieve_credentials(host, username, BackendType::Subsonic)
 }
 
+fn clear_credentials(backend_type: BackendType) -> Result<(), Error> {
+    let host = settings().string("hostname").to_owned();
+    let identifier = settings().string(backend_type.id_key()).to_owned();
+    async_io::block_on(async {
+        let keyring = Keyring::new().await?;
+        keyring.unlock().await?;
+        let attributes = &[("host", host), (backend_type.id_key(), identifier)];
+        keyring.delete(attributes).await?;
+        Ok(())
+    })
+}
+
 fn retrieve_credentials(host: &str, identifier: &str, backend_type: BackendType) -> Option<String> {
-    let identifier_key = match backend_type {
-        BackendType::Jellyfin => "user-id",
-        BackendType::Subsonic => "subsonic-username",
-    };
     let result: Result<Option<String>, Error> = async_io::block_on(async {
         let keyring = Keyring::new().await?;
         keyring.unlock().await?;
-        let attributes = &[("host", host), (identifier_key, identifier)];
+        let attributes = &[("host", host), (backend_type.id_key(), identifier)];
         let items = keyring.search_items(attributes).await?;
         let Some(item) = items.first() else {
             return Ok(None);
