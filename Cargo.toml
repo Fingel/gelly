@@ -18,8 +18,7 @@ gstreamer-pbutils = { version = "0.25.0", features = ["v1_26"] }
 async-channel = "2.5.0"
 futures-util = "0.3.31"
 mpris-server = "0.10.0"
-dbus-secret-service = "4.1.0"
-glycin = { version = "3.0.4", features = ["gdk4"] }
+glycin = { version = "3.1.0", features = ["gdk4"] }
 futures = "0.3.31"
 uuid = { version = "1.18.1", features = ["v4"] }
 rand = "0.10.0"
@@ -27,6 +26,8 @@ md5 = "0.8.0"
 num_enum = "0.7.5"
 lru = "0.18.0"
 gettext-rs = { version = "0.7", features = ["gettext-system"] }
+oo7 = { version = "0.6.0", default-features = false, features = ["async-std", "native_crypto"] }
+async-io = "2.6.0"
 
 [build-dependencies]
 glib-build-tools = "0.22.0"

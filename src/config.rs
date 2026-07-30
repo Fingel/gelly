@@ -1,13 +1,12 @@
-use dbus_secret_service::{EncryptionType, Error, SecretService};
 use gtk::gio;
 use gtk::gio::prelude::SettingsExt;
 use log::error;
-use std::{cell::RefCell, collections::HashMap};
+use oo7::{Error, Keyring};
+use std::cell::RefCell;
 use uuid::Uuid;
 
 pub static APP_ID: &str = "io.m51.Gelly";
 pub static VERSION: &str = env!("CARGO_PKG_VERSION");
-const NO_SS_FOUND: &str = "No secret service found. Please install a keyring such as 'gnome-keyring' or 'kwallet'. Gelly will not store credentials unencrypted.";
 
 thread_local! {
     static SETTINGS: RefCell<Option<gio::Settings>> = const { RefCell::new(None) };
@@ -106,103 +105,74 @@ pub fn logout() -> Result<(), Error> {
 }
 
 pub fn store_jellyfin_api_token(host: &str, user_id: &str, api_token: &str) -> Result<(), Error> {
-    let ss = SecretService::connect(EncryptionType::Plain)?;
-    let collection = ss.get_default_collection()?;
-    let mut properties = HashMap::new();
-    properties.insert("host", host);
-    properties.insert("user-id", user_id);
-    collection.create_item(
-        "Jellyfin API Token",
-        properties,
-        api_token.as_bytes(),
-        true,
-        "text/plain",
-    )?;
-    Ok(())
+    async_io::block_on(async {
+        let keyring = Keyring::new().await?;
+        keyring.unlock().await?;
+        let attributes = &[("host", host), ("user-id", user_id)];
+        keyring
+            .create_item("Jellyfin API Token", attributes, api_token.as_bytes(), true)
+            .await
+    })
 }
 
 pub fn retrieve_jellyfin_api_token(host: &str, user_id: &str) -> Option<String> {
-    let ss = SecretService::connect(EncryptionType::Plain)
-        .inspect_err(|err| error!("{}: {}", NO_SS_FOUND, err))
-        .ok()?;
-
-    let search_items = ss
-        .search_items(HashMap::from([("host", host), ("user-id", user_id)]))
-        .unwrap();
-
-    let item = search_items.unlocked.first().or_else(|| {
-        // if there aren't any, try to unlock one
-        let locked_item = search_items.locked.first()?;
-        locked_item.unlock().unwrap();
-        Some(locked_item)
-    })?;
-
-    let secret = item
-        .get_secret()
-        .expect("Unable to retrieve secret from keyring");
-    Some(String::from_utf8(secret).unwrap())
+    retrieve_credentials(host, user_id, BackendType::Jellyfin)
 }
 
 pub fn clear_jellyfin_api_token(host: &str, user_id: &str) -> Result<(), Error> {
-    let ss = SecretService::connect(EncryptionType::Plain)?;
-
-    let search_items = ss.search_items(HashMap::from([("host", host), ("user-id", user_id)]))?;
-
-    let item = match search_items.unlocked.first() {
-        Some(item) => item,
-        None => {
-            // if there aren't any, try to unlock them
-            if let Some(locked_item) = search_items.locked.first() {
-                locked_item.unlock()?;
-                locked_item
-            } else {
-                return Ok(());
-            }
-        }
-    };
-    item.delete()?;
-    Ok(())
+    async_io::block_on(async {
+        let keyring = Keyring::new().await?;
+        keyring.unlock().await?;
+        let attributes = &[("host", host), ("user-id", user_id)];
+        keyring.delete(attributes).await?;
+        Ok(())
+    })
 }
 
 pub fn store_subsonic_password(host: &str, username: &str, password: &str) -> Result<(), Error> {
-    let ss = SecretService::connect(EncryptionType::Plain)?;
-    let collection = ss.get_default_collection()?;
-    let mut properties = HashMap::new();
-    properties.insert("host", host);
-    properties.insert("subsonic-username", username);
-    collection.create_item(
-        "Subsonic Password",
-        properties,
-        password.as_bytes(),
-        true,
-        "text/plain",
-    )?;
-    Ok(())
+    async_io::block_on(async {
+        let keyring = Keyring::new().await?;
+        keyring.unlock().await?;
+        let attributes = &[("host", host), ("subsonic-username", username)];
+        keyring
+            .create_item("Subsonic Password", attributes, password.as_bytes(), true)
+            .await?;
+        Ok(())
+    })
 }
 
 pub fn retrieve_subsonic_password(host: &str, username: &str) -> Option<String> {
-    let ss = SecretService::connect(EncryptionType::Plain)
-        .inspect_err(|err| error!("{}: {}", NO_SS_FOUND, err))
-        .ok()?;
+    retrieve_credentials(host, username, BackendType::Subsonic)
+}
 
-    let search_items = ss
-        .search_items(HashMap::from([
-            ("host", host),
-            ("subsonic-username", username),
-        ]))
-        .unwrap();
-
-    let item = search_items.unlocked.first().or_else(|| {
-        // if there aren't any, try to unlock one
-        let locked_item = search_items.locked.first()?;
-        locked_item.unlock().unwrap();
-        Some(locked_item)
-    })?;
-
-    let secret = item
-        .get_secret()
-        .expect("Unable to retrieve secret from keyring");
-    Some(String::from_utf8(secret).unwrap())
+fn retrieve_credentials(host: &str, identifier: &str, backend_type: BackendType) -> Option<String> {
+    let identifier_key = match backend_type {
+        BackendType::Jellyfin => "user-id",
+        BackendType::Subsonic => "subsonic-username",
+    };
+    let result: Result<Option<String>, Error> = async_io::block_on(async {
+        let keyring = Keyring::new().await?;
+        keyring.unlock().await?;
+        let attributes = &[("host", host), (identifier_key, identifier)];
+        let items = keyring.search_items(attributes).await?;
+        let Some(item) = items.first() else {
+            return Ok(None);
+        };
+        let secret = item.secret().await?;
+        Ok(Some(
+            String::from_utf8_lossy(secret.as_bytes()).into_owned(),
+        ))
+    });
+    match result {
+        Ok(secret) => secret,
+        Err(err) => {
+            error!(
+                "Failed to retrieve {} credentials: {err}",
+                backend_type.as_str()
+            );
+            None
+        }
+    }
 }
 
 /// Return the client UUID, generating it if it doesn't exist
