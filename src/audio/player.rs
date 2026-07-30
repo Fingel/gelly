@@ -27,7 +27,6 @@ pub enum PlayerEvent {
 #[derive(Debug)]
 pub struct AudioPlayer {
     pipeline: gst::Pipeline,
-    playbin: gst::Element,
     event_sender: Sender<PlayerEvent>,
     next_uri_cache: Arc<Mutex<Option<String>>>,
 }
@@ -37,18 +36,14 @@ impl AudioPlayer {
         gst::init().expect("Could not initialize gstreamer");
         let (event_sender, event_reciever) = async_channel::unbounded();
 
-        let playbin = gst::ElementFactory::make("playbin")
+        let pipeline = gst::ElementFactory::make("playbin")
             .build()
-            .expect("Failed to create playbin element");
-
-        let pipeline = gst::Pipeline::new();
-        pipeline
-            .add(&playbin)
-            .expect("Failed to add playbin to pipeline");
+            .expect("Failed to create playbin element")
+            .downcast::<gst::Pipeline>()
+            .expect("Failed to downcast to pipeline");
 
         let player_instance = Self {
             pipeline,
-            playbin,
             event_sender,
             next_uri_cache: Arc::new(Mutex::new(None)),
         };
@@ -61,7 +56,7 @@ impl AudioPlayer {
     }
 
     pub fn set_uri(&self, uri: &str) {
-        self.playbin.set_property("uri", uri);
+        self.pipeline.set_property("uri", uri);
     }
 
     fn set_state(&self, state: gst::State) {
@@ -118,25 +113,26 @@ impl AudioPlayer {
     }
 
     pub fn set_volume(&self, volume: f64) {
-        self.playbin.set_property("volume", volume);
+        self.pipeline.set_property("volume", volume);
     }
 
     pub fn get_volume(&self) -> f64 {
         // linear to cubic
-        let linear_volume = self.playbin.property::<f64>("volume");
+        let linear_volume = self.pipeline.property::<f64>("volume");
         linear_volume.cbrt().clamp(0.0, 1.0)
     }
 
     pub fn set_mute(&self, muted: bool) {
-        self.playbin.set_property("mute", muted);
+        self.pipeline.set_property("mute", muted);
     }
 
     pub fn is_muted(&self) -> bool {
-        self.playbin.property::<bool>("mute")
+        self.pipeline.property::<bool>("mute")
     }
 
     fn setup_bus_handling(&self) {
-        let bus = self.pipeline.bus().expect("Pipeline should have a bus");
+        let pipeline = self.pipeline.clone();
+        let bus = pipeline.bus().expect("Pipeline should have a bus");
         let sender = self.event_sender.clone();
 
         glib::spawn_future_local(async move {
@@ -149,7 +145,7 @@ impl AudioPlayer {
                         // Only handle pipeline-level state changes to avoid duplicate notifications
                         // Individual elements also emit state changes, but we only care about the overall pipeline state
                         if let Some(source) = state_changed.src()
-                            && source.type_() == gst::Pipeline::static_type()
+                            && source == pipeline.upcast_ref::<gst::Object>()
                         {
                             let new_state = state_changed.current();
                             let player_state = match new_state {
@@ -236,10 +232,10 @@ impl AudioPlayer {
 
     fn setup_element_signals(&self) {
         let cache = Arc::clone(&self.next_uri_cache);
-        let playbin = self.playbin.clone();
+        let playbin = self.pipeline.clone();
         let sender = self.event_sender.clone();
 
-        self.playbin.connect("about-to-finish", false, move |_| {
+        self.pipeline.connect("about-to-finish", false, move |_| {
             if let Some(uri) = cache.lock().unwrap().take() {
                 playbin.set_property("uri", &uri);
                 let _ = sender.send_blocking(PlayerEvent::AboutToFinish);
