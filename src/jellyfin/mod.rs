@@ -106,16 +106,29 @@ impl Jellyfin {
         let now = Instant::now();
         const LIMIT: u64 = 250;
         const MAX_CONCURRENT_REQUESTS: usize = 4;
+        const SLOW_LOAD_THRESHOLD: Duration = Duration::from_secs(1);
 
         // Make the first request to get total count
+        // we also measure how long it takes. If the response is slow it's a
+        // sign that the server might be a potato, and we should reduce the
+        // number of concurrent requests.
         let mut all_items = Vec::new();
+        let first_page_started = Instant::now();
         let first_page = self.get_library_page(library_id, 0, LIMIT).await?;
+        let first_page_elapsed = first_page_started.elapsed();
         let total_count = first_page.total_record_count;
 
+        let concurrent_requests = if first_page_elapsed >= SLOW_LOAD_THRESHOLD {
+            1
+        } else {
+            MAX_CONCURRENT_REQUESTS
+        };
+
         debug!(
-            "Total library items: {}, fetched first {} items",
+            "Total library items: {}, fetched first {} items in {} seconds",
             total_count,
-            first_page.items.len()
+            first_page.items.len(),
+            first_page_elapsed.as_secs_f32()
         );
         all_items.extend(first_page.items);
 
@@ -126,7 +139,7 @@ impl Jellyfin {
 
             debug!(
                 "Fetching {} additional pages with max {} concurrent requests",
-                additional_pages, MAX_CONCURRENT_REQUESTS
+                additional_pages, concurrent_requests
             );
 
             // Create futures for all remaining pages using the futures crate
@@ -135,7 +148,7 @@ impl Jellyfin {
                     let start_index = page * LIMIT;
                     self.get_library_page(library_id, start_index, LIMIT)
                 })
-                .buffer_unordered(MAX_CONCURRENT_REQUESTS);
+                .buffer_unordered(concurrent_requests);
 
             while let Some(result) = page_stream.next().await {
                 match result {
