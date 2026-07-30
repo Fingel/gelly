@@ -3,7 +3,7 @@ use futures_util::StreamExt;
 use gstreamer as gst;
 use gstreamer::prelude::*;
 use gtk::glib;
-use log::warn;
+use log::{debug, warn};
 use std::sync::{Arc, Mutex};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -147,6 +147,12 @@ impl AudioPlayer {
                         if let Some(source) = state_changed.src()
                             && source == pipeline.upcast_ref::<gst::Object>()
                         {
+                            debug!(
+                                "Playback pipeline state changed: {:?} -> {:?} (pending: {:?})",
+                                state_changed.old(),
+                                state_changed.current(),
+                                state_changed.pending()
+                            );
                             let new_state = state_changed.current();
                             let player_state = match new_state {
                                 gst::State::Playing => PlayerState::Playing,
@@ -162,6 +168,7 @@ impl AudioPlayer {
                         }
                     }
                     gst::MessageView::Eos(_) => {
+                        debug!("Playback pipeline reached EOS");
                         let _ = sender.send(PlayerEvent::EndOfStream).await;
                     }
                     gst::MessageView::Error(err) => {
@@ -171,12 +178,14 @@ impl AudioPlayer {
                             err.error(),
                             err.debug().unwrap_or_else(|| "no debug info".into())
                         );
+                        warn!("{error_msg}");
                         let _ = sender.send(PlayerEvent::Error(error_msg)).await;
                     }
                     gst::MessageView::DurationChanged(_) => {
                         // Get it via a timer instead
                     }
                     gst::MessageView::StreamStart(_) => {
+                        debug!("Playback stream started");
                         let _ = sender.send(PlayerEvent::StreamStarted).await;
                     }
                     _ => {}
