@@ -35,6 +35,7 @@ impl Application {
             .property("flags", gio::ApplicationFlags::HANDLES_COMMAND_LINE)
             .build();
         app.load_settings();
+        config::migrate_credentials_if_needed(); // Remove in a few versions
         app.initialize_backend();
         app.initialize_library_cache();
         app.initialize_image_cache();

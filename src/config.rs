@@ -1,13 +1,11 @@
-use dbus_secret_service::{EncryptionType, Error, SecretService};
 use gtk::gio;
 use gtk::gio::prelude::SettingsExt;
-use log::error;
-use std::{cell::RefCell, collections::HashMap};
+use oo7::{Error, Keyring};
+use std::cell::RefCell;
 use uuid::Uuid;
 
 pub static APP_ID: &str = "io.m51.Gelly";
 pub static VERSION: &str = env!("CARGO_PKG_VERSION");
-const NO_SS_FOUND: &str = "No secret service found. Please install a keyring such as 'gnome-keyring' or 'kwallet'. Gelly will not store credentials unencrypted.";
 
 thread_local! {
     static SETTINGS: RefCell<Option<gio::Settings>> = const { RefCell::new(None) };
@@ -32,6 +30,13 @@ impl BackendType {
         match value {
             "subsonic" => BackendType::Subsonic,
             _ => BackendType::Jellyfin,
+        }
+    }
+
+    pub fn id_key(self) -> &'static str {
+        match self {
+            BackendType::Jellyfin => "user-id",
+            BackendType::Subsonic => "subsonic-username",
         }
     }
 }
@@ -83,17 +88,14 @@ pub fn set_backend_type(backend_type: BackendType) {
         .expect("Failed to set backend type");
 }
 
-/// Sets jellyfin settings to blank values and clears the API token
 pub fn logout() -> Result<(), Error> {
-    let clear_res = clear_jellyfin_api_token(
-        settings().string("hostname").as_str(),
-        settings().string("user-id").as_str(),
-    );
+    let clear_res = clear_credentials(get_backend_type());
+
     settings()
-        .set_string("user-id", "")
+        .set_string(BackendType::Jellyfin.id_key(), "")
         .expect("Failed to clear user-id");
     settings()
-        .set_string("subsonic-username", "")
+        .set_string(BackendType::Subsonic.id_key(), "")
         .expect("Failed to clear subsonic-username");
     settings()
         .set_string("library-id", "")
@@ -102,107 +104,77 @@ pub fn logout() -> Result<(), Error> {
         .set_string("backend-type", BackendType::Jellyfin.as_str())
         .expect("Failed to reset backend-type");
 
-    clear_res
+    clear_res?;
+    Ok(())
 }
 
 pub fn store_jellyfin_api_token(host: &str, user_id: &str, api_token: &str) -> Result<(), Error> {
-    let ss = SecretService::connect(EncryptionType::Plain)?;
-    let collection = ss.get_default_collection()?;
-    let mut properties = HashMap::new();
-    properties.insert("host", host);
-    properties.insert("user-id", user_id);
-    collection.create_item(
-        "Jellyfin API Token",
-        properties,
-        api_token.as_bytes(),
-        true,
-        "text/plain",
-    )?;
-    Ok(())
+    async_io::block_on(async {
+        let keyring = Keyring::new().await?;
+        keyring.unlock().await?;
+        let attributes = &[("host", host), (BackendType::Jellyfin.id_key(), user_id)];
+        keyring
+            .create_item("Jellyfin API Token", attributes, api_token, true)
+            .await
+    })
 }
 
 pub fn retrieve_jellyfin_api_token(host: &str, user_id: &str) -> Option<String> {
-    let ss = SecretService::connect(EncryptionType::Plain)
-        .inspect_err(|err| error!("{}: {}", NO_SS_FOUND, err))
-        .ok()?;
-
-    let search_items = ss
-        .search_items(HashMap::from([("host", host), ("user-id", user_id)]))
-        .unwrap();
-
-    let item = search_items.unlocked.first().or_else(|| {
-        // if there aren't any, try to unlock one
-        let locked_item = search_items.locked.first()?;
-        locked_item.unlock().unwrap();
-        Some(locked_item)
-    })?;
-
-    let secret = item
-        .get_secret()
-        .expect("Unable to retrieve secret from keyring");
-    Some(String::from_utf8(secret).unwrap())
-}
-
-pub fn clear_jellyfin_api_token(host: &str, user_id: &str) -> Result<(), Error> {
-    let ss = SecretService::connect(EncryptionType::Plain)?;
-
-    let search_items = ss.search_items(HashMap::from([("host", host), ("user-id", user_id)]))?;
-
-    let item = match search_items.unlocked.first() {
-        Some(item) => item,
-        None => {
-            // if there aren't any, try to unlock them
-            if let Some(locked_item) = search_items.locked.first() {
-                locked_item.unlock()?;
-                locked_item
-            } else {
-                return Ok(());
-            }
-        }
-    };
-    item.delete()?;
-    Ok(())
+    retrieve_credentials(host, user_id, BackendType::Jellyfin)
 }
 
 pub fn store_subsonic_password(host: &str, username: &str, password: &str) -> Result<(), Error> {
-    let ss = SecretService::connect(EncryptionType::Plain)?;
-    let collection = ss.get_default_collection()?;
-    let mut properties = HashMap::new();
-    properties.insert("host", host);
-    properties.insert("subsonic-username", username);
-    collection.create_item(
-        "Subsonic Password",
-        properties,
-        password.as_bytes(),
-        true,
-        "text/plain",
-    )?;
-    Ok(())
+    async_io::block_on(async {
+        let keyring = Keyring::new().await?;
+        keyring.unlock().await?;
+        let attributes = &[("host", host), (BackendType::Subsonic.id_key(), username)];
+        keyring
+            .create_item("Subsonic Password", attributes, password, true)
+            .await?;
+        Ok(())
+    })
 }
 
 pub fn retrieve_subsonic_password(host: &str, username: &str) -> Option<String> {
-    let ss = SecretService::connect(EncryptionType::Plain)
-        .inspect_err(|err| error!("{}: {}", NO_SS_FOUND, err))
-        .ok()?;
+    retrieve_credentials(host, username, BackendType::Subsonic)
+}
 
-    let search_items = ss
-        .search_items(HashMap::from([
-            ("host", host),
-            ("subsonic-username", username),
-        ]))
-        .unwrap();
+fn clear_credentials(backend_type: BackendType) -> Result<(), Error> {
+    let host = settings().string("hostname").to_owned();
+    let identifier = settings().string(backend_type.id_key()).to_owned();
+    async_io::block_on(async {
+        let keyring = Keyring::new().await?;
+        keyring.unlock().await?;
+        let attributes = &[("host", host), (backend_type.id_key(), identifier)];
+        keyring.delete(attributes).await?;
+        Ok(())
+    })
+}
 
-    let item = search_items.unlocked.first().or_else(|| {
-        // if there aren't any, try to unlock one
-        let locked_item = search_items.locked.first()?;
-        locked_item.unlock().unwrap();
-        Some(locked_item)
-    })?;
-
-    let secret = item
-        .get_secret()
-        .expect("Unable to retrieve secret from keyring");
-    Some(String::from_utf8(secret).unwrap())
+fn retrieve_credentials(host: &str, identifier: &str, backend_type: BackendType) -> Option<String> {
+    let result: Result<Option<String>, Error> = async_io::block_on(async {
+        let keyring = Keyring::new().await?;
+        keyring.unlock().await?;
+        let attributes = &[("host", host), (backend_type.id_key(), identifier)];
+        let items = keyring.search_items(attributes).await?;
+        let Some(item) = items.first() else {
+            return Ok(None);
+        };
+        let secret = item.secret().await?;
+        Ok(Some(
+            String::from_utf8_lossy(secret.as_bytes()).into_owned(),
+        ))
+    });
+    match result {
+        Ok(secret) => secret,
+        Err(err) => {
+            log::error!(
+                "Failed to retrieve {} credentials: {err}",
+                backend_type.as_str()
+            );
+            None
+        }
+    }
 }
 
 /// Return the client UUID, generating it if it doesn't exist
@@ -350,4 +322,44 @@ pub fn get_compact_mode_enabled() -> bool {
 
 pub fn get_album_art_window_background_enabled() -> bool {
     settings().boolean("album-art-window-background")
+}
+
+// This will be removed in future version after sandboxed users have been
+// given enough time to upgrade and the migration has been completed.
+// Remember to remove - --talk-name=org.freedesktop.secrets from the flatpak manifest
+const CREDENTIAL_STORAGE_VERSION: u32 = 1;
+
+pub fn migrate_credentials_if_needed() {
+    log::debug!("Beginning credential migration");
+    let current_version = settings().uint("ss-portal-migration-version");
+    if !oo7::ashpd::is_sandboxed() || current_version >= CREDENTIAL_STORAGE_VERSION {
+        log::debug!("Not sandboxed or migration completed, skipping");
+        return;
+    }
+    let backend_type = get_backend_type();
+    let host = settings().string("hostname");
+    let identifier = settings().string(backend_type.id_key());
+    if host.is_empty() || identifier.is_empty() {
+        log::debug!("No hostname or identifier set, skipping credential migration");
+        return;
+    }
+    let result = async_io::block_on(async {
+        let attributes = vec![[
+            ("host", host.as_str()),
+            (backend_type.id_key(), identifier.as_str()),
+        ]];
+        oo7::migrate(attributes, true).await
+    });
+
+    match result {
+        Ok(()) => {
+            settings()
+                .set_uint("ss-portal-migration-version", CREDENTIAL_STORAGE_VERSION)
+                .expect("Failed to save credential storage version");
+            log::debug!("Credential migration completed successfully");
+        }
+        Err(e) => {
+            log::error!("Failed to migrate credentials: {}", e);
+        }
+    }
 }
