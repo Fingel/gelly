@@ -1,6 +1,5 @@
 use gtk::gio;
 use gtk::gio::prelude::SettingsExt;
-use log::{debug, error};
 use oo7::{Error, Keyring};
 use std::cell::RefCell;
 use uuid::Uuid;
@@ -169,7 +168,7 @@ fn retrieve_credentials(host: &str, identifier: &str, backend_type: BackendType)
     match result {
         Ok(secret) => secret,
         Err(err) => {
-            error!(
+            log::error!(
                 "Failed to retrieve {} credentials: {err}",
                 backend_type.as_str()
             );
@@ -331,17 +330,17 @@ pub fn get_album_art_window_background_enabled() -> bool {
 const CREDENTIAL_STORAGE_VERSION: u32 = 1;
 
 pub fn migrate_credentials_if_needed() {
-    debug!("Beginning credential migration");
+    log::debug!("Beginning credential migration");
     let current_version = settings().uint("ss-portal-migration-version");
     if !oo7::ashpd::is_sandboxed() || current_version >= CREDENTIAL_STORAGE_VERSION {
-        debug!("Not sandboxed or migration completed, skipping");
+        log::debug!("Not sandboxed or migration completed, skipping");
         return;
     }
     let backend_type = get_backend_type();
     let host = settings().string("hostname");
     let identifier = settings().string(backend_type.id_key());
     if host.is_empty() || identifier.is_empty() {
-        debug!("No hostname or identifier set, skipping credential migration");
+        log::debug!("No hostname or identifier set, skipping credential migration");
         return;
     }
     let result = async_io::block_on(async {
@@ -357,10 +356,10 @@ pub fn migrate_credentials_if_needed() {
             settings()
                 .set_uint("ss-portal-migration-version", CREDENTIAL_STORAGE_VERSION)
                 .expect("Failed to save credential storage version");
-            debug!("Credential migration completed successfully");
+            log::debug!("Credential migration completed successfully");
         }
         Err(e) => {
-            error!("Failed to migrate credentials: {}", e);
+            log::error!("Failed to migrate credentials: {}", e);
         }
     }
 }
