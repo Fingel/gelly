@@ -113,5 +113,9 @@
       <default>false</default>
       <summary>Enable compact mode</summary>
     </key>
+    <key name="ss-portal-migration-version" type="u">
+      <default>0</default>
+      <summary>Credential storage version</summary>
+    </key>
   </schema>
 </schemalist>

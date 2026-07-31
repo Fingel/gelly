@@ -1,6 +1,6 @@
 use gtk::gio;
 use gtk::gio::prelude::SettingsExt;
-use log::error;
+use log::{debug, error};
 use oo7::{Error, Keyring};
 use std::cell::RefCell;
 use uuid::Uuid;
@@ -323,4 +323,44 @@ pub fn get_compact_mode_enabled() -> bool {
 
 pub fn get_album_art_window_background_enabled() -> bool {
     settings().boolean("album-art-window-background")
+}
+
+// This will be removed in future version after sandboxed users have been
+// given enough time to upgrade and the migration has been completed.
+// Remember to remove - --talk-name=org.freedesktop.secrets from the flatpak manifest
+const CREDENTIAL_STORAGE_VERSION: u32 = 1;
+
+pub fn migrate_credentials_if_needed() {
+    debug!("Beginning credential migration");
+    let current_version = settings().uint("ss-portal-migration-version");
+    if !oo7::ashpd::is_sandboxed() || current_version >= CREDENTIAL_STORAGE_VERSION {
+        debug!("Not sandboxed or migration completed, skipping");
+        return;
+    }
+    let backend_type = get_backend_type();
+    let host = settings().string("hostname");
+    let identifier = settings().string(backend_type.id_key());
+    if host.is_empty() || identifier.is_empty() {
+        debug!("No hostname or identifier set, skipping credential migration");
+        return;
+    }
+    let result = async_io::block_on(async {
+        let attributes = vec![[
+            ("host", host.as_str()),
+            (backend_type.id_key(), identifier.as_str()),
+        ]];
+        oo7::migrate(attributes, true).await
+    });
+
+    match result {
+        Ok(()) => {
+            settings()
+                .set_uint("ss-portal-migration-version", CREDENTIAL_STORAGE_VERSION)
+                .expect("Failed to save credential storage version");
+            debug!("Credential migration completed successfully");
+        }
+        Err(e) => {
+            error!("Failed to migrate credentials: {}", e);
+        }
+    }
 }
