@@ -70,6 +70,21 @@
     <color type="primary" scheme_preference="dark">#325a4a</color>
   </branding>
   <releases>
+    <release version="1.9.6" date="2026-08-01">
+      <description>
+        <ul>
+          <li>
+            Fix a bug preventing duration from updating when transcoding on navidrome.
+          </li>
+          <li>
+            Prevent Gelly from overwhelming slow servers with too many concurrent requests.
+          </li>
+          <li>
+            Add oo7 as the secret service portal implementation, increasing sandbox isolation.
+          </li>
+        </ul>
+      </description>
+    </release>
     <release version="1.9.5" date="2026-07-28">
       <description>
         <ul>
