@@ -224,6 +224,7 @@ where
             .artist_for_item(&song_id)
         {
             window.show_artist_detail(&artist_model);
+            window.imp().player_bar.close_sheet();
         }
     }
 
@@ -237,6 +238,7 @@ where
             .album_for_item(&song_id)
         {
             window.show_album_detail(&album_model);
+            window.imp().player_bar.close_sheet();
         }
     }
 
