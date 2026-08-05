@@ -345,6 +345,7 @@ impl Subsonic {
             parent_index_number: song.disc_number,
             user_data: UserDataDto {
                 play_count: song.play_count.unwrap_or(0),
+                last_played: song.last_played,
             },
             // there's no eqvivalent to that except for doing another API call
             // so it'll be `true` and just show an empty window for the time being

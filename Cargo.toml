@@ -28,6 +28,7 @@ lru = "0.18.0"
 gettext-rs = { version = "0.7", features = ["gettext-system"] }
 oo7 = { version = "0.6.0", default-features = false, features = ["async-std", "native_crypto"] }
 async-io = "2.6.0"
+chrono = { version = "0.4.45", features = ["serde"] }
 
 [build-dependencies]
 glib-build-tools = "0.22.0"
