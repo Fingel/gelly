@@ -327,6 +327,9 @@ impl AudioModel {
     }
 
     fn update_current_song(&self, index: i32, song: SongModel, uri: Option<String>) {
+        self.report_event(PlaybackEvent::Stopped {
+            position: self.position() as u64,
+        });
         self.imp()
             .gapless_playback_active
             .set(config::get_gapless_playback_enabled());
@@ -486,6 +489,9 @@ impl AudioModel {
     }
 
     pub fn stop(&self) {
+        self.report_event(PlaybackEvent::Stopped {
+            position: self.position() as u64,
+        });
         self.imp().track_transition_in_progress.set(false);
         self.player().stop();
         self.set_property("position", 0u32);

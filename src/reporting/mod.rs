@@ -27,6 +27,9 @@ pub enum PlaybackEvent {
         can_go_next: bool,
         can_go_previous: bool,
     },
+    Stopped {
+        position: u64,
+    },
     PositionChanged {
         position: u64,
     },

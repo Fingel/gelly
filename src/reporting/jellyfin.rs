@@ -55,16 +55,18 @@ impl JellyfinReporter {
                 let song_id = song.id();
                 let mut last_song_id = self.last_song_id.borrow_mut();
                 if last_song_id.as_ref() != Some(&song_id) {
-                    if let Some(prev_id) = last_song_id.as_ref() {
-                        // New song now playing, send stopped report and change playback id
-                        let stop_report = self.new_report(prev_id.clone(), false, false, 0);
-                        self.report(stop_report, PlaybackReportStatus::Stopped);
-                        self.playback_id.replace(Uuid::new_v4().to_string());
-                    }
                     // Jellyfin start playing
                     *last_song_id = Some(song_id.clone());
                     let start_report = self.new_report(song_id, true, false, 0);
                     self.report(start_report, PlaybackReportStatus::Started);
+                }
+            }
+            PlaybackEvent::Stopped { position } => {
+                if let Some(item_id) = self.last_song_id.replace(None) {
+                    let position_ticks = position * 10_000_000;
+                    let stop_report = self.new_report(item_id, false, false, position_ticks);
+                    self.report(stop_report, PlaybackReportStatus::Stopped);
+                    self.playback_id.replace(Uuid::new_v4().to_string());
                 }
             }
             PlaybackEvent::PositionChanged { position } if position % 5 == 0 => {

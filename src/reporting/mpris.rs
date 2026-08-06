@@ -150,8 +150,8 @@ impl MprisReporter {
             PlaybackEvent::Seeked { position } => {
                 self.emit_seeked_signal(position).await;
             }
-            PlaybackEvent::PositionChanged { .. } => {
-                // MPRIS doesn't need position change notifications
+            PlaybackEvent::Stopped { .. } | PlaybackEvent::PositionChanged { .. } => {
+                // MPRIS doesn't need position change notifications and stopped status is handled in StateChanged
             }
         }
 
