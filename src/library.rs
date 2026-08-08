@@ -389,7 +389,10 @@ mod tests {
             index_number,
             parent_index_number,
             has_lyrics: false,
-            user_data: UserDataDto { play_count: 1 },
+            user_data: UserDataDto {
+                play_count: 1,
+                last_played: None,
+            },
             genres: vec![],
         }
     }
@@ -421,14 +424,23 @@ mod tests {
             index_number: Some(1),
             parent_index_number: Some(1),
             has_lyrics: false,
-            user_data: UserDataDto { play_count: 1 },
+            user_data: UserDataDto {
+                play_count: 1,
+                last_played: None,
+            },
             genres: vec![],
         }
     }
 
-    fn create_music_dto_user_data(play_count: u64) -> MusicDto {
+    fn create_music_dto_user_data(
+        play_count: u64,
+        last_played: Option<chrono::DateTime<chrono::Utc>>,
+    ) -> MusicDto {
         MusicDto {
-            user_data: UserDataDto { play_count },
+            user_data: UserDataDto {
+                play_count,
+                last_played,
+            },
             id: format!("user-data-{}", play_count),
             name: format!("user-data-{}", play_count),
             album: Some(format!("user-data-{}", play_count)),
@@ -896,10 +908,10 @@ mod tests {
     #[test]
     fn test_most_played_songs() {
         let lib = make_library(vec![
-            create_music_dto_user_data(1),
-            create_music_dto_user_data(2),
-            create_music_dto_user_data(3),
-            create_music_dto_user_data(0),
+            create_music_dto_user_data(1, None),
+            create_music_dto_user_data(2, None),
+            create_music_dto_user_data(3, None),
+            create_music_dto_user_data(0, None),
         ]);
         let most_played = lib.most_played_songs(100);
         assert_eq!(most_played.len(), 3);
@@ -911,8 +923,8 @@ mod tests {
     #[test]
     fn test_favorites() {
         let lib = make_library(vec![
-            create_music_dto_user_data(1),
-            create_music_dto_user_data(2),
+            create_music_dto_user_data(1, None),
+            create_music_dto_user_data(2, None),
         ]);
         lib.update_favorites(&[
             FavoriteDto {

@@ -11,6 +11,7 @@ pub enum SortType {
     Artist,
     Year,
     PlayCount,
+    LastPlayed,
     NumSongs,
     Album,
 }
@@ -32,6 +33,7 @@ impl SortType {
             SortType::PlayCount => "Play Count",
             SortType::NumSongs => "Num. Songs",
             SortType::Album => "Album",
+            Self::LastPlayed => "Last Played",
         }
     }
 }
