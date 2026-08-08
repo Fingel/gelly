@@ -163,6 +163,7 @@ mod imp {
 
         fn class_init(klass: &mut Self::Class) {
             klass.bind_template();
+            Self::install_actions(klass);
         }
 
         fn instance_init(obj: &InitializingObject<Self>) {

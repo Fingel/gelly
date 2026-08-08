@@ -15,10 +15,7 @@ use crate::{
 };
 use adw::prelude::*;
 use glib::{WeakRef, object::ObjectSubclassIs, subclass::prelude::*};
-use gtk::{
-    gio::{SimpleAction, SimpleActionGroup},
-    glib,
-};
+use gtk::{glib, subclass::prelude::WidgetClassExt};
 use log::warn;
 use std::cell::RefCell;
 
@@ -28,7 +25,8 @@ pub fn format_time(seconds: u32) -> String {
     format!("{}:{:02}", minutes, seconds)
 }
 
-pub trait PlayerImp: ObjectSubclassExt + glib::clone::Downgrade + 'static
+pub trait PlayerImp:
+    ObjectSubclassExt + gtk::subclass::prelude::WidgetImpl + glib::clone::Downgrade + 'static
 where
     Self::Type: IsA<gtk::Widget>,
     Self::Type: ObjectSubclassIs<Subclass = Self>,
@@ -322,45 +320,36 @@ where
         };
         let menu = construct_menu(&options);
         self.action_menu().set_popover(Some(&menu));
-        let action_group = self.create_action_group();
-        self.obj()
-            .insert_action_group(&options.action_prefix, Some(&action_group));
     }
 
-    fn create_action_group(&self) -> SimpleActionGroup {
-        let action_group = SimpleActionGroup::new();
-
-        let add_noarg_action = |name: &str, handler: fn(&Self)| {
-            let action = SimpleAction::new(name, None);
-            let weak = self.obj().downgrade();
-            action.connect_activate(move |_, _| {
-                if let Some(player) = weak.upgrade() {
-                    handler(player.imp());
+    fn install_actions(klass: &mut Self::Class) {
+        klass.install_action(
+            "song.add_to_playlist",
+            Some(glib::VariantTy::STRING),
+            |player, _, playlist_id| {
+                if let Some(playlist_id) = playlist_id.and_then(|id| id.get::<String>()) {
+                    player.imp().on_add_to_playlist(playlist_id);
                 }
-            });
-            action_group.add_action(&action);
-        };
-
-        let add_to_playlist_action =
-            SimpleAction::new("add_to_playlist", Some(glib::VariantTy::STRING));
-        let weak = self.obj().downgrade();
-        add_to_playlist_action.connect_activate(move |_, playlist_id| {
-            if let Some(player) = weak.upgrade()
-                && let Some(playlist_id) = playlist_id.and_then(|id| id.get::<String>())
-            {
-                player.imp().on_add_to_playlist(playlist_id);
-            }
+            },
+        );
+        klass.install_action("song.queue_next", None, |player, _, _| {
+            player.imp().on_queue_next();
         });
-        action_group.add_action(&add_to_playlist_action);
-
-        add_noarg_action("queue_next", Self::on_queue_next);
-        add_noarg_action("queue_last", Self::on_queue_last);
-        add_noarg_action("go_to_album", Self::on_go_to_album);
-        add_noarg_action("go_to_artist", Self::on_go_to_artist);
-        add_noarg_action("add_to_playlist_dialog", Self::on_add_to_playlist_dialog);
-        add_noarg_action("show_info_dialog", Self::show_info_dialog);
-
-        action_group
+        klass.install_action("song.queue_last", None, |player, _, _| {
+            player.imp().on_queue_last();
+        });
+        klass.install_action("song.go_to_album", None, |player, _, _| {
+            player.imp().on_go_to_album();
+        });
+        klass.install_action("song.go_to_artist", None, |player, _, _| {
+            player.imp().on_go_to_artist();
+        });
+        klass.install_action("song.add_to_playlist_dialog", None, |player, _, _| {
+            player.imp().on_add_to_playlist_dialog();
+        });
+        klass.install_action("song.show_info_dialog", None, |player, _, _| {
+            player.imp().show_info_dialog();
+        });
     }
 
     fn setup_volume_icons(&self) {

@@ -3,7 +3,6 @@ use glib::Object;
 use gtk::{
     DragSource, DropTarget,
     gdk::{ContentProvider, Drag, DragAction},
-    gio::{self, SimpleAction, SimpleActionGroup},
     glib,
     subclass::prelude::*,
 };
@@ -207,40 +206,6 @@ impl Song {
         };
         let popover_menu = construct_menu(&options);
         self.imp().song_menu.set_popover(Some(&popover_menu));
-        let action_group = self.create_action_group();
-        self.insert_action_group(&options.action_prefix, Some(&action_group));
-    }
-
-    fn create_action_group(&self) -> SimpleActionGroup {
-        let action_group = SimpleActionGroup::new();
-
-        // TODO share this?
-        let add_noarg_action = |name: &str, handler: fn(&Self)| {
-            let action = SimpleAction::new(name, None);
-            action.connect_activate(glib::clone!(
-                #[weak(rename_to = song)]
-                self,
-                move |_, _| handler(&song)
-            ));
-            action_group.add_action(&action);
-        };
-
-        let remove_from_playlist_action = gio::SimpleAction::new("remove_playlist", None);
-        remove_from_playlist_action.connect_activate(glib::clone!(
-            #[weak(rename_to = song)]
-            self,
-            move |_, _| song.on_remove_from_playlist()
-        ));
-        action_group.add_action(&remove_from_playlist_action);
-
-        add_noarg_action("queue_next", Self::on_queue_next);
-        add_noarg_action("queue_last", Self::on_queue_last);
-        add_noarg_action("go_to_album", Self::on_go_to_album);
-        add_noarg_action("go_to_artist", Self::on_go_to_artist);
-        add_noarg_action("add_to_playlist_dialog", Self::on_add_to_playlist_dialog);
-        add_noarg_action("show_info_dialog", Self::show_info_dialog);
-
-        action_group
     }
 
     fn add_song_to_playlist(&self, playlist_id: String, song_id: String) {
@@ -428,6 +393,27 @@ mod imp {
 
         fn class_init(klass: &mut Self::Class) {
             klass.bind_template();
+            klass.install_action("song.remove_playlist", None, |song, _, _| {
+                song.on_remove_from_playlist();
+            });
+            klass.install_action("song.queue_next", None, |song, _, _| {
+                song.on_queue_next();
+            });
+            klass.install_action("song.queue_last", None, |song, _, _| {
+                song.on_queue_last();
+            });
+            klass.install_action("song.go_to_album", None, |song, _, _| {
+                song.on_go_to_album();
+            });
+            klass.install_action("song.go_to_artist", None, |song, _, _| {
+                song.on_go_to_artist();
+            });
+            klass.install_action("song.add_to_playlist_dialog", None, |song, _, _| {
+                song.on_add_to_playlist_dialog();
+            });
+            klass.install_action("song.show_info_dialog", None, |song, _, _| {
+                song.show_info_dialog();
+            });
         }
 
         fn instance_init(obj: &InitializingObject<Self>) {
