@@ -112,6 +112,7 @@
         </child>
         <child>
           <object class="GtkToggleButton" id="song_star">
+            <property name="action-name">song.toggle-favorite</property>
             <property name="width-request">36</property>
             <property name="height-request">36</property>
             <property name="child">

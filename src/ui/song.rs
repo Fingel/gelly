@@ -84,6 +84,16 @@ impl Song {
             .unwrap_or_default()
     }
 
+    fn toggle_current_favorite(&self) {
+        let is_favorite = self
+            .imp()
+            .song_model
+            .borrow()
+            .as_ref()
+            .is_some_and(SongModel::favorite);
+        self.toggle_favorite(!is_favorite);
+    }
+
     fn toggle_favorite(&self, is_favorite: bool) {
         let Some(song_model) = self.imp().song_model.borrow().clone() else {
             return;
@@ -393,6 +403,9 @@ mod imp {
 
         fn class_init(klass: &mut Self::Class) {
             klass.bind_template();
+            klass.install_action("song.toggle-favorite", None, |song, _, _| {
+                song.toggle_current_favorite();
+            });
             klass.install_action("song.remove_playlist", None, |song, _, _| {
                 song.on_remove_from_playlist();
             });
@@ -473,14 +486,6 @@ mod imp {
                     }
                 ),
             );
-
-            self.song_star.connect_clicked(glib::clone!(
-                #[weak(rename_to = song)]
-                self.obj(),
-                move |btn| {
-                    song.toggle_favorite(btn.is_active());
-                }
-            ));
         }
     }
     impl BoxImpl for Song {}
