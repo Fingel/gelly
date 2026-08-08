@@ -12,13 +12,7 @@ use crate::{
     },
 };
 use glib::Object;
-use gtk::{
-    gdk::Texture,
-    gio::{self, SimpleActionGroup},
-    glib,
-    prelude::*,
-    subclass::prelude::*,
-};
+use gtk::{gdk::Texture, gio, glib, prelude::*, subclass::prelude::*};
 use log::warn;
 
 glib::wrapper! {
@@ -121,52 +115,11 @@ impl ArtistDetail {
         };
         let popover_menu = construct_menu(&options);
         self.imp().action_menu.set_popover(Some(&popover_menu));
-        let action_group = self.create_action_group();
-        self.insert_action_group(&options.action_prefix, Some(&action_group));
     }
 
-    fn create_action_group(&self) -> SimpleActionGroup {
-        let action_group = SimpleActionGroup::new();
-
-        let add_to_playlist_action = gio::SimpleAction::new("add_to_playlist_dialog", None);
-        add_to_playlist_action.connect_activate(glib::clone!(
-            #[weak(rename_to = artist)]
-            self,
-            move |_, _| {
-                artist.on_add_to_playlist_dialog();
-            }
-        ));
-        action_group.add_action(&add_to_playlist_action);
-
-        let queue_next_action = gio::SimpleAction::new("queue_next", None);
-        queue_next_action.connect_activate(glib::clone!(
-            #[weak(rename_to = artist)]
-            self,
-            move |_, _| artist.enqueue_artist(false)
-        ));
-        action_group.add_action(&queue_next_action);
-
-        let queue_last_action = gio::SimpleAction::new("queue_last", None);
-        queue_last_action.connect_activate(glib::clone!(
-            #[weak(rename_to = artist)]
-            self,
-            move |_, _| artist.enqueue_artist(true)
-        ));
-        action_group.add_action(&queue_last_action);
-
-        let on_copy_id_action = gio::SimpleAction::new("copy_id", None);
-        on_copy_id_action.connect_activate(glib::clone!(
-            #[weak(rename_to = artist)]
-            self,
-            move |_, _| {
-                let id = artist.id();
-                artist.clipboard().set_text(&id);
-                artist.toast(&tr("Artist ID copied to clipboard"), None);
-            }
-        ));
-        action_group.add_action(&on_copy_id_action);
-
-        action_group
+    fn copy_id(&self) {
+        self.clipboard().set_text(&self.id());
+        self.toast(&tr("Artist ID copied to clipboard"), None);
     }
 
     fn on_add_to_playlist(&self, playlist_id: String) {
@@ -312,6 +265,18 @@ mod imp {
 
         fn class_init(klass: &mut Self::Class) {
             klass.bind_template();
+            klass.install_action("artist.add_to_playlist_dialog", None, |artist, _, _| {
+                artist.on_add_to_playlist_dialog();
+            });
+            klass.install_action("artist.queue_next", None, |artist, _, _| {
+                artist.enqueue_artist(false);
+            });
+            klass.install_action("artist.queue_last", None, |artist, _, _| {
+                artist.enqueue_artist(true);
+            });
+            klass.install_action("artist.copy_id", None, |artist, _, _| {
+                artist.copy_id();
+            });
         }
 
         fn instance_init(obj: &InitializingObject<Self>) {

@@ -16,12 +16,7 @@ use crate::{
     },
 };
 use glib::Object;
-use gtk::{
-    gio::{self, SimpleActionGroup},
-    glib,
-    prelude::*,
-    subclass::prelude::*,
-};
+use gtk::{gio, glib, prelude::*, subclass::prelude::*};
 use log::{error, warn};
 
 glib::wrapper! {
@@ -286,54 +281,13 @@ impl PlaylistDetail {
         };
         let popover_menu = construct_menu(&options);
         self.imp().action_menu.set_popover(Some(&popover_menu));
-        let action_group = self.create_action_group();
-        self.insert_action_group(&options.action_prefix, Some(&action_group));
     }
 
-    fn create_action_group(&self) -> SimpleActionGroup {
-        let action_group = SimpleActionGroup::new();
-
-        let add_to_playlist_action = gio::SimpleAction::new("add_to_playlist_dialog", None);
-        add_to_playlist_action.connect_activate(glib::clone!(
-            #[weak(rename_to = playlist)]
-            self,
-            move |_, _| {
-                playlist.on_add_to_playlist_dialog();
-            }
-        ));
-        action_group.add_action(&add_to_playlist_action);
-
-        let queue_next_action = gio::SimpleAction::new("queue_next", None);
-        queue_next_action.connect_activate(glib::clone!(
-            #[weak(rename_to = playlist)]
-            self,
-            move |_, _| playlist.enqueue_playlist(false)
-        ));
-        action_group.add_action(&queue_next_action);
-
-        let queue_last_action = gio::SimpleAction::new("queue_last", None);
-        queue_last_action.connect_activate(glib::clone!(
-            #[weak(rename_to = playlist)]
-            self,
-            move |_, _| playlist.enqueue_playlist(true)
-        ));
-        action_group.add_action(&queue_last_action);
-
-        let on_copy_id_action = gio::SimpleAction::new("copy_id", None);
-        on_copy_id_action.connect_activate(glib::clone!(
-            #[weak(rename_to = playlist)]
-            self,
-            move |_, _| {
-                if let Some(model) = playlist.get_model() {
-                    let id = model.id();
-                    playlist.clipboard().set_text(&id);
-                    playlist.toast(&tr("Playlist ID copied to clipboard"), None);
-                }
-            }
-        ));
-        action_group.add_action(&on_copy_id_action);
-
-        action_group
+    fn copy_id(&self) {
+        if let Some(model) = self.get_model() {
+            self.clipboard().set_text(&model.id());
+            self.toast(&tr("Playlist ID copied to clipboard"), None);
+        }
     }
 
     fn on_add_to_playlist(self, playlist_id: String) {
@@ -708,6 +662,20 @@ mod imp {
 
         fn class_init(klass: &mut Self::Class) {
             klass.bind_template();
+            klass.install_action(
+                "playlist_detail.add_to_playlist_dialog",
+                None,
+                |playlist, _, _| playlist.on_add_to_playlist_dialog(),
+            );
+            klass.install_action("playlist_detail.queue_next", None, |playlist, _, _| {
+                playlist.enqueue_playlist(false);
+            });
+            klass.install_action("playlist_detail.queue_last", None, |playlist, _, _| {
+                playlist.enqueue_playlist(true);
+            });
+            klass.install_action("playlist_detail.copy_id", None, |playlist, _, _| {
+                playlist.copy_id();
+            });
         }
 
         fn instance_init(obj: &InitializingObject<Self>) {

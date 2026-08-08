@@ -12,12 +12,7 @@ use crate::{
     },
 };
 use glib::Object;
-use gtk::{
-    gio::{self, SimpleActionGroup},
-    glib,
-    prelude::*,
-    subclass::prelude::*,
-};
+use gtk::{gio, glib, prelude::*, subclass::prelude::*};
 use log::warn;
 
 glib::wrapper! {
@@ -234,60 +229,11 @@ impl AlbumDetail {
         };
         let popover_menu = construct_menu(&options);
         self.imp().action_menu.set_popover(Some(&popover_menu));
-        let action_group = self.create_action_group();
-        self.insert_action_group(&options.action_prefix, Some(&action_group));
     }
 
-    fn create_action_group(&self) -> SimpleActionGroup {
-        let action_group = gio::SimpleActionGroup::new();
-
-        let add_to_playlist_action = gio::SimpleAction::new("add_to_playlist_dialog", None);
-        add_to_playlist_action.connect_activate(glib::clone!(
-            #[weak(rename_to = album)]
-            self,
-            move |_, _| {
-                album.on_add_to_playlist_dialog();
-            }
-        ));
-        action_group.add_action(&add_to_playlist_action);
-
-        let queue_next_action = gio::SimpleAction::new("queue_next", None);
-        queue_next_action.connect_activate(glib::clone!(
-            #[weak(rename_to = album)]
-            self,
-            move |_, _| album.enqueue_album(false)
-        ));
-        action_group.add_action(&queue_next_action);
-
-        let queue_last_action = gio::SimpleAction::new("queue_last", None);
-        queue_last_action.connect_activate(glib::clone!(
-            #[weak(rename_to = album)]
-            self,
-            move |_, _| album.enqueue_album(true)
-        ));
-        action_group.add_action(&queue_last_action);
-
-        let on_copy_id_action = gio::SimpleAction::new("copy_id", None);
-        on_copy_id_action.connect_activate(glib::clone!(
-            #[weak(rename_to = album)]
-            self,
-            move |_, _| {
-                let id = album.id();
-                album.clipboard().set_text(&id);
-                album.toast(&tr("Album ID copied to clipboard"), None);
-            }
-        ));
-        action_group.add_action(&on_copy_id_action);
-
-        let on_go_to_artist_action = gio::SimpleAction::new("go_to_artist", None);
-        on_go_to_artist_action.connect_activate(glib::clone!(
-            #[weak(rename_to = album)]
-            self,
-            move |_, _| album.on_go_to_artist()
-        ));
-        action_group.add_action(&on_go_to_artist_action);
-
-        action_group
+    fn copy_id(&self) {
+        self.clipboard().set_text(&self.id());
+        self.toast(&tr("Album ID copied to clipboard"), None);
     }
 
     fn on_add_to_playlist(&self, playlist_id: String) {
@@ -414,6 +360,21 @@ mod imp {
 
         fn class_init(klass: &mut Self::Class) {
             klass.bind_template();
+            klass.install_action("album.add_to_playlist_dialog", None, |album, _, _| {
+                album.on_add_to_playlist_dialog();
+            });
+            klass.install_action("album.queue_next", None, |album, _, _| {
+                album.enqueue_album(false);
+            });
+            klass.install_action("album.queue_last", None, |album, _, _| {
+                album.enqueue_album(true);
+            });
+            klass.install_action("album.copy_id", None, |album, _, _| {
+                album.copy_id();
+            });
+            klass.install_action("album.go_to_artist", None, |album, _, _| {
+                album.on_go_to_artist();
+            });
         }
 
         fn instance_init(obj: &InitializingObject<Self>) {
