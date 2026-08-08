@@ -336,8 +336,6 @@ mod imp {
         #[template_child]
         pub album_duration: TemplateChild<gtk::Label>,
         #[template_child]
-        pub play_all: TemplateChild<gtk::Button>,
-        #[template_child]
         pub action_menu: TemplateChild<gtk::MenuButton>,
         #[template_child]
         pub favorite_button: TemplateChild<gtk::ToggleButton>,
@@ -360,6 +358,12 @@ mod imp {
 
         fn class_init(klass: &mut Self::Class) {
             klass.bind_template();
+            klass.install_action("album.play", None, |album, _, _| {
+                album.play_album();
+            });
+            klass.install_action("album.toggle-favorite", None, |album, _, _| {
+                album.toggle_favorite(!album.favorite());
+            });
             klass.install_action("album.add_to_playlist_dialog", None, |album, _, _| {
                 album.on_add_to_playlist_dialog();
             });
@@ -400,22 +404,6 @@ mod imp {
                 self,
                 move |_track_list, position| {
                     imp.obj().song_selected(position as usize);
-                }
-            ));
-
-            self.play_all.connect_clicked(glib::clone!(
-                #[weak(rename_to=imp)]
-                self,
-                move |_| {
-                    imp.obj().play_album();
-                }
-            ));
-
-            self.favorite_button.connect_clicked(glib::clone!(
-                #[weak(rename_to=imp)]
-                self,
-                move |button| {
-                    imp.obj().toggle_favorite(button.is_active());
                 }
             ));
         }

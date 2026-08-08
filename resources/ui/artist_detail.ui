@@ -48,6 +48,7 @@
                 </child>
                 <child>
                   <object class="GtkButton" id="play_all">
+                    <property name="action-name">artist.play</property>
                     <property name="icon-name">media-playback-start-symbolic</property>
                     <property name="tooltip-text" translatable="yes">Play</property>
                     <property name="margin-start">24</property>
@@ -59,6 +60,7 @@
                 </child>
                 <child>
                   <object class="GtkToggleButton" id="favorite_button">
+                    <property name="action-name">artist.toggle-favorite</property>
                     <property name="width-request">36</property>
                     <property name="height-request">36</property>
                     <property name="child">

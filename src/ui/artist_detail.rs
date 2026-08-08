@@ -242,8 +242,6 @@ mod imp {
         #[template_child]
         pub albums_box: TemplateChild<gtk::Box>,
         #[template_child]
-        pub play_all: TemplateChild<gtk::Button>,
-        #[template_child]
         pub action_menu: TemplateChild<gtk::MenuButton>,
         #[template_child]
         pub favorite_button: TemplateChild<gtk::ToggleButton>,
@@ -265,6 +263,12 @@ mod imp {
 
         fn class_init(klass: &mut Self::Class) {
             klass.bind_template();
+            klass.install_action("artist.play", None, |artist, _, _| {
+                artist.play_artist();
+            });
+            klass.install_action("artist.toggle-favorite", None, |artist, _, _| {
+                artist.toggle_favorite(!artist.favorite());
+            });
             klass.install_action("artist.add_to_playlist_dialog", None, |artist, _, _| {
                 artist.on_add_to_playlist_dialog();
             });
@@ -290,30 +294,11 @@ mod imp {
     impl ObjectImpl for ArtistDetail {
         fn constructed(&self) {
             self.parent_constructed();
-            self.setup_signals();
             self.obj().setup_menu();
         }
     }
     impl WidgetImpl for ArtistDetail {}
     impl ArtistDetail {
-        fn setup_signals(&self) {
-            self.play_all.connect_clicked(glib::clone!(
-                #[weak(rename_to=imp)]
-                self,
-                move |_| {
-                    imp.obj().play_artist();
-                }
-            ));
-
-            self.favorite_button.connect_clicked(glib::clone!(
-                #[weak(rename_to=imp)]
-                self,
-                move |button| {
-                    imp.obj().toggle_favorite(button.is_active());
-                }
-            ));
-        }
-
         fn set_favorite(&self, val: bool) {
             self.favorite.set(val);
             self.favorite_button.set_active(val);
