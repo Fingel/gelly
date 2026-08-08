@@ -375,7 +375,7 @@ mod imp {
         #[template_child]
         pub star_icon: TemplateChild<gtk::Image>,
 
-        #[property(get, set)]
+        #[property(get, set = Self::set_position)]
         pub position: Cell<i32>,
         pub song_model: RefCell<Option<SongModel>>,
         pub favorite_indicator_handler:
@@ -393,6 +393,13 @@ mod imp {
 
         pub playing_indicator_handler: RefCell<Option<glib::SignalHandlerId>>,
         pub signal_handlers: RefCell<Vec<glib::SignalHandlerId>>,
+    }
+
+    impl Song {
+        fn set_position(&self, position: i32) {
+            self.position.set(position);
+            self.number_label.set_label(&(position + 1).to_string());
+        }
     }
 
     #[glib::object_subclass]
@@ -471,21 +478,6 @@ mod imp {
                 gtk::Orientation::Horizontal
             };
             self.artist_box.set_orientation(orientation);
-
-            self.obj().connect_notify_local(
-                Some("position"),
-                glib::clone!(
-                    #[weak(rename_to = song)]
-                    self.obj(),
-                    move |_, _| {
-                        let position = song.position();
-                        // Track number is position + 1 (position is 0-based)
-                        song.imp()
-                            .number_label
-                            .set_label(&(position + 1).to_string());
-                    }
-                ),
-            );
         }
     }
     impl BoxImpl for Song {}
