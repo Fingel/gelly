@@ -14,6 +14,7 @@ fn yes_no(value: Option<bool>) -> String {
 
 fn create_property_row(key: &str, value: &str) -> adw::ActionRow {
     let row = adw::ActionRow::new();
+    row.set_use_markup(false);
     row.set_title(key);
     row.set_subtitle(value);
     row.set_css_classes(&["property"]);
