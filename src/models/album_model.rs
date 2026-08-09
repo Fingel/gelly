@@ -44,7 +44,7 @@ impl AlbumModel {
             .property("play-count", play_count)
             .property("favorite", favorite)
             .property("genres", genres)
-            .property("cover_art_id", dto.cover_art_id.as_deref())
+            .property("cover_art", dto.effective_cover_art())
             .build()
     }
 
@@ -140,7 +140,7 @@ mod imp {
         pub image_data: RefCell<Vec<u8>>,
 
         #[property(get, set)]
-        pub cover_art_id: RefCell<Option<String>>,
+        pub cover_art: RefCell<String>,
     }
 
     #[glib::object_subclass]

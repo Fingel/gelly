@@ -32,7 +32,7 @@ impl Playlist {
         };
         card.set_primary_text(&playlist_model.name());
         card.set_secondary_text(&secondary_text);
-        card.set_image_id(&playlist_model.id(), None);
+        card.set_image_id(&playlist_model.id());
         if playlist_model.is_smart() {
             card.set_static_icon(playlist_model.playlist_type().icon_name());
             card.display_icon();

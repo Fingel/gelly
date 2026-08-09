@@ -15,12 +15,9 @@ impl Album {
     pub fn set_album_model(&self, album_model: &AlbumModel) {
         let imp = self.imp();
         let card = &imp.media_card;
-        match &album_model.cover_art_id() {
-            Some(s) => card.set_image_id(&album_model.id(), Some(s)),
-            None => card.set_image_id(&album_model.id(), None),
-        };
         card.set_primary_text(&album_model.name());
         card.set_secondary_text(&album_model.artists_string());
+        card.set_image_id(&album_model.cover_art());
         imp.album_model.replace(Some(album_model.clone()));
     }
 
