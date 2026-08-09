@@ -18,7 +18,7 @@ impl Artist {
         let imp = self.imp();
         let card = &imp.media_card;
         card.set_primary_text(&artist_model.name());
-        card.set_image_id(&artist_model.id());
+        card.set_image_id(&artist_model.id(), None);
         imp.artist_model.replace(Some(artist_model.clone()));
     }
 

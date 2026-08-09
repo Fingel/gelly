@@ -23,8 +23,8 @@ impl MediaCard {
         self.imp().secondary_label.set_text(Some(text));
     }
 
-    pub fn set_image_id(&self, id: &str) {
-        self.imp().image.set_item_id(id, None);
+    pub fn set_image_id(&self, id: &str, fallback: Option<&str>) {
+        self.imp().image.set_item_id(id, fallback);
     }
 
     pub fn unbind_image(&self) {

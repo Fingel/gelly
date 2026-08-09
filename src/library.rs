@@ -391,6 +391,7 @@ mod tests {
             has_lyrics: false,
             user_data: UserDataDto { play_count: 1 },
             genres: vec![],
+            cover_art_id: None,
         }
     }
 
@@ -423,6 +424,7 @@ mod tests {
             has_lyrics: false,
             user_data: UserDataDto { play_count: 1 },
             genres: vec![],
+            cover_art_id: None,
         }
     }
 
@@ -446,6 +448,7 @@ mod tests {
             parent_index_number: Some(1),
             has_lyrics: false,
             genres: vec![],
+            cover_art_id: None,
         }
     }
 

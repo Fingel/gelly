@@ -34,7 +34,12 @@ impl DetailPage for AlbumDetail {
         } else {
             imp.year_label.set_text(&tr("N/A"));
         }
-        imp.album_image.set_item_id(&model.id(), None);
+
+        match &model.cover_art_id() {
+            Some(s) => imp.album_image.set_item_id(&model.id(), Some(s)),
+            None => imp.album_image.set_item_id(&model.id(), None),
+        };
+
         let binding = model
             .bind_property("favorite", self, "favorite")
             .sync_create()
