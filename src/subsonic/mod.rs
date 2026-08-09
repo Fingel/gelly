@@ -326,8 +326,6 @@ impl Subsonic {
             .replay_gain
             .and_then(|rg| rg.track_gain.or(rg.album_gain).or(rg.base_gain));
 
-        let cover_art_id = fallback.cover_art_id.clone();
-
         MusicDto {
             name: song.title,
             id: song.id,
@@ -354,7 +352,7 @@ impl Subsonic {
             // so it'll be `true` and just show an empty window for the time being
             has_lyrics: true,
             genres: song.genre.into_iter().collect(),
-            cover_art_id: cover_art_id,
+            cover_art_id: fallback.cover_art_id.clone(),
         }
     }
 
@@ -594,7 +592,6 @@ impl Subsonic {
             let size = ((200.0 * scale).round() as u32).max(1);
             params.push(("size".to_string(), size.to_string()));
         }
-
         params.push(("id".to_string(), item_id.to_string()));
 
         let response = self.client.get(url).query(&params).send().await?;
