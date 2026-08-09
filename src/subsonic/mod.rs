@@ -600,8 +600,6 @@ impl Subsonic {
         let response = self.client.get(url).query(&params).send().await?;
         let status = response.status();
 
-        println!("url: {} status: {}", cc, status);
-
         if status.is_success() {
             Ok(response.bytes().await?.to_vec())
         } else if status == StatusCode::UNAUTHORIZED {
