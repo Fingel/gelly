@@ -145,8 +145,8 @@ pub struct Album {
 
     #[serde(default, deserialize_with = "deserialize_items_skip_errors")]
     pub song: Vec<Song>,
-    
-    pub cover_art: Option<String>
+
+    pub cover_art: Option<String>,
 }
 
 #[derive(Debug, Clone, Deserialize)]

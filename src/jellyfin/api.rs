@@ -86,7 +86,7 @@ pub struct MusicDto {
     pub has_lyrics: bool,
     #[serde(deserialize_with = "deserialize_items_skip_errors")]
     pub genres: Vec<String>,
-    pub cover_art_id: Option<String> // This is to accomodate SubSonic
+    pub cover_art_id: Option<String>, // This is to accomodate SubSonic
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
