@@ -86,6 +86,7 @@ pub struct MusicDto {
     pub has_lyrics: bool,
     #[serde(deserialize_with = "deserialize_items_skip_errors")]
     pub genres: Vec<String>,
+    pub cover_art: Option<String>, // This is to accommodate SubSonic
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -282,6 +283,13 @@ impl MusicDto {
                     .collect::<Vec<_>>()
             })
             .collect()
+    }
+
+    pub fn effective_cover_art(&self) -> &str {
+        self.cover_art
+            .as_deref()
+            .or(self.album_id.as_deref())
+            .unwrap_or_default()
     }
 }
 

@@ -38,6 +38,7 @@ struct AlbumFallback {
     artist_id: Option<String>,
     year: Option<u32>,
     created: Option<String>,
+    cover_art: Option<String>,
 }
 
 impl Subsonic {
@@ -263,6 +264,7 @@ impl Subsonic {
             artist_id: album.artist_id.clone(),
             year: album.year,
             created: album.created.clone(),
+            cover_art: album.cover_art,
         };
 
         let songs = album
@@ -350,6 +352,7 @@ impl Subsonic {
             // so it'll be `true` and just show an empty window for the time being
             has_lyrics: true,
             genres: song.genre.into_iter().collect(),
+            cover_art: fallback.cover_art.clone(),
         }
     }
 
@@ -409,6 +412,7 @@ impl Subsonic {
             artist_id: None,
             year: None,
             created: None,
+            cover_art: None,
         };
 
         let items = playlist

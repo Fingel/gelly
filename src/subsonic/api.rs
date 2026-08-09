@@ -142,9 +142,9 @@ pub struct Album {
     pub artist_id: Option<String>,
     pub created: Option<String>,
     pub year: Option<u32>,
-
     #[serde(default, deserialize_with = "deserialize_items_skip_errors")]
     pub song: Vec<Song>,
+    pub cover_art: Option<String>,
 }
 
 #[derive(Debug, Clone, Deserialize)]

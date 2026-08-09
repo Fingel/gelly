@@ -77,3 +77,12 @@ navidrome:
       -p 4533:4533 \
       -e ND_LOGLEVEL=info \
       deluan/navidrome:latest
+
+lms:
+    podman run \
+      --replace \
+      --name lms \
+      -v $MUSIC_DIR:/music:ro \
+      -v ./scratch/lms-data:/var/lms:rw \
+      -p 5082:5082 \
+      docker.io/epoupon/lms:latest
