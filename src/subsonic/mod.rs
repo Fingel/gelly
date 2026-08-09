@@ -594,7 +594,7 @@ impl Subsonic {
             let size = ((200.0 * scale).round() as u32).max(1);
             params.push(("size".to_string(), size.to_string()));
         }
-        let cc = url.clone();
+
         params.push(("id".to_string(), item_id.to_string()));
 
         let response = self.client.get(url).query(&params).send().await?;
