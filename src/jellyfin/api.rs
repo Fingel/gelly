@@ -1,4 +1,3 @@
-use chrono::{DateTime, Utc};
 use serde::{Deserialize, Deserializer, Serialize};
 use serde_json::Value;
 
@@ -93,7 +92,7 @@ pub struct MusicDto {
 #[serde(rename_all = "PascalCase")]
 pub struct UserDataDto {
     pub play_count: u64,
-    pub last_played: Option<DateTime<Utc>>,
+    pub last_played_date: Option<String>,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]

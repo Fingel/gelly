@@ -1,4 +1,3 @@
-use chrono::{DateTime, Utc};
 use serde::{Deserialize, Deserializer};
 use serde_json::Value;
 
@@ -175,8 +174,7 @@ pub struct Song {
     pub replay_gain: Option<ReplayGain>,
     pub path: Option<String>,
     pub genre: Option<String>,
-    #[serde(rename = "played")]
-    pub last_played: Option<DateTime<Utc>>,
+    pub played: Option<String>,
 }
 
 #[derive(Debug, Clone, Deserialize)]

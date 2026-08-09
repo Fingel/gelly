@@ -192,7 +192,7 @@ impl AlbumList {
                 SortType::Year => a.year().cmp(&b.year()).into(),
                 SortType::PlayCount => a.play_count().cmp(&b.play_count()).into(),
                 // Reverse order for more recent first.
-                SortType::LastPlayed => b.last_played().cmp(&a.last_played()).into(),
+                SortType::LastPlayed => b.last_played_date().cmp(&a.last_played_date()).into(),
                 _ => gtk::Ordering::Equal,
             }
         })
