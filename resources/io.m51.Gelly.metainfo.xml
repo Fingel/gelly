@@ -70,6 +70,22 @@
     <color type="primary" scheme_preference="dark">#325a4a</color>
   </branding>
   <releases>
+    <release version="1.9.7" date="2026-08-08">
+      <description>
+        <ul>
+          <li>
+            Fixed playback reporting issue on Jellyfin that was preventing Last.fm and Listenbrainz
+            plugins from working correctly.
+          </li>
+          <li>
+            Misc ux improvements around navigation and small bug fixes.
+          </li>
+          <li>
+            Improved performance of the song list page.
+          </li>
+        </ul>
+      </description>
+    </release>
     <release version="1.9.6" date="2026-08-01">
       <description>
         <ul>
