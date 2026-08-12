@@ -4,17 +4,18 @@
   <id>io.m51.Gelly</id>
   <name>Gelly</name>
   <launchable type="desktop-id">io.m51.Gelly.desktop</launchable>
-  <summary>Music player for Jellyfin and Subsonic</summary>
+  <summary>Jellyfin and Subsonic music player</summary>
   <description>
     <p>
-      A native, lightweight music player for streaming from Jellyfin and Subsonic/Navidrome servers.
+        A native, lightweight music player for streaming from Jellyfin, Navidrome and
+        Subsonic compatible servers.
     </p>
     <ul>
       <li>Supports both Jellyfin and Subsonic/Navidrome backends</li>
-      <li>Modern GTK/Adwaita interface with MPRIS support</li>
+      <li>MPRIS support</li>
       <li>Lyrics with tracking</li>
-      <li>Replaygain</li>
-      <li>Built with Rust</li>
+      <li>Replaygain and Gapless Playback</li>
+      <li>Built with Rust and GTK</li>
     </ul>
   </description>
   <content_rating type="oars-1.1"/>
