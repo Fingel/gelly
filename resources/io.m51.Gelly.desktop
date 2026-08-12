@@ -2,10 +2,10 @@
 Name=Gelly
 Type=Application
 Exec=gelly
-Comment=Jellyfin client focused on music.
+Comment=Jellyfin and Subsonic music player
 Icon=io.m51.Gelly
 Terminal=false
-GenericName=Jellyfin Music Client
+GenericName=Jellyfin and Subsonic music player
 StartupNotify=true
 Categories=GNOME;GTK;Audio;AudioVideo;
-Keywords=Jellyfin;Music;Stream;
+Keywords=Jellyfin;Subsonic;Navidrome;Music;Stream;
