@@ -27,7 +27,7 @@ impl AlbumModel {
         favorite: bool,
         play_count: u64,
         genres: Vec<String>,
-        last_played_date: String,
+        last_played_date: &str,
     ) -> Self {
         let artists: Vec<String> = dto
             .album_artists

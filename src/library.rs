@@ -149,11 +149,7 @@ impl Library {
                     favorites.contains_album(&id),
                     play_counts.get(&id).copied().unwrap_or(0),
                     album_genres,
-                    last_played_dates
-                        .get(&id)
-                        .cloned()
-                        .unwrap_or("".to_string())
-                        .to_string(),
+                    last_played_dates.get(&id).map(|s| s.as_str()).unwrap_or(""),
                 )
             })
             .collect();
@@ -234,11 +230,7 @@ impl Library {
                     favorites.contains_album(&id),
                     play_counts.get(&id).copied().unwrap_or(0),
                     Vec::new(), // Don't need this as we aren't filtering by genre here
-                    last_played_dates
-                        .get(&id)
-                        .cloned()
-                        .unwrap_or("".to_string())
-                        .to_string(),
+                    last_played_dates.get(&id).map(|s| s.as_str()).unwrap_or(""),
                 )
             })
             .collect();
@@ -356,11 +348,7 @@ impl Library {
                     favorites.contains_album(&id),
                     play_counts.get(&id).copied().unwrap_or(0),
                     Vec::new(),
-                    last_played_dates
-                        .get(&id)
-                        .cloned()
-                        .unwrap_or("".to_string())
-                        .to_string(),
+                    last_played_dates.get(&id).map(|s| s.as_str()).unwrap_or(""),
                 )
             })
     }
