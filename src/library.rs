@@ -68,15 +68,11 @@ impl Library {
 
                 *album_counts.entry(album_id.clone()).or_insert(0) += dto.user_data.play_count;
 
-                if let Some(last_played_date) = dto.user_data.last_played_date.clone()
-                    && last_played_date
-                        > *album_played_dates
-                            .entry(album_id.clone())
-                            .or_insert("".to_string())
+                let current: &mut String = album_played_dates.entry(album_id).or_default();
+                if let Some(last_played_date) = dto.user_data.last_played_date.as_ref()
+                    && last_played_date > current
                 {
-                    album_played_dates
-                        .entry(album_id.clone())
-                        .insert_entry(last_played_date.clone());
+                    current.clone_from(last_played_date);
                 }
             }
             for artist in &dto.album_artists {
