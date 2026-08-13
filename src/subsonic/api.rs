@@ -174,6 +174,7 @@ pub struct Song {
     pub replay_gain: Option<ReplayGain>,
     pub path: Option<String>,
     pub genre: Option<String>,
+    pub played: Option<String>,
 }
 
 #[derive(Debug, Clone, Deserialize)]

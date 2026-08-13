@@ -70,6 +70,7 @@ impl TopPage for AlbumList {
             SortType::Artist,
             SortType::Year,
             SortType::PlayCount,
+            SortType::LastPlayed,
         ]
     }
 
@@ -186,9 +187,12 @@ impl AlbumList {
                     .to_lowercase()
                     .cmp(&b.artists_string().to_lowercase())
                     .into(),
-                SortType::DateAdded => b.date_created().cmp(&a.date_created()).into(), // Reverse order for newest first
+                // Reverse order for newest first
+                SortType::DateAdded => b.date_created().cmp(&a.date_created()).into(),
                 SortType::Year => a.year().cmp(&b.year()).into(),
                 SortType::PlayCount => a.play_count().cmp(&b.play_count()).into(),
+                // Reverse order for more recent first.
+                SortType::LastPlayed => b.last_played_date().cmp(&a.last_played_date()).into(),
                 _ => gtk::Ordering::Equal,
             }
         })

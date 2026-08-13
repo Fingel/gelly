@@ -93,6 +93,7 @@ pub struct MusicDto {
 #[serde(rename_all = "PascalCase")]
 pub struct UserDataDto {
     pub play_count: u64,
+    pub last_played_date: Option<String>,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]

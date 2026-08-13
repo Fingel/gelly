@@ -39,6 +39,7 @@ pub struct Library {
     pub songs: Rc<RefCell<Vec<MusicDto>>>, // TODO make this private
     favorites: Rc<RefCell<Favorites>>,
     album_play_counts: Rc<RefCell<HashMap<String, u64>>>,
+    album_last_played_dates: Rc<RefCell<HashMap<String, String>>>,
     artist_play_counts: Rc<RefCell<HashMap<String, u64>>>,
     genres: Rc<RefCell<BTreeSet<String>>>,
 }
@@ -49,6 +50,7 @@ impl Library {
             songs: Rc::new(RefCell::new(Vec::new())),
             favorites: Rc::new(RefCell::new(Favorites::default())),
             album_play_counts: Rc::new(RefCell::new(HashMap::new())),
+            album_last_played_dates: Rc::new(RefCell::new(HashMap::new())),
             artist_play_counts: Rc::new(RefCell::new(HashMap::new())),
             genres: Rc::new(RefCell::new(BTreeSet::new())),
         }
@@ -56,13 +58,22 @@ impl Library {
 
     pub fn update_songs(&self, songs: Vec<MusicDto>) {
         let mut album_counts = HashMap::new();
+        let mut album_played_dates = HashMap::new();
         let mut artist_counts = HashMap::new();
         let mut genres = self.genres.borrow_mut();
         genres.clear();
         for dto in songs.iter() {
             if dto.album.is_some() {
-                *album_counts.entry(dto.effective_album_id()).or_insert(0) +=
-                    dto.user_data.play_count;
+                let album_id = dto.effective_album_id();
+
+                *album_counts.entry(album_id.clone()).or_insert(0) += dto.user_data.play_count;
+
+                let current: &mut String = album_played_dates.entry(album_id).or_default();
+                if let Some(last_played_date) = dto.user_data.last_played_date.as_ref()
+                    && last_played_date > current
+                {
+                    current.clone_from(last_played_date);
+                }
             }
             for artist in &dto.album_artists {
                 *artist_counts.entry(artist.id.clone()).or_insert(0) += dto.user_data.play_count;
@@ -70,6 +81,7 @@ impl Library {
             genres.extend(dto.effective_genres());
         }
         self.album_play_counts.replace(album_counts);
+        self.album_last_played_dates.replace(album_played_dates);
         self.artist_play_counts.replace(artist_counts);
         self.songs.replace(songs);
     }
@@ -101,6 +113,7 @@ impl Library {
 
     pub fn albums_from_library(&self) -> Vec<AlbumModel> {
         let play_counts = self.album_play_counts.borrow();
+        let last_played_dates = self.album_last_played_dates.borrow();
         let favorites = self.favorites.borrow();
         let songs = self.songs.borrow();
 
@@ -132,6 +145,7 @@ impl Library {
                     favorites.contains_album(&id),
                     play_counts.get(&id).copied().unwrap_or(0),
                     album_genres,
+                    last_played_dates.get(&id).map(|s| s.as_str()).unwrap_or(""),
                 )
             })
             .collect();
@@ -192,6 +206,7 @@ impl Library {
 
     pub fn albums_for_artist(&self, artist_id: &str) -> Vec<AlbumModel> {
         let play_counts = self.album_play_counts.borrow();
+        let last_played_dates = self.album_last_played_dates.borrow();
         let favorites = self.favorites.borrow();
         let mut seen_album_ids = HashSet::<String>::new();
         let mut albums: Vec<AlbumModel> = self
@@ -211,6 +226,7 @@ impl Library {
                     favorites.contains_album(&id),
                     play_counts.get(&id).copied().unwrap_or(0),
                     Vec::new(), // Don't need this as we aren't filtering by genre here
+                    last_played_dates.get(&id).map(|s| s.as_str()).unwrap_or(""),
                 )
             })
             .collect();
@@ -315,6 +331,7 @@ impl Library {
 
     pub fn album_for_item(&self, item_id: &str) -> Option<AlbumModel> {
         let play_counts = self.album_play_counts.borrow();
+        let last_played_dates = self.album_last_played_dates.borrow();
         let favorites = self.favorites.borrow();
         self.songs
             .borrow()
@@ -327,6 +344,7 @@ impl Library {
                     favorites.contains_album(&id),
                     play_counts.get(&id).copied().unwrap_or(0),
                     Vec::new(),
+                    last_played_dates.get(&id).map(|s| s.as_str()).unwrap_or(""),
                 )
             })
     }
@@ -389,7 +407,10 @@ mod tests {
             index_number,
             parent_index_number,
             has_lyrics: false,
-            user_data: UserDataDto { play_count: 1 },
+            user_data: UserDataDto {
+                play_count: 1,
+                last_played_date: None,
+            },
             genres: vec![],
             cover_art: None,
         }
@@ -422,7 +443,10 @@ mod tests {
             index_number: Some(1),
             parent_index_number: Some(1),
             has_lyrics: false,
-            user_data: UserDataDto { play_count: 1 },
+            user_data: UserDataDto {
+                play_count: 1,
+                last_played_date: None,
+            },
             genres: vec![],
             cover_art: None,
         }
@@ -430,7 +454,10 @@ mod tests {
 
     fn create_music_dto_user_data(play_count: u64) -> MusicDto {
         MusicDto {
-            user_data: UserDataDto { play_count },
+            user_data: UserDataDto {
+                play_count,
+                last_played_date: None,
+            },
             id: format!("user-data-{}", play_count),
             name: format!("user-data-{}", play_count),
             album: Some(format!("user-data-{}", play_count)),
