@@ -8,16 +8,16 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-07-20 22:57-0700\n"
-"PO-Revision-Date: 2026-07-10 21:01+0000\n"
-"Last-Translator: \"Riccardo B.\" <riccardoberbeglia03@gmail.com>\n"
-"Language-Team: Italian <https://hosted.weblate.org/projects/gelly/gelly/it/"
-">\n"
+"PO-Revision-Date: 2026-08-15 14:51+0000\n"
+"Last-Translator: Simob98 <simobertuzzi98@gmail.com>\n"
+"Language-Team: Italian <https://hosted.weblate.org/projects/gelly/gelly/it/>"
+"\n"
 "Language: it\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 2026.7.1.dev0\n"
+"X-Generator: Weblate 2026.9.dev0\n"
 
 #: src/ui/album_detail.rs:40
 msgid "N/A"
@@ -87,7 +87,7 @@ msgstr "Impossibile caricare la playlist"
 
 #: src/ui/music_context_menu.rs:87
 msgid "Add Anyway"
-msgstr ""
+msgstr "Aggiungi comunque"
 
 #: src/ui/music_context_menu.rs:112
 msgid "Queue Next"
@@ -392,6 +392,8 @@ msgid ""
 "Performing initial library download, this may take a moment. The library "
 "will be cached for subsequent use."
 msgstr ""
+"Eseguendo il download iniziale della libreria, questo potrebbe richiedere un "
+"momento. La libreria verrà memorizzata nella cache per l'uso successivo."
 
 #: resources/ui/artist_detail.ui:41
 msgid "Artist Name"
@@ -476,7 +478,7 @@ msgstr "Riproduzione"
 
 #: resources/ui/preferences.ui:45
 msgid "Uninterrupted playback of consecutive tracks."
-msgstr ""
+msgstr "Riproduzione ininterrotta di tracce consecutive."
 
 #: resources/ui/preferences.ui:50
 msgid "Inhibit Suspend"
