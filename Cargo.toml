@@ -1,6 +1,6 @@
 [package]
 name = "gelly"
-version = "1.9.7"
+version = "1.10.0"
 edition = "2024"
 
 [dependencies]

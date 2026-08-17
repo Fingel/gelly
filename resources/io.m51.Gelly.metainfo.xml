@@ -71,6 +71,24 @@
     <color type="primary" scheme_preference="dark">#325a4a</color>
   </branding>
   <releases>
+    <release version="1.10.0" date="2026-08-16">
+      <description>
+        <ul>
+          <li>
+            Option to sort albums by recently played.
+          </li>
+          <li>
+            Album art now appears for LMS backends.
+          </li>
+          <li>
+            Packaging cleanup, including removing dbbus secret service Flatpak permissions.
+          </li>
+          <li>
+            Translation updates.
+          </li>
+        </ul>
+      </description>
+    </release>
     <release version="1.9.7" date="2026-08-08">
       <description>
         <ul>
