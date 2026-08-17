@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-07-20 22:57-0700\n"
-"PO-Revision-Date: 2026-07-23 14:01+0000\n"
+"PO-Revision-Date: 2026-08-17 16:51+0000\n"
 "Last-Translator: pou <stpou@proton.me>\n"
 "Language-Team: Persian <https://hosted.weblate.org/projects/gelly/gelly/fa/>"
 "\n"
@@ -17,11 +17,12 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 2026.8.dev0\n"
+"X-Generator: Weblate 2026.9.dev0\n"
 
 #: src/ui/album_detail.rs:40
+#, fuzzy
 msgid "N/A"
-msgstr ""
+msgstr "N/A"
 
 #: src/ui/album_detail.rs:169 src/ui/album_detail.rs:179
 #: src/ui/album_detail.rs:203 src/ui/artist_detail.rs:245 src/ui/playlist.rs:53
@@ -241,145 +242,145 @@ msgstr "خطا در احراز هویت با Jellyfin یا Subsonic"
 
 #: src/ui/setup.rs:287
 msgid "Failed to load libraries"
-msgstr ""
+msgstr "خطا در بارگذاری کتابخانه‌ها"
 
 #: src/ui/setup.rs:317
 msgid "Failed to initiate quick connect. Is the host valid?"
-msgstr ""
+msgstr "خطا در برقراری اتصال سریع. آیا میزبان معتبر است؟"
 
 #: src/ui/setup.rs:372
 msgid "Error during quick connect"
-msgstr ""
+msgstr "خطا در هنگام اتصال سریع"
 
 #: src/ui/setup.rs:408
 msgid "Failed to authenticate with quick connect"
-msgstr ""
+msgstr "خطا در احراز هویت با اتصال سریع"
 
 #: src/ui/setup.rs:418
 msgid "Quick connect code copied to clipboard"
-msgstr ""
+msgstr "کد اتصال سریع کپی شد"
 
 #: src/ui/stream_info_dialog.rs:9
 msgid "Yes"
-msgstr ""
+msgstr "بله"
 
 #: src/ui/stream_info_dialog.rs:10
 msgid "No"
-msgstr ""
+msgstr "نه"
 
 #: src/ui/stream_info_dialog.rs:11 src/ui/stream_info_dialog.rs:52
 #: src/ui/stream_info_dialog.rs:73 src/ui/stream_info_dialog.rs:114
 #: src/ui/stream_info_dialog.rs:115
 msgid "Unknown"
-msgstr ""
+msgstr "نامشخص"
 
 #: src/ui/stream_info_dialog.rs:49
 msgid "Backend"
-msgstr ""
+msgstr "بک‌اند"
 
 #: src/ui/stream_info_dialog.rs:52
 msgid "Codec"
-msgstr ""
+msgstr "کدک"
 
 #: src/ui/stream_info_dialog.rs:54
 msgid "Container"
-msgstr ""
+msgstr "کانتینر"
 
 #: src/ui/stream_info_dialog.rs:55 src/ui/stream_info_dialog.rs:77
 msgid "None"
-msgstr ""
+msgstr "هیچ"
 
 #: src/ui/stream_info_dialog.rs:58
 msgid "Sample Rate"
-msgstr ""
+msgstr "سمپل ریت"
 
 #: src/ui/stream_info_dialog.rs:61
 msgid "Channels"
-msgstr ""
+msgstr "کانال‌ها"
 
 #: src/ui/stream_info_dialog.rs:64
 msgid "Bit Rate"
-msgstr ""
+msgstr "بیت‌ریت"
 
 #: src/ui/stream_info_dialog.rs:67
 msgid "Encoder"
-msgstr ""
+msgstr "انکودر"
 
 #: src/ui/stream_info_dialog.rs:72
 msgid "Original Codec"
-msgstr ""
+msgstr "کدک اصلی"
 
 #: src/ui/stream_info_dialog.rs:76
 msgid "Original Container"
-msgstr ""
+msgstr "کانتینر اصلی"
 
 #: src/ui/stream_info_dialog.rs:80
 msgid "Original Sample Rate"
-msgstr ""
+msgstr "سمپل ریت اصلی"
 
 #: src/ui/stream_info_dialog.rs:84
 msgid "Original Channels"
-msgstr ""
+msgstr "کانال‌های اصلی"
 
 #: src/ui/stream_info_dialog.rs:88
 msgid "Supports Direct Play"
-msgstr ""
+msgstr "از Direct Play پشتیبانی می‌کند"
 
 #: src/ui/stream_info_dialog.rs:92
 msgid "Supports Direct Stream"
-msgstr ""
+msgstr "از Direct Stream پشتیبانی می‌کند"
 
 #: src/ui/stream_info_dialog.rs:96
 msgid "Supports Transcoding"
-msgstr ""
+msgstr "از Transcoding پشتیبانی می‌کند"
 
 #: src/ui/stream_info_dialog.rs:102
 msgid "Original Bit Rate"
-msgstr ""
+msgstr "بیت‌ریت اصلی"
 
 #: src/ui/stream_info_dialog.rs:108
 msgid "File Size"
-msgstr ""
+msgstr "حجم فایل"
 
 #: src/ui/stream_info_dialog.rs:114
 msgid "Id"
-msgstr ""
+msgstr "شناسه"
 
 #: src/ui/stream_info_dialog.rs:115
 msgid "Path"
-msgstr ""
+msgstr "مکان"
 
 #: src/ui/stream_info_dialog.rs:138
 msgid "Song Properties"
-msgstr ""
+msgstr "مشخصات آهنگ"
 
 #: src/ui/stream_info_dialog.rs:145
 msgid "Local Properties"
-msgstr ""
+msgstr "مشخصات محلی"
 
 #: src/ui/stream_info_dialog.rs:152
 msgid "Remote Properties"
-msgstr ""
+msgstr "مشخصات اصلی"
 
 #: src/ui/window.rs:181
 msgid "Logged out"
-msgstr ""
+msgstr "خارج شده"
 
 #: src/ui/window.rs:309
 msgid "all genres"
-msgstr ""
+msgstr "همه سبک‌ها"
 
 #: resources/ui/album_art.ui:33
 msgid "Missing album art"
-msgstr ""
+msgstr "فاقد تصویر آلبوم"
 
 #: resources/ui/album_detail.ui:82 resources/ui/playlist_detail.ui:66
 msgid "tracks"
-msgstr ""
+msgstr "آهنگ‌ها"
 
 #: resources/ui/album_detail.ui:145 resources/ui/artist_detail.ui:79
 msgid "More Actions"
-msgstr ""
+msgstr "اقدامات بیشتر"
 
 #: resources/ui/album_list.ui:8
 msgid "No Albums"
