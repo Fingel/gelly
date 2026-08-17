@@ -75,7 +75,7 @@ impl TopPage for AlbumList {
     }
 
     fn current_sort_by(&self) -> u32 {
-        config::get_albums_sort_by()
+        config::get_albums_sort_by().min(self.sort_options().len() as u32 - 1)
     }
 
     fn current_sort_direction(&self) -> u32 {
