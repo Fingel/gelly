@@ -12,7 +12,6 @@ finish-args:
   - --device=dri
   - --share=network
   - --socket=pulseaudio
-  - --talk-name=org.freedesktop.secrets
 modules:
   - name: gelly
     buildsystem: simple
