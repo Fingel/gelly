@@ -1,5 +1,7 @@
+use crate::async_utils::spawn_tokio;
 use crate::config::{self, settings};
 use crate::i18n::tr;
+use crate::jellyfin::api::LibraryDtoList;
 use crate::models::{AlbumModel, ArtistModel, PlaylistModel};
 use crate::ui::album_art_background::create_blur_paintable;
 use crate::ui::page_traits::{DetailPage, TopPage};
@@ -173,6 +175,54 @@ impl Window {
     pub fn show_preferences_dialog(&self) {
         let preferences_dialog = Preferences::new();
         preferences_dialog.present(Some(self));
+    }
+
+    fn show_library_dialog(&self, libraries: &LibraryDtoList) {
+        let app = self.get_application();
+        let libraries = libraries.items.clone();
+        let current_library_id = app.imp().library_id.borrow().clone();
+        let current_library_index = libraries
+            .iter()
+            .position(|item| item.id.as_str() == current_library_id.as_str())
+            .unwrap_or(0);
+        let dialog = adw::AlertDialog::new(Some(&tr("Change Library")), None);
+        dialog.add_responses(&[("cancel", &tr("Cancel")), ("select", &tr("Select"))]);
+        dialog.set_response_appearance("select", adw::ResponseAppearance::Suggested);
+        dialog.set_default_response(Some("select"));
+        dialog.set_close_response("cancel");
+
+        let strings: Vec<&str> = libraries.iter().map(|item| item.name.as_str()).collect();
+        let library_dropdown = gtk::DropDown::from_strings(&strings);
+        library_dropdown.set_selected(current_library_index as u32);
+
+        dialog.set_extra_child(Some(&library_dropdown));
+        dialog.connect_response(Some("select"), move |_, response| {
+            if response == "select" {
+                let selected_index = library_dropdown.selected();
+                if let Some(library_dto) = libraries.get(selected_index as usize) {
+                    app.set_library_id(&library_dto.id);
+                }
+            }
+        });
+        dialog.present(Some(self))
+    }
+
+    pub fn change_library(&self) {
+        let backend = self.get_application().backend();
+        spawn_tokio(
+            async move { backend.get_views().await },
+            glib::clone!(
+                #[weak(rename_to=window)]
+                self,
+                move |result| {
+                    if let Ok(views) = result {
+                        window.show_library_dialog(&views);
+                    } else {
+                        window.toast(&tr("Failed to fetch libraries"), None);
+                    }
+                }
+            ),
+        );
     }
 
     pub fn logout(&self) {
@@ -666,6 +716,16 @@ mod imp {
                 ))
                 .build();
 
+            let action_change_library = ActionEntry::builder("change-library")
+                .activate(glib::clone!(
+                    #[weak(rename_to=window)]
+                    self,
+                    move |_, _, _| {
+                        window.obj().change_library();
+                    }
+                ))
+                .build();
+
             let action_album_list = ActionEntry::builder("show-album-list")
                 .activate(glib::clone!(
                     #[weak(rename_to=window)]
@@ -718,6 +778,7 @@ mod imp {
                 action_about,
                 action_shortcuts,
                 action_preferences,
+                action_change_library,
                 action_album_list,
                 action_artist_list,
                 action_playlist_list,

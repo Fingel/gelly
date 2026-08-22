@@ -350,6 +350,14 @@ impl Application {
         }
     }
 
+    pub fn set_library_id(&self, library_id: &str) {
+        self.imp().library_id.replace(library_id.to_string());
+        self.refresh_all(true);
+        settings()
+            .set_string("library-id", library_id)
+            .expect("Failed to save library id");
+    }
+
     pub fn refresh_all(&self, refresh_cache: bool) {
         self.refresh_favorites(refresh_cache);
         self.refresh_library(refresh_cache);
