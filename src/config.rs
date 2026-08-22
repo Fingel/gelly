@@ -88,7 +88,7 @@ pub fn set_backend_type(backend_type: BackendType) {
         .expect("Failed to set backend type");
 }
 
-pub fn logout() -> Result<(), Error> {
+pub fn logout() -> Result<(), Box<Error>> {
     let clear_res = clear_credentials(get_backend_type());
 
     settings()
@@ -108,14 +108,19 @@ pub fn logout() -> Result<(), Error> {
     Ok(())
 }
 
-pub fn store_jellyfin_api_token(host: &str, user_id: &str, api_token: &str) -> Result<(), Error> {
+pub fn store_jellyfin_api_token(
+    host: &str,
+    user_id: &str,
+    api_token: &str,
+) -> Result<(), Box<Error>> {
     async_io::block_on(async {
         let keyring = Keyring::new().await?;
         keyring.unlock().await?;
         let attributes = &[("host", host), (BackendType::Jellyfin.id_key(), user_id)];
         keyring
             .create_item("Jellyfin API Token", attributes, api_token, true)
-            .await
+            .await?;
+        Ok(())
     })
 }
 
@@ -123,7 +128,11 @@ pub fn retrieve_jellyfin_api_token(host: &str, user_id: &str) -> Option<String> 
     retrieve_credentials(host, user_id, BackendType::Jellyfin)
 }
 
-pub fn store_subsonic_password(host: &str, username: &str, password: &str) -> Result<(), Error> {
+pub fn store_subsonic_password(
+    host: &str,
+    username: &str,
+    password: &str,
+) -> Result<(), Box<Error>> {
     async_io::block_on(async {
         let keyring = Keyring::new().await?;
         keyring.unlock().await?;
@@ -139,7 +148,7 @@ pub fn retrieve_subsonic_password(host: &str, username: &str) -> Option<String> 
     retrieve_credentials(host, username, BackendType::Subsonic)
 }
 
-fn clear_credentials(backend_type: BackendType) -> Result<(), Error> {
+fn clear_credentials(backend_type: BackendType) -> Result<(), Box<Error>> {
     let host = settings().string("hostname").to_owned();
     let identifier = settings().string(backend_type.id_key()).to_owned();
     async_io::block_on(async {
