@@ -71,6 +71,18 @@
     <color type="primary" scheme_preference="dark">#325a4a</color>
   </branding>
   <releases>
+    <release version="1.11.0" date="2026-08-22">
+      <description>
+        <ul>
+          <li>
+            Added the ability to switch libraries for both Jellyfin and Subsonic.
+          </li>
+          <li>
+            Translation updates.
+          </li>
+        </ul>
+      </description>
+    </release>
     <release version="1.10.0" date="2026-08-16">
       <description>
         <ul>
