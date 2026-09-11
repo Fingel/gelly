@@ -108,18 +108,6 @@ impl Application {
         let audio_model = AudioModel::new();
 
         audio_model.connect_closure(
-            "request-stream-uri",
-            false,
-            glib::closure_local!(
-                #[weak(rename_to = app)]
-                self,
-                move |_audio_model: AudioModel, song_id: &str| -> String {
-                    app.backend().get_stream_uri(song_id)
-                }
-            ),
-        );
-
-        audio_model.connect_closure(
             "error",
             false,
             glib::closure_local!(
@@ -202,6 +190,10 @@ impl Application {
 
     pub fn audio_model(&self) -> Option<AudioModel> {
         self.imp().audio_model.borrow().clone()
+    }
+
+    pub fn playback_uri(&self, song_id: &str) -> String {
+        self.backend().get_stream_uri(song_id)
     }
 
     fn handle_backend_error(&self, error: BackendError, operation: &str) {

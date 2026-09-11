@@ -156,14 +156,10 @@ impl AudioModel {
             .expect("Player should be initialized")
     }
 
-    fn stream_uri(&self, song_id: &str) -> Option<String> {
-        let uri: String = self.emit_by_name("request-stream-uri", &[&song_id]);
-        if uri.is_empty() {
-            self.emit_by_name::<()>("error", &[&"Failed to get stream URI".to_string()]);
-            warn!("Failed to get stream URI for song {}", song_id);
-            return None;
-        }
-        Some(uri)
+    fn stream_uri(&self, song_id: &str) -> String {
+        self.application()
+            .expect("Application must be available to resolve URIs")
+            .playback_uri(song_id)
     }
 
     fn apply_volume(&self) {
@@ -306,13 +302,7 @@ impl AudioModel {
             .item(index as u32)
             .and_downcast::<SongModel>()
         {
-            let Some(stream_uri) = self.stream_uri(&song.id()) else {
-                self.imp().track_transition_in_progress.set(false);
-                self.set_property("loading", false);
-                self.stop();
-                return;
-            };
-
+            let stream_uri = self.stream_uri(&song.id());
             let player = self.player();
             self.imp().track_transition_in_progress.set(true);
             self.set_property("loading", true);
@@ -359,8 +349,8 @@ impl AudioModel {
                 .queue
                 .item(next_index as u32)
                 .and_downcast::<SongModel>()
-            && let Some(uri) = self.stream_uri(&song.id())
         {
+            let uri = self.stream_uri(&song.id());
             self.imp().prefetched_next_index.set(Some(next_index));
             self.imp().prefetched_next_uri.replace(Some(uri.clone()));
             self.player().cache_next_uri(uri);
@@ -700,10 +690,6 @@ mod imp {
                     glib::subclass::Signal::builder("queue-finished").build(),
                     glib::subclass::Signal::builder("error")
                         .param_types([String::static_type()])
-                        .build(),
-                    glib::subclass::Signal::builder("request-stream-uri")
-                        .param_types([String::static_type()])
-                        .return_type::<String>()
                         .build(),
                 ]
             })
