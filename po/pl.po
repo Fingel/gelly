@@ -8,8 +8,9 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-09-07 17:15-0700\n"
-"PO-Revision-Date: 2026-09-07 17:51+0000\n"
-"Last-Translator: Tomasz Bojanowski <tomasz@bojanowski.me>\n"
+"PO-Revision-Date: 2026-09-11 14:08+0000\n"
+"Last-Translator: Tomasz Bojanowski "
+"<tbojanowski@users.noreply.hosted.weblate.org>\n"
 "Language-Team: Polish <https://hosted.weblate.org/projects/gelly/gelly/pl/>\n"
 "Language: pl\n"
 "MIME-Version: 1.0\n"
@@ -17,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
 "|| n%100>=20) ? 1 : 2);\n"
-"X-Generator: Weblate 2026.9.1.dev0\n"
+"X-Generator: Weblate 2026.10.dev0\n"
 
 #: src/ui/album_detail.rs:35
 msgid "N/A"
@@ -305,7 +306,7 @@ msgstr "Kanały"
 
 #: src/ui/stream_info_dialog.rs:65
 msgid "Bit Rate"
-msgstr "Przepływność"
+msgstr "Gęstość bitowa"
 
 #: src/ui/stream_info_dialog.rs:68
 msgid "Encoder"
@@ -341,7 +342,7 @@ msgstr "Obsługuje transkodowanie"
 
 #: src/ui/stream_info_dialog.rs:103
 msgid "Original Bit Rate"
-msgstr "Oryginalna przepływność"
+msgstr "Oryginalna gęstość bitowa"
 
 #: src/ui/stream_info_dialog.rs:109
 msgid "File Size"
@@ -405,7 +406,7 @@ msgstr "Brak albumów"
 
 #: resources/ui/album_list.ui:14 resources/ui/artist_list.ui:14
 msgid "Caching initial library download..."
-msgstr ""
+msgstr "Zapisywanie pobranej biblioteki w pamięci podręcznej…"
 
 #: resources/ui/artist_detail.ui:41
 msgid "Artist Name"
@@ -515,7 +516,7 @@ msgstr "Używane tylko wtedy, gdy Direct Play jest niedostępne."
 
 #: resources/ui/preferences.ui:76
 msgid "Maximum Bitrate (kbps)"
-msgstr "Maksymalna przepływność (kb/s)"
+msgstr "Maksymalna gęstość bitowa (kb/s)"
 
 #: resources/ui/preferences.ui:77
 msgid "A value of 0 means no limit."
@@ -580,7 +581,7 @@ msgstr "Hasło"
 
 #: resources/ui/setup.ui:61 resources/ui/setup.ui:222
 msgid "Advanced Settings"
-msgstr ""
+msgstr "Ustawienia zaawansowane"
 
 #: resources/ui/setup.ui:76
 msgid "Connect"
@@ -620,17 +621,19 @@ msgstr "Wprowadź kod na stronie Jellyfin, aby dokończyć uwierzytelnianie."
 
 #: resources/ui/setup.ui:233
 msgid "Subsonic"
-msgstr ""
+msgstr "Subsonic"
 
 #: resources/ui/setup.ui:236
 msgid "Legacy Authentication"
-msgstr ""
+msgstr "Starsze uwierzytelnianie"
 
 #: resources/ui/setup.ui:237
 msgid ""
 "Required by specific servers that do not support token auth like Nextcloud "
 "Music."
 msgstr ""
+"Wymagane przez niektóre serwery nieobsługujące uwierzytelniania tokenem, na "
+"przykład Nextcloud Music."
 
 #: resources/ui/shortcuts_dialog.ui:9 resources/ui/window.ui:411
 msgid "Refresh Library"
@@ -802,13 +805,13 @@ msgstr "Wyloguj"
 #: resources/ui/player_bar/compact_player_bar.ui:136
 #: resources/ui/player_bar/full_player_bar.ui:116
 msgid "Previous"
-msgstr ""
+msgstr "Poprzedni utwór"
 
 #: resources/ui/player_bar/big_player.ui:152
 #: resources/ui/player_bar/compact_player_bar.ui:156
 #: resources/ui/player_bar/full_player_bar.ui:136
 msgid "Next"
-msgstr ""
+msgstr "Następny utwór"
 
 #: resources/ui/player_bar/big_player.ui:169
 #: resources/ui/player_bar/compact_player_bar.ui:110
