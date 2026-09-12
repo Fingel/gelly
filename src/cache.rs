@@ -401,3 +401,26 @@ impl ImageCache {
         _ = fs::create_dir_all(&self.cache_dir);
     }
 }
+
+#[derive(Debug)]
+pub struct MediaCache {
+    pub cache_dir: PathBuf,
+}
+
+impl MediaCache {
+    pub fn new() -> Option<Self> {
+        let cache_dir = get_cache_directory("media").ok()?;
+        fs::create_dir_all(&cache_dir).ok()?;
+        Some(Self { cache_dir })
+    }
+
+    pub fn clear_cache(&self) {
+        _ = fs::remove_dir_all(&self.cache_dir);
+        _ = fs::create_dir_all(&self.cache_dir);
+    }
+
+    pub fn get_media_path(&self, id: &str) -> Option<PathBuf> {
+        let path = self.cache_dir.join(format!("auto/{id}"));
+        if path.is_file() { Some(path) } else { None }
+    }
+}
