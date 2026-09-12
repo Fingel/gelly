@@ -1,6 +1,6 @@
 use adw::subclass::prelude::ObjectSubclassIsExt;
 use glib::Object;
-use gtk::gio::prelude::SettingsExt;
+use gtk::gio::prelude::{FileExt, SettingsExt};
 use gtk::prelude::{GtkApplicationExt, ObjectExt};
 use gtk::{gio, glib};
 
@@ -8,7 +8,7 @@ use crate::async_utils::spawn_tokio;
 use crate::audio::model::AudioModel;
 use crate::backend::Backend;
 use crate::backend::BackendError;
-use crate::cache::{Cacheable, ImageCache, LibraryCache};
+use crate::cache::{Cacheable, ImageCache, LibraryCache, MediaCache};
 use crate::cli::add_cli_options;
 use crate::config::{
     self, BackendType, retrieve_jellyfin_api_token, retrieve_subsonic_password, settings,
@@ -38,6 +38,7 @@ impl Application {
         app.initialize_backend();
         app.initialize_library_cache();
         app.initialize_image_cache();
+        app.initialize_media_cache();
         app.initialize_audio_model();
         app.initialize_cli();
         app
@@ -74,6 +75,7 @@ impl Application {
         self.imp().backend.replace(backend);
     }
 
+    // TODO: simplify like media cache
     pub fn initialize_library_cache(&self) {
         match LibraryCache::new() {
             Ok(cache) => {
@@ -87,6 +89,7 @@ impl Application {
         }
     }
 
+    // TODO: simplify like media cache
     pub fn initialize_image_cache(&self) {
         match ImageCache::new() {
             Ok(cache) => {
@@ -98,6 +101,10 @@ impl Application {
                 error!("Failed to initialize image cache: {}", err);
             }
         }
+    }
+
+    pub fn initialize_media_cache(&self) {
+        self.imp().media_cache.replace(MediaCache::new());
     }
 
     pub fn initialize_cli(&self) {
@@ -193,7 +200,14 @@ impl Application {
     }
 
     pub fn playback_uri(&self, song_id: &str) -> String {
-        self.backend().get_stream_uri(song_id)
+        if let Some(cache) = self.imp().media_cache.borrow().as_ref()
+            && let Some(path) = cache.get_media_path(song_id)
+        {
+            debug!("{song_id} cached at {path:?}");
+            gio::File::for_path(path).uri().into()
+        } else {
+            self.backend().get_stream_uri(song_id)
+        }
     }
 
     fn handle_backend_error(&self, error: BackendError, operation: &str) {
@@ -460,6 +474,7 @@ mod imp {
 
     use crate::audio::model::AudioModel;
     use crate::backend::Backend;
+    use crate::cache::MediaCache;
     use crate::cache::{ImageCache, LibraryCache};
     use crate::jellyfin::api::PlaylistDto;
     use crate::library::Library;
@@ -472,6 +487,7 @@ mod imp {
         pub library_id: RefCell<String>,
         pub library_cache: RefCell<Option<LibraryCache>>, // TODO: remove these Option<> types
         pub image_cache: RefCell<Option<ImageCache>>,
+        pub media_cache: RefCell<Option<MediaCache>>,
         pub audio_model: RefCell<Option<AudioModel>>,
         pub http_request_count: AtomicU32,
         pub inhibit_cookie: Cell<u32>,
