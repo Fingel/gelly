@@ -320,6 +320,13 @@ impl Jellyfin {
         Ok(())
     }
 
+    pub async fn download_item(&self, item_id: &str) -> Result<Vec<u8>, BackendError> {
+        let response = self
+            .get(&format!("Items/{}/Download", item_id), None)
+            .await?;
+        self.handle_binary_response(response).await
+    }
+
     pub async fn set_favorite(&self, item_id: &str, is_favorite: bool) -> Result<(), BackendError> {
         let path = format!("UserFavoriteItems/{item_id}");
         let response = if is_favorite {

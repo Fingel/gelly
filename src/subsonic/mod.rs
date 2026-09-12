@@ -595,6 +595,16 @@ impl Subsonic {
         Ok(())
     }
 
+    pub async fn download_item(&self, item_id: &str) -> Result<Vec<u8>, BackendError> {
+        debug!("Subsonic::download_item(item_id={item_id})");
+        let url = self.rest_url("download");
+        let mut params = self.auth_params();
+        params.retain(|(k, _)| k != "f");
+        params.push(("id".to_string(), item_id.to_string()));
+        let response = self.client.get(url).query(&params).send().await?;
+        self.handle_binary_response(response).await
+    }
+
     // https://github.com/opensubsonic/open-subsonic-api/blob/main/content/en/docs/Endpoints/startscan.md
     pub async fn request_library_rescan(&self, _library_id: &str) -> Result<(), BackendError> {
         debug!("Subsonic::request_library_rescan()");
@@ -869,6 +879,22 @@ impl Subsonic {
             Err(BackendError::Http {
                 status,
                 message: body,
+            })
+        }
+    }
+
+    async fn handle_binary_response(&self, response: Response) -> Result<Vec<u8>, BackendError> {
+        let status = response.status();
+        if status.is_success() {
+            Ok(response.bytes().await?.to_vec())
+        } else if status == StatusCode::UNAUTHORIZED {
+            Err(BackendError::AuthenticationFailed {
+                message: response.text().await?,
+            })
+        } else {
+            Err(BackendError::Http {
+                status,
+                message: response.text().await?,
             })
         }
     }

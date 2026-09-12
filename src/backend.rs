@@ -151,6 +151,13 @@ impl Backend {
         }
     }
 
+    pub async fn download_item(&self, item_id: &str) -> Result<Vec<u8>, BackendError> {
+        match self {
+            Self::Jellyfin(jellyfin) => jellyfin.download_item(item_id).await,
+            Self::Subsonic(subsonic) => subsonic.download_item(item_id).await,
+        }
+    }
+
     pub async fn request_library_rescan(&self, library_id: &str) -> Result<(), BackendError> {
         match self {
             Self::Jellyfin(jellyfin) => jellyfin.request_library_rescan(library_id).await,
