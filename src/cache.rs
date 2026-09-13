@@ -1,11 +1,12 @@
 use std::{
-    collections::HashSet,
-    fs,
+    collections::{HashMap, HashSet},
+    fs::{self, File},
+    io,
     num::NonZeroUsize,
     os::unix,
-    path::PathBuf,
+    path::{Path, PathBuf},
     sync::{Arc, Mutex as StdMutex},
-    time::Duration,
+    time::{Duration, SystemTime},
 };
 
 use gtk::gdk;
@@ -403,15 +404,28 @@ impl ImageCache {
 }
 
 #[derive(Debug)]
+struct CacheEntry {
+    path: PathBuf,
+    size_bytes: u64,
+    last_used: SystemTime,
+}
+
+type CacheKey = String;
+
+#[derive(Debug)]
 pub struct MediaCache {
     pub cache_dir: PathBuf,
+    cache: HashMap<CacheKey, CacheEntry>,
 }
 
 impl MediaCache {
     pub fn new() -> Option<Self> {
         let cache_dir = get_cache_directory("media").ok()?;
         fs::create_dir_all(&cache_dir).ok()?;
-        Some(Self { cache_dir })
+        Some(Self {
+            cache_dir,
+            cache: HashMap::new(),
+        })
     }
 
     pub fn clear_cache(&self) {
@@ -419,8 +433,20 @@ impl MediaCache {
         _ = fs::create_dir_all(&self.cache_dir);
     }
 
-    pub fn get_media_path(&self, id: &str) -> Option<PathBuf> {
+    pub fn media_path(&self, id: &str) -> Option<PathBuf> {
         let path = self.cache_dir.join(format!("auto/{id}"));
-        if path.is_file() { Some(path) } else { None }
+        if path.is_file() {
+            self.mark_used(&path);
+            Some(path)
+        } else {
+            None
+        }
+    }
+
+    fn mark_used(&self, path: &Path) {
+        let result = File::open(path).and_then(|file| file.set_modified(SystemTime::now()));
+        if let Err(err) = result {
+            log::warn!("Failed to mark file as used: {}", err);
+        }
     }
 }
