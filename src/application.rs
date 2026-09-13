@@ -201,7 +201,7 @@ impl Application {
 
     pub fn playback_uri(&self, song_id: &str) -> String {
         if let Some(cache) = self.imp().media_cache.borrow().as_ref()
-            && let Some(path) = cache.get_media_path(song_id)
+            && let Some(path) = cache.media_path(song_id)
         {
             debug!("{song_id} cached at {path:?}");
             gio::File::for_path(path).uri().into()
