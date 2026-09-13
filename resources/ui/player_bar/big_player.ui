@@ -143,6 +143,7 @@
                 <property name="tooltip-text" translatable="yes">Play</property>
                 <style>
                   <class name="pill"/>
+                  <class name="large-button"/>
                 </style>
               </object>
             </child>
