@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-14 07:52-0700\n"
+"POT-Creation-Date: 2026-09-14 13:58-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,6 +17,30 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+
+#: src/application.rs:121
+msgid "Playback error: {}"
+msgstr ""
+
+#: src/audio/model.rs:476
+msgid "Subsonic does not support seeking transcoded streams."
+msgstr ""
+
+#: src/audio/model.rs:478
+msgid "Failed to seek"
+msgstr ""
+
+#: src/models/playlist_type.rs:71
+msgid "Shuffled Songs"
+msgstr ""
+
+#: src/models/playlist_type.rs:73
+msgid "Top {} Played Songs"
+msgstr ""
+
+#: src/models/playlist_type.rs:75
+msgid "Favorite Mix"
+msgstr ""
 
 #: src/ui/album_detail.rs:35
 msgid "N/A"
@@ -66,7 +90,7 @@ msgstr ""
 
 #: src/ui/music_context_menu.rs:34 src/ui/music_context_menu.rs:87
 #: src/ui/playlist_dialogs.rs:20 src/ui/playlist_dialogs.rs:59
-#: src/ui/window.rs:189 resources/ui/setup.ui:203
+#: src/ui/window.rs:185 resources/ui/setup.ui:203
 msgid "Cancel"
 msgstr ""
 
@@ -112,6 +136,38 @@ msgstr ""
 
 #: src/ui/music_context_menu.rs:160
 msgid "Copy ID"
+msgstr ""
+
+#: src/ui/page_traits.rs:30
+msgid "Recently Added"
+msgstr ""
+
+#: src/ui/page_traits.rs:31
+msgid "Name"
+msgstr ""
+
+#: src/ui/page_traits.rs:32
+msgid "Album Artist"
+msgstr ""
+
+#: src/ui/page_traits.rs:33
+msgid "Year"
+msgstr ""
+
+#: src/ui/page_traits.rs:34
+msgid "Play Count"
+msgstr ""
+
+#: src/ui/page_traits.rs:35
+msgid "Num. Songs"
+msgstr ""
+
+#: src/ui/page_traits.rs:36
+msgid "Album"
+msgstr ""
+
+#: src/ui/page_traits.rs:37
+msgid "Last Played"
 msgstr ""
 
 #: src/ui/playback_mode.rs:34
@@ -382,31 +438,37 @@ msgstr ""
 msgid "Remote Properties"
 msgstr ""
 
-#: src/ui/window.rs:188 resources/ui/window.ui:415
+#: src/ui/window.rs:184 resources/ui/window.ui:415
 msgid "Change Library"
 msgstr ""
 
-#: src/ui/window.rs:189
+#: src/ui/window.rs:185
 msgid "Select"
 msgstr ""
 
-#: src/ui/window.rs:221
+#: src/ui/window.rs:217
 msgid "Failed to fetch libraries"
 msgstr ""
 
-#: src/ui/window.rs:231
+#: src/ui/window.rs:227
 msgid "Logged out"
 msgstr ""
 
-#: src/ui/window.rs:359
+#: src/ui/window.rs:355
 msgid "all genres"
 msgstr ""
 
-#: src/ui/window.rs:839
+#: src/ui/window.rs:835
 msgid "1 item added to library"
 msgid_plural "{} items added to library"
 msgstr[0] ""
 msgstr[1] ""
+
+#: src/ui/window.rs:856
+msgid ""
+"Library rescan requested. Wait a few seconds and then use the \"Refresh "
+"Library\" option."
+msgstr ""
 
 #: resources/ui/album_art.ui:33
 msgid "Missing album art"
@@ -586,6 +648,12 @@ msgstr ""
 
 #: resources/ui/setup.ui:36
 msgid "Host URL"
+msgstr ""
+
+#: resources/ui/setup.ui:38
+msgid ""
+"Enter the complete server address including protocol (HTTP or HTTPS) and "
+"port number (:8096)"
 msgstr ""
 
 #: resources/ui/setup.ui:43
