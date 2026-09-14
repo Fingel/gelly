@@ -378,6 +378,7 @@ mod imp {
     };
     use log::{debug, warn};
 
+    use crate::i18n::ngettext;
     use crate::ui::{
         album_art_background::BlurBackground,
         artist_detail::ArtistDetail,
@@ -834,7 +835,12 @@ mod imp {
                                     async move {
                                         window.refresh_genre_dropdown();
                                         window.toast(
-                                            &format!("{} items added to library", total_record_count),
+                                            &ngettext(
+                                                "1 item added to library",
+                                                "{} items added to library",
+                                                total_record_count as u32,
+                                            )
+                                            .replace("{}", &total_record_count.to_string()),
                                             Some(2),
                                         );
                                     }
