@@ -8,16 +8,16 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-09-07 17:15-0700\n"
-"PO-Revision-Date: 2026-09-10 21:02+0000\n"
+"PO-Revision-Date: 2026-09-13 11:51+0000\n"
 "Last-Translator: sendevia <me@sendevia.top>\n"
 "Language-Team: Chinese (Simplified Han script) <https://hosted.weblate.org/"
 "projects/gelly/gelly/zh_Hans/>\n"
-"Language: zh_Hans\n"
+"Language: zh_CN\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 2026.9.1\n"
+"X-Generator: Weblate 2026.10.dev0\n"
 
 #: src/ui/album_detail.rs:35
 msgid "N/A"
@@ -399,7 +399,7 @@ msgstr "无专辑"
 
 #: resources/ui/album_list.ui:14 resources/ui/artist_list.ui:14
 msgid "Caching initial library download..."
-msgstr ""
+msgstr "正在缓存初始曲库.."
 
 #: resources/ui/artist_detail.ui:41
 msgid "Artist Name"
@@ -573,7 +573,7 @@ msgstr "密码"
 
 #: resources/ui/setup.ui:61 resources/ui/setup.ui:222
 msgid "Advanced Settings"
-msgstr ""
+msgstr "高级设置"
 
 #: resources/ui/setup.ui:76
 msgid "Connect"
@@ -613,17 +613,17 @@ msgstr "在 Jellyfin 网页上输入代码以完成验证。"
 
 #: resources/ui/setup.ui:233
 msgid "Subsonic"
-msgstr ""
+msgstr "Subsonic"
 
 #: resources/ui/setup.ui:236
 msgid "Legacy Authentication"
-msgstr ""
+msgstr "旧式认证"
 
 #: resources/ui/setup.ui:237
 msgid ""
 "Required by specific servers that do not support token auth like Nextcloud "
 "Music."
-msgstr ""
+msgstr "某些不支持令牌认证的服务器（如 Nextcloud Music）需要此项。"
 
 #: resources/ui/shortcuts_dialog.ui:9 resources/ui/window.ui:411
 msgid "Refresh Library"
@@ -793,13 +793,13 @@ msgstr "登出"
 #: resources/ui/player_bar/compact_player_bar.ui:136
 #: resources/ui/player_bar/full_player_bar.ui:116
 msgid "Previous"
-msgstr ""
+msgstr "上一首"
 
 #: resources/ui/player_bar/big_player.ui:152
 #: resources/ui/player_bar/compact_player_bar.ui:156
 #: resources/ui/player_bar/full_player_bar.ui:136
 msgid "Next"
-msgstr ""
+msgstr "下一首"
 
 #: resources/ui/player_bar/big_player.ui:169
 #: resources/ui/player_bar/compact_player_bar.ui:110
