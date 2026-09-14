@@ -100,13 +100,9 @@ impl Window {
         imp.new_button.set_visible(page.can_new());
         imp.genre_filter.set_visible(page.has_genres());
         imp.reset_genre_button.set_visible(page.has_genres());
-        let sort_model = gtk::StringList::new(
-            &page
-                .sort_options()
-                .iter()
-                .map(|s| s.as_str())
-                .collect::<Vec<_>>(),
-        );
+        let sort_labels: Vec<String> = page.sort_options().iter().map(|s| s.as_str()).collect();
+        let sort_model =
+            gtk::StringList::new(&sort_labels.iter().map(|s| s.as_str()).collect::<Vec<_>>());
         imp.sort_changing.set(true);
         imp.sort_dropdown.set_model(Some(&sort_model));
         imp.sort_dropdown.set_selected(page.current_sort_by());
@@ -378,7 +374,7 @@ mod imp {
     };
     use log::{debug, warn};
 
-    use crate::i18n::ngettext;
+    use crate::i18n::{ngettext, tr};
     use crate::ui::{
         album_art_background::BlurBackground,
         artist_detail::ArtistDetail,
@@ -857,7 +853,7 @@ mod imp {
                             window,
                             move |_app: Application| {
                                 window.toast(
-                                    "Library rescan requested. Wait a few seconds and then use the \"Refresh Library\" option.",
+                                    &tr("Library rescan requested. Wait a few seconds and then use the \"Refresh Library\" option."),
                                     None,
                                 );
                             }

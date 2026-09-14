@@ -13,6 +13,7 @@ use super::shuffle::ShuffleState;
 use crate::{
     audio::player::{AudioPlayer, PlayerEvent, PlayerState},
     config::{self, BackendType},
+    i18n::tr,
     models::SongModel,
     reporting::{PlaybackEvent, ReportingManager},
     ui::playback_mode::PlaybackMode,
@@ -472,11 +473,11 @@ impl AudioModel {
             });
         } else {
             let msg = if config::get_backend_type() == BackendType::Subsonic {
-                "Subsonic does not support seeking transcoded streams."
+                tr("Subsonic does not support seeking transcoded streams.")
             } else {
-                "Failed to seek"
+                tr("Failed to seek")
             };
-            self.emit_by_name::<()>("error", &[&msg.to_string()]);
+            self.emit_by_name::<()>("error", &[&msg]);
         }
     }
 
