@@ -216,16 +216,22 @@ impl AudioModel {
         self.notify("queue-total-duration");
     }
 
+    fn report_navigation_changed(&self, can_go_next: bool, can_go_previous: bool, can_play: bool) {
+        let shuffle_repeat =
+            self.playback_mode() == PlaybackMode::ShuffleRepeat as u32 && self.queue_len() > 0;
+        self.report_event(PlaybackEvent::NavigationChanged {
+            can_go_next: shuffle_repeat || can_go_next,
+            can_go_previous: shuffle_repeat || can_go_previous,
+            can_play,
+        });
+    }
+
     pub fn set_queue(&self, songs: Vec<SongModel>, start_index: usize, ignore_shuffle: bool) {
         let song_len = songs.len();
         let queue = &self.imp().queue;
         queue.remove_all();
         queue.extend_from_slice(&songs);
-        self.report_event(PlaybackEvent::NavigationChanged {
-            can_go_next: song_len > 0,
-            can_go_previous: start_index > 0,
-            can_play: song_len > 0,
-        });
+        self.report_navigation_changed(song_len > 0, start_index > 0, song_len > 0);
         self.new_shuffle_cycle();
         if song_len > 0 {
             let index = if self.is_shuffle_enabled() && !ignore_shuffle {
@@ -251,11 +257,7 @@ impl AudioModel {
         let songs_len = songs.len();
         self.imp().queue.extend_from_slice(&songs);
         let current_index = self.queue_index();
-        self.report_event(PlaybackEvent::NavigationChanged {
-            can_go_next: songs_len > 0,
-            can_go_previous: current_index > 0,
-            can_play: true,
-        });
+        self.report_navigation_changed(songs_len > 0, current_index > 0, true);
         self.new_shuffle_cycle();
     }
 
@@ -270,22 +272,14 @@ impl AudioModel {
         for (i, song) in songs.into_iter().enumerate() {
             queue.insert((index + i) as u32, &song);
         }
-        self.report_event(PlaybackEvent::NavigationChanged {
-            can_go_next: index < self.queue_len() as usize,
-            can_go_previous: current_index > 0,
-            can_play: true,
-        });
+        self.report_navigation_changed(index < self.queue_len() as usize, current_index > 0, true);
         self.new_shuffle_cycle();
     }
 
     pub fn clear_queue(&self) {
         self.imp().queue.remove_all();
         self.set_queue_index(-1);
-        self.report_event(PlaybackEvent::NavigationChanged {
-            can_go_next: false,
-            can_go_previous: false,
-            can_play: false,
-        });
+        self.report_navigation_changed(false, false, false);
     }
 
     pub fn play_song(&self, index: usize) {
@@ -330,11 +324,12 @@ impl AudioModel {
         self.set_property("duration", song.duration_seconds() as u32);
         self.emit_by_name::<()>("song-changed", &[&song.id()]);
         let queue_len = self.queue_len();
+        let shuffle_repeat = self.playback_mode() == PlaybackMode::ShuffleRepeat as u32;
         self.report_event(PlaybackEvent::TrackChanged {
             song: Some(song),
             position: 0,
-            can_go_next: (index + 1) < queue_len,
-            can_go_previous: index > 0,
+            can_go_next: shuffle_repeat || (index + 1) < queue_len,
+            can_go_previous: shuffle_repeat || index > 0,
         });
         self.prefetch_next_uri();
     }
@@ -707,11 +702,23 @@ mod imp {
         }
 
         pub fn set_playback_mode(&self, mode: u32) {
+            if self.playback_mode.get() == mode {
+                return;
+            }
             self.playback_mode.set(mode);
             config::set_playback_mode(mode);
             if mode == PlaybackMode::Shuffle as u32 || mode == PlaybackMode::ShuffleRepeat as u32 {
                 self.obj().new_shuffle_cycle();
             }
+            let obj = self.obj();
+            obj.report_event(PlaybackEvent::PlaybackModeChanged { mode });
+            let queue_len = obj.queue_len();
+            let index = self.queue_index.get();
+            obj.report_navigation_changed(
+                index >= 0 && index + 1 < queue_len,
+                index > 0,
+                queue_len > 0,
+            );
         }
     }
 }
