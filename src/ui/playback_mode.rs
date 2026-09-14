@@ -4,6 +4,8 @@ use gtk::{self, gio, glib, prelude::*, subclass::prelude::*};
 use log::{debug, warn};
 use num_enum::TryFromPrimitive;
 
+use crate::i18n::tr;
+
 use crate::audio::model::AudioModel;
 
 #[derive(Debug, TryFromPrimitive)]
@@ -27,13 +29,13 @@ impl PlaybackMode {
         }
     }
 
-    fn label(&self) -> &'static str {
+    fn label(&self) -> String {
         match self {
-            PlaybackMode::Normal => "No Shuffle/Repeat",
-            PlaybackMode::Shuffle => "Shuffle",
-            PlaybackMode::Repeat => "Repeat",
-            PlaybackMode::RepeatOne => "Repeat One",
-            PlaybackMode::ShuffleRepeat => "Shuffle Repeat",
+            PlaybackMode::Normal => tr("No Shuffle/Repeat"),
+            PlaybackMode::Shuffle => tr("Shuffle"),
+            PlaybackMode::Repeat => tr("Repeat"),
+            PlaybackMode::RepeatOne => tr("Repeat One"),
+            PlaybackMode::ShuffleRepeat => tr("Shuffle Repeat"),
         }
     }
 }
@@ -139,7 +141,7 @@ mod imp {
                 super::PlaybackMode::Repeat,
                 super::PlaybackMode::RepeatOne,
             ] {
-                let item = gio::MenuItem::new(Some(mode.label()), None);
+                let item = gio::MenuItem::new(Some(&mode.label()), None);
                 item.set_action_and_target_value(
                     Some("playbackmode.mode"),
                     Some(&(mode as u32).to_variant()),
