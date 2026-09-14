@@ -13,6 +13,7 @@ pub enum PlaybackMode {
     Shuffle = 1,
     Repeat = 2,
     RepeatOne = 3,
+    ShuffleRepeat = 4,
 }
 
 impl PlaybackMode {
@@ -22,6 +23,7 @@ impl PlaybackMode {
             PlaybackMode::Shuffle => "media-playlist-shuffle-symbolic",
             PlaybackMode::Repeat => "media-playlist-repeat-symbolic",
             PlaybackMode::RepeatOne => "media-playlist-repeat-song-symbolic",
+            PlaybackMode::ShuffleRepeat => "playlist-infinite-symbolic",
         }
     }
 
@@ -31,6 +33,7 @@ impl PlaybackMode {
             PlaybackMode::Shuffle => "Shuffle",
             PlaybackMode::Repeat => "Repeat",
             PlaybackMode::RepeatOne => "Repeat One",
+            PlaybackMode::ShuffleRepeat => "Shuffle Repeat",
         }
     }
 }
@@ -132,6 +135,7 @@ mod imp {
             for mode in [
                 super::PlaybackMode::Normal,
                 super::PlaybackMode::Shuffle,
+                super::PlaybackMode::ShuffleRepeat,
                 super::PlaybackMode::Repeat,
                 super::PlaybackMode::RepeatOne,
             ] {

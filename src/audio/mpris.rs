@@ -166,6 +166,7 @@ impl LocalPlayerInterface for AudioModel {
         match PlaybackMode::try_from(self.playback_mode()) {
             Ok(PlaybackMode::Normal) => Ok(LoopStatus::None),
             Ok(PlaybackMode::Shuffle) => Ok(LoopStatus::None), // Not handled by loop status
+            Ok(PlaybackMode::ShuffleRepeat) => Ok(LoopStatus::Playlist),
             Ok(PlaybackMode::Repeat) => Ok(LoopStatus::Playlist),
             Ok(PlaybackMode::RepeatOne) => Ok(LoopStatus::Track),
             Err(_) => Ok(LoopStatus::None),
