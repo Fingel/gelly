@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-13 22:27-0700\n"
+"POT-Creation-Date: 2026-09-14 07:52-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -112,6 +112,26 @@ msgstr ""
 
 #: src/ui/music_context_menu.rs:160
 msgid "Copy ID"
+msgstr ""
+
+#: src/ui/playback_mode.rs:34
+msgid "No Shuffle/Repeat"
+msgstr ""
+
+#: src/ui/playback_mode.rs:35
+msgid "Shuffle"
+msgstr ""
+
+#: src/ui/playback_mode.rs:36
+msgid "Repeat"
+msgstr ""
+
+#: src/ui/playback_mode.rs:37
+msgid "Repeat One"
+msgstr ""
+
+#: src/ui/playback_mode.rs:38
+msgid "Shuffle Repeat"
 msgstr ""
 
 #: src/ui/player_bar/common.rs:78
