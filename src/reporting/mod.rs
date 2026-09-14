@@ -39,6 +39,9 @@ pub enum PlaybackEvent {
     VolumeChanged {
         volume: f64,
     },
+    PlaybackModeChanged {
+        mode: u32,
+    },
     NavigationChanged {
         can_go_next: bool,
         can_go_previous: bool,

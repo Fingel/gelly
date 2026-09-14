@@ -5,9 +5,10 @@ use gtk::{
     subclass::prelude::*,
 };
 use log::warn;
-use rand::RngExt;
 use std::cell::{Cell, RefCell};
 use std::sync::OnceLock;
+
+use super::shuffle::ShuffleState;
 
 use crate::{
     audio::player::{AudioPlayer, PlayerEvent, PlayerState},
@@ -215,19 +216,25 @@ impl AudioModel {
         self.notify("queue-total-duration");
     }
 
+    fn report_navigation_changed(&self, can_go_next: bool, can_go_previous: bool, can_play: bool) {
+        let shuffle_repeat =
+            self.playback_mode() == PlaybackMode::ShuffleRepeat as u32 && self.queue_len() > 0;
+        self.report_event(PlaybackEvent::NavigationChanged {
+            can_go_next: shuffle_repeat || can_go_next,
+            can_go_previous: shuffle_repeat || can_go_previous,
+            can_play,
+        });
+    }
+
     pub fn set_queue(&self, songs: Vec<SongModel>, start_index: usize, ignore_shuffle: bool) {
         let song_len = songs.len();
         let queue = &self.imp().queue;
         queue.remove_all();
         queue.extend_from_slice(&songs);
-        self.report_event(PlaybackEvent::NavigationChanged {
-            can_go_next: song_len > 0,
-            can_go_previous: start_index > 0,
-            can_play: song_len > 0,
-        });
+        self.report_navigation_changed(song_len > 0, start_index > 0, song_len > 0);
         self.new_shuffle_cycle();
         if song_len > 0 {
-            let index = if self.playback_mode() == PlaybackMode::Shuffle as u32 && !ignore_shuffle {
+            let index = if self.is_shuffle_enabled() && !ignore_shuffle {
                 self.next_index().unwrap_or(0)
             } else {
                 start_index as i32
@@ -250,11 +257,7 @@ impl AudioModel {
         let songs_len = songs.len();
         self.imp().queue.extend_from_slice(&songs);
         let current_index = self.queue_index();
-        self.report_event(PlaybackEvent::NavigationChanged {
-            can_go_next: songs_len > 0,
-            can_go_previous: current_index > 0,
-            can_play: true,
-        });
+        self.report_navigation_changed(songs_len > 0, current_index > 0, true);
         self.new_shuffle_cycle();
     }
 
@@ -269,22 +272,14 @@ impl AudioModel {
         for (i, song) in songs.into_iter().enumerate() {
             queue.insert((index + i) as u32, &song);
         }
-        self.report_event(PlaybackEvent::NavigationChanged {
-            can_go_next: index < self.queue_len() as usize,
-            can_go_previous: current_index > 0,
-            can_play: true,
-        });
+        self.report_navigation_changed(index < self.queue_len() as usize, current_index > 0, true);
         self.new_shuffle_cycle();
     }
 
     pub fn clear_queue(&self) {
         self.imp().queue.remove_all();
         self.set_queue_index(-1);
-        self.report_event(PlaybackEvent::NavigationChanged {
-            can_go_next: false,
-            can_go_previous: false,
-            can_play: false,
-        });
+        self.report_navigation_changed(false, false, false);
     }
 
     pub fn play_song(&self, index: usize) {
@@ -329,11 +324,12 @@ impl AudioModel {
         self.set_property("duration", song.duration_seconds() as u32);
         self.emit_by_name::<()>("song-changed", &[&song.id()]);
         let queue_len = self.queue_len();
+        let shuffle_repeat = self.playback_mode() == PlaybackMode::ShuffleRepeat as u32;
         self.report_event(PlaybackEvent::TrackChanged {
             song: Some(song),
             position: 0,
-            can_go_next: (index + 1) < queue_len,
-            can_go_previous: index > 0,
+            can_go_next: shuffle_repeat || (index + 1) < queue_len,
+            can_go_previous: shuffle_repeat || index > 0,
         });
         self.prefetch_next_uri();
     }
@@ -395,22 +391,12 @@ impl AudioModel {
                     None
                 }
             }
-            PlaybackMode::Shuffle => {
-                let shuffle_order = self.get_shuffle_order();
-                let current_pos = self.imp().shuffle_index.get();
-                if current_pos < shuffle_order.len() {
-                    shuffle_order.get(current_pos).map(|&song_index| {
-                        if !peek {
-                            self.imp().shuffle_index.set(current_pos + 1);
-                        }
-                        song_index as i32
-                    })
-                } else {
-                    if !peek {
-                        self.new_shuffle_cycle();
-                    }
-                    None
-                }
+            PlaybackMode::Shuffle | PlaybackMode::ShuffleRepeat => {
+                self.imp().shuffle.borrow_mut().next(
+                    self.queue_len() as usize,
+                    matches!(mode, PlaybackMode::ShuffleRepeat),
+                    peek,
+                )
             }
             PlaybackMode::Repeat => {
                 let next_index = self.queue_index() + 1;
@@ -435,23 +421,13 @@ impl AudioModel {
                 };
                 Some(index)
             }
-            PlaybackMode::Shuffle => {
-                let shuffle_order = self.get_shuffle_order();
-                let current_pos = self.imp().shuffle_index.get();
-                // shuffle_index points to next song, so current is at current_pos - 1
-                if self.get_position() > 3 {
-                    // Restart current song if more than 3 seconds have elapsed
-                    shuffle_order.get(current_pos - 1).map(|idx| *idx as i32)
-                } else if current_pos > 1 {
-                    // Go to previous song
-                    let prev_pos = current_pos - 2;
-                    self.imp().shuffle_index.set(current_pos - 1);
-                    shuffle_order.get(prev_pos).map(|idx| *idx as i32)
-                } else {
-                    // At start of shuffle - just restart first song
-                    self.imp().shuffle_index.set(1);
-                    shuffle_order.first().map(|idx| *idx as i32)
-                }
+            PlaybackMode::Shuffle | PlaybackMode::ShuffleRepeat => {
+                self.imp().shuffle.borrow_mut().previous(
+                    self.queue_len() as usize,
+                    self.queue_index(),
+                    self.get_position(),
+                    matches!(mode, PlaybackMode::ShuffleRepeat),
+                )
             }
             PlaybackMode::Repeat => {
                 let index = if self.get_position() > 3 {
@@ -548,29 +524,21 @@ impl AudioModel {
         self.current_song().map(|s| s.id()).unwrap_or_default()
     }
 
+    fn is_shuffle_enabled(&self) -> bool {
+        matches!(
+            PlaybackMode::try_from(self.playback_mode()),
+            Ok(PlaybackMode::Shuffle | PlaybackMode::ShuffleRepeat)
+        )
+    }
+
     fn advance_shuffle_cursor(&self) {
-        if self.playback_mode() == PlaybackMode::Shuffle as u32 {
-            let pos = self.imp().shuffle_index.get();
-            self.imp().shuffle_index.set(pos + 1);
+        if self.is_shuffle_enabled() {
+            let _ = self.next_index();
         }
     }
 
     fn new_shuffle_cycle(&self) {
-        let new_seed = rand::rng().random::<u64>();
-        self.imp().shuffle_seed.set(new_seed);
-        self.imp().shuffle_index.set(0);
-    }
-
-    fn get_shuffle_order(&self) -> Vec<usize> {
-        let queue_len = self.queue().len();
-        if queue_len == 0 {
-            return Vec::new();
-        }
-        let mut indicies: Vec<usize> = (0..queue_len).collect();
-        use rand::{SeedableRng, seq::SliceRandom};
-        let mut rng = rand::rngs::StdRng::seed_from_u64(self.imp().shuffle_seed.get());
-        indicies.shuffle(&mut rng);
-        indicies
+        self.imp().shuffle.borrow_mut().reset();
     }
 }
 
@@ -629,8 +597,7 @@ mod imp {
         pub queue: gio::ListStore,
         pub mpris_server: OnceCell<LocalServer<super::AudioModel>>,
         pub reporting_manager: OnceCell<ReportingManager>,
-        pub shuffle_index: Cell<usize>,
-        pub shuffle_seed: Cell<u64>,
+        pub shuffle: RefCell<ShuffleState>,
         pub uri: RefCell<Option<String>>,
         pub prefetched_next_index: Cell<Option<i32>>,
         pub prefetched_next_uri: RefCell<Option<String>>,
@@ -656,8 +623,7 @@ mod imp {
                 queue: gio::ListStore::new::<SongModel>(),
                 mpris_server: OnceCell::new(),
                 reporting_manager: OnceCell::new(),
-                shuffle_index: Cell::new(0),
-                shuffle_seed: Cell::new(0),
+                shuffle: RefCell::new(ShuffleState::default()),
                 uri: RefCell::new(None),
                 prefetched_next_index: Cell::new(None),
                 prefetched_next_uri: RefCell::new(None),
@@ -736,11 +702,23 @@ mod imp {
         }
 
         pub fn set_playback_mode(&self, mode: u32) {
+            if self.playback_mode.get() == mode {
+                return;
+            }
             self.playback_mode.set(mode);
             config::set_playback_mode(mode);
-            if mode == PlaybackMode::Shuffle as u32 {
+            if mode == PlaybackMode::Shuffle as u32 || mode == PlaybackMode::ShuffleRepeat as u32 {
                 self.obj().new_shuffle_cycle();
             }
+            let obj = self.obj();
+            obj.report_event(PlaybackEvent::PlaybackModeChanged { mode });
+            let queue_len = obj.queue_len();
+            let index = self.queue_index.get();
+            obj.report_navigation_changed(
+                index >= 0 && index + 1 < queue_len,
+                index > 0,
+                queue_len > 0,
+            );
         }
     }
 }

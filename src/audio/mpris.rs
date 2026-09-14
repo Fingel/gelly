@@ -166,6 +166,7 @@ impl LocalPlayerInterface for AudioModel {
         match PlaybackMode::try_from(self.playback_mode()) {
             Ok(PlaybackMode::Normal) => Ok(LoopStatus::None),
             Ok(PlaybackMode::Shuffle) => Ok(LoopStatus::None), // Not handled by loop status
+            Ok(PlaybackMode::ShuffleRepeat) => Ok(LoopStatus::Playlist),
             Ok(PlaybackMode::Repeat) => Ok(LoopStatus::Playlist),
             Ok(PlaybackMode::RepeatOne) => Ok(LoopStatus::Track),
             Err(_) => Ok(LoopStatus::None),
@@ -173,8 +174,13 @@ impl LocalPlayerInterface for AudioModel {
     }
 
     async fn set_loop_status(&self, loop_status: LoopStatus) -> mpris_server::zbus::Result<()> {
+        let shuffle = self.shuffle().await?;
         match loop_status {
+            LoopStatus::None if shuffle => self.set_playback_mode(PlaybackMode::Shuffle as u32),
             LoopStatus::None => self.set_playback_mode(PlaybackMode::Normal as u32),
+            LoopStatus::Playlist if shuffle => {
+                self.set_playback_mode(PlaybackMode::ShuffleRepeat as u32)
+            }
             LoopStatus::Playlist => self.set_playback_mode(PlaybackMode::Repeat as u32),
             LoopStatus::Track => self.set_playback_mode(PlaybackMode::RepeatOne as u32),
         }
@@ -192,14 +198,22 @@ impl LocalPlayerInterface for AudioModel {
     }
 
     async fn shuffle(&self) -> fdo::Result<bool> {
-        Ok(self.imp().playback_mode.get() == PlaybackMode::Shuffle as u32)
+        Ok(
+            self.imp().playback_mode.get() == PlaybackMode::Shuffle as u32
+                || self.imp().playback_mode.get() == PlaybackMode::ShuffleRepeat as u32,
+        )
     }
 
     async fn set_shuffle(&self, shuffle: bool) -> mpris_server::zbus::Result<()> {
-        self.set_playback_mode(if shuffle {
-            PlaybackMode::Shuffle as u32
-        } else {
-            PlaybackMode::Normal as u32
+        if self.shuffle().await? == shuffle {
+            return Ok(());
+        }
+        let repeat = self.loop_status().await? == LoopStatus::Playlist;
+        self.set_playback_mode(match (shuffle, repeat) {
+            (true, true) => PlaybackMode::ShuffleRepeat as u32,
+            (true, false) => PlaybackMode::Shuffle as u32,
+            (false, true) => PlaybackMode::Repeat as u32,
+            (false, false) => PlaybackMode::Normal as u32,
         });
         Ok(())
     }
@@ -235,11 +249,17 @@ impl LocalPlayerInterface for AudioModel {
 
     async fn can_go_next(&self) -> fdo::Result<bool> {
         let queue = self.queue();
+        if self.playback_mode() == PlaybackMode::ShuffleRepeat as u32 {
+            return Ok(!queue.is_empty());
+        }
         let current_index = self.queue_index();
         Ok(current_index >= 0 && (current_index + 1) < queue.len() as i32)
     }
 
     async fn can_go_previous(&self) -> fdo::Result<bool> {
+        if self.playback_mode() == PlaybackMode::ShuffleRepeat as u32 {
+            return Ok(self.queue_len() > 0);
+        }
         Ok(self.queue_index() > 0)
     }
 
