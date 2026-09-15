@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-09-14 13:58-0700\n"
-"PO-Revision-Date: 2026-09-15 14:13+0000\n"
+"PO-Revision-Date: 2026-09-15 14:17+0000\n"
 "Last-Translator: Tomasz Bojanowski "
 "<tbojanowski@users.noreply.hosted.weblate.org>\n"
 "Language-Team: Polish <https://hosted.weblate.org/projects/gelly/gelly/pl/>\n"
@@ -151,7 +151,7 @@ msgstr "Nazwa"
 
 #: src/ui/page_traits.rs:32
 msgid "Album Artist"
-msgstr "Wykonawca albumu"
+msgstr "Artysta albumu"
 
 #: src/ui/page_traits.rs:33
 msgid "Year"
@@ -175,7 +175,7 @@ msgstr "Ostatnio odtwarzane"
 
 #: src/ui/playback_mode.rs:34
 msgid "No Shuffle/Repeat"
-msgstr "Odtwarzanie kolejno"
+msgstr "Kolejno"
 
 #: src/ui/playback_mode.rs:35
 msgid "Shuffle"
@@ -477,7 +477,7 @@ msgid ""
 "Library\" option."
 msgstr ""
 "Zażądano przeskanowania biblioteki. Odczekaj kilka sekund, a następnie użyj "
-"opcji „Odśwież bibliotekę\"."
+"opcji „Odśwież bibliotekę”."
 
 #: resources/ui/album_art.ui:33
 msgid "Missing album art"
