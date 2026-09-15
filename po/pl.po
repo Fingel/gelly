@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-09-14 13:58-0700\n"
-"PO-Revision-Date: 2026-09-15 15:10+0000\n"
+"PO-Revision-Date: 2026-09-15 15:31+0000\n"
 "Last-Translator: Tomasz Bojanowski "
 "<tbojanowski@users.noreply.hosted.weblate.org>\n"
 "Language-Team: Polish <https://hosted.weblate.org/projects/gelly/gelly/pl/>\n"
@@ -59,9 +59,9 @@ msgstr "Moduł audio nie został zainicjowany, uruchom ponownie"
 #: src/ui/playlist_detail.rs:501
 msgid "1 song added to queue"
 msgid_plural "{} songs added to queue"
-msgstr[0] "1 utwór dodany do kolejki"
-msgstr[1] "{} utwory dodane do kolejki"
-msgstr[2] "{} utworów dodanych do kolejki"
+msgstr[0] "Dodano 1 utwór do kolejki"
+msgstr[1] "Dodano {} utwory do kolejki"
+msgstr[2] "Dodano {} utworów do kolejki"
 
 #: src/ui/album_detail.rs:236
 msgid "Album ID copied to clipboard"
@@ -660,7 +660,7 @@ msgstr ""
 
 #: resources/ui/setup.ui:36
 msgid "Host URL"
-msgstr "URL serwera"
+msgstr "Adres URL serwera"
 
 #: resources/ui/setup.ui:38
 msgid ""
@@ -716,7 +716,7 @@ msgstr "Szybkie połączenie"
 
 #: resources/ui/setup.ui:168
 msgid "Enter the code on the Jellyfin web page to complete authentication."
-msgstr "Wprowadź kod na stronie Jellyfin, aby dokończyć uwierzytelnianie."
+msgstr "Podaj kod na stronie Jellyfin, aby dokończyć uwierzytelnianie."
 
 #: resources/ui/setup.ui:233
 msgid "Subsonic"
