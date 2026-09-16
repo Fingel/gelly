@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-09-14 13:58-0700\n"
-"PO-Revision-Date: 2026-08-28 04:51+0000\n"
+"PO-Revision-Date: 2026-09-16 22:51+0000\n"
 "Last-Translator: Julian Meergans <tubuspapaya@gmail.com>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/gelly/gelly/de/>\n"
 "Language: de\n"
@@ -16,42 +16,31 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 2026.9.dev0\n"
+"X-Generator: Weblate 2026.10.dev0\n"
 
 #: src/application.rs:121
-#, fuzzy
-#| msgid "Playback Mode"
 msgid "Playback error: {}"
-msgstr "Wiedergabe-Modus"
+msgstr "Wiedergabefehler: {}"
 
 #: src/audio/model.rs:476
-#, fuzzy
-#| msgid "Currently Subsonic backends cannot seek transcoded streams."
 msgid "Subsonic does not support seeking transcoded streams."
-msgstr ""
-"Derzeit können Subsonic-Backends in transkodierten Streams nicht springen."
+msgstr "Subsonic unterstützt das Springen in transkodierten Streams nicht."
 
 #: src/audio/model.rs:478
-#, fuzzy
-#| msgid "Failed to delete playlist"
 msgid "Failed to seek"
-msgstr "Löschen der Wiedergabeliste fehlgeschlagen"
+msgstr "Springen fehlgeschlagen"
 
 #: src/models/playlist_type.rs:71
-#, fuzzy
-#| msgid "Shuffled Playlist"
 msgid "Shuffled Songs"
-msgstr "Zufällige Wiedergabeliste"
+msgstr "Zufällige Lieder"
 
 #: src/models/playlist_type.rs:73
 msgid "Top {} Played Songs"
-msgstr ""
+msgstr "Top {} gespielte Lieder"
 
 #: src/models/playlist_type.rs:75
-#, fuzzy
-#| msgid "Favorite"
 msgid "Favorite Mix"
-msgstr "Favorit"
+msgstr "Favoriten-Mix"
 
 #: src/ui/album_detail.rs:35
 msgid "N/A"
@@ -118,7 +107,7 @@ msgstr ""
 
 #: src/ui/music_context_menu.rs:86
 msgid "Song already in playlist"
-msgstr "Titel bereits hinzugefügt"
+msgstr "Das Lied ist bereits in der Wiedergabeliste"
 
 #: src/ui/music_context_menu.rs:87
 msgid "Add Anyway"
@@ -154,63 +143,55 @@ msgstr "ID kopieren"
 
 #: src/ui/page_traits.rs:30
 msgid "Recently Added"
-msgstr ""
+msgstr "Zuletzt hinzugefügt"
 
 #: src/ui/page_traits.rs:31
 msgid "Name"
-msgstr ""
+msgstr "Name"
 
 #: src/ui/page_traits.rs:32
-#, fuzzy
-#| msgid "Album Detail"
 msgid "Album Artist"
-msgstr "Albumdetails"
+msgstr "Album-Künster*in"
 
 #: src/ui/page_traits.rs:33
 msgid "Year"
-msgstr ""
+msgstr "Jahr"
 
 #: src/ui/page_traits.rs:34
 msgid "Play Count"
-msgstr ""
+msgstr "Anzahl der Wiedergaben"
 
 #: src/ui/page_traits.rs:35
-#, fuzzy
-#| msgid "No Songs"
 msgid "Num. Songs"
-msgstr "Keine Lieder"
+msgstr "Anzahl der Lieder"
 
 #: src/ui/page_traits.rs:36
-#, fuzzy
-#| msgid "Albums"
 msgid "Album"
-msgstr "Alben"
+msgstr "Album"
 
 #: src/ui/page_traits.rs:37
 msgid "Last Played"
-msgstr ""
+msgstr "Zuletzt gespielt"
 
 #: src/ui/playback_mode.rs:34
 msgid "No Shuffle/Repeat"
-msgstr ""
+msgstr "Keine Zufallswiedergabe/Wiederholung"
 
 #: src/ui/playback_mode.rs:35
 msgid "Shuffle"
-msgstr ""
+msgstr "Zufallswiedergabe"
 
 #: src/ui/playback_mode.rs:36
 msgid "Repeat"
-msgstr ""
+msgstr "Wiederholung"
 
 #: src/ui/playback_mode.rs:37
 msgid "Repeat One"
-msgstr ""
+msgstr "Einzelnes Lied wiederholen"
 
 #: src/ui/playback_mode.rs:38
-#, fuzzy
-#| msgid "Shuffled Playlist"
 msgid "Shuffle Repeat"
-msgstr "Zufällige Wiedergabeliste"
+msgstr "Zufallswiedergabe mit Wiederholung"
 
 #: src/ui/player_bar/common.rs:78
 msgid "Pause"
@@ -488,14 +469,17 @@ msgstr "Alle Genres"
 #: src/ui/window.rs:835
 msgid "1 item added to library"
 msgid_plural "{} items added to library"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "1 Titel zur Bibliothek hinzugefügt"
+msgstr[1] "{} Titel zur Bibliothek hinzugefügt"
 
 #: src/ui/window.rs:856
 msgid ""
 "Library rescan requested. Wait a few seconds and then use the \"Refresh "
 "Library\" option."
 msgstr ""
+"Es wurde eine erneute Überprüfung der Bibliothek angefordert. Bitte warten "
+"Sie einige Sekunden und nutzen Sie anschließend die Option „Bibliothek "
+"aktualisieren“."
 
 #: resources/ui/album_art.ui:33
 msgid "Missing album art"
@@ -515,7 +499,7 @@ msgstr "Keine Alben"
 
 #: resources/ui/album_list.ui:14 resources/ui/artist_list.ui:14
 msgid "Caching initial library download..."
-msgstr ""
+msgstr "Der erstmalige Download der Bibliothek wird zwischengespeichert..."
 
 #: resources/ui/artist_detail.ui:41
 msgid "Artist Name"
@@ -688,6 +672,8 @@ msgid ""
 "Enter the complete server address including protocol (HTTP or HTTPS) and "
 "port number (:8096)"
 msgstr ""
+"Geben Sie die vollständige Serveradresse einschließlich des Protokolls (HTTP "
+"oder HTTPS) und der Portnummer (:8096) ein"
 
 #: resources/ui/setup.ui:43
 msgid "Username"
@@ -699,7 +685,7 @@ msgstr "Passwort"
 
 #: resources/ui/setup.ui:61 resources/ui/setup.ui:222
 msgid "Advanced Settings"
-msgstr ""
+msgstr "Erweiterte Einstellungen"
 
 #: resources/ui/setup.ui:76
 msgid "Connect"
@@ -742,17 +728,19 @@ msgstr ""
 
 #: resources/ui/setup.ui:233
 msgid "Subsonic"
-msgstr ""
+msgstr "Subsonic"
 
 #: resources/ui/setup.ui:236
 msgid "Legacy Authentication"
-msgstr ""
+msgstr "Alte Authentifizierungsmethode"
 
 #: resources/ui/setup.ui:237
 msgid ""
 "Required by specific servers that do not support token auth like Nextcloud "
 "Music."
 msgstr ""
+"Erforderlich für bestimmte Server, die keine Token-Authentifizierung "
+"unterstützen, wie beispielsweise Nextcloud Music."
 
 #: resources/ui/shortcuts_dialog.ui:9 resources/ui/window.ui:411
 msgid "Refresh Library"
@@ -924,13 +912,13 @@ msgstr "Abmelden"
 #: resources/ui/player_bar/compact_player_bar.ui:136
 #: resources/ui/player_bar/full_player_bar.ui:116
 msgid "Previous"
-msgstr ""
+msgstr "Vorheriges"
 
 #: resources/ui/player_bar/big_player.ui:153
 #: resources/ui/player_bar/compact_player_bar.ui:156
 #: resources/ui/player_bar/full_player_bar.ui:137
 msgid "Next"
-msgstr ""
+msgstr "Nächstes"
 
 #: resources/ui/player_bar/big_player.ui:170
 #: resources/ui/player_bar/compact_player_bar.ui:110
