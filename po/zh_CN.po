@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-09-14 13:58-0700\n"
-"PO-Revision-Date: 2026-09-13 11:51+0000\n"
+"PO-Revision-Date: 2026-09-16 22:51+0000\n"
 "Last-Translator: sendevia <me@sendevia.top>\n"
 "Language-Team: Chinese (Simplified Han script) <https://hosted.weblate.org/"
 "projects/gelly/gelly/zh_Hans/>\n"
@@ -20,38 +20,28 @@ msgstr ""
 "X-Generator: Weblate 2026.10.dev0\n"
 
 #: src/application.rs:121
-#, fuzzy
-#| msgid "Playback Mode"
 msgid "Playback error: {}"
-msgstr "播放模式"
+msgstr "播放错误：{}"
 
 #: src/audio/model.rs:476
-#, fuzzy
-#| msgid "Currently Subsonic backends cannot seek transcoded streams."
 msgid "Subsonic does not support seeking transcoded streams."
-msgstr "目前，Subsonic 后端无法对转码流进行跳转播放。"
+msgstr "Subsonic 不支持对转码流进行进度跳转。"
 
 #: src/audio/model.rs:478
-#, fuzzy
-#| msgid "Failed to delete playlist"
 msgid "Failed to seek"
-msgstr "无法删除歌单"
+msgstr "无法跳转"
 
 #: src/models/playlist_type.rs:71
-#, fuzzy
-#| msgid "Shuffled Playlist"
 msgid "Shuffled Songs"
-msgstr "随机播放的歌单"
+msgstr "随机播放的歌曲"
 
 #: src/models/playlist_type.rs:73
 msgid "Top {} Played Songs"
-msgstr ""
+msgstr "播放次数最多的 {} 首歌曲"
 
 #: src/models/playlist_type.rs:75
-#, fuzzy
-#| msgid "Favorite"
 msgid "Favorite Mix"
-msgstr "精选"
+msgstr "精选合辑"
 
 #: src/ui/album_detail.rs:35
 msgid "N/A"
@@ -150,63 +140,55 @@ msgstr "复制 ID"
 
 #: src/ui/page_traits.rs:30
 msgid "Recently Added"
-msgstr ""
+msgstr "最新添加"
 
 #: src/ui/page_traits.rs:31
 msgid "Name"
-msgstr ""
+msgstr "名称"
 
 #: src/ui/page_traits.rs:32
-#, fuzzy
-#| msgid "Album Detail"
 msgid "Album Artist"
-msgstr "专辑详情"
+msgstr "专辑艺术家"
 
 #: src/ui/page_traits.rs:33
 msgid "Year"
-msgstr ""
+msgstr "年份"
 
 #: src/ui/page_traits.rs:34
 msgid "Play Count"
-msgstr ""
+msgstr "播放次数"
 
 #: src/ui/page_traits.rs:35
-#, fuzzy
-#| msgid "No Songs"
 msgid "Num. Songs"
-msgstr "无歌曲"
+msgstr "歌曲数量"
 
 #: src/ui/page_traits.rs:36
-#, fuzzy
-#| msgid "Albums"
 msgid "Album"
 msgstr "专辑"
 
 #: src/ui/page_traits.rs:37
 msgid "Last Played"
-msgstr ""
+msgstr "上次播放"
 
 #: src/ui/playback_mode.rs:34
 msgid "No Shuffle/Repeat"
-msgstr ""
+msgstr "不随机/不重复"
 
 #: src/ui/playback_mode.rs:35
 msgid "Shuffle"
-msgstr ""
+msgstr "随机播放"
 
 #: src/ui/playback_mode.rs:36
 msgid "Repeat"
-msgstr ""
+msgstr "重复播放"
 
 #: src/ui/playback_mode.rs:37
 msgid "Repeat One"
-msgstr ""
+msgstr "单曲循环"
 
 #: src/ui/playback_mode.rs:38
-#, fuzzy
-#| msgid "Shuffled Playlist"
 msgid "Shuffle Repeat"
-msgstr "随机播放的歌单"
+msgstr "随机重复"
 
 #: src/ui/player_bar/common.rs:78
 msgid "Pause"
@@ -478,13 +460,13 @@ msgstr "所有风格"
 #: src/ui/window.rs:835
 msgid "1 item added to library"
 msgid_plural "{} items added to library"
-msgstr[0] ""
+msgstr[0] "已将 {} 个项目添加到曲库"
 
 #: src/ui/window.rs:856
 msgid ""
 "Library rescan requested. Wait a few seconds and then use the \"Refresh "
 "Library\" option."
-msgstr ""
+msgstr "已请求重新扫描媒体库。请稍候片刻，然后使用“刷新曲库”选项。"
 
 #: resources/ui/album_art.ui:33
 msgid "Missing album art"
@@ -629,7 +611,7 @@ msgstr "智能列表"
 
 #: resources/ui/preferences.ui:102
 msgid "Favorite Mix Playlist"
-msgstr "精选混合歌单"
+msgstr "精选合辑歌单"
 
 #: resources/ui/preferences.ui:107
 msgid "Shuffled Playlist"
@@ -672,7 +654,7 @@ msgstr "主机地址"
 msgid ""
 "Enter the complete server address including protocol (HTTP or HTTPS) and "
 "port number (:8096)"
-msgstr ""
+msgstr "输入包括协议（HTTP 或 HTTPS）和端口号（:8096）的完整服务器地址"
 
 #: resources/ui/setup.ui:43
 msgid "Username"
