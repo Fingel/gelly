@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-07 17:15-0700\n"
+"POT-Creation-Date: 2026-09-14 13:58-0700\n"
 "PO-Revision-Date: 2026-06-19 18:01+0000\n"
 "Last-Translator: Quentin PAGÈS <quentinantonin@free.fr>\n"
 "Language-Team: Occitan <https://hosted.weblate.org/projects/gelly/gelly/oc/"
@@ -18,6 +18,32 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
 "X-Generator: Weblate 2026.7.dev0\n"
+
+#: src/application.rs:121
+msgid "Playback error: {}"
+msgstr ""
+
+#: src/audio/model.rs:476
+msgid "Subsonic does not support seeking transcoded streams."
+msgstr ""
+
+#: src/audio/model.rs:478
+#, fuzzy
+#| msgid "Add to Playlist"
+msgid "Failed to seek"
+msgstr "Apondre a la lista de lectura"
+
+#: src/models/playlist_type.rs:71
+msgid "Shuffled Songs"
+msgstr ""
+
+#: src/models/playlist_type.rs:73
+msgid "Top {} Played Songs"
+msgstr ""
+
+#: src/models/playlist_type.rs:75
+msgid "Favorite Mix"
+msgstr ""
 
 #: src/ui/album_detail.rs:35
 msgid "N/A"
@@ -71,7 +97,7 @@ msgstr "Apondre a la lista de lectura"
 
 #: src/ui/music_context_menu.rs:34 src/ui/music_context_menu.rs:87
 #: src/ui/playlist_dialogs.rs:20 src/ui/playlist_dialogs.rs:59
-#: src/ui/window.rs:189 resources/ui/setup.ui:203
+#: src/ui/window.rs:185 resources/ui/setup.ui:203
 msgid "Cancel"
 msgstr ""
 
@@ -122,6 +148,58 @@ msgstr ""
 #: src/ui/music_context_menu.rs:160
 msgid "Copy ID"
 msgstr "Copiar l’ID"
+
+#: src/ui/page_traits.rs:30
+msgid "Recently Added"
+msgstr ""
+
+#: src/ui/page_traits.rs:31
+msgid "Name"
+msgstr ""
+
+#: src/ui/page_traits.rs:32
+msgid "Album Artist"
+msgstr ""
+
+#: src/ui/page_traits.rs:33
+msgid "Year"
+msgstr ""
+
+#: src/ui/page_traits.rs:34
+msgid "Play Count"
+msgstr ""
+
+#: src/ui/page_traits.rs:35
+msgid "Num. Songs"
+msgstr ""
+
+#: src/ui/page_traits.rs:36
+msgid "Album"
+msgstr ""
+
+#: src/ui/page_traits.rs:37
+msgid "Last Played"
+msgstr ""
+
+#: src/ui/playback_mode.rs:34
+msgid "No Shuffle/Repeat"
+msgstr ""
+
+#: src/ui/playback_mode.rs:35
+msgid "Shuffle"
+msgstr ""
+
+#: src/ui/playback_mode.rs:36
+msgid "Repeat"
+msgstr ""
+
+#: src/ui/playback_mode.rs:37
+msgid "Repeat One"
+msgstr ""
+
+#: src/ui/playback_mode.rs:38
+msgid "Shuffle Repeat"
+msgstr ""
 
 #: src/ui/player_bar/common.rs:78
 msgid "Pause"
@@ -381,26 +459,38 @@ msgstr ""
 msgid "Remote Properties"
 msgstr ""
 
-#: src/ui/window.rs:188 resources/ui/window.ui:415
+#: src/ui/window.rs:184 resources/ui/window.ui:415
 msgid "Change Library"
 msgstr ""
 
-#: src/ui/window.rs:189
+#: src/ui/window.rs:185
 msgid "Select"
 msgstr ""
 
-#: src/ui/window.rs:221
+#: src/ui/window.rs:217
 #, fuzzy
 #| msgid "Add to Playlist"
 msgid "Failed to fetch libraries"
 msgstr "Apondre a la lista de lectura"
 
-#: src/ui/window.rs:231
+#: src/ui/window.rs:227
 msgid "Logged out"
 msgstr ""
 
-#: src/ui/window.rs:359
+#: src/ui/window.rs:355
 msgid "all genres"
+msgstr ""
+
+#: src/ui/window.rs:835
+msgid "1 item added to library"
+msgid_plural "{} items added to library"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/ui/window.rs:856
+msgid ""
+"Library rescan requested. Wait a few seconds and then use the \"Refresh "
+"Library\" option."
 msgstr ""
 
 #: resources/ui/album_art.ui:33
@@ -581,6 +671,12 @@ msgstr ""
 
 #: resources/ui/setup.ui:36
 msgid "Host URL"
+msgstr ""
+
+#: resources/ui/setup.ui:38
+msgid ""
+"Enter the complete server address including protocol (HTTP or HTTPS) and "
+"port number (:8096)"
 msgstr ""
 
 #: resources/ui/setup.ui:43
@@ -815,30 +911,30 @@ msgstr ""
 msgid "Previous"
 msgstr ""
 
-#: resources/ui/player_bar/big_player.ui:152
+#: resources/ui/player_bar/big_player.ui:153
 #: resources/ui/player_bar/compact_player_bar.ui:156
-#: resources/ui/player_bar/full_player_bar.ui:136
+#: resources/ui/player_bar/full_player_bar.ui:137
 msgid "Next"
 msgstr ""
 
-#: resources/ui/player_bar/big_player.ui:169
+#: resources/ui/player_bar/big_player.ui:170
 #: resources/ui/player_bar/compact_player_bar.ui:110
-#: resources/ui/player_bar/full_player_bar.ui:198
+#: resources/ui/player_bar/full_player_bar.ui:199
 msgid "Lyrics"
 msgstr ""
 
-#: resources/ui/player_bar/big_player.ui:179
+#: resources/ui/player_bar/big_player.ui:180
 #: resources/ui/player_bar/compact_player_bar.ui:120
-#: resources/ui/player_bar/full_player_bar.ui:208
+#: resources/ui/player_bar/full_player_bar.ui:209
 msgid "Favorite"
 msgstr ""
 
-#: resources/ui/player_bar/big_player.ui:199
-#: resources/ui/player_bar/full_player_bar.ui:245
+#: resources/ui/player_bar/big_player.ui:200
+#: resources/ui/player_bar/full_player_bar.ui:246
 msgid "Volume"
 msgstr ""
 
-#: resources/ui/player_bar/big_player.ui:214
-#: resources/ui/player_bar/full_player_bar.ui:232
+#: resources/ui/player_bar/big_player.ui:215
+#: resources/ui/player_bar/full_player_bar.ui:233
 msgid "Song Menu"
 msgstr ""

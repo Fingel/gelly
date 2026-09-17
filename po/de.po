@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-07 17:15-0700\n"
-"PO-Revision-Date: 2026-08-28 04:51+0000\n"
+"POT-Creation-Date: 2026-09-14 13:58-0700\n"
+"PO-Revision-Date: 2026-09-16 22:51+0000\n"
 "Last-Translator: Julian Meergans <tubuspapaya@gmail.com>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/gelly/gelly/de/>\n"
 "Language: de\n"
@@ -16,7 +16,31 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 2026.9.dev0\n"
+"X-Generator: Weblate 2026.10.dev0\n"
+
+#: src/application.rs:121
+msgid "Playback error: {}"
+msgstr "Wiedergabefehler: {}"
+
+#: src/audio/model.rs:476
+msgid "Subsonic does not support seeking transcoded streams."
+msgstr "Subsonic unterstützt das Springen in transkodierten Streams nicht."
+
+#: src/audio/model.rs:478
+msgid "Failed to seek"
+msgstr "Springen fehlgeschlagen"
+
+#: src/models/playlist_type.rs:71
+msgid "Shuffled Songs"
+msgstr "Zufällige Lieder"
+
+#: src/models/playlist_type.rs:73
+msgid "Top {} Played Songs"
+msgstr "Top {} gespielte Lieder"
+
+#: src/models/playlist_type.rs:75
+msgid "Favorite Mix"
+msgstr "Favoriten-Mix"
 
 #: src/ui/album_detail.rs:35
 msgid "N/A"
@@ -67,7 +91,7 @@ msgstr "Hinzufügen zur Wiedergabeliste"
 
 #: src/ui/music_context_menu.rs:34 src/ui/music_context_menu.rs:87
 #: src/ui/playlist_dialogs.rs:20 src/ui/playlist_dialogs.rs:59
-#: src/ui/window.rs:189 resources/ui/setup.ui:203
+#: src/ui/window.rs:185 resources/ui/setup.ui:203
 msgid "Cancel"
 msgstr "Abbrechen"
 
@@ -83,7 +107,7 @@ msgstr ""
 
 #: src/ui/music_context_menu.rs:86
 msgid "Song already in playlist"
-msgstr "Titel bereits hinzugefügt"
+msgstr "Das Lied ist bereits in der Wiedergabeliste"
 
 #: src/ui/music_context_menu.rs:87
 msgid "Add Anyway"
@@ -116,6 +140,58 @@ msgstr "Lied-Informationen"
 #: src/ui/music_context_menu.rs:160
 msgid "Copy ID"
 msgstr "ID kopieren"
+
+#: src/ui/page_traits.rs:30
+msgid "Recently Added"
+msgstr "Zuletzt hinzugefügt"
+
+#: src/ui/page_traits.rs:31
+msgid "Name"
+msgstr "Name"
+
+#: src/ui/page_traits.rs:32
+msgid "Album Artist"
+msgstr "Album-Künster*in"
+
+#: src/ui/page_traits.rs:33
+msgid "Year"
+msgstr "Jahr"
+
+#: src/ui/page_traits.rs:34
+msgid "Play Count"
+msgstr "Anzahl der Wiedergaben"
+
+#: src/ui/page_traits.rs:35
+msgid "Num. Songs"
+msgstr "Anzahl der Lieder"
+
+#: src/ui/page_traits.rs:36
+msgid "Album"
+msgstr "Album"
+
+#: src/ui/page_traits.rs:37
+msgid "Last Played"
+msgstr "Zuletzt gespielt"
+
+#: src/ui/playback_mode.rs:34
+msgid "No Shuffle/Repeat"
+msgstr "Keine Zufallswiedergabe/Wiederholung"
+
+#: src/ui/playback_mode.rs:35
+msgid "Shuffle"
+msgstr "Zufallswiedergabe"
+
+#: src/ui/playback_mode.rs:36
+msgid "Repeat"
+msgstr "Wiederholung"
+
+#: src/ui/playback_mode.rs:37
+msgid "Repeat One"
+msgstr "Einzelnes Lied wiederholen"
+
+#: src/ui/playback_mode.rs:38
+msgid "Shuffle Repeat"
+msgstr "Zufallswiedergabe mit Wiederholung"
 
 #: src/ui/player_bar/common.rs:78
 msgid "Pause"
@@ -370,25 +446,40 @@ msgstr "Lokale Eigenschaften"
 msgid "Remote Properties"
 msgstr "Remote-Eigenschafen"
 
-#: src/ui/window.rs:188 resources/ui/window.ui:415
+#: src/ui/window.rs:184 resources/ui/window.ui:415
 msgid "Change Library"
 msgstr "Bibliothek wechseln"
 
-#: src/ui/window.rs:189
+#: src/ui/window.rs:185
 msgid "Select"
 msgstr "Auswählen"
 
-#: src/ui/window.rs:221
+#: src/ui/window.rs:217
 msgid "Failed to fetch libraries"
 msgstr "Bibliotheken konnten nicht abgerufen werden"
 
-#: src/ui/window.rs:231
+#: src/ui/window.rs:227
 msgid "Logged out"
 msgstr "Abgemeldet"
 
-#: src/ui/window.rs:359
+#: src/ui/window.rs:355
 msgid "all genres"
 msgstr "Alle Genres"
+
+#: src/ui/window.rs:835
+msgid "1 item added to library"
+msgid_plural "{} items added to library"
+msgstr[0] "1 Titel zur Bibliothek hinzugefügt"
+msgstr[1] "{} Titel zur Bibliothek hinzugefügt"
+
+#: src/ui/window.rs:856
+msgid ""
+"Library rescan requested. Wait a few seconds and then use the \"Refresh "
+"Library\" option."
+msgstr ""
+"Es wurde eine erneute Überprüfung der Bibliothek angefordert. Bitte warten "
+"Sie einige Sekunden und nutzen Sie anschließend die Option „Bibliothek "
+"aktualisieren“."
 
 #: resources/ui/album_art.ui:33
 msgid "Missing album art"
@@ -408,7 +499,7 @@ msgstr "Keine Alben"
 
 #: resources/ui/album_list.ui:14 resources/ui/artist_list.ui:14
 msgid "Caching initial library download..."
-msgstr ""
+msgstr "Der erstmalige Download der Bibliothek wird zwischengespeichert..."
 
 #: resources/ui/artist_detail.ui:41
 msgid "Artist Name"
@@ -576,6 +667,14 @@ msgstr ""
 msgid "Host URL"
 msgstr "Host-URL"
 
+#: resources/ui/setup.ui:38
+msgid ""
+"Enter the complete server address including protocol (HTTP or HTTPS) and "
+"port number (:8096)"
+msgstr ""
+"Geben Sie die vollständige Serveradresse einschließlich des Protokolls (HTTP "
+"oder HTTPS) und der Portnummer (:8096) ein"
+
 #: resources/ui/setup.ui:43
 msgid "Username"
 msgstr "Benutzername"
@@ -586,7 +685,7 @@ msgstr "Passwort"
 
 #: resources/ui/setup.ui:61 resources/ui/setup.ui:222
 msgid "Advanced Settings"
-msgstr ""
+msgstr "Erweiterte Einstellungen"
 
 #: resources/ui/setup.ui:76
 msgid "Connect"
@@ -629,17 +728,19 @@ msgstr ""
 
 #: resources/ui/setup.ui:233
 msgid "Subsonic"
-msgstr ""
+msgstr "Subsonic"
 
 #: resources/ui/setup.ui:236
 msgid "Legacy Authentication"
-msgstr ""
+msgstr "Alte Authentifizierungsmethode"
 
 #: resources/ui/setup.ui:237
 msgid ""
 "Required by specific servers that do not support token auth like Nextcloud "
 "Music."
 msgstr ""
+"Erforderlich für bestimmte Server, die keine Token-Authentifizierung "
+"unterstützen, wie beispielsweise Nextcloud Music."
 
 #: resources/ui/shortcuts_dialog.ui:9 resources/ui/window.ui:411
 msgid "Refresh Library"
@@ -811,33 +912,33 @@ msgstr "Abmelden"
 #: resources/ui/player_bar/compact_player_bar.ui:136
 #: resources/ui/player_bar/full_player_bar.ui:116
 msgid "Previous"
-msgstr ""
+msgstr "Vorheriges"
 
-#: resources/ui/player_bar/big_player.ui:152
+#: resources/ui/player_bar/big_player.ui:153
 #: resources/ui/player_bar/compact_player_bar.ui:156
-#: resources/ui/player_bar/full_player_bar.ui:136
+#: resources/ui/player_bar/full_player_bar.ui:137
 msgid "Next"
-msgstr ""
+msgstr "Nächstes"
 
-#: resources/ui/player_bar/big_player.ui:169
+#: resources/ui/player_bar/big_player.ui:170
 #: resources/ui/player_bar/compact_player_bar.ui:110
-#: resources/ui/player_bar/full_player_bar.ui:198
+#: resources/ui/player_bar/full_player_bar.ui:199
 msgid "Lyrics"
 msgstr "Liedtexte"
 
-#: resources/ui/player_bar/big_player.ui:179
+#: resources/ui/player_bar/big_player.ui:180
 #: resources/ui/player_bar/compact_player_bar.ui:120
-#: resources/ui/player_bar/full_player_bar.ui:208
+#: resources/ui/player_bar/full_player_bar.ui:209
 msgid "Favorite"
 msgstr "Favorit"
 
-#: resources/ui/player_bar/big_player.ui:199
-#: resources/ui/player_bar/full_player_bar.ui:245
+#: resources/ui/player_bar/big_player.ui:200
+#: resources/ui/player_bar/full_player_bar.ui:246
 msgid "Volume"
 msgstr "Lautstärke"
 
-#: resources/ui/player_bar/big_player.ui:214
-#: resources/ui/player_bar/full_player_bar.ui:232
+#: resources/ui/player_bar/big_player.ui:215
+#: resources/ui/player_bar/full_player_bar.ui:233
 msgid "Song Menu"
 msgstr "Liedmenü"
 

@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-07 17:15-0700\n"
-"PO-Revision-Date: 2026-09-11 14:08+0000\n"
+"POT-Creation-Date: 2026-09-14 13:58-0700\n"
+"PO-Revision-Date: 2026-09-15 15:31+0000\n"
 "Last-Translator: Tomasz Bojanowski "
 "<tbojanowski@users.noreply.hosted.weblate.org>\n"
 "Language-Team: Polish <https://hosted.weblate.org/projects/gelly/gelly/pl/>\n"
@@ -19,6 +19,30 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
 "|| n%100>=20) ? 1 : 2);\n"
 "X-Generator: Weblate 2026.10.dev0\n"
+
+#: src/application.rs:121
+msgid "Playback error: {}"
+msgstr "Błąd odtwarzania: {}"
+
+#: src/audio/model.rs:476
+msgid "Subsonic does not support seeking transcoded streams."
+msgstr "Subsonic nie obsługuje przewijania transkodowanych strumieni."
+
+#: src/audio/model.rs:478
+msgid "Failed to seek"
+msgstr "Nie udało się przewinąć"
+
+#: src/models/playlist_type.rs:71
+msgid "Shuffled Songs"
+msgstr "Losowe utwory"
+
+#: src/models/playlist_type.rs:73
+msgid "Top {} Played Songs"
+msgstr "{} najczęściej odtwarzanych"
+
+#: src/models/playlist_type.rs:75
+msgid "Favorite Mix"
+msgstr "Miks ulubionych"
 
 #: src/ui/album_detail.rs:35
 msgid "N/A"
@@ -35,9 +59,9 @@ msgstr "Moduł audio nie został zainicjowany, uruchom ponownie"
 #: src/ui/playlist_detail.rs:501
 msgid "1 song added to queue"
 msgid_plural "{} songs added to queue"
-msgstr[0] "1 utwór dodany do kolejki"
-msgstr[1] "{} utwory dodane do kolejki"
-msgstr[2] "{} utworów dodanych do kolejki"
+msgstr[0] "Dodano 1 utwór do kolejki"
+msgstr[1] "Dodano {} utwory do kolejki"
+msgstr[2] "Dodano {} utworów do kolejki"
 
 #: src/ui/album_detail.rs:236
 msgid "Album ID copied to clipboard"
@@ -69,7 +93,7 @@ msgstr "Dodaj do playlisty"
 
 #: src/ui/music_context_menu.rs:34 src/ui/music_context_menu.rs:87
 #: src/ui/playlist_dialogs.rs:20 src/ui/playlist_dialogs.rs:59
-#: src/ui/window.rs:189 resources/ui/setup.ui:203
+#: src/ui/window.rs:185 resources/ui/setup.ui:203
 msgid "Cancel"
 msgstr "Anuluj"
 
@@ -91,7 +115,7 @@ msgstr "Dodaj mimo to"
 
 #: src/ui/music_context_menu.rs:112
 msgid "Queue Next"
-msgstr "Dodaj jako następny do kolejki"
+msgstr "Dodaj jako następny"
 
 #: src/ui/music_context_menu.rs:116
 msgid "Queue Last"
@@ -116,6 +140,58 @@ msgstr "Informacje o utworze"
 #: src/ui/music_context_menu.rs:160
 msgid "Copy ID"
 msgstr "Skopiuj ID"
+
+#: src/ui/page_traits.rs:30
+msgid "Recently Added"
+msgstr "Ostatnio dodane"
+
+#: src/ui/page_traits.rs:31
+msgid "Name"
+msgstr "Nazwa"
+
+#: src/ui/page_traits.rs:32
+msgid "Album Artist"
+msgstr "Artysta albumu"
+
+#: src/ui/page_traits.rs:33
+msgid "Year"
+msgstr "Rok"
+
+#: src/ui/page_traits.rs:34
+msgid "Play Count"
+msgstr "Liczba odtworzeń"
+
+#: src/ui/page_traits.rs:35
+msgid "Num. Songs"
+msgstr "Liczba utworów"
+
+#: src/ui/page_traits.rs:36
+msgid "Album"
+msgstr "Album"
+
+#: src/ui/page_traits.rs:37
+msgid "Last Played"
+msgstr "Ostatnio odtwarzane"
+
+#: src/ui/playback_mode.rs:34
+msgid "No Shuffle/Repeat"
+msgstr "Kolejno"
+
+#: src/ui/playback_mode.rs:35
+msgid "Shuffle"
+msgstr "Losowo"
+
+#: src/ui/playback_mode.rs:36
+msgid "Repeat"
+msgstr "Powtarzanie"
+
+#: src/ui/playback_mode.rs:37
+msgid "Repeat One"
+msgstr "Powtarzanie utworu"
+
+#: src/ui/playback_mode.rs:38
+msgid "Shuffle Repeat"
+msgstr "Losowo z powtarzaniem"
 
 #: src/ui/player_bar/common.rs:78
 msgid "Pause"
@@ -218,7 +294,7 @@ msgstr "Usuń"
 
 #: src/ui/playlist_list.rs:66
 msgid "No audio model found, please restart."
-msgstr "Nie znaleziono modelu audio, uruchom ponownie."
+msgstr "Nie znaleziono modułu audio, uruchom ponownie."
 
 #: src/ui/playlist_list.rs:174 src/ui/queue.rs:125
 msgid "Playlist created"
@@ -310,7 +386,7 @@ msgstr "Gęstość bitowa"
 
 #: src/ui/stream_info_dialog.rs:68
 msgid "Encoder"
-msgstr "Enkoder"
+msgstr "Koder"
 
 #: src/ui/stream_info_dialog.rs:73
 msgid "Original Codec"
@@ -368,25 +444,40 @@ msgstr "Właściwości lokalne"
 msgid "Remote Properties"
 msgstr "Właściwości zdalne"
 
-#: src/ui/window.rs:188 resources/ui/window.ui:415
+#: src/ui/window.rs:184 resources/ui/window.ui:415
 msgid "Change Library"
 msgstr "Zmień bibliotekę"
 
-#: src/ui/window.rs:189
+#: src/ui/window.rs:185
 msgid "Select"
-msgstr "Zaznacz"
+msgstr "Wybierz"
 
-#: src/ui/window.rs:221
+#: src/ui/window.rs:217
 msgid "Failed to fetch libraries"
 msgstr "Nie udało się pobrać bibliotek"
 
-#: src/ui/window.rs:231
+#: src/ui/window.rs:227
 msgid "Logged out"
 msgstr "Wylogowano"
 
-#: src/ui/window.rs:359
+#: src/ui/window.rs:355
 msgid "all genres"
 msgstr "wszystkie gatunki"
+
+#: src/ui/window.rs:835
+msgid "1 item added to library"
+msgid_plural "{} items added to library"
+msgstr[0] "Dodano 1 element do biblioteki"
+msgstr[1] "Dodano {} elementy do biblioteki"
+msgstr[2] "Dodano {} elementów do biblioteki"
+
+#: src/ui/window.rs:856
+msgid ""
+"Library rescan requested. Wait a few seconds and then use the \"Refresh "
+"Library\" option."
+msgstr ""
+"Zażądano przeskanowania biblioteki. Odczekaj kilka sekund, a następnie użyj "
+"opcji „Odśwież bibliotekę”."
 
 #: resources/ui/album_art.ui:33
 msgid "Missing album art"
@@ -447,7 +538,7 @@ msgstr "Ogólne"
 
 #: resources/ui/preferences.ui:15
 msgid "Refresh library on startup"
-msgstr "Odśwież bibliotekę przy uruchomieniu"
+msgstr "Odświeżanie biblioteki przy uruchomieniu"
 
 #: resources/ui/preferences.ui:16
 msgid "The library can be refreshed using ctrl+r or the menu."
@@ -491,7 +582,7 @@ msgstr "Odtwarzanie kolejnych utworów bez przerw."
 
 #: resources/ui/preferences.ui:50
 msgid "Inhibit Suspend"
-msgstr "Zapobiegaj uśpieniu"
+msgstr "Zapobieganie uśpieniu"
 
 #: resources/ui/preferences.ui:51
 msgid "Prevents the system from suspending while playing"
@@ -536,11 +627,11 @@ msgstr "Miks ulubionych"
 
 #: resources/ui/preferences.ui:107
 msgid "Shuffled Playlist"
-msgstr "Losowa playlista"
+msgstr "Losowe utwory"
 
 #: resources/ui/preferences.ui:112
 msgid "Most Played Playlist"
-msgstr "Playlista najczęściej odtwarzanych"
+msgstr "Najczęściej odtwarzane"
 
 #: resources/ui/queue.ui:8
 msgid "Nothing Playing"
@@ -569,7 +660,15 @@ msgstr ""
 
 #: resources/ui/setup.ui:36
 msgid "Host URL"
-msgstr "URL serwera"
+msgstr "Adres URL serwera"
+
+#: resources/ui/setup.ui:38
+msgid ""
+"Enter the complete server address including protocol (HTTP or HTTPS) and "
+"port number (:8096)"
+msgstr ""
+"Podaj pełny adres serwera wraz z protokołem (HTTP lub HTTPS) i numerem portu "
+"(:8096)"
 
 #: resources/ui/setup.ui:43
 msgid "Username"
@@ -593,11 +692,11 @@ msgstr "Szybkie połączenie z Jellyfin"
 
 #: resources/ui/setup.ui:104
 msgid "Choose Library"
-msgstr "Wybierz bibliotekę"
+msgstr "Wybór biblioteki"
 
 #: resources/ui/setup.ui:114
 msgid "Select Library"
-msgstr "Zaznacz bibliotekę"
+msgstr "Wybierz bibliotekę"
 
 #: resources/ui/setup.ui:115
 msgid "Choose which library Gelly will use to load your music."
@@ -617,7 +716,7 @@ msgstr "Szybkie połączenie"
 
 #: resources/ui/setup.ui:168
 msgid "Enter the code on the Jellyfin web page to complete authentication."
-msgstr "Wprowadź kod na stronie Jellyfin, aby dokończyć uwierzytelnianie."
+msgstr "Podaj kod na stronie Jellyfin, aby dokończyć uwierzytelnianie."
 
 #: resources/ui/setup.ui:233
 msgid "Subsonic"
@@ -695,7 +794,7 @@ msgstr "Przełącz na listę utworów"
 
 #: resources/ui/shortcuts_dialog.ui:87
 msgid "Play Selected"
-msgstr "Odtwarzaj zaznaczenie"
+msgstr "Odtwórz zaznaczone"
 
 #: resources/ui/shortcuts_dialog.ui:88
 msgid "Play the currently selected item in the list"
@@ -739,11 +838,11 @@ msgstr "Sortowanie"
 
 #: resources/ui/window.ui:173
 msgid "New"
-msgstr "Nowe"
+msgstr "Nowa playlista"
 
 #: resources/ui/window.ui:208
 msgid "Search..."
-msgstr "Wyszukaj…"
+msgstr "Szukaj…"
 
 #: resources/ui/window.ui:231
 msgid "Reset"
@@ -799,7 +898,7 @@ msgstr "Informacje o Gelly"
 
 #: resources/ui/window.ui:437
 msgid "Logout"
-msgstr "Wyloguj"
+msgstr "Wyloguj się"
 
 #: resources/ui/player_bar/big_player.ui:133
 #: resources/ui/player_bar/compact_player_bar.ui:136
@@ -807,31 +906,31 @@ msgstr "Wyloguj"
 msgid "Previous"
 msgstr "Poprzedni utwór"
 
-#: resources/ui/player_bar/big_player.ui:152
+#: resources/ui/player_bar/big_player.ui:153
 #: resources/ui/player_bar/compact_player_bar.ui:156
-#: resources/ui/player_bar/full_player_bar.ui:136
+#: resources/ui/player_bar/full_player_bar.ui:137
 msgid "Next"
 msgstr "Następny utwór"
 
-#: resources/ui/player_bar/big_player.ui:169
+#: resources/ui/player_bar/big_player.ui:170
 #: resources/ui/player_bar/compact_player_bar.ui:110
-#: resources/ui/player_bar/full_player_bar.ui:198
+#: resources/ui/player_bar/full_player_bar.ui:199
 msgid "Lyrics"
 msgstr "Tekst utworu"
 
-#: resources/ui/player_bar/big_player.ui:179
+#: resources/ui/player_bar/big_player.ui:180
 #: resources/ui/player_bar/compact_player_bar.ui:120
-#: resources/ui/player_bar/full_player_bar.ui:208
+#: resources/ui/player_bar/full_player_bar.ui:209
 msgid "Favorite"
 msgstr "Dodaj do ulubionych"
 
-#: resources/ui/player_bar/big_player.ui:199
-#: resources/ui/player_bar/full_player_bar.ui:245
+#: resources/ui/player_bar/big_player.ui:200
+#: resources/ui/player_bar/full_player_bar.ui:246
 msgid "Volume"
 msgstr "Głośność"
 
-#: resources/ui/player_bar/big_player.ui:214
-#: resources/ui/player_bar/full_player_bar.ui:232
+#: resources/ui/player_bar/big_player.ui:215
+#: resources/ui/player_bar/full_player_bar.ui:233
 msgid "Song Menu"
 msgstr "Menu utworu"
 

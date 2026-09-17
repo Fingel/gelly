@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-07 17:15-0700\n"
+"POT-Creation-Date: 2026-09-14 13:58-0700\n"
 "PO-Revision-Date: 2026-09-03 08:01+0000\n"
 "Last-Translator: Anatoly Bogomolov <tolya.bogomolov2019@gmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/gelly/gelly/ru/"
@@ -21,6 +21,42 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 "X-Generator: Weblate 2026.9.dev0\n"
+
+#: src/application.rs:121
+#, fuzzy
+#| msgid "Playback"
+msgid "Playback error: {}"
+msgstr "Воспроизведение"
+
+#: src/audio/model.rs:476
+#, fuzzy
+#| msgid "Currently Subsonic backends cannot seek transcoded streams."
+msgid "Subsonic does not support seeking transcoded streams."
+msgstr ""
+"В настоящее время бэкэнды Subsonic не могут осуществлять поиск "
+"транскодированных потоков."
+
+#: src/audio/model.rs:478
+#, fuzzy
+#| msgid "Failed to delete playlist"
+msgid "Failed to seek"
+msgstr "Не удалось удалить плейлист"
+
+#: src/models/playlist_type.rs:71
+#, fuzzy
+#| msgid "Shuffled Playlist"
+msgid "Shuffled Songs"
+msgstr "Перемешанный плейлист"
+
+#: src/models/playlist_type.rs:73
+msgid "Top {} Played Songs"
+msgstr ""
+
+#: src/models/playlist_type.rs:75
+#, fuzzy
+#| msgid "Favorites"
+msgid "Favorite Mix"
+msgstr "Избранное"
 
 #: src/ui/album_detail.rs:35
 msgid "N/A"
@@ -71,7 +107,7 @@ msgstr "Добавить в плейлист"
 
 #: src/ui/music_context_menu.rs:34 src/ui/music_context_menu.rs:87
 #: src/ui/playlist_dialogs.rs:20 src/ui/playlist_dialogs.rs:59
-#: src/ui/window.rs:189 resources/ui/setup.ui:203
+#: src/ui/window.rs:185 resources/ui/setup.ui:203
 msgid "Cancel"
 msgstr "Отменить"
 
@@ -118,6 +154,66 @@ msgstr "Информация о песне"
 #: src/ui/music_context_menu.rs:160
 msgid "Copy ID"
 msgstr "Копировать ID"
+
+#: src/ui/page_traits.rs:30
+msgid "Recently Added"
+msgstr ""
+
+#: src/ui/page_traits.rs:31
+msgid "Name"
+msgstr ""
+
+#: src/ui/page_traits.rs:32
+#, fuzzy
+#| msgid "Album Detail"
+msgid "Album Artist"
+msgstr "Информация об альбоме"
+
+#: src/ui/page_traits.rs:33
+msgid "Year"
+msgstr ""
+
+#: src/ui/page_traits.rs:34
+msgid "Play Count"
+msgstr ""
+
+#: src/ui/page_traits.rs:35
+#, fuzzy
+#| msgid "No Songs"
+msgid "Num. Songs"
+msgstr "Нет песен"
+
+#: src/ui/page_traits.rs:36
+#, fuzzy
+#| msgid "Albums"
+msgid "Album"
+msgstr "Альбомы"
+
+#: src/ui/page_traits.rs:37
+msgid "Last Played"
+msgstr ""
+
+#: src/ui/playback_mode.rs:34
+msgid "No Shuffle/Repeat"
+msgstr ""
+
+#: src/ui/playback_mode.rs:35
+msgid "Shuffle"
+msgstr ""
+
+#: src/ui/playback_mode.rs:36
+msgid "Repeat"
+msgstr ""
+
+#: src/ui/playback_mode.rs:37
+msgid "Repeat One"
+msgstr ""
+
+#: src/ui/playback_mode.rs:38
+#, fuzzy
+#| msgid "Shuffled Playlist"
+msgid "Shuffle Repeat"
+msgstr "Перемешанный плейлист"
 
 #: src/ui/player_bar/common.rs:78
 msgid "Pause"
@@ -372,29 +468,42 @@ msgstr "Локальные свойства"
 msgid "Remote Properties"
 msgstr "Свойства на сервере"
 
-#: src/ui/window.rs:188 resources/ui/window.ui:415
+#: src/ui/window.rs:184 resources/ui/window.ui:415
 msgid "Change Library"
 msgstr "Изменить медиатеку"
 
-#: src/ui/window.rs:189
+#: src/ui/window.rs:185
 #, fuzzy
 #| msgid "Play Selected"
 msgid "Select"
 msgstr "Воспроизвести выбранное"
 
-#: src/ui/window.rs:221
+#: src/ui/window.rs:217
 #, fuzzy
 #| msgid "Failed to load libraries"
 msgid "Failed to fetch libraries"
 msgstr "Не удалось загрузить библиотеки."
 
-#: src/ui/window.rs:231
+#: src/ui/window.rs:227
 msgid "Logged out"
 msgstr "Вышел из системы"
 
-#: src/ui/window.rs:359
+#: src/ui/window.rs:355
 msgid "all genres"
 msgstr "все жанры"
+
+#: src/ui/window.rs:835
+msgid "1 item added to library"
+msgid_plural "{} items added to library"
+msgstr[0] ""
+msgstr[1] ""
+msgstr[2] ""
+
+#: src/ui/window.rs:856
+msgid ""
+"Library rescan requested. Wait a few seconds and then use the \"Refresh "
+"Library\" option."
+msgstr ""
 
 #: resources/ui/album_art.ui:33
 msgid "Missing album art"
@@ -586,6 +695,12 @@ msgstr ""
 #: resources/ui/setup.ui:36
 msgid "Host URL"
 msgstr "URL хоста"
+
+#: resources/ui/setup.ui:38
+msgid ""
+"Enter the complete server address including protocol (HTTP or HTTPS) and "
+"port number (:8096)"
+msgstr ""
 
 #: resources/ui/setup.ui:43
 msgid "Username"
@@ -823,33 +938,33 @@ msgstr "Выйти"
 msgid "Previous"
 msgstr ""
 
-#: resources/ui/player_bar/big_player.ui:152
+#: resources/ui/player_bar/big_player.ui:153
 #: resources/ui/player_bar/compact_player_bar.ui:156
-#: resources/ui/player_bar/full_player_bar.ui:136
+#: resources/ui/player_bar/full_player_bar.ui:137
 msgid "Next"
 msgstr ""
 
-#: resources/ui/player_bar/big_player.ui:169
+#: resources/ui/player_bar/big_player.ui:170
 #: resources/ui/player_bar/compact_player_bar.ui:110
-#: resources/ui/player_bar/full_player_bar.ui:198
+#: resources/ui/player_bar/full_player_bar.ui:199
 msgid "Lyrics"
 msgstr "Текст песни"
 
-#: resources/ui/player_bar/big_player.ui:179
+#: resources/ui/player_bar/big_player.ui:180
 #: resources/ui/player_bar/compact_player_bar.ui:120
-#: resources/ui/player_bar/full_player_bar.ui:208
+#: resources/ui/player_bar/full_player_bar.ui:209
 #, fuzzy
 #| msgid "Favorites"
 msgid "Favorite"
 msgstr "Избранное"
 
-#: resources/ui/player_bar/big_player.ui:199
-#: resources/ui/player_bar/full_player_bar.ui:245
+#: resources/ui/player_bar/big_player.ui:200
+#: resources/ui/player_bar/full_player_bar.ui:246
 msgid "Volume"
 msgstr "Громкость"
 
-#: resources/ui/player_bar/big_player.ui:214
-#: resources/ui/player_bar/full_player_bar.ui:232
+#: resources/ui/player_bar/big_player.ui:215
+#: resources/ui/player_bar/full_player_bar.ui:233
 msgid "Song Menu"
 msgstr "Меню песни"
 

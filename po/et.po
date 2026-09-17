@@ -7,17 +7,41 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-07 17:15-0700\n"
-"PO-Revision-Date: 2026-08-26 11:51+0000\n"
+"POT-Creation-Date: 2026-09-14 13:58-0700\n"
+"PO-Revision-Date: 2026-09-16 22:51+0000\n"
 "Last-Translator: Priit Jõerüüt <jrthwlate@users.noreply.hosted.weblate.org>\n"
-"Language-Team: Estonian <https://hosted.weblate.org/projects/gelly/gelly/et/"
-">\n"
+"Language-Team: Estonian <https://hosted.weblate.org/projects/gelly/gelly/et/>"
+"\n"
 "Language: et\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 2026.9.dev0\n"
+"X-Generator: Weblate 2026.10.dev0\n"
+
+#: src/application.rs:121
+msgid "Playback error: {}"
+msgstr "Taasesituse viga: {}"
+
+#: src/audio/model.rs:476
+msgid "Subsonic does not support seeking transcoded streams."
+msgstr "Subsonic ei oska muudetud kodeeringuga lugusid kerida."
+
+#: src/audio/model.rs:478
+msgid "Failed to seek"
+msgstr "Kerimine ei õnnestunud"
+
+#: src/models/playlist_type.rs:71
+msgid "Shuffled Songs"
+msgstr "Segatud lood"
+
+#: src/models/playlist_type.rs:73
+msgid "Top {} Played Songs"
+msgstr "{} enimesitatud lugu"
+
+#: src/models/playlist_type.rs:75
+msgid "Favorite Mix"
+msgstr "Miks lemmikutest"
 
 #: src/ui/album_detail.rs:35
 msgid "N/A"
@@ -67,7 +91,7 @@ msgstr "Lisa esitusloendisse"
 
 #: src/ui/music_context_menu.rs:34 src/ui/music_context_menu.rs:87
 #: src/ui/playlist_dialogs.rs:20 src/ui/playlist_dialogs.rs:59
-#: src/ui/window.rs:189 resources/ui/setup.ui:203
+#: src/ui/window.rs:185 resources/ui/setup.ui:203
 msgid "Cancel"
 msgstr "Katkesta"
 
@@ -114,6 +138,58 @@ msgstr "Loo teave"
 #: src/ui/music_context_menu.rs:160
 msgid "Copy ID"
 msgstr "Kopeeri tunnus"
+
+#: src/ui/page_traits.rs:30
+msgid "Recently Added"
+msgstr "Hiljuti lisatud"
+
+#: src/ui/page_traits.rs:31
+msgid "Name"
+msgstr "Nimi"
+
+#: src/ui/page_traits.rs:32
+msgid "Album Artist"
+msgstr "Albumi esitaja"
+
+#: src/ui/page_traits.rs:33
+msgid "Year"
+msgstr "Aasta"
+
+#: src/ui/page_traits.rs:34
+msgid "Play Count"
+msgstr "Esituskordade arv"
+
+#: src/ui/page_traits.rs:35
+msgid "Num. Songs"
+msgstr "Lugude arv"
+
+#: src/ui/page_traits.rs:36
+msgid "Album"
+msgstr "Album"
+
+#: src/ui/page_traits.rs:37
+msgid "Last Played"
+msgstr "Viimati esitatud"
+
+#: src/ui/playback_mode.rs:34
+msgid "No Shuffle/Repeat"
+msgstr "Ära sega ega korda"
+
+#: src/ui/playback_mode.rs:35
+msgid "Shuffle"
+msgstr "Sega"
+
+#: src/ui/playback_mode.rs:36
+msgid "Repeat"
+msgstr "Korda"
+
+#: src/ui/playback_mode.rs:37
+msgid "Repeat One"
+msgstr "Korda üht lugu"
+
+#: src/ui/playback_mode.rs:38
+msgid "Shuffle Repeat"
+msgstr "Sega ja korda"
 
 #: src/ui/player_bar/common.rs:78
 msgid "Pause"
@@ -368,25 +444,39 @@ msgstr "Omadused kohalikus seadmes"
 msgid "Remote Properties"
 msgstr "Omadused kaugseadmes"
 
-#: src/ui/window.rs:188 resources/ui/window.ui:415
+#: src/ui/window.rs:184 resources/ui/window.ui:415
 msgid "Change Library"
-msgstr "Vaheta meediakogu"
+msgstr "Vaheta meediumikogu"
 
-#: src/ui/window.rs:189
+#: src/ui/window.rs:185
 msgid "Select"
 msgstr "Vali"
 
-#: src/ui/window.rs:221
+#: src/ui/window.rs:217
 msgid "Failed to fetch libraries"
 msgstr "Meediakogude laadimine ei õnnestunud"
 
-#: src/ui/window.rs:231
+#: src/ui/window.rs:227
 msgid "Logged out"
 msgstr "Väljalogitud"
 
-#: src/ui/window.rs:359
+#: src/ui/window.rs:355
 msgid "all genres"
 msgstr "kõik žanrid"
+
+#: src/ui/window.rs:835
+msgid "1 item added to library"
+msgid_plural "{} items added to library"
+msgstr[0] "1 lugu on lisatud meediumikogusse"
+msgstr[1] "{} lugu on lisatud meediumikogusse"
+
+#: src/ui/window.rs:856
+msgid ""
+"Library rescan requested. Wait a few seconds and then use the \"Refresh "
+"Library\" option."
+msgstr ""
+"Oled soovinud meediumikogu uuesti skaneerimist. Oota paar sekundit ja kasuta "
+"valikut „Uuenda meediumikogu andmed“."
 
 #: resources/ui/album_art.ui:33
 msgid "Missing album art"
@@ -406,7 +496,7 @@ msgstr "Albumeid ei leidu"
 
 #: resources/ui/album_list.ui:14 resources/ui/artist_list.ui:14
 msgid "Caching initial library download..."
-msgstr ""
+msgstr "Puhverdan allalaaditavat meediumikogu…"
 
 #: resources/ui/artist_detail.ui:41
 msgid "Artist Name"
@@ -447,11 +537,11 @@ msgstr "Üldised"
 
 #: resources/ui/preferences.ui:15
 msgid "Refresh library on startup"
-msgstr "Käivitamisel uuenda meediakogu uuesti"
+msgstr "Käivitamisel uuenda meediumikogu"
 
 #: resources/ui/preferences.ui:16
 msgid "The library can be refreshed using ctrl+r or the menu."
-msgstr "Meediakogu saad uuendada ka Ctrl+R klahvivajutusega."
+msgstr "Meediumikogu saad uuendada ka Ctrl+R klahvivajutusega."
 
 #: resources/ui/preferences.ui:21
 msgid "Extra eye candy"
@@ -573,6 +663,14 @@ msgstr ""
 msgid "Host URL"
 msgstr "Serveri võrguaadress"
 
+#: resources/ui/setup.ui:38
+msgid ""
+"Enter the complete server address including protocol (HTTP or HTTPS) and "
+"port number (:8096)"
+msgstr ""
+"Sisesta serveri täisaadress koos protokolli (HTTP või HTTPS) ja "
+"pordinumbriga (:8096)"
+
 #: resources/ui/setup.ui:43
 msgid "Username"
 msgstr "Kasutajanimi"
@@ -583,7 +681,7 @@ msgstr "Salasõna"
 
 #: resources/ui/setup.ui:61 resources/ui/setup.ui:222
 msgid "Advanced Settings"
-msgstr ""
+msgstr "Täiendavad seadistused"
 
 #: resources/ui/setup.ui:76
 msgid "Connect"
@@ -595,19 +693,19 @@ msgstr "Jellyfini kiirühendus"
 
 #: resources/ui/setup.ui:104
 msgid "Choose Library"
-msgstr "Vali meediakogu"
+msgstr "Vali meediumikogu"
 
 #: resources/ui/setup.ui:114
 msgid "Select Library"
-msgstr "Vali meediakogu"
+msgstr "Vali meediumikogu"
 
 #: resources/ui/setup.ui:115
 msgid "Choose which library Gelly will use to load your music."
-msgstr "Vali meediakogu, mida Gelly kasutab sinu muusika laadimiseks."
+msgstr "Vali meediumikogu, mida Gelly kasutab sinu muusika laadimiseks."
 
 #: resources/ui/setup.ui:130
 msgid "Library"
-msgstr "meediakogu"
+msgstr "Meediumikogu"
 
 #: resources/ui/setup.ui:137
 msgid "Launch Gelly"
@@ -623,35 +721,37 @@ msgstr "Autentimise lõpetamiseks sisesta Jellyfini lehel näidatud kood."
 
 #: resources/ui/setup.ui:233
 msgid "Subsonic"
-msgstr ""
+msgstr "Subsonic"
 
 #: resources/ui/setup.ui:236
 msgid "Legacy Authentication"
-msgstr ""
+msgstr "Autentimise vana lahendus"
 
 #: resources/ui/setup.ui:237
 msgid ""
 "Required by specific servers that do not support token auth like Nextcloud "
 "Music."
 msgstr ""
+"Vajalik mõnede serverite puhul (nt. Nextcloud Music), mis ei oska kasutada "
+"tunnusloaga autentimist."
 
 #: resources/ui/shortcuts_dialog.ui:9 resources/ui/window.ui:411
 msgid "Refresh Library"
-msgstr "Uuenda meediakogu andmed"
+msgstr "Uuenda meediumikogu andmed"
 
 #: resources/ui/shortcuts_dialog.ui:10
 msgid "Re-downloads the music library"
-msgstr "Laadib meediakogu uuesti alla"
+msgstr "Laadib meediumikogu uuesti alla"
 
 #: resources/ui/shortcuts_dialog.ui:16
 msgid "Request Library Rescan"
-msgstr "Alusta meediakogu uut skaneerimist"
+msgstr "Alusta meediumikogu uut skaneerimist"
 
 #: resources/ui/shortcuts_dialog.ui:17
 msgid "Ask Jellyfin to rescan the library for new or modified files"
 msgstr ""
-"Palu, et Jellyfin skaneeriks uute ja muudetud failide otsimiseks meediakogu "
-"uuesti"
+"Palu, et Jellyfin skaneeriks uute ja muudetud failide otsimiseks "
+"meediumikogu uuesti"
 
 #: resources/ui/shortcuts_dialog.ui:23
 msgid "Search"
@@ -805,33 +905,33 @@ msgstr "Logi välja"
 #: resources/ui/player_bar/compact_player_bar.ui:136
 #: resources/ui/player_bar/full_player_bar.ui:116
 msgid "Previous"
-msgstr ""
+msgstr "Eelmine"
 
-#: resources/ui/player_bar/big_player.ui:152
+#: resources/ui/player_bar/big_player.ui:153
 #: resources/ui/player_bar/compact_player_bar.ui:156
-#: resources/ui/player_bar/full_player_bar.ui:136
+#: resources/ui/player_bar/full_player_bar.ui:137
 msgid "Next"
-msgstr ""
+msgstr "Järgmine"
 
-#: resources/ui/player_bar/big_player.ui:169
+#: resources/ui/player_bar/big_player.ui:170
 #: resources/ui/player_bar/compact_player_bar.ui:110
-#: resources/ui/player_bar/full_player_bar.ui:198
+#: resources/ui/player_bar/full_player_bar.ui:199
 msgid "Lyrics"
 msgstr "Laulusõnad"
 
-#: resources/ui/player_bar/big_player.ui:179
+#: resources/ui/player_bar/big_player.ui:180
 #: resources/ui/player_bar/compact_player_bar.ui:120
-#: resources/ui/player_bar/full_player_bar.ui:208
+#: resources/ui/player_bar/full_player_bar.ui:209
 msgid "Favorite"
 msgstr "Lemmik"
 
-#: resources/ui/player_bar/big_player.ui:199
-#: resources/ui/player_bar/full_player_bar.ui:245
+#: resources/ui/player_bar/big_player.ui:200
+#: resources/ui/player_bar/full_player_bar.ui:246
 msgid "Volume"
 msgstr "Helivaljus"
 
-#: resources/ui/player_bar/big_player.ui:214
-#: resources/ui/player_bar/full_player_bar.ui:232
+#: resources/ui/player_bar/big_player.ui:215
+#: resources/ui/player_bar/full_player_bar.ui:233
 msgid "Song Menu"
 msgstr "Loo menüü"
 
