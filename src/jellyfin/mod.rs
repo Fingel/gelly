@@ -106,7 +106,7 @@ impl Jellyfin {
         let now = Instant::now();
         const LIMIT: u64 = 250;
         const MAX_CONCURRENT_REQUESTS: usize = 4;
-        const SLOW_LOAD_THRESHOLD: Duration = Duration::from_secs(1);
+        const SLOW_LOAD_THRESHOLD: Duration = Duration::from_millis(1_500);
 
         // Make the first request to get total count
         // we also measure how long it takes. If the response is slow it's a
