@@ -17,6 +17,7 @@
 - [x] Replaygain
 - [x] Gapless playback 
 - [x] Transcoding
+- [x] Instant Mix
 - [x] Translated to 13+ languages
 - [x] [CLI](#command-line-interface) 
 - [x] Playlist management

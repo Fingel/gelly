@@ -2,7 +2,7 @@ use crate::{
     async_utils::spawn_tokio,
     i18n::{ngettext, tr},
     jellyfin::api::ImageType,
-    library_utils::play_artist,
+    library_utils::{play_artist, play_similar},
     models::{AlbumModel, ArtistModel},
     ui::{
         album_detail::AlbumDetail,
@@ -201,6 +201,11 @@ impl ArtistDetail {
         }
     }
 
+    fn on_play_similar(&self) {
+        let app = self.get_application();
+        play_similar(&self.id(), &app);
+    }
+
     pub fn toggle_favorite(&self, is_favorite: bool) {
         let Some(model) = self.get_model() else {
             return;
@@ -277,6 +282,9 @@ mod imp {
             });
             klass.install_action("artist.queue_last", None, |artist, _, _| {
                 artist.enqueue_artist(true);
+            });
+            klass.install_action("artist.play_similar", None, |artist, _, _| {
+                artist.on_play_similar();
             });
             klass.install_action("artist.copy_id", None, |artist, _, _| {
                 artist.copy_id();

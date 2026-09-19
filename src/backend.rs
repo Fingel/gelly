@@ -144,6 +144,17 @@ impl Backend {
         }
     }
 
+    pub async fn get_similar_items(
+        &self,
+        item_id: &str,
+        count: u32,
+    ) -> Result<PlaylistItems, BackendError> {
+        match self {
+            Self::Jellyfin(jellyfin) => jellyfin.get_similar_items(item_id, count).await,
+            Self::Subsonic(subsonic) => subsonic.get_similar_items(item_id, count).await,
+        }
+    }
+
     pub async fn delete_item(&self, item_id: &str) -> Result<(), BackendError> {
         match self {
             Self::Jellyfin(jellyfin) => jellyfin.delete_item(item_id).await,

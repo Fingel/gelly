@@ -58,6 +58,7 @@ pub struct Subsonic {
     pub auth_mode: SubsonicAuthMode,
 }
 
+#[derive(Debug, Default)]
 struct AlbumFallback {
     album_id: Option<String>,
     album_name: Option<String>,
@@ -299,13 +300,16 @@ impl Subsonic {
         let songs = album
             .song
             .into_iter()
-            .map(|song| self.song_to_music_dto(song, &fallback))
+            .map(|song| self.song_to_music_dto(song, Some(&fallback)))
             .collect();
 
         Ok(songs)
     }
 
-    fn song_to_music_dto(&self, song: Song, fallback: &AlbumFallback) -> MusicDto {
+    fn song_to_music_dto(&self, song: Song, fallback: Option<&AlbumFallback>) -> MusicDto {
+        let default_fallback = AlbumFallback::default();
+        let fallback = fallback.unwrap_or(&default_fallback);
+
         let album = song.album.or_else(|| fallback.album_name.clone());
         let album_id = song.album_id.or_else(|| fallback.album_id.clone());
 
@@ -434,21 +438,10 @@ impl Subsonic {
             message: "Subsonic response missing playlist payload".to_string(),
         })?;
 
-        let album_fallback = AlbumFallback {
-            album_artists: vec![],
-            album_id: None,
-            album_name: None,
-            artist_name: None,
-            artist_id: None,
-            year: None,
-            created: None,
-            cover_art: None,
-        };
-
         let items = playlist
             .entry
             .into_iter()
-            .map(|song| self.song_to_music_dto(song, &album_fallback))
+            .map(|song| self.song_to_music_dto(song, None))
             .collect::<Vec<_>>();
 
         Ok(PlaylistItems {
@@ -593,6 +586,32 @@ impl Subsonic {
         let response = self.get_subsonic("deletePlaylist", &params).await?;
         self.ensure_ok_response(&response)?;
         Ok(())
+    }
+
+    pub async fn get_similar_items(
+        &self,
+        item_id: &str,
+        count: u32,
+    ) -> Result<PlaylistItems, BackendError> {
+        debug!("Subsonic::get_similar_songs(item_id={item_id}, count={count})");
+        let params = vec![
+            ("id".to_string(), item_id.to_string()),
+            ("count".to_string(), count.to_string()),
+        ];
+        let response = self.get_subsonic("getSimilarSongs2", &params).await?;
+        self.ensure_ok_response(&response)?;
+        let items = response
+            .similar_songs2
+            .map(|payload| payload.song)
+            .unwrap_or_default()
+            .into_iter()
+            .map(|song| self.song_to_music_dto(song, None))
+            .collect::<Vec<MusicDto>>();
+
+        Ok(PlaylistItems {
+            total_record_count: items.len() as u64,
+            items,
+        })
     }
 
     // https://github.com/opensubsonic/open-subsonic-api/blob/main/content/en/docs/Endpoints/startscan.md

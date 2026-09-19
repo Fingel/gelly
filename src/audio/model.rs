@@ -92,7 +92,7 @@ impl AudioModel {
                     PlayerEvent::Error(err) => {
                         obj.imp().track_transition_in_progress.set(false);
                         obj.set_property("loading", false);
-                        obj.emit_by_name::<()>("error", &[&err]);
+                        obj.emit_error(&err);
                     }
                     PlayerEvent::AboutToFinish => {
                         if let Some(next_index) = obj.imp().prefetched_next_index.take()
@@ -477,7 +477,7 @@ impl AudioModel {
             } else {
                 tr("Failed to seek")
             };
-            self.emit_by_name::<()>("error", &[&msg]);
+            self.emit_error(&msg);
         }
     }
 
@@ -540,6 +540,10 @@ impl AudioModel {
 
     fn new_shuffle_cycle(&self) {
         self.imp().shuffle.borrow_mut().reset();
+    }
+
+    pub fn emit_error(&self, message: &str) {
+        self.emit_by_name::<()>("error", &[&message]);
     }
 }
 

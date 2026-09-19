@@ -2,6 +2,7 @@ use crate::{
     async_utils::spawn_tokio,
     i18n::{ngettext, tr},
     jellyfin::utils::format_duration,
+    library_utils::play_similar,
     models::{AlbumModel, SongModel},
     ui::{
         music_context_menu::{ContextActions, add_to_playlist_dialog, construct_menu},
@@ -200,6 +201,11 @@ impl AlbumDetail {
         }
     }
 
+    fn on_play_similar(&self) {
+        let app = self.get_application();
+        play_similar(&self.id(), &app);
+    }
+
     fn on_go_to_artist(&self) {
         if let Some(song) = self.imp().songs.borrow().first()
             && let Some(artist_model) = self.get_application().library().artist_for_item(&song.id())
@@ -372,6 +378,9 @@ mod imp {
             });
             klass.install_action("album.queue_last", None, |album, _, _| {
                 album.enqueue_album(true);
+            });
+            klass.install_action("album.play_similar", None, |album, _, _| {
+                album.on_play_similar();
             });
             klass.install_action("album.copy_id", None, |album, _, _| {
                 album.copy_id();

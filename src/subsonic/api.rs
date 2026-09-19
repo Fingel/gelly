@@ -60,6 +60,7 @@ pub struct SubsonicResponse {
     pub song: Option<Song>,
     pub lyrics_list: Option<LyricsList>,
     pub starred2: Option<Starred2Payload>,
+    pub similar_songs2: Option<SimilarSongs2Payload>,
 }
 
 impl SubsonicResponse {
@@ -230,4 +231,11 @@ pub struct ReplayGain {
     pub track_gain: Option<f64>,
     pub album_gain: Option<f64>,
     pub base_gain: Option<f64>,
+}
+
+#[derive(Debug, Clone, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct SimilarSongs2Payload {
+    #[serde(default, deserialize_with = "deserialize_items_skip_errors")]
+    pub song: Vec<Song>,
 }

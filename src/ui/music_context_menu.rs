@@ -118,6 +118,13 @@ fn create_menu_model(config: &ContextActions) -> gio::Menu {
         );
         menu.append_section(None, &queue_section);
     }
+    // Similar mix
+    let similar_section = gio::Menu::new();
+    similar_section.append(
+        Some(&tr("Play Similar")),
+        Some(&format!("{}.play_similar", config.action_prefix)),
+    );
+    menu.append_section(None, &similar_section);
     // Playlist section
     let playlist_section = gio::Menu::new();
     playlist_section.append(
