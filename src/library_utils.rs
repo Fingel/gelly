@@ -62,3 +62,28 @@ pub fn play_song(id: &str, app: &Application) {
         log::warn!("No audio model found");
     }
 }
+
+pub fn play_similar(id: &str, app: &Application) {
+    let library = app.library();
+    let backend = app.backend();
+    let id = id.to_string();
+    if let Some(audio_model) = app.audio_model() {
+        app.http_with_loading(
+            async move { backend.get_similar_items(&id, 50).await },
+            move |result| {
+                if let Ok(plist_items) = result {
+                    let songs = plist_items
+                        .items
+                        .iter()
+                        .map(|dto| SongModel::new(dto, library.song_is_favorite(&dto.id)))
+                        .collect();
+                    audio_model.set_queue(songs, 0, true);
+                } else {
+                    log::warn!("Failed to get similar items")
+                }
+            },
+        );
+    } else {
+        log::warn!("No audio model found");
+    }
+}

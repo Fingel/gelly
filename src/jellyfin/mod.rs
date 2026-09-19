@@ -314,6 +314,23 @@ impl Jellyfin {
         Ok(playlist_response.id)
     }
 
+    pub async fn get_similar_items(
+        &self,
+        item_id: &str,
+        count: u32,
+    ) -> Result<PlaylistItems, BackendError> {
+        let count = count.to_string();
+        let params = vec![
+            ("fields", "DateCreated,Genres"),
+            ("limit", &count),
+            ("userId", &self.user_id),
+        ];
+        let path = format!("Items/{item_id}/InstantMix");
+        let response = self.get(&path, Some(&params)).await?;
+        let body = self.handle_response(response).await?;
+        Ok(serde_json::from_str(&body)?)
+    }
+
     pub async fn delete_item(&self, item_id: &str) -> Result<(), BackendError> {
         let path = format!("Items/{}", item_id);
         self.delete(&path, None).await?;
