@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-14 13:58-0700\n"
+"POT-Creation-Date: 2026-09-19 13:31-0700\n"
 "PO-Revision-Date: 2026-08-15 14:51+0000\n"
 "Last-Translator: Simob98 <simobertuzzi98@gmail.com>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/gelly/gelly/it/"
@@ -39,6 +39,11 @@ msgstr ""
 msgid "Failed to seek"
 msgstr "Impossibile eliminare playlist"
 
+#: src/library_utils.rs:82
+msgid ""
+"The backend did not return many songs, it may require a sonic analysis plugin"
+msgstr ""
+
 #: src/models/playlist_type.rs:71
 #, fuzzy
 #| msgid "Shuffled Playlist"
@@ -55,33 +60,33 @@ msgstr ""
 msgid "Favorite Mix"
 msgstr "Preferito"
 
-#: src/ui/album_detail.rs:35
+#: src/ui/album_detail.rs:36
 msgid "N/A"
 msgstr "N/A"
 
-#: src/ui/album_detail.rs:164 src/ui/album_detail.rs:174
-#: src/ui/album_detail.rs:198 src/ui/artist_detail.rs:198 src/ui/playlist.rs:53
+#: src/ui/album_detail.rs:165 src/ui/album_detail.rs:175
+#: src/ui/album_detail.rs:199 src/ui/artist_detail.rs:198 src/ui/playlist.rs:53
 #: src/ui/playlist_detail.rs:475 src/ui/playlist_detail.rs:485
 #: src/ui/playlist_detail.rs:509 src/ui/song_list.rs:159
 msgid "Audio model not initialized, please restart"
 msgstr "Modello audio non inizializzato, riavviare il programma"
 
-#: src/ui/album_detail.rs:190 src/ui/artist_detail.rs:190
+#: src/ui/album_detail.rs:191 src/ui/artist_detail.rs:190
 #: src/ui/playlist_detail.rs:501
 msgid "1 song added to queue"
 msgid_plural "{} songs added to queue"
 msgstr[0] "1 brano aggiunto alla coda"
 msgstr[1] "{} brani aggiunti alla coda"
 
-#: src/ui/album_detail.rs:236
+#: src/ui/album_detail.rs:242
 msgid "Album ID copied to clipboard"
 msgstr "ID album copiato negli appunti"
 
-#: src/ui/album_detail.rs:259
+#: src/ui/album_detail.rs:265
 msgid "Added album to playlist"
 msgstr "Album aggiunto alla playlist"
 
-#: src/ui/album_detail.rs:263
+#: src/ui/album_detail.rs:269
 msgid "Failed to add album to playlist"
 msgstr "Impossibile aggiungere l'album alla playlist"
 
@@ -97,7 +102,7 @@ msgstr "Artista aggiunto alla playlist"
 msgid "Failed to add artist to playlist"
 msgstr "Impossibile aggiungere l'artista alla playlist"
 
-#: src/ui/music_context_menu.rs:33 src/ui/music_context_menu.rs:124
+#: src/ui/music_context_menu.rs:33 src/ui/music_context_menu.rs:131
 msgid "Add to Playlist"
 msgstr "Aggiungi alla Playlist"
 
@@ -133,23 +138,27 @@ msgstr "Aggiungi come successivo"
 msgid "Queue Last"
 msgstr "Aggiungi in fondo"
 
-#: src/ui/music_context_menu.rs:129
+#: src/ui/music_context_menu.rs:124
+msgid "Play Similar"
+msgstr ""
+
+#: src/ui/music_context_menu.rs:136
 msgid "Remove from Playlist"
 msgstr "Rimuovi dalla Playlist"
 
-#: src/ui/music_context_menu.rs:139
+#: src/ui/music_context_menu.rs:146
 msgid "Go to Album"
 msgstr "Vai all'album"
 
-#: src/ui/music_context_menu.rs:146
+#: src/ui/music_context_menu.rs:153
 msgid "Go to Artist"
 msgstr "Vai all'artista"
 
-#: src/ui/music_context_menu.rs:155 src/ui/stream_info_dialog.rs:121
+#: src/ui/music_context_menu.rs:162 src/ui/stream_info_dialog.rs:121
 msgid "Song Info"
 msgstr "Informazioni Brano"
 
-#: src/ui/music_context_menu.rs:160
+#: src/ui/music_context_menu.rs:167
 msgid "Copy ID"
 msgstr "Copia ID"
 
@@ -213,11 +222,11 @@ msgstr ""
 msgid "Shuffle Repeat"
 msgstr "Playlist Rirpoduzione Casuale"
 
-#: src/ui/player_bar/common.rs:78
+#: src/ui/player_bar/common.rs:79
 msgid "Pause"
 msgstr "Pausa"
 
-#: src/ui/player_bar/common.rs:81 resources/ui/album_detail.ui:120
+#: src/ui/player_bar/common.rs:82 resources/ui/album_detail.ui:120
 #: resources/ui/artist_detail.ui:53 resources/ui/playlist_detail.ui:102
 #: resources/ui/player_bar/big_player.ui:143
 #: resources/ui/player_bar/compact_player_bar.ui:146
@@ -225,15 +234,15 @@ msgstr "Pausa"
 msgid "Play"
 msgstr "Riproduci"
 
-#: src/ui/player_bar/common.rs:91
+#: src/ui/player_bar/common.rs:92
 msgid "Unknown Artist"
 msgstr "Artista Sconosciuto"
 
-#: src/ui/player_bar/common.rs:253 src/ui/song.rs:232
+#: src/ui/player_bar/common.rs:254 src/ui/song.rs:233
 msgid "Added song to playlist"
 msgstr "Brano aggiunto alla playlist"
 
-#: src/ui/player_bar/common.rs:257 src/ui/song.rs:236
+#: src/ui/player_bar/common.rs:258 src/ui/song.rs:237
 msgid "Failed to add song to playlist"
 msgstr "Impossibile aggiungere il brano alla playlist"
 

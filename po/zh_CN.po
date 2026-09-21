@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-14 13:58-0700\n"
+"POT-Creation-Date: 2026-09-19 13:31-0700\n"
 "PO-Revision-Date: 2026-09-16 22:51+0000\n"
 "Last-Translator: sendevia <me@sendevia.top>\n"
 "Language-Team: Chinese (Simplified Han script) <https://hosted.weblate.org/"
@@ -31,6 +31,11 @@ msgstr "Subsonic 不支持对转码流进行进度跳转。"
 msgid "Failed to seek"
 msgstr "无法跳转"
 
+#: src/library_utils.rs:82
+msgid ""
+"The backend did not return many songs, it may require a sonic analysis plugin"
+msgstr ""
+
 #: src/models/playlist_type.rs:71
 msgid "Shuffled Songs"
 msgstr "随机播放的歌曲"
@@ -43,32 +48,32 @@ msgstr "播放次数最多的 {} 首歌曲"
 msgid "Favorite Mix"
 msgstr "精选合辑"
 
-#: src/ui/album_detail.rs:35
+#: src/ui/album_detail.rs:36
 msgid "N/A"
 msgstr "N/A"
 
-#: src/ui/album_detail.rs:164 src/ui/album_detail.rs:174
-#: src/ui/album_detail.rs:198 src/ui/artist_detail.rs:198 src/ui/playlist.rs:53
+#: src/ui/album_detail.rs:165 src/ui/album_detail.rs:175
+#: src/ui/album_detail.rs:199 src/ui/artist_detail.rs:198 src/ui/playlist.rs:53
 #: src/ui/playlist_detail.rs:475 src/ui/playlist_detail.rs:485
 #: src/ui/playlist_detail.rs:509 src/ui/song_list.rs:159
 msgid "Audio model not initialized, please restart"
 msgstr "音频模型未初始化，请重新启动"
 
-#: src/ui/album_detail.rs:190 src/ui/artist_detail.rs:190
+#: src/ui/album_detail.rs:191 src/ui/artist_detail.rs:190
 #: src/ui/playlist_detail.rs:501
 msgid "1 song added to queue"
 msgid_plural "{} songs added to queue"
 msgstr[0] "已添加 {} 首歌曲到队列"
 
-#: src/ui/album_detail.rs:236
+#: src/ui/album_detail.rs:242
 msgid "Album ID copied to clipboard"
 msgstr "已复制专辑 ID 到剪贴板"
 
-#: src/ui/album_detail.rs:259
+#: src/ui/album_detail.rs:265
 msgid "Added album to playlist"
 msgstr "专辑已添加到歌单"
 
-#: src/ui/album_detail.rs:263
+#: src/ui/album_detail.rs:269
 msgid "Failed to add album to playlist"
 msgstr "无法将专辑添加到歌单"
 
@@ -84,7 +89,7 @@ msgstr "艺术家已添加到歌单"
 msgid "Failed to add artist to playlist"
 msgstr "无法将艺术家添加到歌单"
 
-#: src/ui/music_context_menu.rs:33 src/ui/music_context_menu.rs:124
+#: src/ui/music_context_menu.rs:33 src/ui/music_context_menu.rs:131
 msgid "Add to Playlist"
 msgstr "添加到歌单"
 
@@ -118,23 +123,27 @@ msgstr "队列下一首"
 msgid "Queue Last"
 msgstr "队列末尾"
 
-#: src/ui/music_context_menu.rs:129
+#: src/ui/music_context_menu.rs:124
+msgid "Play Similar"
+msgstr ""
+
+#: src/ui/music_context_menu.rs:136
 msgid "Remove from Playlist"
 msgstr "从歌单移除"
 
-#: src/ui/music_context_menu.rs:139
+#: src/ui/music_context_menu.rs:146
 msgid "Go to Album"
 msgstr "前往专辑"
 
-#: src/ui/music_context_menu.rs:146
+#: src/ui/music_context_menu.rs:153
 msgid "Go to Artist"
 msgstr "前往艺术家"
 
-#: src/ui/music_context_menu.rs:155 src/ui/stream_info_dialog.rs:121
+#: src/ui/music_context_menu.rs:162 src/ui/stream_info_dialog.rs:121
 msgid "Song Info"
 msgstr "歌曲信息"
 
-#: src/ui/music_context_menu.rs:160
+#: src/ui/music_context_menu.rs:167
 msgid "Copy ID"
 msgstr "复制 ID"
 
@@ -190,11 +199,11 @@ msgstr "单曲循环"
 msgid "Shuffle Repeat"
 msgstr "随机重复"
 
-#: src/ui/player_bar/common.rs:78
+#: src/ui/player_bar/common.rs:79
 msgid "Pause"
 msgstr "暂停"
 
-#: src/ui/player_bar/common.rs:81 resources/ui/album_detail.ui:120
+#: src/ui/player_bar/common.rs:82 resources/ui/album_detail.ui:120
 #: resources/ui/artist_detail.ui:53 resources/ui/playlist_detail.ui:102
 #: resources/ui/player_bar/big_player.ui:143
 #: resources/ui/player_bar/compact_player_bar.ui:146
@@ -202,15 +211,15 @@ msgstr "暂停"
 msgid "Play"
 msgstr "播放"
 
-#: src/ui/player_bar/common.rs:91
+#: src/ui/player_bar/common.rs:92
 msgid "Unknown Artist"
 msgstr "未知艺术家"
 
-#: src/ui/player_bar/common.rs:253 src/ui/song.rs:232
+#: src/ui/player_bar/common.rs:254 src/ui/song.rs:233
 msgid "Added song to playlist"
 msgstr "歌曲已添加到歌单"
 
-#: src/ui/player_bar/common.rs:257 src/ui/song.rs:236
+#: src/ui/player_bar/common.rs:258 src/ui/song.rs:237
 msgid "Failed to add song to playlist"
 msgstr "无法将歌曲添加到歌单"
 
