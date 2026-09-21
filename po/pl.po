@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-09-19 13:31-0700\n"
-"PO-Revision-Date: 2026-09-15 15:31+0000\n"
+"PO-Revision-Date: 2026-09-21 23:27+0000\n"
 "Last-Translator: Tomasz Bojanowski "
 "<tbojanowski@users.noreply.hosted.weblate.org>\n"
 "Language-Team: Polish <https://hosted.weblate.org/projects/gelly/gelly/pl/>\n"
@@ -36,6 +36,7 @@ msgstr "Nie udało się przewinąć"
 msgid ""
 "The backend did not return many songs, it may require a sonic analysis plugin"
 msgstr ""
+"Serwer zwrócił niewiele utworów, być może wymaga wtyczki do analizy dźwięku"
 
 #: src/models/playlist_type.rs:71
 msgid "Shuffled Songs"
@@ -128,7 +129,7 @@ msgstr "Dodaj na koniec kolejki"
 
 #: src/ui/music_context_menu.rs:124
 msgid "Play Similar"
-msgstr ""
+msgstr "Odtwórz podobne"
 
 #: src/ui/music_context_menu.rs:136
 msgid "Remove from Playlist"
