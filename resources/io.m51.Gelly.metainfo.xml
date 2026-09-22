@@ -71,6 +71,19 @@
     <color type="primary" scheme_preference="dark">#325a4a</color>
   </branding>
   <releases>
+    <release version="1.14.0" date="2026-09-22">
+      <description>
+        <ul>
+          <li>
+            Add the "play similar" action for songs, albums and artists. This is called
+            "Instant Mix" in other players.
+          </li>
+          <li>
+            Translation updates.
+          </li>
+        </ul>
+      </description>
+    </release>
     <release version="1.13.0" date="2026-09-14">
       <description>
         <ul>
