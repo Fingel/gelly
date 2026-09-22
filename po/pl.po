@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-09-19 13:31-0700\n"
-"PO-Revision-Date: 2026-09-21 23:27+0000\n"
+"PO-Revision-Date: 2026-09-22 23:51+0000\n"
 "Last-Translator: Tomasz Bojanowski "
 "<tbojanowski@users.noreply.hosted.weblate.org>\n"
 "Language-Team: Polish <https://hosted.weblate.org/projects/gelly/gelly/pl/>\n"
@@ -44,7 +44,7 @@ msgstr "Losowe utwory"
 
 #: src/models/playlist_type.rs:73
 msgid "Top {} Played Songs"
-msgstr "{} najczęściej odtwarzanych"
+msgstr "Top {} utworów"
 
 #: src/models/playlist_type.rs:75
 msgid "Favorite Mix"
@@ -477,9 +477,9 @@ msgstr "wszystkie gatunki"
 #: src/ui/window.rs:835
 msgid "1 item added to library"
 msgid_plural "{} items added to library"
-msgstr[0] "Dodano 1 element do biblioteki"
-msgstr[1] "Dodano {} elementy do biblioteki"
-msgstr[2] "Dodano {} elementów do biblioteki"
+msgstr[0] "Dodano 1 utwór do biblioteki"
+msgstr[1] "Dodano {} utwory do biblioteki"
+msgstr[2] "Dodano {} utworów do biblioteki"
 
 #: src/ui/window.rs:856
 msgid ""
@@ -726,7 +726,7 @@ msgstr "Szybkie połączenie"
 
 #: resources/ui/setup.ui:168
 msgid "Enter the code on the Jellyfin web page to complete authentication."
-msgstr "Podaj kod na stronie Jellyfin, aby dokończyć uwierzytelnianie."
+msgstr "Wpisz kod na stronie Jellyfin, aby dokończyć uwierzytelnianie."
 
 #: resources/ui/setup.ui:233
 msgid "Subsonic"
@@ -750,7 +750,7 @@ msgstr "Odśwież bibliotekę"
 
 #: resources/ui/shortcuts_dialog.ui:10
 msgid "Re-downloads the music library"
-msgstr "Pobierz ponownie całą bibliotekę muzyczną"
+msgstr "Pobiera ponownie bibliotekę muzyczną"
 
 #: resources/ui/shortcuts_dialog.ui:16
 msgid "Request Library Rescan"
@@ -852,7 +852,7 @@ msgstr "Nowa playlista"
 
 #: resources/ui/window.ui:208
 msgid "Search..."
-msgstr "Szukaj…"
+msgstr "Wyszukaj…"
 
 #: resources/ui/window.ui:231
 msgid "Reset"
@@ -932,7 +932,7 @@ msgstr "Tekst utworu"
 #: resources/ui/player_bar/compact_player_bar.ui:120
 #: resources/ui/player_bar/full_player_bar.ui:209
 msgid "Favorite"
-msgstr "Dodaj do ulubionych"
+msgstr "Ulubione"
 
 #: resources/ui/player_bar/big_player.ui:200
 #: resources/ui/player_bar/full_player_bar.ui:246
