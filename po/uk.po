@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-14 13:58-0700\n"
+"POT-Creation-Date: 2026-09-19 13:31-0700\n"
 "PO-Revision-Date: 2026-06-04 08:01+0000\n"
 "Last-Translator: Димко <Dymkovych@proton.me>\n"
 "Language-Team: Ukrainian <https://hosted.weblate.org/projects/gelly/gelly/uk/"
@@ -36,6 +36,11 @@ msgstr ""
 msgid "Failed to seek"
 msgstr "Розумна добірка"
 
+#: src/library_utils.rs:82
+msgid ""
+"The backend did not return many songs, it may require a sonic analysis plugin"
+msgstr ""
+
 #: src/models/playlist_type.rs:71
 #, fuzzy
 #| msgid "Shuffled Playlist"
@@ -52,18 +57,18 @@ msgstr ""
 msgid "Favorite Mix"
 msgstr "Улюблене"
 
-#: src/ui/album_detail.rs:35
+#: src/ui/album_detail.rs:36
 msgid "N/A"
 msgstr ""
 
-#: src/ui/album_detail.rs:164 src/ui/album_detail.rs:174
-#: src/ui/album_detail.rs:198 src/ui/artist_detail.rs:198 src/ui/playlist.rs:53
+#: src/ui/album_detail.rs:165 src/ui/album_detail.rs:175
+#: src/ui/album_detail.rs:199 src/ui/artist_detail.rs:198 src/ui/playlist.rs:53
 #: src/ui/playlist_detail.rs:475 src/ui/playlist_detail.rs:485
 #: src/ui/playlist_detail.rs:509 src/ui/song_list.rs:159
 msgid "Audio model not initialized, please restart"
 msgstr ""
 
-#: src/ui/album_detail.rs:190 src/ui/artist_detail.rs:190
+#: src/ui/album_detail.rs:191 src/ui/artist_detail.rs:190
 #: src/ui/playlist_detail.rs:501
 msgid "1 song added to queue"
 msgid_plural "{} songs added to queue"
@@ -71,17 +76,17 @@ msgstr[0] "1 запис додано до черги"
 msgstr[1] "{} записи додано до черги"
 msgstr[2] "{} записів додано до черги"
 
-#: src/ui/album_detail.rs:236
+#: src/ui/album_detail.rs:242
 #, fuzzy
 #| msgid "Quick connect code copied to clipboard"
 msgid "Album ID copied to clipboard"
 msgstr "Код швидкого підключення скопійовано до буфера обміну"
 
-#: src/ui/album_detail.rs:259
+#: src/ui/album_detail.rs:265
 msgid "Added album to playlist"
 msgstr ""
 
-#: src/ui/album_detail.rs:263
+#: src/ui/album_detail.rs:269
 msgid "Failed to add album to playlist"
 msgstr ""
 
@@ -101,7 +106,7 @@ msgstr "Розумна добірка"
 msgid "Failed to add artist to playlist"
 msgstr ""
 
-#: src/ui/music_context_menu.rs:33 src/ui/music_context_menu.rs:124
+#: src/ui/music_context_menu.rs:33 src/ui/music_context_menu.rs:131
 #, fuzzy
 #| msgid "Smart Playlists"
 msgid "Add to Playlist"
@@ -139,27 +144,31 @@ msgstr ""
 msgid "Queue Last"
 msgstr ""
 
-#: src/ui/music_context_menu.rs:129
+#: src/ui/music_context_menu.rs:124
+msgid "Play Similar"
+msgstr ""
+
+#: src/ui/music_context_menu.rs:136
 #, fuzzy
 #| msgid "Save As Playlist"
 msgid "Remove from Playlist"
 msgstr "Зберегти як добірку"
 
-#: src/ui/music_context_menu.rs:139
+#: src/ui/music_context_menu.rs:146
 msgid "Go to Album"
 msgstr ""
 
-#: src/ui/music_context_menu.rs:146
+#: src/ui/music_context_menu.rs:153
 #, fuzzy
 #| msgid "Artists"
 msgid "Go to Artist"
 msgstr "Виконавці"
 
-#: src/ui/music_context_menu.rs:155 src/ui/stream_info_dialog.rs:121
+#: src/ui/music_context_menu.rs:162 src/ui/stream_info_dialog.rs:121
 msgid "Song Info"
 msgstr ""
 
-#: src/ui/music_context_menu.rs:160
+#: src/ui/music_context_menu.rs:167
 msgid "Copy ID"
 msgstr ""
 
@@ -223,11 +232,11 @@ msgstr ""
 msgid "Shuffle Repeat"
 msgstr "Перемішана добірка"
 
-#: src/ui/player_bar/common.rs:78
+#: src/ui/player_bar/common.rs:79
 msgid "Pause"
 msgstr ""
 
-#: src/ui/player_bar/common.rs:81 resources/ui/album_detail.ui:120
+#: src/ui/player_bar/common.rs:82 resources/ui/album_detail.ui:120
 #: resources/ui/artist_detail.ui:53 resources/ui/playlist_detail.ui:102
 #: resources/ui/player_bar/big_player.ui:143
 #: resources/ui/player_bar/compact_player_bar.ui:146
@@ -237,15 +246,15 @@ msgstr ""
 msgid "Play"
 msgstr "Відтворення"
 
-#: src/ui/player_bar/common.rs:91
+#: src/ui/player_bar/common.rs:92
 msgid "Unknown Artist"
 msgstr ""
 
-#: src/ui/player_bar/common.rs:253 src/ui/song.rs:232
+#: src/ui/player_bar/common.rs:254 src/ui/song.rs:233
 msgid "Added song to playlist"
 msgstr ""
 
-#: src/ui/player_bar/common.rs:257 src/ui/song.rs:236
+#: src/ui/player_bar/common.rs:258 src/ui/song.rs:237
 msgid "Failed to add song to playlist"
 msgstr ""
 
