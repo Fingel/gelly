@@ -8,10 +8,10 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-09-19 13:31-0700\n"
-"PO-Revision-Date: 2026-09-16 22:51+0000\n"
+"PO-Revision-Date: 2026-09-22 23:51+0000\n"
 "Last-Translator: Priit Jõerüüt <jrthwlate@users.noreply.hosted.weblate.org>\n"
-"Language-Team: Estonian <https://hosted.weblate.org/projects/gelly/gelly/et/"
-">\n"
+"Language-Team: Estonian <https://hosted.weblate.org/projects/gelly/gelly/et/>"
+"\n"
 "Language: et\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -35,6 +35,8 @@ msgstr "Kerimine ei õnnestunud"
 msgid ""
 "The backend did not return many songs, it may require a sonic analysis plugin"
 msgstr ""
+"Taustateenuse vastuses polnud palju laule, selleks võib seal olla vaja "
+"helianalüüsi lisamoodulit"
 
 #: src/models/playlist_type.rs:71
 msgid "Shuffled Songs"
@@ -126,7 +128,7 @@ msgstr "Lisa esitusjärjekorda viimaseks"
 
 #: src/ui/music_context_menu.rs:124
 msgid "Play Similar"
-msgstr ""
+msgstr "Esita sarnaseid lugusid"
 
 #: src/ui/music_context_menu.rs:136
 msgid "Remove from Playlist"
