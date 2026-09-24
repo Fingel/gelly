@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-09-19 13:31-0700\n"
-"PO-Revision-Date: 2026-09-22 23:51+0000\n"
+"PO-Revision-Date: 2026-09-25 12:50+0000\n"
 "Last-Translator: Priit Jõerüüt <jrthwlate@users.noreply.hosted.weblate.org>\n"
 "Language-Team: Estonian <https://hosted.weblate.org/projects/gelly/gelly/et/>"
 "\n"
@@ -495,7 +495,7 @@ msgstr "Kaanepilt on puudu"
 
 #: resources/ui/album_detail.ui:82 resources/ui/playlist_detail.ui:66
 msgid "tracks"
-msgstr "lood"
+msgstr "lugu"
 
 #: resources/ui/album_detail.ui:147 resources/ui/artist_detail.ui:81
 msgid "More Actions"
@@ -818,7 +818,7 @@ msgstr "Lugusid ei leidu"
 
 #: resources/ui/song_list.ui:35
 msgid "songs"
-msgstr "lood"
+msgstr "lugu"
 
 #: resources/ui/window.ui:56
 msgid "Album Detail"
