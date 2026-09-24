@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-09-19 13:31-0700\n"
-"PO-Revision-Date: 2026-09-16 22:51+0000\n"
+"PO-Revision-Date: 2026-09-24 11:51+0000\n"
 "Last-Translator: sendevia <me@sendevia.top>\n"
 "Language-Team: Chinese (Simplified Han script) <https://hosted.weblate.org/"
 "projects/gelly/gelly/zh_Hans/>\n"
@@ -34,7 +34,7 @@ msgstr "无法跳转"
 #: src/library_utils.rs:82
 msgid ""
 "The backend did not return many songs, it may require a sonic analysis plugin"
-msgstr ""
+msgstr "后端返回的歌曲数量不多，可能需要音频分析插件"
 
 #: src/models/playlist_type.rs:71
 msgid "Shuffled Songs"
@@ -125,7 +125,7 @@ msgstr "队列末尾"
 
 #: src/ui/music_context_menu.rs:124
 msgid "Play Similar"
-msgstr ""
+msgstr "播放相似"
 
 #: src/ui/music_context_menu.rs:136
 msgid "Remove from Playlist"
