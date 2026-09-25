@@ -1,0 +1,925 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-19 13:31-0700\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"Language: nb_NO\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+
+#: src/application.rs:121
+msgid "Playback error: {}"
+msgstr ""
+
+#: src/audio/model.rs:476
+msgid "Subsonic does not support seeking transcoded streams."
+msgstr ""
+
+#: src/audio/model.rs:478
+msgid "Failed to seek"
+msgstr ""
+
+#: src/library_utils.rs:82
+msgid ""
+"The backend did not return many songs, it may require a sonic analysis plugin"
+msgstr ""
+
+#: src/models/playlist_type.rs:71
+msgid "Shuffled Songs"
+msgstr ""
+
+#: src/models/playlist_type.rs:73
+msgid "Top {} Played Songs"
+msgstr ""
+
+#: src/models/playlist_type.rs:75
+msgid "Favorite Mix"
+msgstr ""
+
+#: src/ui/album_detail.rs:36
+msgid "N/A"
+msgstr ""
+
+#: src/ui/album_detail.rs:165 src/ui/album_detail.rs:175
+#: src/ui/album_detail.rs:199 src/ui/artist_detail.rs:198 src/ui/playlist.rs:53
+#: src/ui/playlist_detail.rs:475 src/ui/playlist_detail.rs:485
+#: src/ui/playlist_detail.rs:509 src/ui/song_list.rs:159
+msgid "Audio model not initialized, please restart"
+msgstr ""
+
+#: src/ui/album_detail.rs:191 src/ui/artist_detail.rs:190
+#: src/ui/playlist_detail.rs:501
+msgid "1 song added to queue"
+msgid_plural "{} songs added to queue"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/ui/album_detail.rs:242
+msgid "Album ID copied to clipboard"
+msgstr ""
+
+#: src/ui/album_detail.rs:265
+msgid "Added album to playlist"
+msgstr ""
+
+#: src/ui/album_detail.rs:269
+msgid "Failed to add album to playlist"
+msgstr ""
+
+#: src/ui/artist_detail.rs:122
+msgid "Artist ID copied to clipboard"
+msgstr ""
+
+#: src/ui/artist_detail.rs:145
+msgid "Added artist to playlist"
+msgstr ""
+
+#: src/ui/artist_detail.rs:149
+msgid "Failed to add artist to playlist"
+msgstr ""
+
+#: src/ui/music_context_menu.rs:33 src/ui/music_context_menu.rs:131
+msgid "Add to Playlist"
+msgstr ""
+
+#: src/ui/music_context_menu.rs:34 src/ui/music_context_menu.rs:87
+#: src/ui/playlist_dialogs.rs:20 src/ui/playlist_dialogs.rs:59
+#: src/ui/window.rs:185 resources/ui/setup.ui:203
+msgid "Cancel"
+msgstr ""
+
+#: src/ui/music_context_menu.rs:34
+msgid "Add"
+msgstr ""
+
+#: src/ui/music_context_menu.rs:59
+msgid "No playlists available. Please create a playlist first."
+msgstr ""
+
+#: src/ui/music_context_menu.rs:86
+msgid "Song already in playlist"
+msgstr ""
+
+#: src/ui/music_context_menu.rs:87
+msgid "Add Anyway"
+msgstr ""
+
+#: src/ui/music_context_menu.rs:112
+msgid "Queue Next"
+msgstr ""
+
+#: src/ui/music_context_menu.rs:116
+msgid "Queue Last"
+msgstr ""
+
+#: src/ui/music_context_menu.rs:124
+msgid "Play Similar"
+msgstr ""
+
+#: src/ui/music_context_menu.rs:136
+msgid "Remove from Playlist"
+msgstr ""
+
+#: src/ui/music_context_menu.rs:146
+msgid "Go to Album"
+msgstr ""
+
+#: src/ui/music_context_menu.rs:153
+msgid "Go to Artist"
+msgstr ""
+
+#: src/ui/music_context_menu.rs:162 src/ui/stream_info_dialog.rs:121
+msgid "Song Info"
+msgstr ""
+
+#: src/ui/music_context_menu.rs:167
+msgid "Copy ID"
+msgstr ""
+
+#: src/ui/page_traits.rs:30
+msgid "Recently Added"
+msgstr ""
+
+#: src/ui/page_traits.rs:31
+msgid "Name"
+msgstr ""
+
+#: src/ui/page_traits.rs:32
+msgid "Album Artist"
+msgstr ""
+
+#: src/ui/page_traits.rs:33
+msgid "Year"
+msgstr ""
+
+#: src/ui/page_traits.rs:34
+msgid "Play Count"
+msgstr ""
+
+#: src/ui/page_traits.rs:35
+msgid "Num. Songs"
+msgstr ""
+
+#: src/ui/page_traits.rs:36
+msgid "Album"
+msgstr ""
+
+#: src/ui/page_traits.rs:37
+msgid "Last Played"
+msgstr ""
+
+#: src/ui/playback_mode.rs:34
+msgid "No Shuffle/Repeat"
+msgstr ""
+
+#: src/ui/playback_mode.rs:35
+msgid "Shuffle"
+msgstr ""
+
+#: src/ui/playback_mode.rs:36
+msgid "Repeat"
+msgstr ""
+
+#: src/ui/playback_mode.rs:37
+msgid "Repeat One"
+msgstr ""
+
+#: src/ui/playback_mode.rs:38
+msgid "Shuffle Repeat"
+msgstr ""
+
+#: src/ui/player_bar/common.rs:79
+msgid "Pause"
+msgstr ""
+
+#: src/ui/player_bar/common.rs:82 resources/ui/album_detail.ui:120
+#: resources/ui/artist_detail.ui:53 resources/ui/playlist_detail.ui:102
+#: resources/ui/player_bar/big_player.ui:143
+#: resources/ui/player_bar/compact_player_bar.ui:146
+#: resources/ui/player_bar/full_player_bar.ui:126
+msgid "Play"
+msgstr ""
+
+#: src/ui/player_bar/common.rs:92
+msgid "Unknown Artist"
+msgstr ""
+
+#: src/ui/player_bar/common.rs:254 src/ui/song.rs:233
+msgid "Added song to playlist"
+msgstr ""
+
+#: src/ui/player_bar/common.rs:258 src/ui/song.rs:237
+msgid "Failed to add song to playlist"
+msgstr ""
+
+#: src/ui/playlist.rs:26
+msgid "1 song"
+msgid_plural "{} songs"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/ui/playlist.rs:29
+msgid "Smart playlist"
+msgstr ""
+
+#: src/ui/playlist.rs:31
+msgid "Empty playlist"
+msgstr ""
+
+#: src/ui/playlist.rs:77
+msgid "Unable to load playlist"
+msgstr ""
+
+#: src/ui/playlist_detail.rs:256 src/ui/playlist_list.rs:72
+msgid "Could not load playlist, please try again."
+msgstr ""
+
+#: src/ui/playlist_detail.rs:289
+msgid "Playlist ID copied to clipboard"
+msgstr ""
+
+#: src/ui/playlist_detail.rs:313
+msgid "Added songs to playlist"
+msgstr ""
+
+#: src/ui/playlist_detail.rs:317
+msgid "Failed to add songs to playlist"
+msgstr ""
+
+#: src/ui/playlist_detail.rs:413
+msgid "Failed to save playlist order."
+msgstr ""
+
+#: src/ui/playlist_detail.rs:459
+msgid "Failed to modify playlist."
+msgstr ""
+
+#: src/ui/playlist_detail.rs:527
+msgid "Smart playlists cannot be deleted"
+msgstr ""
+
+#: src/ui/playlist_detail.rs:560
+msgid "Playlist deleted"
+msgstr ""
+
+#: src/ui/playlist_detail.rs:563
+msgid "Failed to delete playlist"
+msgstr ""
+
+#: src/ui/playlist_dialogs.rs:7
+msgid "Playlist name"
+msgstr ""
+
+#: src/ui/playlist_dialogs.rs:16
+msgid "New Playlist"
+msgstr ""
+
+#: src/ui/playlist_dialogs.rs:20
+msgid "Create"
+msgstr ""
+
+#: src/ui/playlist_dialogs.rs:56
+msgid "Delete playlist?"
+msgstr ""
+
+#: src/ui/playlist_dialogs.rs:59
+msgid "Delete"
+msgstr ""
+
+#: src/ui/playlist_list.rs:66
+msgid "No audio model found, please restart."
+msgstr ""
+
+#: src/ui/playlist_list.rs:174 src/ui/queue.rs:125
+msgid "Playlist created"
+msgstr ""
+
+#: src/ui/playlist_list.rs:177 src/ui/queue.rs:128
+msgid "Failed to create playlist"
+msgstr ""
+
+#: src/ui/setup.rs:180 src/ui/setup.rs:195 src/ui/setup.rs:425
+msgid "Credentials could not be saved. Do you have a keyring daemon running?"
+msgstr ""
+
+#: src/ui/setup.rs:245
+msgid "Connection error. Please supply a full URL (http://example.com:8096)"
+msgstr ""
+
+#: src/ui/setup.rs:259
+msgid "Invalid credentials"
+msgstr ""
+
+#: src/ui/setup.rs:269
+msgid "Could not authenticate with Jellyfin or Subsonic"
+msgstr ""
+
+#: src/ui/setup.rs:314
+msgid "Failed to load libraries"
+msgstr ""
+
+#: src/ui/setup.rs:344
+msgid "Failed to initiate quick connect. Is the host valid?"
+msgstr ""
+
+#: src/ui/setup.rs:399
+msgid "Error during quick connect"
+msgstr ""
+
+#: src/ui/setup.rs:435
+msgid "Failed to authenticate with quick connect"
+msgstr ""
+
+#: src/ui/setup.rs:445
+msgid "Quick connect code copied to clipboard"
+msgstr ""
+
+#: src/ui/stream_info_dialog.rs:9
+msgid "Yes"
+msgstr ""
+
+#: src/ui/stream_info_dialog.rs:10
+msgid "No"
+msgstr ""
+
+#: src/ui/stream_info_dialog.rs:11 src/ui/stream_info_dialog.rs:53
+#: src/ui/stream_info_dialog.rs:74 src/ui/stream_info_dialog.rs:115
+#: src/ui/stream_info_dialog.rs:116
+msgid "Unknown"
+msgstr ""
+
+#: src/ui/stream_info_dialog.rs:50
+msgid "Backend"
+msgstr ""
+
+#: src/ui/stream_info_dialog.rs:53
+msgid "Codec"
+msgstr ""
+
+#: src/ui/stream_info_dialog.rs:55
+msgid "Container"
+msgstr ""
+
+#: src/ui/stream_info_dialog.rs:56 src/ui/stream_info_dialog.rs:78
+msgid "None"
+msgstr ""
+
+#: src/ui/stream_info_dialog.rs:59
+msgid "Sample Rate"
+msgstr ""
+
+#: src/ui/stream_info_dialog.rs:62
+msgid "Channels"
+msgstr ""
+
+#: src/ui/stream_info_dialog.rs:65
+msgid "Bit Rate"
+msgstr ""
+
+#: src/ui/stream_info_dialog.rs:68
+msgid "Encoder"
+msgstr ""
+
+#: src/ui/stream_info_dialog.rs:73
+msgid "Original Codec"
+msgstr ""
+
+#: src/ui/stream_info_dialog.rs:77
+msgid "Original Container"
+msgstr ""
+
+#: src/ui/stream_info_dialog.rs:81
+msgid "Original Sample Rate"
+msgstr ""
+
+#: src/ui/stream_info_dialog.rs:85
+msgid "Original Channels"
+msgstr ""
+
+#: src/ui/stream_info_dialog.rs:89
+msgid "Supports Direct Play"
+msgstr ""
+
+#: src/ui/stream_info_dialog.rs:93
+msgid "Supports Direct Stream"
+msgstr ""
+
+#: src/ui/stream_info_dialog.rs:97
+msgid "Supports Transcoding"
+msgstr ""
+
+#: src/ui/stream_info_dialog.rs:103
+msgid "Original Bit Rate"
+msgstr ""
+
+#: src/ui/stream_info_dialog.rs:109
+msgid "File Size"
+msgstr ""
+
+#: src/ui/stream_info_dialog.rs:115
+msgid "Id"
+msgstr ""
+
+#: src/ui/stream_info_dialog.rs:116
+msgid "Path"
+msgstr ""
+
+#: src/ui/stream_info_dialog.rs:139
+msgid "Song Properties"
+msgstr ""
+
+#: src/ui/stream_info_dialog.rs:146
+msgid "Local Properties"
+msgstr ""
+
+#: src/ui/stream_info_dialog.rs:153
+msgid "Remote Properties"
+msgstr ""
+
+#: src/ui/window.rs:184 resources/ui/window.ui:415
+msgid "Change Library"
+msgstr ""
+
+#: src/ui/window.rs:185
+msgid "Select"
+msgstr ""
+
+#: src/ui/window.rs:217
+msgid "Failed to fetch libraries"
+msgstr ""
+
+#: src/ui/window.rs:227
+msgid "Logged out"
+msgstr ""
+
+#: src/ui/window.rs:355
+msgid "all genres"
+msgstr ""
+
+#: src/ui/window.rs:835
+msgid "1 item added to library"
+msgid_plural "{} items added to library"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/ui/window.rs:856
+msgid ""
+"Library rescan requested. Wait a few seconds and then use the \"Refresh "
+"Library\" option."
+msgstr ""
+
+#: resources/ui/album_art.ui:33
+msgid "Missing album art"
+msgstr ""
+
+#: resources/ui/album_detail.ui:82 resources/ui/playlist_detail.ui:66
+msgid "tracks"
+msgstr ""
+
+#: resources/ui/album_detail.ui:147 resources/ui/artist_detail.ui:81
+msgid "More Actions"
+msgstr ""
+
+#: resources/ui/album_list.ui:8
+msgid "No Albums"
+msgstr ""
+
+#: resources/ui/album_list.ui:14 resources/ui/artist_list.ui:14
+msgid "Caching initial library download..."
+msgstr ""
+
+#: resources/ui/artist_detail.ui:41
+msgid "Artist Name"
+msgstr ""
+
+#: resources/ui/artist_list.ui:8
+msgid "No Artists"
+msgstr ""
+
+#: resources/ui/lyrics.ui:56
+msgid "No lyrics available"
+msgstr ""
+
+#: resources/ui/playback_mode.ui:9
+msgid "Playback Mode"
+msgstr ""
+
+#: resources/ui/playlist_detail.ui:129
+msgid "More actions"
+msgstr ""
+
+#: resources/ui/playlist_detail.ui:140
+msgid "Delete playlist"
+msgstr ""
+
+#: resources/ui/playlist_detail.ui:154
+msgid "Playlist is Empty"
+msgstr ""
+
+#: resources/ui/playlist_list.ui:8
+msgid "No Playlists"
+msgstr ""
+
+#: resources/ui/preferences.ui:9 resources/ui/preferences.ui:12
+#: resources/ui/shortcuts_dialog.ui:6
+msgid "General"
+msgstr ""
+
+#: resources/ui/preferences.ui:15
+msgid "Refresh library on startup"
+msgstr ""
+
+#: resources/ui/preferences.ui:16
+msgid "The library can be refreshed using ctrl+r or the menu."
+msgstr ""
+
+#: resources/ui/preferences.ui:21
+msgid "Extra eye candy"
+msgstr ""
+
+#: resources/ui/preferences.ui:22
+msgid "Utilizes transparency, blurred backgrounds, etc."
+msgstr ""
+
+#: resources/ui/preferences.ui:27
+msgid "Compact Mode"
+msgstr ""
+
+#: resources/ui/preferences.ui:28
+msgid "Use smaller UI elements regardless of window size."
+msgstr ""
+
+#: resources/ui/preferences.ui:35 resources/ui/shortcuts_dialog.ui:84
+msgid "Playback"
+msgstr ""
+
+#: resources/ui/preferences.ui:38
+msgid "Normalize Audio"
+msgstr ""
+
+#: resources/ui/preferences.ui:39
+msgid "May require backend plugins."
+msgstr ""
+
+#: resources/ui/preferences.ui:44
+msgid "Gapless Playback"
+msgstr ""
+
+#: resources/ui/preferences.ui:45
+msgid "Uninterrupted playback of consecutive tracks."
+msgstr ""
+
+#: resources/ui/preferences.ui:50
+msgid "Inhibit Suspend"
+msgstr ""
+
+#: resources/ui/preferences.ui:51
+msgid "Prevents the system from suspending while playing"
+msgstr ""
+
+#: resources/ui/preferences.ui:58
+msgid "Transcoding"
+msgstr ""
+
+#: resources/ui/preferences.ui:59
+msgid "Currently Subsonic backends cannot seek transcoded streams."
+msgstr ""
+
+#: resources/ui/preferences.ui:62
+msgid "Transcoding Profile"
+msgstr ""
+
+#: resources/ui/preferences.ui:63
+msgid "Only used when direct play is not available."
+msgstr ""
+
+#: resources/ui/preferences.ui:76
+msgid "Maximum Bitrate (kbps)"
+msgstr ""
+
+#: resources/ui/preferences.ui:77
+msgid "A value of 0 means no limit."
+msgstr ""
+
+#: resources/ui/preferences.ui:96 resources/ui/window.ui:313
+msgid "Playlists"
+msgstr ""
+
+#: resources/ui/preferences.ui:99
+msgid "Smart Playlists"
+msgstr ""
+
+#: resources/ui/preferences.ui:102
+msgid "Favorite Mix Playlist"
+msgstr ""
+
+#: resources/ui/preferences.ui:107
+msgid "Shuffled Playlist"
+msgstr ""
+
+#: resources/ui/preferences.ui:112
+msgid "Most Played Playlist"
+msgstr ""
+
+#: resources/ui/queue.ui:8
+msgid "Nothing Playing"
+msgstr ""
+
+#: resources/ui/queue.ui:41
+msgid "Jump to current song"
+msgstr ""
+
+#: resources/ui/setup.ui:11
+msgid "Servers"
+msgstr ""
+
+#: resources/ui/setup.ui:20
+msgid "Connect to Server"
+msgstr ""
+
+#: resources/ui/setup.ui:21
+msgid ""
+"Gelly supports Jellyfin and Subsonic/Navidrome. Enter the full server URL "
+"including protocol and port. For Jellyfin this is usually 8096, Navidrome "
+"uses 4533."
+msgstr ""
+
+#: resources/ui/setup.ui:36
+msgid "Host URL"
+msgstr ""
+
+#: resources/ui/setup.ui:38
+msgid ""
+"Enter the complete server address including protocol (HTTP or HTTPS) and "
+"port number (:8096)"
+msgstr ""
+
+#: resources/ui/setup.ui:43
+msgid "Username"
+msgstr ""
+
+#: resources/ui/setup.ui:48
+msgid "Password"
+msgstr ""
+
+#: resources/ui/setup.ui:61 resources/ui/setup.ui:222
+msgid "Advanced Settings"
+msgstr ""
+
+#: resources/ui/setup.ui:76
+msgid "Connect"
+msgstr ""
+
+#: resources/ui/setup.ui:87 resources/ui/setup.ui:167
+msgid "Jellyfin Quick Connect"
+msgstr ""
+
+#: resources/ui/setup.ui:104
+msgid "Choose Library"
+msgstr ""
+
+#: resources/ui/setup.ui:114
+msgid "Select Library"
+msgstr ""
+
+#: resources/ui/setup.ui:115
+msgid "Choose which library Gelly will use to load your music."
+msgstr ""
+
+#: resources/ui/setup.ui:130
+msgid "Library"
+msgstr ""
+
+#: resources/ui/setup.ui:137
+msgid "Launch Gelly"
+msgstr ""
+
+#: resources/ui/setup.ui:158
+msgid "Quick Connect"
+msgstr ""
+
+#: resources/ui/setup.ui:168
+msgid "Enter the code on the Jellyfin web page to complete authentication."
+msgstr ""
+
+#: resources/ui/setup.ui:233
+msgid "Subsonic"
+msgstr ""
+
+#: resources/ui/setup.ui:236
+msgid "Legacy Authentication"
+msgstr ""
+
+#: resources/ui/setup.ui:237
+msgid ""
+"Required by specific servers that do not support token auth like Nextcloud "
+"Music."
+msgstr ""
+
+#: resources/ui/shortcuts_dialog.ui:9 resources/ui/window.ui:411
+msgid "Refresh Library"
+msgstr ""
+
+#: resources/ui/shortcuts_dialog.ui:10
+msgid "Re-downloads the music library"
+msgstr ""
+
+#: resources/ui/shortcuts_dialog.ui:16
+msgid "Request Library Rescan"
+msgstr ""
+
+#: resources/ui/shortcuts_dialog.ui:17
+msgid "Ask Jellyfin to rescan the library for new or modified files"
+msgstr ""
+
+#: resources/ui/shortcuts_dialog.ui:23
+msgid "Search"
+msgstr ""
+
+#: resources/ui/shortcuts_dialog.ui:29
+msgid "Show Favorites"
+msgstr ""
+
+#: resources/ui/shortcuts_dialog.ui:35 resources/ui/window.ui:425
+msgid "Preferences"
+msgstr ""
+
+#: resources/ui/shortcuts_dialog.ui:41 resources/ui/window.ui:429
+msgid "Keyboard Shortcuts"
+msgstr ""
+
+#: resources/ui/shortcuts_dialog.ui:47 resources/ui/window.ui:441
+msgid "Quit"
+msgstr ""
+
+#: resources/ui/shortcuts_dialog.ui:55
+msgid "Navigation"
+msgstr ""
+
+#: resources/ui/shortcuts_dialog.ui:58
+msgid "Focus Albums"
+msgstr ""
+
+#: resources/ui/shortcuts_dialog.ui:64
+msgid "Focus Artists"
+msgstr ""
+
+#: resources/ui/shortcuts_dialog.ui:70
+msgid "Focus Playlist"
+msgstr ""
+
+#: resources/ui/shortcuts_dialog.ui:76
+msgid "Focus Song List"
+msgstr ""
+
+#: resources/ui/shortcuts_dialog.ui:87
+msgid "Play Selected"
+msgstr ""
+
+#: resources/ui/shortcuts_dialog.ui:88
+msgid "Play the currently selected item in the list"
+msgstr ""
+
+#: resources/ui/song_list.ui:8
+msgid "No Songs"
+msgstr ""
+
+#: resources/ui/song_list.ui:35
+msgid "songs"
+msgstr ""
+
+#: resources/ui/window.ui:56
+msgid "Album Detail"
+msgstr ""
+
+#: resources/ui/window.ui:89
+msgid "Artist Detail"
+msgstr ""
+
+#: resources/ui/window.ui:121
+msgid "Playlist Detail"
+msgstr ""
+
+#: resources/ui/window.ui:144
+msgid "Main"
+msgstr ""
+
+#: resources/ui/window.ui:153
+msgid "Show Queue"
+msgstr ""
+
+#: resources/ui/window.ui:160
+msgid "Search and Genres"
+msgstr ""
+
+#: resources/ui/window.ui:166
+msgid "Sort"
+msgstr ""
+
+#: resources/ui/window.ui:173
+msgid "New"
+msgstr ""
+
+#: resources/ui/window.ui:208
+msgid "Search..."
+msgstr ""
+
+#: resources/ui/window.ui:231
+msgid "Reset"
+msgstr ""
+
+#: resources/ui/window.ui:253
+msgid "Favorites"
+msgstr ""
+
+#: resources/ui/window.ui:266
+msgid "Ascending"
+msgstr ""
+
+#: resources/ui/window.ui:273
+msgid "Descending"
+msgstr ""
+
+#: resources/ui/window.ui:289
+msgid "Albums"
+msgstr ""
+
+#: resources/ui/window.ui:301
+msgid "Artists"
+msgstr ""
+
+#: resources/ui/window.ui:325
+msgid "Songs"
+msgstr ""
+
+#: resources/ui/window.ui:370
+msgid "Hide Queue"
+msgstr ""
+
+#: resources/ui/window.ui:379
+msgid "Clear Queue"
+msgstr ""
+
+#: resources/ui/window.ui:386
+msgid "Save As Playlist"
+msgstr ""
+
+#: resources/ui/window.ui:407
+msgid "Request Rescan"
+msgstr ""
+
+#: resources/ui/window.ui:419
+msgid "Clear Image Cache"
+msgstr ""
+
+#: resources/ui/window.ui:433
+msgid "About Gelly"
+msgstr ""
+
+#: resources/ui/window.ui:437
+msgid "Logout"
+msgstr ""
+
+#: resources/ui/player_bar/big_player.ui:133
+#: resources/ui/player_bar/compact_player_bar.ui:136
+#: resources/ui/player_bar/full_player_bar.ui:116
+msgid "Previous"
+msgstr ""
+
+#: resources/ui/player_bar/big_player.ui:153
+#: resources/ui/player_bar/compact_player_bar.ui:156
+#: resources/ui/player_bar/full_player_bar.ui:137
+msgid "Next"
+msgstr ""
+
+#: resources/ui/player_bar/big_player.ui:170
+#: resources/ui/player_bar/compact_player_bar.ui:110
+#: resources/ui/player_bar/full_player_bar.ui:199
+msgid "Lyrics"
+msgstr ""
+
+#: resources/ui/player_bar/big_player.ui:180
+#: resources/ui/player_bar/compact_player_bar.ui:120
+#: resources/ui/player_bar/full_player_bar.ui:209
+msgid "Favorite"
+msgstr ""
+
+#: resources/ui/player_bar/big_player.ui:200
+#: resources/ui/player_bar/full_player_bar.ui:246
+msgid "Volume"
+msgstr ""
+
+#: resources/ui/player_bar/big_player.ui:215
+#: resources/ui/player_bar/full_player_bar.ui:233
+msgid "Song Menu"
+msgstr ""
