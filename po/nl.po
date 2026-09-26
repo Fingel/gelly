@@ -8,63 +8,59 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-09-19 13:31-0700\n"
-"PO-Revision-Date: 2026-06-19 18:01+0000\n"
-"Last-Translator: Jeffrey van Altena <jeffrey2107@outlook.com>\n"
+"PO-Revision-Date: 2026-09-25 12:50+0000\n"
+"Last-Translator: DustedDonut4378 <kurilian373@tutamail.com>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/gelly/gelly/nl/>\n"
 "Language: nl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 2026.7.dev0\n"
+"X-Generator: Weblate 2026.10.dev0\n"
 
 #: src/application.rs:121
-#, fuzzy
-#| msgid "Playback"
 msgid "Playback error: {}"
-msgstr "Afspelen"
+msgstr "Afspeelfout: {}"
 
 #: src/audio/model.rs:476
 msgid "Subsonic does not support seeking transcoded streams."
 msgstr ""
+"Subsonic ondersteunt vooruit- en terugspoelen in getranscodeerde streams "
+"niet."
 
 #: src/audio/model.rs:478
-#, fuzzy
-#| msgid "Smart playlist"
 msgid "Failed to seek"
-msgstr "Slimme afspeellijst"
+msgstr "Vooruit- of terugspoelen mislukt"
 
 #: src/library_utils.rs:82
 msgid ""
 "The backend did not return many songs, it may require a sonic analysis plugin"
 msgstr ""
+"De backend heeft niet veel nummers teruggestuurd. Mogelijk is een sonic "
+"analyseplugin vereist"
 
 #: src/models/playlist_type.rs:71
-#, fuzzy
-#| msgid "Shuffled Playlist"
 msgid "Shuffled Songs"
-msgstr "Shuffled Afspeellijst"
+msgstr "Willekeurige Nummers"
 
 #: src/models/playlist_type.rs:73
 msgid "Top {} Played Songs"
-msgstr ""
+msgstr "Top {} Afgespeelde Nummers"
 
 #: src/models/playlist_type.rs:75
-#, fuzzy
-#| msgid "Favorites"
 msgid "Favorite Mix"
-msgstr "Favorieten"
+msgstr "Favorieten Mix"
 
 #: src/ui/album_detail.rs:36
 msgid "N/A"
-msgstr ""
+msgstr "n.v.t."
 
 #: src/ui/album_detail.rs:165 src/ui/album_detail.rs:175
 #: src/ui/album_detail.rs:199 src/ui/artist_detail.rs:198 src/ui/playlist.rs:53
 #: src/ui/playlist_detail.rs:475 src/ui/playlist_detail.rs:485
 #: src/ui/playlist_detail.rs:509 src/ui/song_list.rs:159
 msgid "Audio model not initialized, please restart"
-msgstr ""
+msgstr "Het audiomodel is niet geïnitialiseerd. Start de applicatie opnieuw"
 
 #: src/ui/album_detail.rs:191 src/ui/artist_detail.rs:190
 #: src/ui/playlist_detail.rs:501
@@ -75,181 +71,161 @@ msgstr[1] "{} nummers toegevoegd aan wachtrij"
 
 #: src/ui/album_detail.rs:242
 msgid "Album ID copied to clipboard"
-msgstr ""
+msgstr "Album ID gekopieerd naar klembord"
 
 #: src/ui/album_detail.rs:265
 msgid "Added album to playlist"
-msgstr ""
+msgstr "Album toegevoegd aan afspeellijst"
 
 #: src/ui/album_detail.rs:269
 msgid "Failed to add album to playlist"
-msgstr ""
+msgstr "Album toevoegen aan afspeellijst mislukt"
 
 #: src/ui/artist_detail.rs:122
 msgid "Artist ID copied to clipboard"
-msgstr ""
+msgstr "Artiest ID gekopieerd naar klembord"
 
 #: src/ui/artist_detail.rs:145
-#, fuzzy
-#| msgid "Smart playlist"
 msgid "Added artist to playlist"
-msgstr "Slimme afspeellijst"
+msgstr "Artiest toegevoegd aan afspeellijst"
 
 #: src/ui/artist_detail.rs:149
 msgid "Failed to add artist to playlist"
-msgstr ""
+msgstr "Artiest toevoegen aan afspeellijst mislukt"
 
 #: src/ui/music_context_menu.rs:33 src/ui/music_context_menu.rs:131
-#, fuzzy
-#| msgid "Smart Playlists"
 msgid "Add to Playlist"
-msgstr "Slimme afspeellijsten"
+msgstr "Voeg toe aan afspeellijst"
 
 #: src/ui/music_context_menu.rs:34 src/ui/music_context_menu.rs:87
 #: src/ui/playlist_dialogs.rs:20 src/ui/playlist_dialogs.rs:59
 #: src/ui/window.rs:185 resources/ui/setup.ui:203
 msgid "Cancel"
-msgstr ""
+msgstr "Annuleren"
 
 #: src/ui/music_context_menu.rs:34
 msgid "Add"
-msgstr ""
+msgstr "Toevoegen"
 
 #: src/ui/music_context_menu.rs:59
 msgid "No playlists available. Please create a playlist first."
-msgstr ""
+msgstr "Geen afspeellijst beschikbaar. Maak eerst een afspeellijst aan."
 
 #: src/ui/music_context_menu.rs:86
-#, fuzzy
-#| msgid "Most Played Playlist"
 msgid "Song already in playlist"
-msgstr "Meest Gespeelde Afspeellijst"
+msgstr "Nummer staat al in afspeellijst"
 
 #: src/ui/music_context_menu.rs:87
 msgid "Add Anyway"
-msgstr ""
+msgstr "Toch Toevoegen"
 
 #: src/ui/music_context_menu.rs:112
 msgid "Queue Next"
-msgstr ""
+msgstr "Als volgende afspelen"
 
 #: src/ui/music_context_menu.rs:116
 msgid "Queue Last"
-msgstr ""
+msgstr "Achteraan in de wachtrij plaatsen"
 
 #: src/ui/music_context_menu.rs:124
 msgid "Play Similar"
-msgstr ""
+msgstr "Speel vergelijkbaar"
 
 #: src/ui/music_context_menu.rs:136
-#, fuzzy
-#| msgid "Save As Playlist"
 msgid "Remove from Playlist"
-msgstr "Opslaan Als Playlist"
+msgstr "Verwijderen van afspeellijst"
 
 #: src/ui/music_context_menu.rs:146
 msgid "Go to Album"
-msgstr ""
+msgstr "Ga naar Album"
 
 #: src/ui/music_context_menu.rs:153
-#, fuzzy
-#| msgid "Artists"
 msgid "Go to Artist"
-msgstr "Artiesten"
+msgstr "Ga naar Artiest"
 
 #: src/ui/music_context_menu.rs:162 src/ui/stream_info_dialog.rs:121
 msgid "Song Info"
-msgstr ""
+msgstr "Nummerinformatie"
 
 #: src/ui/music_context_menu.rs:167
 msgid "Copy ID"
-msgstr ""
+msgstr "Kopieer ID"
 
 #: src/ui/page_traits.rs:30
 msgid "Recently Added"
-msgstr ""
+msgstr "Recent Toegevoegd"
 
 #: src/ui/page_traits.rs:31
 msgid "Name"
-msgstr ""
+msgstr "Naam"
 
 #: src/ui/page_traits.rs:32
-#, fuzzy
-#| msgid "Album Detail"
 msgid "Album Artist"
-msgstr "Album Detail"
+msgstr "Album Artiest"
 
 #: src/ui/page_traits.rs:33
 msgid "Year"
-msgstr ""
+msgstr "Jaar"
 
 #: src/ui/page_traits.rs:34
 msgid "Play Count"
-msgstr ""
+msgstr "Aantal Keer Afgespeeld"
 
 #: src/ui/page_traits.rs:35
-#, fuzzy
-#| msgid "Songs"
 msgid "Num. Songs"
-msgstr "Nummers"
+msgstr "Aantal Nummers"
 
 #: src/ui/page_traits.rs:36
-#, fuzzy
-#| msgid "Albums"
 msgid "Album"
-msgstr "Albums"
+msgstr "Album"
 
 #: src/ui/page_traits.rs:37
 msgid "Last Played"
-msgstr ""
+msgstr "Laatst Afgespeeld"
 
 #: src/ui/playback_mode.rs:34
 msgid "No Shuffle/Repeat"
-msgstr ""
+msgstr "Willekeurig afspelen en herhalen uit"
 
 #: src/ui/playback_mode.rs:35
 msgid "Shuffle"
-msgstr ""
+msgstr "Willekeurig afspelen"
 
 #: src/ui/playback_mode.rs:36
 msgid "Repeat"
-msgstr ""
+msgstr "Herhalen"
 
 #: src/ui/playback_mode.rs:37
 msgid "Repeat One"
-msgstr ""
+msgstr "Eén nummer herhalen"
 
 #: src/ui/playback_mode.rs:38
-#, fuzzy
-#| msgid "Shuffled Playlist"
 msgid "Shuffle Repeat"
-msgstr "Shuffled Afspeellijst"
+msgstr "Willekeurig Herhalen"
 
 #: src/ui/player_bar/common.rs:79
 msgid "Pause"
-msgstr ""
+msgstr "Pauzeren"
 
 #: src/ui/player_bar/common.rs:82 resources/ui/album_detail.ui:120
 #: resources/ui/artist_detail.ui:53 resources/ui/playlist_detail.ui:102
 #: resources/ui/player_bar/big_player.ui:143
 #: resources/ui/player_bar/compact_player_bar.ui:146
 #: resources/ui/player_bar/full_player_bar.ui:126
-#, fuzzy
-#| msgid "Playback"
 msgid "Play"
 msgstr "Afspelen"
 
 #: src/ui/player_bar/common.rs:92
 msgid "Unknown Artist"
-msgstr ""
+msgstr "Onbekende artiest"
 
 #: src/ui/player_bar/common.rs:254 src/ui/song.rs:233
 msgid "Added song to playlist"
-msgstr ""
+msgstr "Nummer toegevoegd aan afspeellijst"
 
 #: src/ui/player_bar/common.rs:258 src/ui/song.rs:237
 msgid "Failed to add song to playlist"
-msgstr ""
+msgstr "Nummer toevoegen aan afspeellijst mislukt"
 
 #: src/ui/playlist.rs:26
 msgid "1 song"
@@ -266,268 +242,249 @@ msgid "Empty playlist"
 msgstr "Lege afspeellijst"
 
 #: src/ui/playlist.rs:77
-#, fuzzy
-#| msgid "Most Played Playlist"
 msgid "Unable to load playlist"
-msgstr "Meest Gespeelde Afspeellijst"
+msgstr "Kan afspeellijst niet laden"
 
 #: src/ui/playlist_detail.rs:256 src/ui/playlist_list.rs:72
 msgid "Could not load playlist, please try again."
-msgstr ""
+msgstr "Kon afspeellijst niet laden, probeer het opnieuw."
 
 #: src/ui/playlist_detail.rs:289
 msgid "Playlist ID copied to clipboard"
-msgstr ""
+msgstr "Afspeellijst ID gekopieerd naar klembord"
 
 #: src/ui/playlist_detail.rs:313
 msgid "Added songs to playlist"
-msgstr ""
+msgstr "Nummers toegevoegd aan afspeellijst"
 
 #: src/ui/playlist_detail.rs:317
 msgid "Failed to add songs to playlist"
-msgstr ""
+msgstr "Nummers toevoegen aan afspeellijst mislukt"
 
 #: src/ui/playlist_detail.rs:413
 msgid "Failed to save playlist order."
-msgstr ""
+msgstr "Afspeellijstvolgorde opslaan mislukt."
 
 #: src/ui/playlist_detail.rs:459
 msgid "Failed to modify playlist."
-msgstr ""
+msgstr "Afspeellijst aanpassen mislukt."
 
 #: src/ui/playlist_detail.rs:527
 msgid "Smart playlists cannot be deleted"
-msgstr ""
+msgstr "Slimme afspeellijst kan niet verwijderd worden"
 
 #: src/ui/playlist_detail.rs:560
-#, fuzzy
-#| msgid "Playlist Detail"
 msgid "Playlist deleted"
-msgstr "Afspeellijst Detail"
+msgstr "Afspeellijst verwijderd"
 
 #: src/ui/playlist_detail.rs:563
 msgid "Failed to delete playlist"
-msgstr ""
+msgstr "Kon afspeellijst niet verwijderen"
 
 #: src/ui/playlist_dialogs.rs:7
-#, fuzzy
-#| msgid "Playlists"
 msgid "Playlist name"
-msgstr "Afspeellijsten"
+msgstr "Afspeellijstnaam"
 
 #: src/ui/playlist_dialogs.rs:16
-#, fuzzy
-#| msgid "Playlists"
 msgid "New Playlist"
-msgstr "Afspeellijsten"
+msgstr "Nieuwe Afspeellijst"
 
 #: src/ui/playlist_dialogs.rs:20
 msgid "Create"
-msgstr ""
+msgstr "Maken"
 
 #: src/ui/playlist_dialogs.rs:56
-#, fuzzy
-#| msgid "Smart playlist"
 msgid "Delete playlist?"
-msgstr "Slimme afspeellijst"
+msgstr "Afspeellijst verwijderen?"
 
 #: src/ui/playlist_dialogs.rs:59
 msgid "Delete"
-msgstr ""
+msgstr "Verwijderen"
 
 #: src/ui/playlist_list.rs:66
 msgid "No audio model found, please restart."
-msgstr ""
+msgstr "Kon geen audiomodel vinden, start de applicatie opnieuw."
 
 #: src/ui/playlist_list.rs:174 src/ui/queue.rs:125
-#, fuzzy
-#| msgid "Playlist Detail"
 msgid "Playlist created"
-msgstr "Afspeellijst Detail"
+msgstr "Afspeellijst aangemaakt"
 
 #: src/ui/playlist_list.rs:177 src/ui/queue.rs:128
-#, fuzzy
-#| msgid "Smart playlist"
 msgid "Failed to create playlist"
-msgstr "Slimme afspeellijst"
+msgstr "Aanmaken afspeellijst mislukt"
 
 #: src/ui/setup.rs:180 src/ui/setup.rs:195 src/ui/setup.rs:425
 msgid "Credentials could not be saved. Do you have a keyring daemon running?"
 msgstr ""
+"Inloggegevens konden niet opgeslagen worden. Is een keyring daemon draaiende?"
 
 #: src/ui/setup.rs:245
 msgid "Connection error. Please supply a full URL (http://example.com:8096)"
-msgstr ""
+msgstr "Verbinding fout. Gebruik een volledige URL (http://voorbeeld.com:8096)"
 
 #: src/ui/setup.rs:259
 msgid "Invalid credentials"
-msgstr ""
+msgstr "Onjuiste inloggegevens"
 
 #: src/ui/setup.rs:269
 msgid "Could not authenticate with Jellyfin or Subsonic"
-msgstr ""
+msgstr "Kon niet authenticeren met Jellyfin of Subsonic"
 
 #: src/ui/setup.rs:314
 msgid "Failed to load libraries"
-msgstr ""
+msgstr "Kon bibliotheken niet laden"
 
 #: src/ui/setup.rs:344
 msgid "Failed to initiate quick connect. Is the host valid?"
-msgstr ""
+msgstr "Kon snelle verbinding niet initialiseren. Is de host juist?"
 
 #: src/ui/setup.rs:399
 msgid "Error during quick connect"
-msgstr ""
+msgstr "Fout tijdens snelle verbinding"
 
 #: src/ui/setup.rs:435
 msgid "Failed to authenticate with quick connect"
-msgstr ""
+msgstr "Kon niet authenticeren met snelle verbinding"
 
 #: src/ui/setup.rs:445
 msgid "Quick connect code copied to clipboard"
-msgstr ""
+msgstr "Snelle verbinding code gekopieerd naar klembord"
 
 #: src/ui/stream_info_dialog.rs:9
 msgid "Yes"
-msgstr ""
+msgstr "Ja"
 
 #: src/ui/stream_info_dialog.rs:10
 msgid "No"
-msgstr ""
+msgstr "Nee"
 
 #: src/ui/stream_info_dialog.rs:11 src/ui/stream_info_dialog.rs:53
 #: src/ui/stream_info_dialog.rs:74 src/ui/stream_info_dialog.rs:115
 #: src/ui/stream_info_dialog.rs:116
 msgid "Unknown"
-msgstr ""
+msgstr "Onbekend"
 
 #: src/ui/stream_info_dialog.rs:50
 msgid "Backend"
-msgstr ""
+msgstr "Backend"
 
 #: src/ui/stream_info_dialog.rs:53
 msgid "Codec"
-msgstr ""
+msgstr "Codec"
 
 #: src/ui/stream_info_dialog.rs:55
 msgid "Container"
-msgstr ""
+msgstr "Container"
 
 #: src/ui/stream_info_dialog.rs:56 src/ui/stream_info_dialog.rs:78
 msgid "None"
-msgstr ""
+msgstr "Geen"
 
 #: src/ui/stream_info_dialog.rs:59
 msgid "Sample Rate"
-msgstr ""
+msgstr "Samplefrequentie"
 
 #: src/ui/stream_info_dialog.rs:62
 msgid "Channels"
-msgstr ""
+msgstr "Kanalen"
 
 #: src/ui/stream_info_dialog.rs:65
 msgid "Bit Rate"
-msgstr ""
+msgstr "Bitsnelheid"
 
 #: src/ui/stream_info_dialog.rs:68
 msgid "Encoder"
-msgstr ""
+msgstr "Encoder"
 
 #: src/ui/stream_info_dialog.rs:73
 msgid "Original Codec"
-msgstr ""
+msgstr "Originele Codec"
 
 #: src/ui/stream_info_dialog.rs:77
 msgid "Original Container"
-msgstr ""
+msgstr "Originele Container"
 
 #: src/ui/stream_info_dialog.rs:81
 msgid "Original Sample Rate"
-msgstr ""
+msgstr "Originele Samplefrequentie"
 
 #: src/ui/stream_info_dialog.rs:85
 msgid "Original Channels"
-msgstr ""
+msgstr "Originele Kanalen"
 
 #: src/ui/stream_info_dialog.rs:89
 msgid "Supports Direct Play"
-msgstr ""
+msgstr "Ondersteunt Direct Afspelen"
 
 #: src/ui/stream_info_dialog.rs:93
 msgid "Supports Direct Stream"
-msgstr ""
+msgstr "Ondersteunt Direct Streamen"
 
 #: src/ui/stream_info_dialog.rs:97
-#, fuzzy
-#| msgid "Transcoding"
 msgid "Supports Transcoding"
-msgstr "Transcoderen"
+msgstr "Ondersteunt Transcoderen"
 
 #: src/ui/stream_info_dialog.rs:103
 msgid "Original Bit Rate"
-msgstr ""
+msgstr "Originele Bitsnelheid"
 
 #: src/ui/stream_info_dialog.rs:109
 msgid "File Size"
-msgstr ""
+msgstr "Bestandsgrootte"
 
 #: src/ui/stream_info_dialog.rs:115
 msgid "Id"
-msgstr ""
+msgstr "Id"
 
 #: src/ui/stream_info_dialog.rs:116
 msgid "Path"
-msgstr ""
+msgstr "Pad"
 
 #: src/ui/stream_info_dialog.rs:139
 msgid "Song Properties"
-msgstr ""
+msgstr "Nummereigenschappen"
 
 #: src/ui/stream_info_dialog.rs:146
 msgid "Local Properties"
-msgstr ""
+msgstr "Lokale Eigenschappen"
 
 #: src/ui/stream_info_dialog.rs:153
 msgid "Remote Properties"
-msgstr ""
+msgstr "Externe Eigenschappen"
 
 #: src/ui/window.rs:184 resources/ui/window.ui:415
-#, fuzzy
-#| msgid "Library"
 msgid "Change Library"
-msgstr "Bibliotheek"
+msgstr "Verander Bibliotheek"
 
 #: src/ui/window.rs:185
-#, fuzzy
-#| msgid "Select Library"
 msgid "Select"
-msgstr "Selecteer Bibliotheek"
+msgstr "Selecteren"
 
 #: src/ui/window.rs:217
-#, fuzzy
-#| msgid "Smart playlist"
 msgid "Failed to fetch libraries"
-msgstr "Slimme afspeellijst"
+msgstr "Kon bibliotheken niet ophalen"
 
 #: src/ui/window.rs:227
 msgid "Logged out"
-msgstr ""
+msgstr "Uitgelogd"
 
 #: src/ui/window.rs:355
 msgid "all genres"
-msgstr ""
+msgstr "Alle genres"
 
 #: src/ui/window.rs:835
 msgid "1 item added to library"
 msgid_plural "{} items added to library"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "1 item toegevoegd aan de bibliotheek"
+msgstr[1] "{} items toegevoegd aan de bibliotheek"
 
 #: src/ui/window.rs:856
 msgid ""
 "Library rescan requested. Wait a few seconds and then use the \"Refresh "
 "Library\" option."
 msgstr ""
+"Bibliotheek opnieuw scannen opgevraagd. Wacht een paar seconden en gebruik "
+"daarna de \"Bibliotheek Verversen\" optie."
 
 #: resources/ui/album_art.ui:33
 msgid "Missing album art"
@@ -535,65 +492,51 @@ msgstr "Albumhoes ontbreekt"
 
 #: resources/ui/album_detail.ui:82 resources/ui/playlist_detail.ui:66
 msgid "tracks"
-msgstr ""
+msgstr "Nummers"
 
 #: resources/ui/album_detail.ui:147 resources/ui/artist_detail.ui:81
 msgid "More Actions"
-msgstr ""
+msgstr "Meer Acties"
 
 #: resources/ui/album_list.ui:8
-#, fuzzy
-#| msgid "Albums"
 msgid "No Albums"
-msgstr "Albums"
+msgstr "Geen Albums"
 
 #: resources/ui/album_list.ui:14 resources/ui/artist_list.ui:14
 msgid "Caching initial library download..."
-msgstr ""
+msgstr "Caching initiële download van de bibliotheek..."
 
 #: resources/ui/artist_detail.ui:41
-#, fuzzy
-#| msgid "Artist Detail"
 msgid "Artist Name"
-msgstr "Artiest Detail"
+msgstr "Naam van de Artiest"
 
 #: resources/ui/artist_list.ui:8
-#, fuzzy
-#| msgid "Artists"
 msgid "No Artists"
-msgstr "Artiesten"
+msgstr "Geen Artiesten"
 
 #: resources/ui/lyrics.ui:56
 msgid "No lyrics available"
-msgstr ""
+msgstr "Geen songteksts beschikbaar"
 
 #: resources/ui/playback_mode.ui:9
-#, fuzzy
-#| msgid "Playback"
 msgid "Playback Mode"
-msgstr "Afspelen"
+msgstr "Afspeel Modus"
 
 #: resources/ui/playlist_detail.ui:129
 msgid "More actions"
-msgstr ""
+msgstr "Meer Acties"
 
 #: resources/ui/playlist_detail.ui:140
-#, fuzzy
-#| msgid "Smart playlist"
 msgid "Delete playlist"
-msgstr "Slimme afspeellijst"
+msgstr "Verwijder afspeellijst"
 
 #: resources/ui/playlist_detail.ui:154
-#, fuzzy
-#| msgid "Playlists"
 msgid "Playlist is Empty"
-msgstr "Afspeellijsten"
+msgstr "Afspeellijst is Leeg"
 
 #: resources/ui/playlist_list.ui:8
-#, fuzzy
-#| msgid "Playlists"
 msgid "No Playlists"
-msgstr "Afspeellijsten"
+msgstr "Geen Afspeellijsten"
 
 #: resources/ui/preferences.ui:9 resources/ui/preferences.ui:12
 #: resources/ui/shortcuts_dialog.ui:6
@@ -602,7 +545,7 @@ msgstr "Algemeen"
 
 #: resources/ui/preferences.ui:15
 msgid "Refresh library on startup"
-msgstr "ververs bibliotheek bij opstarten"
+msgstr "Ververs bibliotheek bij opstarten"
 
 #: resources/ui/preferences.ui:16
 msgid "The library can be refreshed using ctrl+r or the menu."
@@ -619,11 +562,11 @@ msgstr "Gebruikt transparantie, geblurde achtergronden, enz."
 
 #: resources/ui/preferences.ui:27
 msgid "Compact Mode"
-msgstr ""
+msgstr "Compacte Modus"
 
 #: resources/ui/preferences.ui:28
 msgid "Use smaller UI elements regardless of window size."
-msgstr ""
+msgstr "Gebruik kleinere UI-elementen, ongeacht de venstergrootte."
 
 #: resources/ui/preferences.ui:35 resources/ui/shortcuts_dialog.ui:84
 msgid "Playback"
@@ -631,25 +574,23 @@ msgstr "Afspelen"
 
 #: resources/ui/preferences.ui:38
 msgid "Normalize Audio"
-msgstr "Audio normaliseren"
+msgstr "Audio Normaliseren"
 
 #: resources/ui/preferences.ui:39
 msgid "May require backend plugins."
 msgstr "Kan backend plugins nodig hebben."
 
 #: resources/ui/preferences.ui:44
-#, fuzzy
-#| msgid "Playback"
 msgid "Gapless Playback"
-msgstr "Afspelen"
+msgstr "Naadloos Afspelen"
 
 #: resources/ui/preferences.ui:45
 msgid "Uninterrupted playback of consecutive tracks."
-msgstr ""
+msgstr "Ononderbroken afspelen van opeenvolgende nummers."
 
 #: resources/ui/preferences.ui:50
 msgid "Inhibit Suspend"
-msgstr "Voorkom slaapstand"
+msgstr "Voorkom Slaapstand"
 
 #: resources/ui/preferences.ui:51
 msgid "Prevents the system from suspending while playing"
@@ -662,6 +603,8 @@ msgstr "Transcoderen"
 #: resources/ui/preferences.ui:59
 msgid "Currently Subsonic backends cannot seek transcoded streams."
 msgstr ""
+"Op dit moment ondersteunen Subsonic backends voor- en terugspoelen in "
+"getranscodeerde streams niet."
 
 #: resources/ui/preferences.ui:62
 msgid "Transcoding Profile"
@@ -669,11 +612,11 @@ msgstr "Transcoding Instelling"
 
 #: resources/ui/preferences.ui:63
 msgid "Only used when direct play is not available."
-msgstr "Enkel gebruiken wanneer direct play niet beschikbaar is."
+msgstr "Enkel gebruiken wanneer direct afspelen niet beschikbaar is."
 
 #: resources/ui/preferences.ui:76
 msgid "Maximum Bitrate (kbps)"
-msgstr "Maximale bitrate (kbps)"
+msgstr "Maximale Bitsnelheid (kbps)"
 
 #: resources/ui/preferences.ui:77
 msgid "A value of 0 means no limit."
@@ -701,11 +644,11 @@ msgstr "Meest Gespeelde Afspeellijst"
 
 #: resources/ui/queue.ui:8
 msgid "Nothing Playing"
-msgstr ""
+msgstr "Niks wordt afgespeeld"
 
 #: resources/ui/queue.ui:41
 msgid "Jump to current song"
-msgstr ""
+msgstr "Ga naar het huidig nummer"
 
 #: resources/ui/setup.ui:11
 msgid "Servers"
@@ -727,39 +670,39 @@ msgstr ""
 
 #: resources/ui/setup.ui:36
 msgid "Host URL"
-msgstr ""
+msgstr "Host URL"
 
 #: resources/ui/setup.ui:38
 msgid ""
 "Enter the complete server address including protocol (HTTP or HTTPS) and "
 "port number (:8096)"
 msgstr ""
+"Vul het complete server adres in, inclufsief het protocol (HTTP of HTTPS) en "
+"poort nummer (:8096)"
 
 #: resources/ui/setup.ui:43
 msgid "Username"
-msgstr ""
+msgstr "Gebruikersnaam"
 
 #: resources/ui/setup.ui:48
 msgid "Password"
-msgstr ""
+msgstr "Wachtwoord"
 
 #: resources/ui/setup.ui:61 resources/ui/setup.ui:222
 msgid "Advanced Settings"
-msgstr ""
+msgstr "Geavanceerde Instellingen"
 
 #: resources/ui/setup.ui:76
 msgid "Connect"
-msgstr ""
+msgstr "Verbinden"
 
 #: resources/ui/setup.ui:87 resources/ui/setup.ui:167
 msgid "Jellyfin Quick Connect"
-msgstr ""
+msgstr "Jellyfin Snelle Verbinding"
 
 #: resources/ui/setup.ui:104
-#, fuzzy
-#| msgid "Library"
 msgid "Choose Library"
-msgstr "Bibliotheek"
+msgstr "Kies Bibliotheek"
 
 #: resources/ui/setup.ui:114
 msgid "Select Library"
@@ -774,32 +717,32 @@ msgid "Library"
 msgstr "Bibliotheek"
 
 #: resources/ui/setup.ui:137
-#, fuzzy
-#| msgid "About Gelly"
 msgid "Launch Gelly"
-msgstr "Over Gelly"
+msgstr "Start Gelly op"
 
 #: resources/ui/setup.ui:158
 msgid "Quick Connect"
-msgstr ""
+msgstr "Snelle Verbinding"
 
 #: resources/ui/setup.ui:168
 msgid "Enter the code on the Jellyfin web page to complete authentication."
-msgstr ""
+msgstr "Vul de code op de Jellyfin webpagina in om te authenticeren."
 
 #: resources/ui/setup.ui:233
 msgid "Subsonic"
-msgstr ""
+msgstr "Subsonic"
 
 #: resources/ui/setup.ui:236
 msgid "Legacy Authentication"
-msgstr ""
+msgstr "Verouderde Authenticatie"
 
 #: resources/ui/setup.ui:237
 msgid ""
 "Required by specific servers that do not support token auth like Nextcloud "
 "Music."
 msgstr ""
+"Nodig voor specifieke servers die een auth token niet ondersteunen zoals "
+"Nextcloud Muziek."
 
 #: resources/ui/shortcuts_dialog.ui:9 resources/ui/window.ui:411
 msgid "Refresh Library"
@@ -807,27 +750,25 @@ msgstr "Bibliotheek Verversen"
 
 #: resources/ui/shortcuts_dialog.ui:10
 msgid "Re-downloads the music library"
-msgstr ""
+msgstr "Herdownload de muziekbibliotheek"
 
 #: resources/ui/shortcuts_dialog.ui:16
-#, fuzzy
-#| msgid "Request Rescan"
 msgid "Request Library Rescan"
-msgstr "Rescan Aanvragen"
+msgstr "Opnieuw Bibliotheek Scan Aanvragen"
 
 #: resources/ui/shortcuts_dialog.ui:17
 msgid "Ask Jellyfin to rescan the library for new or modified files"
 msgstr ""
+"Vraag Jellyfin om de bibliotheek opnieuw te scannen voor nieuwe of "
+"aangepaste bestanden"
 
 #: resources/ui/shortcuts_dialog.ui:23
 msgid "Search"
 msgstr "Zoeken"
 
 #: resources/ui/shortcuts_dialog.ui:29
-#, fuzzy
-#| msgid "Favorites"
 msgid "Show Favorites"
-msgstr "Favorieten"
+msgstr "Laat Favorieten Zien"
 
 #: resources/ui/shortcuts_dialog.ui:35 resources/ui/window.ui:425
 msgid "Preferences"
@@ -843,49 +784,39 @@ msgstr "Afsluiten"
 
 #: resources/ui/shortcuts_dialog.ui:55
 msgid "Navigation"
-msgstr ""
+msgstr "Navigatie"
 
 #: resources/ui/shortcuts_dialog.ui:58
-#, fuzzy
-#| msgid "Albums"
 msgid "Focus Albums"
-msgstr "Albums"
+msgstr "Focus Albums"
 
 #: resources/ui/shortcuts_dialog.ui:64
-#, fuzzy
-#| msgid "Artists"
 msgid "Focus Artists"
-msgstr "Artiesten"
+msgstr "Focus Artiesten"
 
 #: resources/ui/shortcuts_dialog.ui:70
-#, fuzzy
-#| msgid "Playlists"
 msgid "Focus Playlist"
-msgstr "Afspeellijsten"
+msgstr "Focus Afspeellijst"
 
 #: resources/ui/shortcuts_dialog.ui:76
 msgid "Focus Song List"
-msgstr ""
+msgstr "Focus Nummerlijst"
 
 #: resources/ui/shortcuts_dialog.ui:87
 msgid "Play Selected"
-msgstr ""
+msgstr "Speel Geselecteerde"
 
 #: resources/ui/shortcuts_dialog.ui:88
 msgid "Play the currently selected item in the list"
-msgstr ""
+msgstr "Speel het huidig geselecteerde item in de lijst"
 
 #: resources/ui/song_list.ui:8
-#, fuzzy
-#| msgid "Songs"
 msgid "No Songs"
-msgstr "Nummers"
+msgstr "Geen Nummers"
 
 #: resources/ui/song_list.ui:35
-#, fuzzy
-#| msgid "Songs"
 msgid "songs"
-msgstr "Nummers"
+msgstr "nummers"
 
 #: resources/ui/window.ui:56
 msgid "Album Detail"
@@ -909,25 +840,23 @@ msgstr "Laat wachtrij zien"
 
 #: resources/ui/window.ui:160
 msgid "Search and Genres"
-msgstr ""
+msgstr "Zoeken en Genres"
 
 #: resources/ui/window.ui:166
 msgid "Sort"
-msgstr "Soorteren"
+msgstr "Sorteren"
 
 #: resources/ui/window.ui:173
 msgid "New"
 msgstr "Nieuw"
 
 #: resources/ui/window.ui:208
-#, fuzzy
-#| msgid "Search"
 msgid "Search..."
-msgstr "Zoeken"
+msgstr "Zoeken..."
 
 #: resources/ui/window.ui:231
 msgid "Reset"
-msgstr ""
+msgstr "Resetten"
 
 #: resources/ui/window.ui:253
 msgid "Favorites"
@@ -963,11 +892,11 @@ msgstr "Leeg Wachtrij"
 
 #: resources/ui/window.ui:386
 msgid "Save As Playlist"
-msgstr "Opslaan Als Playlist"
+msgstr "Opslaan Als Afspeellijst"
 
 #: resources/ui/window.ui:407
 msgid "Request Rescan"
-msgstr "Rescan Aanvragen"
+msgstr "Opnieuw Scannen Aanvragen"
 
 #: resources/ui/window.ui:419
 msgid "Clear Image Cache"
@@ -985,34 +914,32 @@ msgstr "Afmelden"
 #: resources/ui/player_bar/compact_player_bar.ui:136
 #: resources/ui/player_bar/full_player_bar.ui:116
 msgid "Previous"
-msgstr ""
+msgstr "Vorige"
 
 #: resources/ui/player_bar/big_player.ui:153
 #: resources/ui/player_bar/compact_player_bar.ui:156
 #: resources/ui/player_bar/full_player_bar.ui:137
 msgid "Next"
-msgstr ""
+msgstr "Volgende"
 
 #: resources/ui/player_bar/big_player.ui:170
 #: resources/ui/player_bar/compact_player_bar.ui:110
 #: resources/ui/player_bar/full_player_bar.ui:199
 msgid "Lyrics"
-msgstr ""
+msgstr "Songtekst"
 
 #: resources/ui/player_bar/big_player.ui:180
 #: resources/ui/player_bar/compact_player_bar.ui:120
 #: resources/ui/player_bar/full_player_bar.ui:209
-#, fuzzy
-#| msgid "Favorites"
 msgid "Favorite"
-msgstr "Favorieten"
+msgstr "Favoriet"
 
 #: resources/ui/player_bar/big_player.ui:200
 #: resources/ui/player_bar/full_player_bar.ui:246
 msgid "Volume"
-msgstr ""
+msgstr "Volume"
 
 #: resources/ui/player_bar/big_player.ui:215
 #: resources/ui/player_bar/full_player_bar.ui:233
 msgid "Song Menu"
-msgstr ""
+msgstr "Nummermenu"
