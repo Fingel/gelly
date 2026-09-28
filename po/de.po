@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-09-19 13:31-0700\n"
-"PO-Revision-Date: 2026-09-16 22:51+0000\n"
+"PO-Revision-Date: 2026-09-29 06:51+0000\n"
 "Last-Translator: Julian Meergans <tubuspapaya@gmail.com>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/gelly/gelly/de/>\n"
 "Language: de\n"
@@ -34,6 +34,8 @@ msgstr "Springen fehlgeschlagen"
 msgid ""
 "The backend did not return many songs, it may require a sonic analysis plugin"
 msgstr ""
+"Das Backend hat nicht viele Titel ausgegeben. Möglicherweise ist ein Plugin "
+"zur Klangalanlyse erforderlich"
 
 #: src/models/playlist_type.rs:71
 msgid "Shuffled Songs"
@@ -128,7 +130,7 @@ msgstr "Als letztes Lied der Warteschlange hinzufügen"
 
 #: src/ui/music_context_menu.rs:124
 msgid "Play Similar"
-msgstr ""
+msgstr "Ähnliche abspielen"
 
 #: src/ui/music_context_menu.rs:136
 msgid "Remove from Playlist"
