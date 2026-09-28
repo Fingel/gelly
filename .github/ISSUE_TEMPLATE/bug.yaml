@@ -1,0 +1,42 @@
+name: Bug
+description: Report a bug in Gelly
+body:
+- type: input
+  id: backend
+  attributes:
+    label: Library backend in use
+    placeholder: Jellyfin or Subsonic
+  validations:
+    required: true
+- type: input
+  id: version
+  attributes:
+    label: Version of Gelly
+  validations:
+    required: true
+- type: dropdown
+  id: installation
+  attributes:
+    label: Installation method
+    options:
+      - Flatpak
+      - Package
+      - Source
+  validations:
+    required: true
+- type: input
+  id: distro
+  attributes:
+    label: Linux distribution
+  validations:
+    required: true
+- type: input
+  id: library-size
+  attributes:
+    label: Approximate library size (number of songs)
+- type: textarea
+  id: issue
+  attributes:
+    label: What issue did you encounter?
+    description: >
+      Please also provide logs if relevant. Debug logging can be enabled by running Gelly with `RUST_LOG="debug,glycin=off,glycin_utils=off"`
