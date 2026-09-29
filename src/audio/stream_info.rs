@@ -6,6 +6,8 @@ use thiserror::Error;
 use crate::{
     async_utils::spawn_tokio,
     backend::{Backend, BackendError},
+    library::Library,
+    models::SongModel,
 };
 
 #[derive(Error, Debug)]
@@ -22,6 +24,9 @@ pub struct StreamInfo {
     // File properties
     pub id: Option<String>,
     pub path: Option<String>,
+    pub play_count: u64,
+    pub date_added: String,
+    pub genres: Vec<String>,
     // Gstreamer properties
     pub codec: Option<String>,
     pub sample_rate: Option<i32>,
@@ -44,13 +49,17 @@ pub struct StreamInfo {
 
 pub fn discover_stream_info(
     uri: &str,
-    song_id: &str,
+    song: &SongModel,
     jellyfin: &Backend,
+    library: &Library,
     callback: impl FnOnce(StreamInfo) + 'static,
 ) {
     let uri = uri.to_string();
-    let item_id = song_id.to_string();
+    let item_id = song.id().to_string();
     let jellyfin = jellyfin.clone();
+    let song_play_count = library.play_count_for_song(&item_id);
+    let date_added = song.date_created();
+    let genres = song.genres();
 
     spawn_tokio(
         async move {
@@ -115,6 +124,9 @@ pub fn discover_stream_info(
                     }
                 }
                 stream_info.id = Some(item_id);
+                stream_info.play_count = song_play_count;
+                stream_info.date_added = date_added;
+                stream_info.genres = genres;
                 Ok(stream_info)
             })
             .await

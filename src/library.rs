@@ -372,6 +372,18 @@ impl Library {
     pub fn genres(&self) -> Vec<String> {
         self.genres.borrow().iter().cloned().collect()
     }
+
+    pub fn play_count_for_song(&self, id: &str) -> u64 {
+        // This could be made a property on the song model, and it might still
+        // be in the future. But for now this will only be accessed via the
+        // stream info dialog, so save some compute and make it lazy.
+        self.songs
+            .borrow()
+            .iter()
+            .find(|s| s.id == id)
+            .map(|s| s.user_data.play_count)
+            .unwrap_or(0)
+    }
 }
 
 #[cfg(test)]

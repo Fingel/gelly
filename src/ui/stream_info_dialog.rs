@@ -111,9 +111,18 @@ pub fn show(parent: Option<&Window>, info: StreamInfo) {
         ));
     }
 
+    let date_added = glib::DateTime::from_iso8601(&info.date_added, None)
+        .and_then(|d| d.to_local())
+        .and_then(|d| d.format("%c"))
+        .map(|s| s.into())
+        .unwrap_or_else(|_| info.date_added);
+
     let song_props = vec![
         (tr("Id"), info.id.unwrap_or_else(|| tr("Unknown"))),
         (tr("Path"), info.path.unwrap_or_else(|| tr("Unknown"))),
+        (tr("Approximate Play Count"), info.play_count.to_string()),
+        (tr("Date Added"), date_added),
+        (tr("Genres"), info.genres.join(", ")),
     ];
 
     // Create a header bar with title

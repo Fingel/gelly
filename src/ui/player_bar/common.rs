@@ -165,10 +165,10 @@ where
         if let Some(uri) = self.audio_model().get_uri()
             && let Some(song_model) = self.audio_model().current_song()
         {
-            let song_id = song_model.id();
             let backend = self.obj().get_application().backend();
+            let library = self.obj().get_application().library();
             let weak = self.obj().downgrade();
-            discover_stream_info(&uri, &song_id, &backend, move |info| {
+            discover_stream_info(&uri, &song_model, &backend, &library, move |info| {
                 if let Some(obj) = weak.upgrade() {
                     stream_info_dialog::show(obj.get_gtk_window().as_ref(), info);
                 }
