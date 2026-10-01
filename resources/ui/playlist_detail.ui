@@ -160,6 +160,7 @@
       <object class="GellyAutoScrollWindow">
         <property name="vexpand">false</property>
         <property name="margin-top">24</property>
+        <property name="margin-bottom">24</property>
         <property name="overflow">hidden</property>
         <property name="visible" bind-source="track_list" bind-property="visible" bind-flags="sync-create" />
         <style>
