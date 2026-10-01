@@ -18,7 +18,7 @@
 - [x] Gapless playback
 - [x] Transcoding
 - [x] Instant Mix
-- [x] Translated to 13+ languages
+- [x] Translated to 20+ languages
 - [x] [CLI](#command-line-interface)
 - [x] Playlist management
 - [x] Favorites
@@ -142,6 +142,8 @@ See [CONTRIBUTING.md](CONTRIBUTING.md)
 
 ## Writings
 I write about developing Gelly on my blog occasionally
+
+[One Year of Gelly](https://www.pedaldrivenprogramming.com/2026/09/one-year-of-gelly/)
 
 [Self Hosted Jukebox with NFC Cards](https://www.pedaldrivenprogramming.com/2026/05/self-hosted-jukebox-with-nfc-cards/")
 
