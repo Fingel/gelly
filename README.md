@@ -15,14 +15,14 @@
 - [x] MPRIS
 - [x] Lyrics
 - [x] Replaygain
-- [x] Gapless playback 
+- [x] Gapless playback
 - [x] Transcoding
 - [x] Instant Mix
 - [x] Translated to 13+ languages
-- [x] [CLI](#command-line-interface) 
+- [x] [CLI](#command-line-interface)
 - [x] Playlist management
-- [x] Favorites 
-- [x] Smart Playlists 
+- [x] Favorites
+- [x] Smart Playlists
 - [x] [NFC tag support](#nfc-tag-support)
 
 ## Installation
@@ -73,9 +73,9 @@ can be used as an argument to the `--play-x` options.
 
 ## NFC Tag Support
 
-Gelly doesn't directly support reading or writing NFC card but the project 
+Gelly doesn't directly support reading or writing NFC card but the project
 [Gelly-NFC](https://github.com/Fingel/gelly-nfc) does. It's a simple Python
-script that can be used to control Gelly via NFC cards using the 
+script that can be used to control Gelly via NFC cards using the
 [command line interface](#command-line-interface). Perfect for making a home
 Jukebox!
 
@@ -84,12 +84,12 @@ for more details.
 
 ## Connecting with TLS using self signed certificates
 
-There is currently [an issue with Flatpak](https://gitlab.com/freedesktop-sdk/freedesktop-sdk/-/issues/1905) 
+There is currently [an issue with Flatpak](https://gitlab.com/freedesktop-sdk/freedesktop-sdk/-/issues/1905)
 that prevents sandboxed applications from reading the host's certificate store. This means if you are using
 a self-signed certificate on your Jellyfin/Navidrome install, Gelly will be unlikely to be able to connect
 even if you have the cert installed locally.
 
-There is a workaround: You need to make the cert file available to the flatpak sandbox and then 
+There is a workaround: You need to make the cert file available to the flatpak sandbox and then
 set the `SSL_CERT_FILE` env var to point to it. This can be done using a tool like Flatseal. Thank you
 @RodrigoPrestes for [finding this workaround](https://github.com/Fingel/gelly/issues/15#issuecomment-4195533397).
 
@@ -97,7 +97,7 @@ The other alternative is to use a non flatpak installation method.
 
 ## Translations
 
-Gelly needs help with translations! See the 
+Gelly needs help with translations! See the
 [Weblate project page](https://hosted.weblate.org/engage/gelly/) to submit translations via Weblate.
 
 [![Translation status](https://hosted.weblate.org/widget/gelly/horizontal-auto.svg)](https://hosted.weblate.org/engage/gelly/)
@@ -110,16 +110,16 @@ Make sure you have the development libraries for the following installed:
 * Libadwaita
 * Gstreamer
 
-The name of these packages depends on your distribution, 
+The name of these packages depends on your distribution,
 but will usually be something like `gstreamer-dev`. Note that Arch Linux includes development libs with the main
 package, btw, so you don't need to install anything extra.
 
-Gelly leverages [gtk-rs](https://gtk-rs.org/) for GTK bindings. 
+Gelly leverages [gtk-rs](https://gtk-rs.org/) for GTK bindings.
 
-You will also need a rust compiler installed. Gelly does *not* require any nightly 
-features from Rust. 
+You will also need a rust compiler installed. Gelly does *not* require any nightly
+features from Rust.
 
-To make things easy, also install the [just](https://github.com/casey/just) command runner. Building and 
+To make things easy, also install the [just](https://github.com/casey/just) command runner. Building and
 launching a development build of Gelly should then simply be a matter of:
 
     just
@@ -128,7 +128,7 @@ And installing a release build:
 
     just release
     sudo just install
-  
+
 See the recipes in the [justfile](justfile) for other useful commands.
 
 
