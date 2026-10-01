@@ -216,6 +216,7 @@ impl Library {
             .filter(|dto| {
                 dto.album_artists
                     .iter()
+                    .chain(dto.artist_items.iter())
                     .any(|artist| artist.id == artist_id)
             })
             .filter(|dto| seen_album_ids.insert(dto.effective_album_id()))
@@ -723,6 +724,39 @@ mod tests {
             Some(1),
         )]);
         assert_eq!(lib.albums_for_artist("nonexistent_artist").len(), 0);
+    }
+
+    #[test]
+    fn test_albums_for_artist_with_song_artists() {
+        let album_artist_dto = create_test_music_dto(
+            "1",
+            "Song 1",
+            "Album A",
+            "album_1",
+            "Artist A",
+            "artist_1",
+            Some(1),
+            Some(1),
+        );
+        let mut song_artist_dto = create_test_music_dto(
+            "2",
+            "Song 1",
+            "Album B",
+            "album_2",
+            "Artist B",
+            "artist_2",
+            Some(1),
+            Some(1),
+        );
+        song_artist_dto.artist_items = vec![ArtistItemsDto {
+            name: "Artist A".to_string(),
+            id: "artist_1".to_string(),
+        }];
+        let lib = make_library(vec![album_artist_dto, song_artist_dto]);
+        let albums = lib.albums_for_artist("artist_1");
+        assert_eq!(albums.len(), 2);
+        assert!(albums.iter().any(|a| a.id() == "album_1"));
+        assert!(albums.iter().any(|a| a.id() == "album_2"));
     }
 
     #[test]
