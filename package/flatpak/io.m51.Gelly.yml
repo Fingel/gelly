@@ -35,6 +35,6 @@ modules:
     sources:
       - type: git
         url: https://github.com/Fingel/gelly.git
-        tag: v1.14.0
-        commit: b2be824a3dae36194db5840cf73656bee7e1101d
+        tag: v1.15.0
+        commit: 6b6ef073349edfc0eb622a10850d6464e6a423a8
       - cargo-sources.json
