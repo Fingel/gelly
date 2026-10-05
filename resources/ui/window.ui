@@ -184,7 +184,7 @@
                                             <property name="title-widget">
                                               <object class="AdwViewSwitcher" id="switcher_title">
                                                 <property name="stack">stack</property>
-                                                <property name="policy">1</property>
+                                                <property name="policy">wide</property>
                                               </object>
                                             </property>
                                           </object>
