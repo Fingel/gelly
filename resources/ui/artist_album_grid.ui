@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <requires lib="gtk" version="4.0"/>
+  <requires lib="adwaita" version="1.0"/>
+  <template class="GellyArtistAlbumGrid" parent="GtkBox">
+    <property name="orientation">vertical</property>
+    <child>
+      <object class="GtkFlowBox" id="flow_box">
+        <property name="orientation">horizontal</property>
+        <property name="homogeneous">true</property>
+        <property name="selection-mode">none</property>
+        <property name="min-children-per-line">1</property>
+        <property name="max-children-per-line">20</property>
+        <property name="hexpand">true</property>
+        <property name="valign">start</property>
+      </object>
+    </child>
+  </template>
+</interface>
