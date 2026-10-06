@@ -1,11 +1,10 @@
 use std::{
     collections::{HashMap, HashSet},
-    fs::{self, File},
-    io,
+    fs,
     num::NonZeroUsize,
     os::unix,
-    path::{Path, PathBuf},
-    sync::{Arc, Mutex as StdMutex},
+    path::PathBuf,
+    sync::{Arc, Mutex as StdMutex, RwLock},
     time::{Duration, SystemTime},
 };
 
@@ -404,7 +403,7 @@ impl ImageCache {
 }
 
 #[derive(Debug)]
-struct CacheEntry {
+pub struct CacheEntry {
     path: PathBuf,
     size_bytes: u64,
     last_used: SystemTime,
@@ -414,18 +413,68 @@ type CacheKey = String;
 
 #[derive(Debug)]
 pub struct MediaCache {
-    pub cache_dir: PathBuf,
-    cache: HashMap<CacheKey, CacheEntry>,
+    cache_dir: PathBuf,
+    items: RwLock<HashMap<CacheKey, CacheEntry>>,
+    pending_requests: Mutex<HashSet<CacheKey>>,
+    download_semaphore: Semaphore,
 }
 
 impl MediaCache {
     pub fn new() -> Option<Self> {
+        const MAX_CONCURRENT_DOWNLOADS: usize = 2;
         let cache_dir = get_cache_directory("media").ok()?;
         fs::create_dir_all(&cache_dir).ok()?;
         Some(Self {
             cache_dir,
-            cache: HashMap::new(),
+            items: RwLock::new(HashMap::new()),
+            pending_requests: Mutex::new(HashSet::new()),
+            download_semaphore: Semaphore::new(MAX_CONCURRENT_DOWNLOADS),
         })
+    }
+
+    fn get_cache_file_path(&self, item_id: &str) -> PathBuf {
+        self.cache_dir.join(item_id)
+    }
+
+    pub async fn download_item(&self, item_id: &str, backend: &Backend) -> Result<(), CacheError> {
+        loop {
+            {
+                let mut pending = self.pending_requests.lock().await;
+                if self.items.read().unwrap().contains_key(item_id) {
+                    return Ok(());
+                }
+                if pending.contains(item_id) {
+                    drop(pending);
+                    tokio::time::sleep(Duration::from_millis(100)).await;
+                    continue;
+                }
+                pending.insert(item_id.to_string());
+            }
+            let _permit = self.download_semaphore.acquire().await.unwrap();
+            // save the result to ensure cleanup in case of error
+            let result: Result<CacheEntry, CacheError> = async {
+                let bytes = backend.download_item(item_id).await?;
+                let size_bytes = bytes.len() as u64;
+                let path = self.get_cache_file_path(item_id);
+                tokio::fs::write(&path, bytes).await?;
+                Ok(CacheEntry {
+                    path,
+                    size_bytes,
+                    last_used: SystemTime::now(),
+                })
+            }
+            .await;
+            let mut pending = self.pending_requests.lock().await;
+            let result = result.map(|cache_entry| {
+                self.items
+                    .write()
+                    .unwrap()
+                    .insert(item_id.to_string(), cache_entry);
+            });
+            pending.remove(item_id);
+
+            return result;
+        }
     }
 
     pub fn clear_cache(&self) {
@@ -434,19 +483,10 @@ impl MediaCache {
     }
 
     pub fn media_path(&self, id: &str) -> Option<PathBuf> {
-        let path = self.cache_dir.join(id);
-        if path.is_file() {
-            self.mark_used(&path);
-            Some(path)
-        } else {
-            None
-        }
-    }
-
-    fn mark_used(&self, path: &Path) {
-        let result = File::open(path).and_then(|file| file.set_modified(SystemTime::now()));
-        if let Err(err) = result {
-            log::warn!("Failed to mark file as used: {}", err);
-        }
+        self.items
+            .read()
+            .unwrap()
+            .get(id)
+            .map(|entry| entry.path.clone())
     }
 }
