@@ -248,6 +248,7 @@ impl ImageCache {
         jellyfin: &Backend,
     ) -> Result<Vec<u8>, CacheError> {
         loop {
+            // TODO: there is a small race condition here. Fix like in media cache download
             if let Ok(bytes) = self.load_from_disk(item_id, image_type).await {
                 return Ok(bytes);
             }
