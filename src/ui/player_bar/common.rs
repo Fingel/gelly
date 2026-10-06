@@ -3,6 +3,7 @@ use crate::{
     audio::{model::AudioModel, stream_info::discover_stream_info},
     i18n::tr,
     jellyfin::api::ItemType,
+    library_utils::play_similar,
     ui::{
         album_art::AlbumArt,
         lyrics::Lyrics,
@@ -164,10 +165,10 @@ where
         if let Some(uri) = self.audio_model().get_uri()
             && let Some(song_model) = self.audio_model().current_song()
         {
-            let song_id = song_model.id();
             let backend = self.obj().get_application().backend();
+            let library = self.obj().get_application().library();
             let weak = self.obj().downgrade();
-            discover_stream_info(&uri, &song_id, &backend, move |info| {
+            discover_stream_info(&uri, &song_model, &backend, &library, move |info| {
                 if let Some(obj) = weak.upgrade() {
                     stream_info_dialog::show(obj.get_gtk_window().as_ref(), info);
                 }
@@ -309,6 +310,13 @@ where
         }
     }
 
+    fn on_play_similar(&self) {
+        if let Some(song_model) = self.audio_model().current_song() {
+            let app = self.obj().get_application();
+            play_similar(&song_model.id(), &app);
+        }
+    }
+
     fn setup_menu(&self) {
         let options = ContextActions {
             can_remove_from_playlist: false,
@@ -337,6 +345,9 @@ where
         });
         klass.install_action("song.queue_last", None, |player, _, _| {
             player.imp().on_queue_last();
+        });
+        klass.install_action("song.play_similar", None, |player, _, _| {
+            player.imp().on_play_similar();
         });
         klass.install_action("song.go_to_album", None, |player, _, _| {
             player.imp().on_go_to_album();

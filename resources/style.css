@@ -130,3 +130,7 @@ scale.top-border-scale slider {
     margin: 0;
     opacity: 0;
 }
+
+button.large-button {
+    -gtk-icon-size: 32px;
+}

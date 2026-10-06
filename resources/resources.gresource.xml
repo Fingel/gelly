@@ -15,6 +15,7 @@
     <file compressed="true" preprocess="xml-stripblanks">ui/player_bar/mini_player.ui</file>
     <file compressed="true" preprocess="xml-stripblanks">ui/artist_list.ui</file>
     <file compressed="true" preprocess="xml-stripblanks">ui/artist.ui</file>
+    <file compressed="true" preprocess="xml-stripblanks">ui/artist_album_grid.ui</file>
     <file compressed="true" preprocess="xml-stripblanks">ui/artist_detail.ui</file>
     <file compressed="true" preprocess="xml-stripblanks">ui/queue.ui</file>
     <file compressed="true" preprocess="xml-stripblanks">ui/playlist.ui</file>
@@ -35,6 +36,7 @@
     <file compressed="true" preprocess="xml-stripblanks">icons/text-editor-symbolic.svg</file>
     <file compressed="true" preprocess="xml-stripblanks">icons/heart-filled-symbolic.svg</file>
     <file compressed="true" preprocess="xml-stripblanks">icons/media-playlist-consecutive-symbolic.svg</file>
+    <file compressed="true" preprocess="xml-stripblanks">icons/playlist-infinite-symbolic.svg</file>
     <file alias="metainfo.xml" compressed="true">io.m51.Gelly.metainfo.xml</file>
   </gresource>
 </gresources>

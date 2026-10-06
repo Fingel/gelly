@@ -2,7 +2,7 @@ use crate::{
     async_utils::spawn_tokio,
     i18n::{ngettext, tr},
     jellyfin::api::ImageType,
-    library_utils::play_artist,
+    library_utils::{play_artist, play_similar},
     models::{AlbumModel, ArtistModel},
     ui::{
         album_detail::AlbumDetail,
@@ -62,6 +62,9 @@ impl ArtistDetail {
             album_widget.set_model(album);
             album_widget.imp().artist_label.set_visible(false);
         }
+        self.imp()
+            .album_grid
+            .set_albums(self.imp().albums.borrow().as_ref());
     }
 
     pub fn load_banner_image(&self) {
@@ -201,6 +204,11 @@ impl ArtistDetail {
         }
     }
 
+    fn on_play_similar(&self) {
+        let app = self.get_application();
+        play_similar(&self.id(), &app);
+    }
+
     pub fn toggle_favorite(&self, is_favorite: bool) {
         let Some(model) = self.get_model() else {
             return;
@@ -227,7 +235,10 @@ mod imp {
         prelude::*,
     };
 
-    use crate::models::{AlbumModel, ArtistModel};
+    use crate::{
+        models::{AlbumModel, ArtistModel},
+        ui::artist_album_grid::ArtistAlbumGrid,
+    };
 
     #[derive(CompositeTemplate, Default, Properties)]
     #[template(resource = "/io/m51/Gelly/ui/artist_detail.ui")]
@@ -239,6 +250,8 @@ mod imp {
         pub artist_name: TemplateChild<gtk::Label>,
         #[template_child]
         pub banner_image: TemplateChild<gtk::Picture>,
+        #[template_child]
+        pub album_grid: TemplateChild<ArtistAlbumGrid>,
         #[template_child]
         pub albums_box: TemplateChild<gtk::Box>,
         #[template_child]
@@ -277,6 +290,9 @@ mod imp {
             });
             klass.install_action("artist.queue_last", None, |artist, _, _| {
                 artist.enqueue_artist(true);
+            });
+            klass.install_action("artist.play_similar", None, |artist, _, _| {
+                artist.on_play_similar();
             });
             klass.install_action("artist.copy_id", None, |artist, _, _| {
                 artist.copy_id();

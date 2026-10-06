@@ -4,6 +4,8 @@ use gtk::{self, gio, glib, prelude::*, subclass::prelude::*};
 use log::{debug, warn};
 use num_enum::TryFromPrimitive;
 
+use crate::i18n::tr;
+
 use crate::audio::model::AudioModel;
 
 #[derive(Debug, TryFromPrimitive)]
@@ -13,6 +15,7 @@ pub enum PlaybackMode {
     Shuffle = 1,
     Repeat = 2,
     RepeatOne = 3,
+    ShuffleRepeat = 4,
 }
 
 impl PlaybackMode {
@@ -22,15 +25,17 @@ impl PlaybackMode {
             PlaybackMode::Shuffle => "media-playlist-shuffle-symbolic",
             PlaybackMode::Repeat => "media-playlist-repeat-symbolic",
             PlaybackMode::RepeatOne => "media-playlist-repeat-song-symbolic",
+            PlaybackMode::ShuffleRepeat => "playlist-infinite-symbolic",
         }
     }
 
-    fn label(&self) -> &'static str {
+    fn label(&self) -> String {
         match self {
-            PlaybackMode::Normal => "No Shuffle/Repeat",
-            PlaybackMode::Shuffle => "Shuffle",
-            PlaybackMode::Repeat => "Repeat",
-            PlaybackMode::RepeatOne => "Repeat One",
+            PlaybackMode::Normal => tr("No Shuffle/Repeat"),
+            PlaybackMode::Shuffle => tr("Shuffle"),
+            PlaybackMode::Repeat => tr("Repeat"),
+            PlaybackMode::RepeatOne => tr("Repeat One"),
+            PlaybackMode::ShuffleRepeat => tr("Shuffle Repeat"),
         }
     }
 }
@@ -132,10 +137,11 @@ mod imp {
             for mode in [
                 super::PlaybackMode::Normal,
                 super::PlaybackMode::Shuffle,
+                super::PlaybackMode::ShuffleRepeat,
                 super::PlaybackMode::Repeat,
                 super::PlaybackMode::RepeatOne,
             ] {
-                let item = gio::MenuItem::new(Some(mode.label()), None);
+                let item = gio::MenuItem::new(Some(&mode.label()), None);
                 item.set_action_and_target_value(
                     Some("playbackmode.mode"),
                     Some(&(mode as u32).to_variant()),

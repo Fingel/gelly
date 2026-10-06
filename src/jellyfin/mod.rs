@@ -106,7 +106,7 @@ impl Jellyfin {
         let now = Instant::now();
         const LIMIT: u64 = 250;
         const MAX_CONCURRENT_REQUESTS: usize = 4;
-        const SLOW_LOAD_THRESHOLD: Duration = Duration::from_secs(1);
+        const SLOW_LOAD_THRESHOLD: Duration = Duration::from_millis(1_500);
 
         // Make the first request to get total count
         // we also measure how long it takes. If the response is slow it's a
@@ -312,6 +312,23 @@ impl Jellyfin {
         let response = self.handle_response(response).await?;
         let playlist_response: NewPlaylistResponse = serde_json::from_str(&response)?;
         Ok(playlist_response.id)
+    }
+
+    pub async fn get_similar_items(
+        &self,
+        item_id: &str,
+        count: u32,
+    ) -> Result<PlaylistItems, BackendError> {
+        let count = count.to_string();
+        let params = vec![
+            ("fields", "DateCreated,Genres"),
+            ("limit", &count),
+            ("userId", &self.user_id),
+        ];
+        let path = format!("Items/{item_id}/InstantMix");
+        let response = self.get(&path, Some(&params)).await?;
+        let body = self.handle_response(response).await?;
+        Ok(serde_json::from_str(&body)?)
     }
 
     pub async fn delete_item(&self, item_id: &str) -> Result<(), BackendError> {

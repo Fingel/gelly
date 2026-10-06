@@ -13,6 +13,7 @@ use crate::{
     audio::stream_info::discover_stream_info,
     i18n::tr,
     jellyfin::{api::ItemType, utils::format_duration},
+    library_utils::play_similar,
     models::SongModel,
     ui::{
         music_context_menu::{
@@ -278,21 +279,25 @@ impl Song {
     }
 
     fn show_info_dialog(&self) {
-        let song_id = self.song_id();
-        let backend = self.get_application().backend();
-        let uri = backend.get_stream_uri(&song_id);
-        discover_stream_info(
-            &uri,
-            &song_id,
-            &backend,
-            glib::clone!(
-                #[weak(rename_to = song)]
-                self,
-                move |stream_info| {
-                    stream_info_dialog::show(song.get_gtk_window().as_ref(), stream_info);
-                }
-            ),
-        );
+        if let Some(song_model) = self.imp().song_model.borrow().clone() {
+            let song_id = song_model.id();
+            let backend = self.get_application().backend();
+            let library = self.get_application().library();
+            let uri = backend.get_stream_uri(&song_id);
+            discover_stream_info(
+                &uri,
+                &song_model,
+                &backend,
+                &library,
+                glib::clone!(
+                    #[weak(rename_to = song)]
+                    self,
+                    move |stream_info| {
+                        stream_info_dialog::show(song.get_gtk_window().as_ref(), stream_info);
+                    }
+                ),
+            );
+        }
     }
 
     fn on_remove_from_playlist(&self) {
@@ -315,6 +320,11 @@ impl Song {
         {
             audio_model.append_to_queue(vec![song_model]);
         }
+    }
+
+    fn on_play_similar(&self) {
+        let app = self.get_application();
+        play_similar(&self.song_id(), &app);
     }
 
     fn on_go_to_album(&self) {
@@ -421,6 +431,9 @@ mod imp {
             });
             klass.install_action("song.queue_last", None, |song, _, _| {
                 song.on_queue_last();
+            });
+            klass.install_action("song.play_similar", None, |song, _, _| {
+                song.on_play_similar();
             });
             klass.install_action("song.go_to_album", None, |song, _, _| {
                 song.on_go_to_album();

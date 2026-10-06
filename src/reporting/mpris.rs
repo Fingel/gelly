@@ -1,13 +1,14 @@
 use gtk::glib;
 use log::warn;
 use mpris_server::zbus::{self, fdo};
-use mpris_server::{LocalServer, Metadata, PlaybackStatus, Property, Signal, Time};
+use mpris_server::{LocalServer, LoopStatus, Metadata, PlaybackStatus, Property, Signal, Time};
 use thiserror::Error;
 
 use crate::audio::model::AudioModel;
 use crate::audio::mpris::build_metadata;
 use crate::config::APP_ID;
 use crate::models::SongModel;
+use crate::ui::playback_mode::PlaybackMode;
 
 use super::PlaybackEvent;
 
@@ -132,6 +133,22 @@ impl MprisReporter {
             PlaybackEvent::VolumeChanged { volume } => {
                 self.emit_properties_changed([Property::Volume(volume)])
                     .await?;
+            }
+
+            PlaybackEvent::PlaybackModeChanged { mode } => {
+                let mode = PlaybackMode::try_from(mode).unwrap_or(PlaybackMode::Normal);
+                self.emit_properties_changed([
+                    Property::Shuffle(matches!(
+                        mode,
+                        PlaybackMode::Shuffle | PlaybackMode::ShuffleRepeat
+                    )),
+                    Property::LoopStatus(match mode {
+                        PlaybackMode::Repeat | PlaybackMode::ShuffleRepeat => LoopStatus::Playlist,
+                        PlaybackMode::RepeatOne => LoopStatus::Track,
+                        _ => LoopStatus::None,
+                    }),
+                ])
+                .await?;
             }
 
             PlaybackEvent::NavigationChanged {

@@ -71,6 +71,50 @@
     <color type="primary" scheme_preference="dark">#325a4a</color>
   </branding>
   <releases>
+    <release version="1.15.0" date="2026-10-03">
+      <description>
+        <ul>
+          <li>
+            Add additional information to the song info dialog, including play count.
+          </li>
+          <li>
+            UI improvements around cover art and list display.
+          </li>
+          <li>
+            Artist detail now includes albums for which an artist has song credit.
+          </li>
+        </ul>
+      </description>
+    </release>
+    <release version="1.14.0" date="2026-09-22">
+      <description>
+        <ul>
+          <li>
+            Add the "play similar" action for songs, albums and artists. This is called
+            "Instant Mix" in other players.
+          </li>
+          <li>
+            Translation updates.
+          </li>
+        </ul>
+      </description>
+    </release>
+    <release version="1.13.0" date="2026-09-14">
+      <description>
+        <ul>
+          <li>
+            Added shuffled repeat playback mode.
+          </li>
+          <li>
+            Visual improvements: Lists now have rounded corners, play/pause button size
+            increased slightly.
+          </li>
+          <li>
+            Lots of translation updates and internal code cleanup.
+          </li>
+        </ul>
+      </description>
+    </release>
     <release version="1.12.0" date="2026-09-08">
       <description>
         <ul>

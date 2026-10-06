@@ -1,4 +1,4 @@
-use crate::{library::Library, models::SongModel};
+use crate::{i18n::tr, library::Library, models::SongModel};
 
 pub const DEFAULT_SMART_COUNT: u64 = 100;
 
@@ -68,9 +68,11 @@ impl PlaylistType {
     pub fn display_name(&self) -> String {
         match self {
             PlaylistType::Regular { name, .. } => name.clone(),
-            PlaylistType::ShuffleLibrary { .. } => "Shuffled Songs".to_string(),
-            PlaylistType::MostPlayed { count } => format!("Top {} Played Songs", count),
-            PlaylistType::Favorites => "Favorite Mix".to_string(),
+            PlaylistType::ShuffleLibrary { .. } => tr("Shuffled Songs"),
+            PlaylistType::MostPlayed { count } => {
+                tr("Top {} Played Songs").replace("{}", &count.to_string())
+            }
+            PlaylistType::Favorites => tr("Favorite Mix"),
         }
     }
 

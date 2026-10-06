@@ -3,7 +3,7 @@ use gtk::{glib::prelude::*, prelude::*};
 use log::warn;
 use num_enum::{IntoPrimitive, TryFromPrimitive};
 
-use crate::models::model_traits::ItemModel;
+use crate::{i18n::tr, models::model_traits::ItemModel};
 
 #[derive(Debug, Clone, Copy)]
 pub enum SortType {
@@ -25,16 +25,16 @@ pub enum SortDirection {
 }
 
 impl SortType {
-    pub fn as_str(&self) -> &str {
+    pub fn as_str(&self) -> String {
         match self {
-            SortType::DateAdded => "Recently Added",
-            SortType::Name => "Name",
-            SortType::Artist => "Album Artist",
-            SortType::Year => "Year",
-            SortType::PlayCount => "Play Count",
-            SortType::NumSongs => "Num. Songs",
-            SortType::Album => "Album",
-            Self::LastPlayed => "Last Played",
+            SortType::DateAdded => tr("Recently Added"),
+            SortType::Name => tr("Name"),
+            SortType::Artist => tr("Album Artist"),
+            SortType::Year => tr("Year"),
+            SortType::PlayCount => tr("Play Count"),
+            SortType::NumSongs => tr("Num. Songs"),
+            SortType::Album => tr("Album"),
+            Self::LastPlayed => tr("Last Played"),
         }
     }
 }

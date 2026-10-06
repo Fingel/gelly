@@ -5,6 +5,7 @@ pub mod album_art_background;
 pub mod album_detail;
 pub mod album_list;
 pub mod artist;
+pub mod artist_album_grid;
 pub mod artist_detail;
 pub mod artist_list;
 pub mod auto_scroll_window;

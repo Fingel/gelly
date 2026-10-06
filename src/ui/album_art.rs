@@ -41,6 +41,9 @@ impl AlbumArt {
     pub fn set_loading(&self, loading: bool) {
         self.imp().spinner.set_visible(loading);
         self.imp().is_loading.set(loading);
+        self.imp()
+            .album_image
+            .set_opacity(if loading { 0.4 } else { 1.0 });
         if loading {
             self.imp().spinner.start();
         } else {

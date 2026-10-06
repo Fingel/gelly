@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-07 17:15-0700\n"
+"POT-Creation-Date: 2026-09-19 13:31-0700\n"
 "PO-Revision-Date: 2026-07-16 15:01+0000\n"
 "Last-Translator: mifares <vserafim_o@outlook.com>\n"
 "Language-Team: Portuguese (Brazil) <https://hosted.weblate.org/projects/"
@@ -19,33 +19,70 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
 "X-Generator: Weblate 2026.8.dev0\n"
 
-#: src/ui/album_detail.rs:35
+#: src/application.rs:121
+#, fuzzy
+#| msgid "Playback"
+msgid "Playback error: {}"
+msgstr "Reprodução"
+
+#: src/audio/model.rs:476
+msgid "Subsonic does not support seeking transcoded streams."
+msgstr ""
+
+#: src/audio/model.rs:478
+#, fuzzy
+#| msgid "Smart playlist"
+msgid "Failed to seek"
+msgstr "Playlist inteligente"
+
+#: src/library_utils.rs:82
+msgid ""
+"The backend did not return many songs, it may require a sonic analysis plugin"
+msgstr ""
+
+#: src/models/playlist_type.rs:71
+#, fuzzy
+#| msgid "Shuffled Playlist"
+msgid "Shuffled Songs"
+msgstr "Playlist aleatória"
+
+#: src/models/playlist_type.rs:73
+msgid "Top {} Played Songs"
+msgstr ""
+
+#: src/models/playlist_type.rs:75
+#, fuzzy
+#| msgid "Favorites"
+msgid "Favorite Mix"
+msgstr "Favoritos"
+
+#: src/ui/album_detail.rs:36
 msgid "N/A"
 msgstr "N/A"
 
-#: src/ui/album_detail.rs:164 src/ui/album_detail.rs:174
-#: src/ui/album_detail.rs:198 src/ui/artist_detail.rs:198 src/ui/playlist.rs:53
+#: src/ui/album_detail.rs:165 src/ui/album_detail.rs:175
+#: src/ui/album_detail.rs:199 src/ui/artist_detail.rs:198 src/ui/playlist.rs:53
 #: src/ui/playlist_detail.rs:475 src/ui/playlist_detail.rs:485
 #: src/ui/playlist_detail.rs:509 src/ui/song_list.rs:159
 msgid "Audio model not initialized, please restart"
 msgstr "Modelo de áudio não inicializado, por favor reinicie"
 
-#: src/ui/album_detail.rs:190 src/ui/artist_detail.rs:190
+#: src/ui/album_detail.rs:191 src/ui/artist_detail.rs:190
 #: src/ui/playlist_detail.rs:501
 msgid "1 song added to queue"
 msgid_plural "{} songs added to queue"
 msgstr[0] "1 música adicionada à fila"
 msgstr[1] "{} músicas adicionadas à fila"
 
-#: src/ui/album_detail.rs:236
+#: src/ui/album_detail.rs:242
 msgid "Album ID copied to clipboard"
 msgstr "ID do Album copiado"
 
-#: src/ui/album_detail.rs:259
+#: src/ui/album_detail.rs:265
 msgid "Added album to playlist"
 msgstr "Álbum adicionado a playlist"
 
-#: src/ui/album_detail.rs:263
+#: src/ui/album_detail.rs:269
 msgid "Failed to add album to playlist"
 msgstr "Falha ao adicionar álbum a playlist"
 
@@ -61,13 +98,13 @@ msgstr "Artista adicionado a playlist"
 msgid "Failed to add artist to playlist"
 msgstr "Falha ao adicionar artista a playlist"
 
-#: src/ui/music_context_menu.rs:33 src/ui/music_context_menu.rs:124
+#: src/ui/music_context_menu.rs:33 src/ui/music_context_menu.rs:131
 msgid "Add to Playlist"
 msgstr "Adicione a playlist"
 
 #: src/ui/music_context_menu.rs:34 src/ui/music_context_menu.rs:87
 #: src/ui/playlist_dialogs.rs:20 src/ui/playlist_dialogs.rs:59
-#: src/ui/window.rs:189 resources/ui/setup.ui:203
+#: src/ui/window.rs:185 resources/ui/setup.ui:203
 msgid "Cancel"
 msgstr "Cancelar"
 
@@ -97,31 +134,95 @@ msgstr "Fila a seguir"
 msgid "Queue Last"
 msgstr "Última Fila"
 
-#: src/ui/music_context_menu.rs:129
+#: src/ui/music_context_menu.rs:124
+msgid "Play Similar"
+msgstr ""
+
+#: src/ui/music_context_menu.rs:136
 msgid "Remove from Playlist"
 msgstr "Remover da Playlist"
 
-#: src/ui/music_context_menu.rs:139
+#: src/ui/music_context_menu.rs:146
 msgid "Go to Album"
 msgstr "Ir para o Álbum"
 
-#: src/ui/music_context_menu.rs:146
+#: src/ui/music_context_menu.rs:153
 msgid "Go to Artist"
 msgstr "Ir para o Artistas"
 
-#: src/ui/music_context_menu.rs:155 src/ui/stream_info_dialog.rs:121
+#: src/ui/music_context_menu.rs:162 src/ui/stream_info_dialog.rs:121
 msgid "Song Info"
 msgstr "Informações da música"
 
-#: src/ui/music_context_menu.rs:160
+#: src/ui/music_context_menu.rs:167
 msgid "Copy ID"
 msgstr "Copiar ID"
 
-#: src/ui/player_bar/common.rs:78
+#: src/ui/page_traits.rs:30
+msgid "Recently Added"
+msgstr ""
+
+#: src/ui/page_traits.rs:31
+msgid "Name"
+msgstr ""
+
+#: src/ui/page_traits.rs:32
+#, fuzzy
+#| msgid "Album Detail"
+msgid "Album Artist"
+msgstr "Detalhes do Álbum"
+
+#: src/ui/page_traits.rs:33
+msgid "Year"
+msgstr ""
+
+#: src/ui/page_traits.rs:34
+msgid "Play Count"
+msgstr ""
+
+#: src/ui/page_traits.rs:35
+#, fuzzy
+#| msgid "Songs"
+msgid "Num. Songs"
+msgstr "Músicas"
+
+#: src/ui/page_traits.rs:36
+#, fuzzy
+#| msgid "Albums"
+msgid "Album"
+msgstr "Álbuns"
+
+#: src/ui/page_traits.rs:37
+msgid "Last Played"
+msgstr ""
+
+#: src/ui/playback_mode.rs:34
+msgid "No Shuffle/Repeat"
+msgstr ""
+
+#: src/ui/playback_mode.rs:35
+msgid "Shuffle"
+msgstr ""
+
+#: src/ui/playback_mode.rs:36
+msgid "Repeat"
+msgstr ""
+
+#: src/ui/playback_mode.rs:37
+msgid "Repeat One"
+msgstr ""
+
+#: src/ui/playback_mode.rs:38
+#, fuzzy
+#| msgid "Shuffled Playlist"
+msgid "Shuffle Repeat"
+msgstr "Playlist aleatória"
+
+#: src/ui/player_bar/common.rs:79
 msgid "Pause"
 msgstr "Pause"
 
-#: src/ui/player_bar/common.rs:81 resources/ui/album_detail.ui:120
+#: src/ui/player_bar/common.rs:82 resources/ui/album_detail.ui:120
 #: resources/ui/artist_detail.ui:53 resources/ui/playlist_detail.ui:102
 #: resources/ui/player_bar/big_player.ui:143
 #: resources/ui/player_bar/compact_player_bar.ui:146
@@ -129,15 +230,15 @@ msgstr "Pause"
 msgid "Play"
 msgstr "Tocar"
 
-#: src/ui/player_bar/common.rs:91
+#: src/ui/player_bar/common.rs:92
 msgid "Unknown Artist"
 msgstr "Artista desconhecido"
 
-#: src/ui/player_bar/common.rs:253 src/ui/song.rs:232
+#: src/ui/player_bar/common.rs:254 src/ui/song.rs:233
 msgid "Added song to playlist"
 msgstr "Música adicionada a playlist"
 
-#: src/ui/player_bar/common.rs:257 src/ui/song.rs:236
+#: src/ui/player_bar/common.rs:258 src/ui/song.rs:237
 msgid "Failed to add song to playlist"
 msgstr "Falha ao adicionar música a playlist"
 
@@ -383,30 +484,42 @@ msgstr ""
 msgid "Remote Properties"
 msgstr ""
 
-#: src/ui/window.rs:188 resources/ui/window.ui:415
+#: src/ui/window.rs:184 resources/ui/window.ui:415
 #, fuzzy
 #| msgid "Choose Library"
 msgid "Change Library"
 msgstr "Escolher biblioteca"
 
-#: src/ui/window.rs:189
+#: src/ui/window.rs:185
 #, fuzzy
 #| msgid "Select Library"
 msgid "Select"
 msgstr "Selecionar biblioteca"
 
-#: src/ui/window.rs:221
+#: src/ui/window.rs:217
 #, fuzzy
 #| msgid "Smart playlist"
 msgid "Failed to fetch libraries"
 msgstr "Playlist inteligente"
 
-#: src/ui/window.rs:231
+#: src/ui/window.rs:227
 msgid "Logged out"
 msgstr ""
 
-#: src/ui/window.rs:359
+#: src/ui/window.rs:355
 msgid "all genres"
+msgstr ""
+
+#: src/ui/window.rs:835
+msgid "1 item added to library"
+msgid_plural "{} items added to library"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/ui/window.rs:856
+msgid ""
+"Library rescan requested. Wait a few seconds and then use the \"Refresh "
+"Library\" option."
 msgstr ""
 
 #: resources/ui/album_art.ui:33
@@ -606,6 +719,12 @@ msgstr ""
 
 #: resources/ui/setup.ui:36
 msgid "Host URL"
+msgstr ""
+
+#: resources/ui/setup.ui:38
+msgid ""
+"Enter the complete server address including protocol (HTTP or HTTPS) and "
+"port number (:8096)"
 msgstr ""
 
 #: resources/ui/setup.ui:43
@@ -857,33 +976,33 @@ msgstr "Desconectar"
 msgid "Previous"
 msgstr ""
 
-#: resources/ui/player_bar/big_player.ui:152
+#: resources/ui/player_bar/big_player.ui:153
 #: resources/ui/player_bar/compact_player_bar.ui:156
-#: resources/ui/player_bar/full_player_bar.ui:136
+#: resources/ui/player_bar/full_player_bar.ui:137
 msgid "Next"
 msgstr ""
 
-#: resources/ui/player_bar/big_player.ui:169
+#: resources/ui/player_bar/big_player.ui:170
 #: resources/ui/player_bar/compact_player_bar.ui:110
-#: resources/ui/player_bar/full_player_bar.ui:198
+#: resources/ui/player_bar/full_player_bar.ui:199
 msgid "Lyrics"
 msgstr ""
 
-#: resources/ui/player_bar/big_player.ui:179
+#: resources/ui/player_bar/big_player.ui:180
 #: resources/ui/player_bar/compact_player_bar.ui:120
-#: resources/ui/player_bar/full_player_bar.ui:208
+#: resources/ui/player_bar/full_player_bar.ui:209
 #, fuzzy
 #| msgid "Favorites"
 msgid "Favorite"
 msgstr "Favoritos"
 
-#: resources/ui/player_bar/big_player.ui:199
-#: resources/ui/player_bar/full_player_bar.ui:245
+#: resources/ui/player_bar/big_player.ui:200
+#: resources/ui/player_bar/full_player_bar.ui:246
 msgid "Volume"
 msgstr ""
 
-#: resources/ui/player_bar/big_player.ui:214
-#: resources/ui/player_bar/full_player_bar.ui:232
+#: resources/ui/player_bar/big_player.ui:215
+#: resources/ui/player_bar/full_player_bar.ui:233
 msgid "Song Menu"
 msgstr ""
 

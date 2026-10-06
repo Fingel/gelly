@@ -13,6 +13,7 @@ use crate::cli::add_cli_options;
 use crate::config::{
     self, BackendType, retrieve_jellyfin_api_token, retrieve_subsonic_password, settings,
 };
+use crate::i18n::tr;
 use crate::jellyfin::Jellyfin;
 use crate::jellyfin::api::{FavoriteDtoList, MusicDtoList, PlaylistDto, PlaylistDtoList};
 use crate::library::Library;
@@ -124,7 +125,7 @@ impl Application {
                     log::error!("Audio error: {}", error);
                     app.emit_by_name::<()>(
                         "global-error",
-                        &[&format!("Playback error: {}", error)],
+                        &[&tr("Playback error: {}").replace("{}", &error)],
                     );
                 }
             ),
