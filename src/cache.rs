@@ -434,7 +434,7 @@ impl MediaCache {
     }
 
     pub fn media_path(&self, id: &str) -> Option<PathBuf> {
-        let path = self.cache_dir.join(format!("auto/{id}"));
+        let path = self.cache_dir.join(id);
         if path.is_file() {
             self.mark_used(&path);
             Some(path)
