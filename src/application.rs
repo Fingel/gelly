@@ -21,6 +21,7 @@ use crate::subsonic::Subsonic;
 use log::{debug, error, warn};
 use std::cell::RefCell;
 use std::rc::Rc;
+use std::sync::Arc;
 use std::sync::atomic::Ordering;
 
 glib::wrapper! {
@@ -105,7 +106,9 @@ impl Application {
     }
 
     pub fn initialize_media_cache(&self) {
-        self.imp().media_cache.replace(MediaCache::new());
+        if let Some(cache) = MediaCache::new() {
+            self.imp().media_cache.replace(Some(Arc::new(cache)));
+        }
     }
 
     pub fn initialize_cli(&self) {
@@ -470,8 +473,8 @@ mod imp {
     use std::cell::Cell;
     use std::cell::RefCell;
     use std::rc::Rc;
-    use std::sync::OnceLock;
     use std::sync::atomic::AtomicU32;
+    use std::sync::{Arc, OnceLock};
 
     use crate::audio::model::AudioModel;
     use crate::backend::Backend;
@@ -488,7 +491,7 @@ mod imp {
         pub library_id: RefCell<String>,
         pub library_cache: RefCell<Option<LibraryCache>>, // TODO: remove these Option<> types
         pub image_cache: RefCell<Option<ImageCache>>,
-        pub media_cache: RefCell<Option<MediaCache>>,
+        pub media_cache: RefCell<Option<Arc<MediaCache>>>,
         pub audio_model: RefCell<Option<AudioModel>>,
         pub http_request_count: AtomicU32,
         pub inhibit_cookie: Cell<u32>,
