@@ -71,6 +71,18 @@
     <color type="primary" scheme_preference="dark">#325a4a</color>
   </branding>
   <releases>
+    <release version="1.16.0" date="2026-10-07">
+      <description>
+        <ul>
+          <li>
+            Added an album grid to the artist detail view.
+          </li>
+          <li>
+            Update to GNOME runtime 51.
+          </li>
+        </ul>
+      </description>
+    </release>
     <release version="1.15.0" date="2026-10-03">
       <description>
         <ul>

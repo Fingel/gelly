@@ -40,6 +40,7 @@ impl ArtistAlbumGrid {
             let model = object.downcast_ref::<AlbumModel>().unwrap();
             let album = Album::new();
             album.imp().media_card.set_compact_mode(true);
+            album.imp().media_card.set_has_secondary_label(false);
             album.set_album_model(model);
             album.upcast::<gtk::Widget>()
         });
