@@ -4,8 +4,8 @@ version = "1.15.0"
 edition = "2024"
 
 [dependencies]
-gtk = { version = "0.11.5", package = "gtk4", features = ["v4_22"] }
-adw = { version = "0.9.2", package = "libadwaita", features = ["v1_9"] }
+gtk = { version = "0.11.5", package = "gtk4", features = ["v4_24"] }
+adw = { version = "0.9.2", package = "libadwaita", features = ["v1_10"] }
 log = { version = "0.4.34", features = ["std"] }
 env_logger = { version = "0.11.11", features = ["color"] }
 tokio = { version = "1.53.2", features = ["rt-multi-thread", "sync", "fs"] }
@@ -13,8 +13,8 @@ reqwest = { version = "0.13.5", features = ["json", "query"] }
 serde_json = { version = "1.0.151", features = ["std"] }
 serde = { version = "1.0.229", features = ["derive"] }
 thiserror = "2.0.21"
-gstreamer = { version = "0.25.4", features = ["v1_26"] }
-gstreamer-pbutils = { version = "0.25.4", features = ["v1_26"] }
+gstreamer = { version = "0.25.4", features = ["v1_28"] }
+gstreamer-pbutils = { version = "0.25.4", features = ["v1_28"] }
 async-channel = "2.5.0"
 futures-util = "0.3.34"
 mpris-server = "0.10.0"
