@@ -1,5 +1,6 @@
 use std::{
     collections::{HashMap, HashSet},
+    ffi::OsStr,
     fs,
     num::NonZeroUsize,
     os::unix,
@@ -437,6 +438,40 @@ impl MediaCache {
         self.cache_dir.join(item_id)
     }
 
+    pub async fn populate_cache(&self) -> Result<(), CacheError> {
+        let mut dir = tokio::fs::read_dir(&self.cache_dir).await?;
+        // collect existing cache entries into a temp map
+        let mut scanned_items = HashMap::new();
+        while let Some(entry) = dir.next_entry().await? {
+            let metadata = entry.metadata().await?;
+            if !metadata.is_file() || entry.path().extension() == Some(OsStr::new("part")) {
+                continue;
+            }
+
+            let Ok(item_id) = entry.file_name().into_string() else {
+                continue;
+            };
+            scanned_items.insert(
+                item_id,
+                CacheEntry {
+                    path: entry.path(),
+                    size_bytes: metadata.len(),
+                    last_used: metadata.modified()?,
+                },
+            );
+        }
+        log::info!(
+            "Found {} items during media cache scan",
+            scanned_items.len()
+        );
+        // merge scanned items into the main cache
+        let mut items = self.items.write().unwrap();
+        for (item_id, entry) in scanned_items {
+            items.entry(item_id).or_insert(entry);
+        }
+        Ok(())
+    }
+
     pub async fn download_item(&self, item_id: &str, backend: &Backend) -> Result<(), CacheError> {
         loop {
             {
@@ -457,7 +492,9 @@ impl MediaCache {
                 let bytes = backend.download_item(item_id).await?;
                 let size_bytes = bytes.len() as u64;
                 let path = self.get_cache_file_path(item_id);
-                tokio::fs::write(&path, bytes).await?;
+                let temp_path = path.with_extension("part");
+                tokio::fs::write(&temp_path, bytes).await?;
+                tokio::fs::rename(&temp_path, &path).await?;
                 Ok(CacheEntry {
                     path,
                     size_bytes,

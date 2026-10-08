@@ -106,9 +106,23 @@ impl Application {
     }
 
     pub fn initialize_media_cache(&self) {
-        if let Some(cache) = MediaCache::new() {
-            self.imp().media_cache.replace(Some(Arc::new(cache)));
-        }
+        let Some(cache) = MediaCache::new() else {
+            return;
+        };
+        let cache = Arc::new(cache);
+        self.imp().media_cache.replace(Some(Arc::clone(&cache)));
+        spawn_tokio(
+            async move { cache.populate_cache().await },
+            glib::clone!(
+                #[weak(rename_to = app)]
+                self,
+                move |result: Result<(), CacheError>| {
+                    if let Err(err) = result {
+                        app.emit_by_name::<()>("global-error", &[&err.to_string()]);
+                    }
+                }
+            ),
+        );
     }
 
     pub fn initialize_cli(&self) {
@@ -211,9 +225,10 @@ impl Application {
         if let Some(cache) = self.media_cache()
             && let Some(path) = cache.media_path(song_id)
         {
-            debug!("Playing {song_id} from cache at {path:?}");
+            debug!("Locating {song_id} from media cache");
             gio::File::for_path(path).uri().into()
         } else {
+            debug!("Locating {song_id} via backend");
             self.backend().get_stream_uri(song_id)
         }
     }
