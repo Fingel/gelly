@@ -24,6 +24,12 @@ mod subsonic;
 mod ui;
 
 fn main() -> glib::ExitCode {
+    // Work around libsoup HTTP/2 playback stalls. See https://github.com/Fingel/gelly/issues/247
+    // Revert this one libsoup is fixed.
+    // SAFETY: Must be set before initializing libsoup.
+    unsafe {
+        std::env::set_var("SOUP_FORCE_HTTP1", "1");
+    }
     env_logger::init();
     i18n::init();
     gio::resources_register_include!("gelly.gresource").expect("Failed to register resources");
