@@ -8,7 +8,7 @@ use crate::async_utils::spawn_tokio;
 use crate::audio::model::AudioModel;
 use crate::backend::Backend;
 use crate::backend::BackendError;
-use crate::cache::{Cacheable, ImageCache, LibraryCache, MediaCache};
+use crate::cache::{CacheError, Cacheable, ImageCache, LibraryCache, MediaCache};
 use crate::cli::add_cli_options;
 use crate::config::{
     self, BackendType, retrieve_jellyfin_api_token, retrieve_subsonic_password, settings,
@@ -193,6 +193,10 @@ impl Application {
         self.imp().image_cache.borrow().clone()
     }
 
+    pub fn media_cache(&self) -> Option<Arc<MediaCache>> {
+        self.imp().media_cache.borrow().clone()
+    }
+
     pub fn set_image_cache_scale(&self, scale: f32) {
         if let Some(image_cache) = self.image_cache() {
             image_cache.set_scale(scale);
@@ -204,7 +208,7 @@ impl Application {
     }
 
     pub fn playback_uri(&self, song_id: &str) -> String {
-        if let Some(cache) = self.imp().media_cache.borrow().as_ref()
+        if let Some(cache) = self.media_cache()
             && let Some(path) = cache.media_path(song_id)
         {
             debug!("{song_id} cached at {path:?}");
@@ -342,6 +346,38 @@ impl Application {
                 }
             ),
         )
+    }
+
+    pub fn download_media(&self, item_id: &str) {
+        let Some(cache) = self.media_cache() else {
+            log::error!("Failed to get media cache");
+            return;
+        };
+        let backend = self.backend();
+        let item_id = item_id.to_string();
+        self.http_with_loading(
+            async move {
+                cache.download_item(&item_id, &backend).await?;
+                Ok::<String, CacheError>(item_id)
+            },
+            glib::clone!(
+                #[weak(rename_to=app)]
+                self,
+                move |result: Result<String, CacheError>| {
+                    match result {
+                        Ok(item_id) => app.emit_by_name::<()>("media-downloaded", &[&item_id]),
+                        Err(err) => {
+                            log::error!("Failed to download media: {}", err);
+                            app.emit_by_name::<()>(
+                                "global-error",
+                                &[&tr("Failed to download media: {}")
+                                    .replace("{}", &err.to_string())],
+                            )
+                        }
+                    }
+                }
+            ),
+        );
     }
 
     fn cache_collection<T: Cacheable>(&self, collection: &T) {
@@ -525,6 +561,9 @@ mod imp {
                     Signal::builder("http-request-start").build(),
                     Signal::builder("http-request-end").build(),
                     Signal::builder("big-player-requested").build(),
+                    Signal::builder("media-downloaded")
+                        .param_types([String::static_type()])
+                        .build(),
                 ]
             })
         }
