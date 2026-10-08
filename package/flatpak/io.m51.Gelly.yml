@@ -20,6 +20,8 @@ modules:
       env:
         CARGO_HOME: /run/build/gelly/cargo
         CARGO_NET_OFFLINE: "true"
+        # Remove this once a fixed version of aws-lc is released.
+        AWS_LC_SYS_CMAKE_BUILDER: "1"
         LOCALEDIR: /app/share/locale
     build-commands:
       - cargo --offline fetch --manifest-path Cargo.toml --verbose
@@ -35,6 +37,6 @@ modules:
     sources:
       - type: git
         url: https://github.com/Fingel/gelly.git
-        tag: v1.15.0
-        commit: 6b6ef073349edfc0eb622a10850d6464e6a423a8
+        tag: v1.16.0
+        commit: 25a75b4f0a8a02481ce39c91c70951207a7c471d
       - cargo-sources.json
