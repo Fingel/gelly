@@ -211,7 +211,7 @@ impl Application {
         if let Some(cache) = self.media_cache()
             && let Some(path) = cache.media_path(song_id)
         {
-            debug!("{song_id} cached at {path:?}");
+            debug!("Playing {song_id} from cache at {path:?}");
             gio::File::for_path(path).uri().into()
         } else {
             self.backend().get_stream_uri(song_id)

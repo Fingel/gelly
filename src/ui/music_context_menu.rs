@@ -131,6 +131,10 @@ fn create_menu_model(config: &ContextActions) -> gio::Menu {
         Some(&tr("Add to Playlist")),
         Some(&format!("{}.add_to_playlist_dialog", config.action_prefix)),
     );
+    playlist_section.append(
+        Some(&tr("Download")),
+        Some(&format!("{}.download", config.action_prefix)),
+    );
     if config.can_remove_from_playlist {
         playlist_section.append(
             Some(&tr("Remove from Playlist")),
