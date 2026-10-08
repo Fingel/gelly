@@ -71,6 +71,18 @@
     <color type="primary" scheme_preference="dark">#325a4a</color>
   </branding>
   <releases>
+    <release version="1.16.1" date="2026-10-08">
+      <description>
+        <ul>
+          <li>
+            Revert update to GNOME runtime 51 until playback issues are sorted out.
+          </li>
+          <li>
+            Fixed a bug where gapless playback didn't take certain queue changes into account.
+          </li>
+        </ul>
+      </description>
+    </release>
     <release version="1.16.0" date="2026-10-07">
       <description>
         <ul>
