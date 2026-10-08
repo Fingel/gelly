@@ -204,6 +204,8 @@ impl AudioModel {
             self,
             move |_, _, _, _| {
                 audio_model.refresh_queue_metrics();
+                audio_model.new_shuffle_cycle();
+                audio_model.prefetch_next_uri();
             }
         ));
     }
@@ -251,7 +253,6 @@ impl AudioModel {
         let queue = &self.imp().queue;
         queue.remove_all();
         queue.extend_from_slice(&songs);
-        self.new_shuffle_cycle();
     }
 
     pub fn append_to_queue(&self, songs: Vec<SongModel>) {
@@ -259,7 +260,6 @@ impl AudioModel {
         self.imp().queue.extend_from_slice(&songs);
         let current_index = self.queue_index();
         self.report_navigation_changed(songs_len > 0, current_index > 0, true);
-        self.new_shuffle_cycle();
     }
 
     pub fn prepend_to_queue(&self, songs: Vec<SongModel>) {
@@ -270,11 +270,8 @@ impl AudioModel {
             current_index + 1
         } as usize;
         let queue = &self.imp().queue;
-        for (i, song) in songs.into_iter().enumerate() {
-            queue.insert((index + i) as u32, &song);
-        }
+        queue.splice(index as u32, 0, &songs);
         self.report_navigation_changed(index < self.queue_len() as usize, current_index > 0, true);
-        self.new_shuffle_cycle();
     }
 
     pub fn clear_queue(&self) {
@@ -289,9 +286,7 @@ impl AudioModel {
     }
 
     fn load_song(&self, index: i32) {
-        self.imp().prefetched_next_index.set(None);
-        self.imp().prefetched_next_uri.replace(None);
-        self.player().clear_next_uri_cache();
+        self.clear_prefetched_next_uri();
         if let Some(song) = self
             .imp()
             .queue
@@ -335,8 +330,20 @@ impl AudioModel {
         self.prefetch_next_uri();
     }
 
+    fn clear_prefetched_next_uri(&self) {
+        self.imp().prefetched_next_index.set(None);
+        self.imp().prefetched_next_uri.replace(None);
+        if let Some(player) = self.imp().player.get() {
+            player.clear_next_uri_cache();
+        }
+    }
+
     fn prefetch_next_uri(&self) {
-        if !self.imp().gapless_playback_active.get() {
+        if !self.imp().gapless_playback_active.get()
+            || self.imp().uri.borrow().is_none()
+            || self.current_song().is_none()
+        {
+            self.clear_prefetched_next_uri();
             return;
         }
 
@@ -351,6 +358,8 @@ impl AudioModel {
             self.imp().prefetched_next_index.set(Some(next_index));
             self.imp().prefetched_next_uri.replace(Some(uri.clone()));
             self.player().cache_next_uri(uri);
+        } else {
+            self.clear_prefetched_next_uri();
         }
     }
 
@@ -724,6 +733,7 @@ mod imp {
                 index > 0,
                 queue_len > 0,
             );
+            obj.prefetch_next_uri();
         }
     }
 }

@@ -1,6 +1,6 @@
 id: io.m51.Gelly
 runtime: org.gnome.Platform
-runtime-version: "51"
+runtime-version: "50"
 sdk: org.gnome.Sdk
 sdk-extensions:
   - org.freedesktop.Sdk.Extension.rust-stable
@@ -20,8 +20,6 @@ modules:
       env:
         CARGO_HOME: /run/build/gelly/cargo
         CARGO_NET_OFFLINE: "true"
-        # Remove this once a fixed version of aws-lc is released.
-        AWS_LC_SYS_CMAKE_BUILDER: "1"
         LOCALEDIR: /app/share/locale
     build-commands:
       - cargo --offline fetch --manifest-path Cargo.toml --verbose
@@ -37,6 +35,6 @@ modules:
     sources:
       - type: git
         url: https://github.com/Fingel/gelly.git
-        tag: v1.16.0
-        commit: 25a75b4f0a8a02481ce39c91c70951207a7c471d
+        tag: v1.16.1
+        commit: 6ae9252c215b6403203740a0c6e4f89bea376f28
       - cargo-sources.json
