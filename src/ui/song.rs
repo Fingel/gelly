@@ -278,6 +278,12 @@ impl Song {
         );
     }
 
+    fn on_download(&self) {
+        let song_id = self.song_id();
+        let application = self.get_application();
+        application.download_media(&song_id);
+    }
+
     fn show_info_dialog(&self) {
         if let Some(song_model) = self.imp().song_model.borrow().clone() {
             let song_id = song_model.id();
@@ -443,6 +449,9 @@ mod imp {
             });
             klass.install_action("song.add_to_playlist_dialog", None, |song, _, _| {
                 song.on_add_to_playlist_dialog();
+            });
+            klass.install_action("song.download", None, |song, _, _| {
+                song.on_download();
             });
             klass.install_action("song.show_info_dialog", None, |song, _, _| {
                 song.show_info_dialog();
