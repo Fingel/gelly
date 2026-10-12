@@ -783,6 +783,9 @@ mod imp {
                 action_sidebar,
             ]);
 
+            let action_offline = config::settings().create_action("offline");
+            self.obj().add_action(&action_offline);
+
             self.stack.connect_notify_local(
                 Some("visible-child"),
                 glib::clone!(

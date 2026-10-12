@@ -124,6 +124,21 @@ impl Application {
                 }
             ),
         );
+        config::settings().connect_changed(
+            Some("offline"),
+            glib::clone!(
+                #[weak(rename_to = app)]
+                self,
+                move |_, _| {
+                    app.offline_changed();
+                }
+            ),
+        );
+    }
+
+    fn offline_changed(&self) {
+        let is_offline = config::get_offline();
+        debug!("Offline changed: {}", is_offline);
     }
 
     pub fn initialize_cli(&self) {

@@ -121,5 +121,9 @@
       <default>0</default>
       <summary>Credential storage version</summary>
     </key>
+    <key name="offline" type="b">
+      <default>false</default>
+      <summary>Offline mode</summary>
+    </key>
   </schema>
 </schemalist>
