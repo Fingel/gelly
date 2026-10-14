@@ -137,8 +137,7 @@ impl Application {
     }
 
     fn offline_changed(&self) {
-        let is_offline = config::get_offline();
-        debug!("Offline changed: {}", is_offline);
+        self.refresh_all(false);
     }
 
     pub fn initialize_cli(&self) {
@@ -286,46 +285,83 @@ impl Application {
         }
     }
 
-    pub fn refresh_library(&self, refresh_cache: bool) {
-        self.emit_by_name::<()>("library-refresh-requested", &[]);
-        if !refresh_cache && let Some(cache) = self.library_cache() {
-            match cache.load::<MusicDtoList>() {
-                Ok(library) => {
-                    let library_cnt = library.items.len() as u64;
-                    self.imp().library.update_songs(library.items);
-                    self.emit_by_name::<()>("library-refreshed", &[&library_cnt]);
-                    debug!("Loaded library from cache");
-                    return;
-                }
-                Err(error) => {
-                    warn!("Failed to load library cache: {}. Refreshing.", error);
-                }
+    fn refresh_library_offline(&self, library_cache: &LibraryCache) {
+        // TODO: need to make sure the media cache is initialized
+        match library_cache.load::<MusicDtoList>().and_then(|library| {
+            let media_cache = self.media_cache().ok_or(CacheError::Uninitialized)?;
+            Ok(library
+                .items
+                .into_iter()
+                .filter(|item| media_cache.cached_item_ids().contains(&item.id))
+                .collect::<Vec<_>>())
+        }) {
+            Ok(items) => {
+                let library_cnt = items.len() as u64;
+                self.imp().library.update_songs(items);
+                self.emit_by_name::<()>("library-refreshed", &[&library_cnt]);
+                debug!("Loaded offline library via cache");
+            }
+            Err(err) => {
+                warn!("Failed to load library or media cache: {}", err);
+                self.emit_by_name::<()>(
+                    "global-error",
+                    &[&format!("Failed to load library: {}", err)],
+                )
             }
         }
-        let library_id = self.imp().library_id.borrow().clone();
-        let backend = self.backend();
-        if !backend.is_authenticated() {
-            debug!("Not authenticated, skipping library refresh");
-            return;
-        }
-        self.http_with_loading(
-            async move { backend.get_library(&library_id).await },
-            glib::clone!(
-                #[weak(rename_to=app)]
-                self,
-                move |result: Result<MusicDtoList, BackendError>| {
-                    match result {
+    }
+
+    pub fn refresh_library(&self, refresh_cache: bool) {
+        self.emit_by_name::<()>("library-refresh-requested", &[]);
+        if let Some(library_cache) = self.library_cache() {
+            if config::get_offline() {
+                self.refresh_library_offline(&library_cache);
+            } else {
+                if !refresh_cache {
+                    match library_cache.load::<MusicDtoList>() {
                         Ok(library) => {
                             let library_cnt = library.items.len() as u64;
-                            app.cache_collection(&library);
-                            app.imp().library.update_songs(library.items);
-                            app.emit_by_name::<()>("library-refreshed", &[&library_cnt]);
+                            self.imp().library.update_songs(library.items);
+                            self.emit_by_name::<()>("library-refreshed", &[&library_cnt]);
+                            debug!("Loaded library from cache");
+                            return;
                         }
-                        Err(err) => app.handle_backend_error(err, "refresh_library"),
+                        Err(error) => {
+                            warn!("Failed to load library cache: {}. Refreshing.", error);
+                        }
                     }
-                },
-            ),
-        );
+                }
+                let library_id = self.imp().library_id.borrow().clone();
+                let backend = self.backend();
+                if !backend.is_authenticated() {
+                    debug!("Not authenticated, skipping library refresh");
+                    return;
+                }
+                self.http_with_loading(
+                    async move { backend.get_library(&library_id).await },
+                    glib::clone!(
+                        #[weak(rename_to=app)]
+                        self,
+                        move |result: Result<MusicDtoList, BackendError>| {
+                            match result {
+                                Ok(library) => {
+                                    let library_cnt = library.items.len() as u64;
+                                    app.cache_collection(&library);
+                                    app.imp().library.update_songs(library.items);
+                                    app.emit_by_name::<()>("library-refreshed", &[&library_cnt]);
+                                }
+                                Err(err) => app.handle_backend_error(err, "refresh_library"),
+                            }
+                        },
+                    ),
+                );
+            }
+        } else {
+            self.emit_by_name::<()>(
+                "global-error",
+                &[&"Library cache failed to initialize".to_string()],
+            )
+        }
     }
 
     pub fn refresh_favorites(&self, refresh_cache: bool) {
