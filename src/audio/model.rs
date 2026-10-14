@@ -490,6 +490,16 @@ impl AudioModel {
         }
     }
 
+    pub fn seek_forward(&self) {
+        let position = self.position().saturating_add(10).min(self.duration());
+        self.seek(position);
+    }
+
+    pub fn seek_backward(&self) {
+        let position = self.position().saturating_sub(10);
+        self.seek(position);
+    }
+
     pub fn get_uri(&self) -> Option<String> {
         self.imp().uri.borrow().clone()
     }

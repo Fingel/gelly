@@ -1,6 +1,6 @@
 use adw::subclass::prelude::ObjectSubclassIsExt;
 use glib::Object;
-use gtk::gio::prelude::{FileExt, SettingsExt};
+use gtk::gio::prelude::*;
 use gtk::prelude::{GtkApplicationExt, ObjectExt};
 use gtk::{gio, glib};
 
@@ -42,6 +42,7 @@ impl Application {
         app.initialize_image_cache();
         app.initialize_media_cache();
         app.initialize_audio_model();
+        app.register_playback_actions();
         app.initialize_cli();
         app
     }
@@ -200,6 +201,30 @@ impl Application {
         );
 
         self.imp().audio_model.replace(Some(audio_model));
+    }
+
+    fn register_playback_actions(&self) {
+        type AudioModelAction = (&'static str, fn(&AudioModel));
+        let actions: [AudioModelAction; 5] = [
+            ("play-pause", AudioModel::toggle_play_pause),
+            ("previous", AudioModel::prev),
+            ("next", AudioModel::next),
+            ("seek-backward", AudioModel::seek_backward),
+            ("seek-forward", AudioModel::seek_forward),
+        ];
+        for (name, callback) in actions {
+            let action = gio::SimpleAction::new(name, None);
+            action.connect_activate(glib::clone!(
+                #[weak(rename_to = app)]
+                self,
+                move |_, _| {
+                    if let Some(audio_model) = app.audio_model() {
+                        callback(&audio_model);
+                    }
+                }
+            ));
+            self.add_action(&action);
+        }
     }
 
     pub fn backend(&self) -> Backend {

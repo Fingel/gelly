@@ -8,31 +8,27 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-09-19 13:31-0700\n"
-"PO-Revision-Date: 2026-07-11 22:01+0000\n"
-"Last-Translator: sabrinah7509 <shernandez75@aliasvault.net>\n"
+"PO-Revision-Date: 2026-10-09 18:51+0000\n"
+"Last-Translator: Alice <alice@martins-almeida.com>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/gelly/gelly/fr/>\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 2026.7.1.dev0\n"
+"X-Generator: Weblate 2026.10.1.dev0\n"
 
 #: src/application.rs:121
-#, fuzzy
-#| msgid "Playback"
 msgid "Playback error: {}"
-msgstr "Lecture"
+msgstr "Erreur de lecture : {]"
 
 #: src/audio/model.rs:476
 msgid "Subsonic does not support seeking transcoded streams."
-msgstr ""
+msgstr "Subsonic ne supporte pas la recherche."
 
 #: src/audio/model.rs:478
-#, fuzzy
-#| msgid "Smart playlist"
 msgid "Failed to seek"
-msgstr "Playlist intelligente"
+msgstr "Echec de recherche"
 
 #: src/library_utils.rs:82
 msgid ""
@@ -40,20 +36,16 @@ msgid ""
 msgstr ""
 
 #: src/models/playlist_type.rs:71
-#, fuzzy
-#| msgid "Shuffled Playlist"
 msgid "Shuffled Songs"
-msgstr "Playlist Aléatoire"
+msgstr "Chansons aléatoires"
 
 #: src/models/playlist_type.rs:73
 msgid "Top {} Played Songs"
-msgstr ""
+msgstr "Top {} musique jouée"
 
 #: src/models/playlist_type.rs:75
-#, fuzzy
-#| msgid "Favorites"
 msgid "Favorite Mix"
-msgstr "Favoris"
+msgstr "Mix préféré"
 
 #: src/ui/album_detail.rs:36
 msgid "N/A"
@@ -75,87 +67,77 @@ msgstr[1] "{} chansons ajoutées à la file"
 
 #: src/ui/album_detail.rs:242
 msgid "Album ID copied to clipboard"
-msgstr ""
+msgstr "ID de l'album copié dans le presse papier"
 
 #: src/ui/album_detail.rs:265
 msgid "Added album to playlist"
-msgstr ""
+msgstr "Album ajouté à la liste de lecture"
 
 #: src/ui/album_detail.rs:269
 msgid "Failed to add album to playlist"
-msgstr ""
+msgstr "Echec de l'ajout de l'album à la liste de lecture"
 
 #: src/ui/artist_detail.rs:122
 msgid "Artist ID copied to clipboard"
-msgstr ""
+msgstr "ID de l'artiste copiée dans le presse-papier"
 
 #: src/ui/artist_detail.rs:145
-#, fuzzy
-#| msgid "Smart playlist"
 msgid "Added artist to playlist"
-msgstr "Playlist intelligente"
+msgstr "Artiste ajouté à la liste de lecture"
 
 #: src/ui/artist_detail.rs:149
 msgid "Failed to add artist to playlist"
-msgstr ""
+msgstr "Echec de l'ajout de l'artiste à la liste de lecture"
 
 #: src/ui/music_context_menu.rs:33 src/ui/music_context_menu.rs:131
-#, fuzzy
-#| msgid "Smart Playlists"
 msgid "Add to Playlist"
-msgstr "Playlists intelligentes"
+msgstr "Ajouter à la liste de lecture"
 
 #: src/ui/music_context_menu.rs:34 src/ui/music_context_menu.rs:87
 #: src/ui/playlist_dialogs.rs:20 src/ui/playlist_dialogs.rs:59
 #: src/ui/window.rs:185 resources/ui/setup.ui:203
 msgid "Cancel"
-msgstr ""
+msgstr "Annuler"
 
 #: src/ui/music_context_menu.rs:34
 msgid "Add"
-msgstr ""
+msgstr "Ajouter"
 
 #: src/ui/music_context_menu.rs:59
 msgid "No playlists available. Please create a playlist first."
-msgstr ""
+msgstr "Pas de liste de lecture. Merci d'en créer une."
 
 #: src/ui/music_context_menu.rs:86
-#, fuzzy
-#| msgid "Most Played Playlist"
 msgid "Song already in playlist"
-msgstr "Playlist des titres les plus joués"
+msgstr "Titre déjà présent dans la liste de lecture"
 
 #: src/ui/music_context_menu.rs:87
 msgid "Add Anyway"
-msgstr ""
+msgstr "Ajouter quand même"
 
 #: src/ui/music_context_menu.rs:112
 msgid "Queue Next"
-msgstr ""
+msgstr "Ajouter à la suite"
 
 #: src/ui/music_context_menu.rs:116
 msgid "Queue Last"
-msgstr ""
+msgstr "Ajouter à la fin"
 
 #: src/ui/music_context_menu.rs:124
 msgid "Play Similar"
-msgstr ""
+msgstr "Jouer similaire"
 
 #: src/ui/music_context_menu.rs:136
-#, fuzzy
-#| msgid "Save As Playlist"
 msgid "Remove from Playlist"
-msgstr "Enregistrer comme playlist"
+msgstr "Retirer de la liste de lecture"
 
 #: src/ui/music_context_menu.rs:146
 msgid "Go to Album"
-msgstr ""
+msgstr "Aller à l'album"
 
 #: src/ui/music_context_menu.rs:153
-#, fuzzy
-#| msgid "Artists"
 msgid "Go to Artist"
-msgstr "Artistes"
+msgstr "Aller à l'artiste"
 
 #: src/ui/music_context_menu.rs:162 src/ui/stream_info_dialog.rs:121
 msgid "Song Info"
@@ -163,61 +145,56 @@ msgstr ""
 
 #: src/ui/music_context_menu.rs:167
 msgid "Copy ID"
-msgstr ""
+msgstr "Copier ID"
 
 #: src/ui/page_traits.rs:30
 msgid "Recently Added"
-msgstr ""
+msgstr "Récemment ajouté"
 
 #: src/ui/page_traits.rs:31
 msgid "Name"
-msgstr ""
+msgstr "Nom"
 
 #: src/ui/page_traits.rs:32
-#, fuzzy
-#| msgid "Album Detail"
 msgid "Album Artist"
-msgstr "Détails de l’album"
+msgstr "Artiste de l’album"
 
 #: src/ui/page_traits.rs:33
 msgid "Year"
-msgstr ""
+msgstr "Année"
 
 #: src/ui/page_traits.rs:34
+#, fuzzy
 msgid "Play Count"
-msgstr ""
+msgstr "Compteur"
 
 #: src/ui/page_traits.rs:35
-#, fuzzy
-#| msgid "Songs"
 msgid "Num. Songs"
-msgstr "Chansons"
+msgstr "Num. Chansons"
 
 #: src/ui/page_traits.rs:36
-#, fuzzy
-#| msgid "Albums"
 msgid "Album"
-msgstr "Albums"
+msgstr "Album"
 
 #: src/ui/page_traits.rs:37
 msgid "Last Played"
-msgstr ""
+msgstr "Dernière lecture"
 
 #: src/ui/playback_mode.rs:34
 msgid "No Shuffle/Repeat"
-msgstr ""
+msgstr "Ne pas mélanger/Répéter"
 
 #: src/ui/playback_mode.rs:35
 msgid "Shuffle"
-msgstr ""
+msgstr "Mélanger"
 
 #: src/ui/playback_mode.rs:36
 msgid "Repeat"
-msgstr ""
+msgstr "Répéter"
 
 #: src/ui/playback_mode.rs:37
 msgid "Repeat One"
-msgstr ""
+msgstr "Répéter une fois"
 
 #: src/ui/playback_mode.rs:38
 #, fuzzy
@@ -227,29 +204,27 @@ msgstr "Playlist Aléatoire"
 
 #: src/ui/player_bar/common.rs:79
 msgid "Pause"
-msgstr ""
+msgstr "Pause"
 
 #: src/ui/player_bar/common.rs:82 resources/ui/album_detail.ui:120
 #: resources/ui/artist_detail.ui:53 resources/ui/playlist_detail.ui:102
 #: resources/ui/player_bar/big_player.ui:143
 #: resources/ui/player_bar/compact_player_bar.ui:146
 #: resources/ui/player_bar/full_player_bar.ui:126
-#, fuzzy
-#| msgid "Playback"
 msgid "Play"
-msgstr "Lecture"
+msgstr "Jouer"
 
 #: src/ui/player_bar/common.rs:92
 msgid "Unknown Artist"
-msgstr ""
+msgstr "Artiste Inconnu"
 
 #: src/ui/player_bar/common.rs:254 src/ui/song.rs:233
 msgid "Added song to playlist"
-msgstr ""
+msgstr "Chanson ajoutée à la liste de lecture"
 
 #: src/ui/player_bar/common.rs:258 src/ui/song.rs:237
 msgid "Failed to add song to playlist"
-msgstr ""
+msgstr "Echec de l'ajout à la liste de lecture"
 
 #: src/ui/playlist.rs:26
 msgid "1 song"
@@ -266,14 +241,12 @@ msgid "Empty playlist"
 msgstr "Playlist vide"
 
 #: src/ui/playlist.rs:77
-#, fuzzy
-#| msgid "Most Played Playlist"
 msgid "Unable to load playlist"
-msgstr "Playlist des titres les plus joués"
+msgstr "Impossible de charger la liste de lecture"
 
 #: src/ui/playlist_detail.rs:256 src/ui/playlist_list.rs:72
 msgid "Could not load playlist, please try again."
-msgstr ""
+msgstr "Impossible de charger la liste de lecture, réessayez ultérieurement."
 
 #: src/ui/playlist_detail.rs:289
 msgid "Playlist ID copied to clipboard"
@@ -281,19 +254,19 @@ msgstr ""
 
 #: src/ui/playlist_detail.rs:313
 msgid "Added songs to playlist"
-msgstr ""
+msgstr "Titres ajoutés à la liste de lecture"
 
 #: src/ui/playlist_detail.rs:317
 msgid "Failed to add songs to playlist"
-msgstr ""
+msgstr "Echec de l'ajout du titre à la liste de lecture"
 
 #: src/ui/playlist_detail.rs:413
 msgid "Failed to save playlist order."
-msgstr ""
+msgstr "Sauvegarde de l'ordre de la liste de lecture échouée."
 
 #: src/ui/playlist_detail.rs:459
 msgid "Failed to modify playlist."
-msgstr ""
+msgstr "Modification de la liste de lecture échouée."
 
 #: src/ui/playlist_detail.rs:527
 msgid "Smart playlists cannot be deleted"

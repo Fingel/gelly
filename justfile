@@ -86,3 +86,6 @@ lms:
       -v ./scratch/lms-data:/var/lms:rw \
       -p 5082:5082 \
       docker.io/epoupon/lms:latest
+
+https:
+    caddy run --config ./scratch/Caddyfile
