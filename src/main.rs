@@ -40,7 +40,7 @@ fn main() -> glib::ExitCode {
     app.set_accels_for_action("win.request-library-rescan", &["<Ctrl><Shift>r"]);
     app.set_accels_for_action("win.search", &["<Ctrl>f"]);
     app.set_accels_for_action("win.favorites", &["<Ctrl>s"]);
-    app.set_accels_for_action("win.play-selected", &["<Ctrl>p"]);
+    app.set_accels_for_action("win.play-selected", &["<Ctrl>space"]);
     app.set_accels_for_action("win.shortcuts", &["<Ctrl>question"]);
     app.set_accels_for_action("win.preferences", &["<Ctrl>comma"]);
     app.set_accels_for_action("win.show-album-list", &["<Ctrl>1"]);
@@ -48,6 +48,11 @@ fn main() -> glib::ExitCode {
     app.set_accels_for_action("win.show-playlist-list", &["<Ctrl>3"]);
     app.set_accels_for_action("win.show-song-list", &["<Ctrl>4"]);
     app.set_accels_for_action("window.close", &["<Ctrl>q"]);
+    app.set_accels_for_action("app.play-pause", &["<Ctrl>p"]);
+    app.set_accels_for_action("app.previous", &["<Ctrl>b"]);
+    app.set_accels_for_action("app.next", &["<Ctrl>n"]);
+    app.set_accels_for_action("app.seek-backward", &["<Ctrl>Left"]);
+    app.set_accels_for_action("app.seek-forward", &["<Ctrl>Right"]);
     info!("Application started");
     app.run()
 }

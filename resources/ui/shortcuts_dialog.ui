@@ -77,6 +77,13 @@
             <property name="action-name">win.show-song-list</property>
           </object>
         </child>
+        <child>
+          <object class="AdwShortcutsItem">
+            <property name="title" translatable="yes">Play Selected</property>
+            <property name="subtitle" translatable="yes">Play the currently selected item in the list</property>
+            <property name="action-name">win.play-selected</property>
+          </object>
+        </child>
       </object>
     </child>
     <child>
@@ -84,9 +91,32 @@
         <property name="title" translatable="yes">Playback</property>
         <child>
           <object class="AdwShortcutsItem">
-            <property name="title" translatable="yes">Play Selected</property>
-            <property name="subtitle" translatable="yes">Play the currently selected item in the list</property>
-            <property name="action-name">win.play-selected</property>
+            <property name="title" translatable="yes">Toggle Play/Pause</property>
+            <property name="action-name">app.play-pause</property>
+          </object>
+        </child>
+        <child>
+          <object class="AdwShortcutsItem">
+            <property name="title" translatable="yes">Previous Song</property>
+            <property name="action-name">app.previous</property>
+          </object>
+        </child>
+        <child>
+          <object class="AdwShortcutsItem">
+            <property name="title" translatable="yes">Next Song</property>
+            <property name="action-name">app.next</property>
+          </object>
+        </child>
+        <child>
+          <object class="AdwShortcutsItem">
+            <property name="title" translatable="yes">Seek Backward</property>
+            <property name="action-name">app.seek-backward</property>
+          </object>
+        </child>
+        <child>
+          <object class="AdwShortcutsItem">
+            <property name="title" translatable="yes">Seek Forward</property>
+            <property name="action-name">app.seek-forward</property>
           </object>
         </child>
       </object>
