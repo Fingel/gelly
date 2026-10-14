@@ -108,6 +108,8 @@ pub enum CacheError {
 
     #[error("Image decode error: {0}")]
     Decode(String),
+    #[error("Cache not initialized")]
+    Uninitialized,
 }
 
 fn get_cache_directory(name: &str) -> Result<PathBuf, CacheError> {
@@ -436,6 +438,10 @@ impl MediaCache {
 
     fn get_cache_file_path(&self, item_id: &str) -> PathBuf {
         self.cache_dir.join(item_id)
+    }
+
+    pub fn cached_item_ids(&self) -> HashSet<CacheKey> {
+        self.items.read().unwrap().keys().cloned().collect()
     }
 
     pub async fn populate_cache(&self) -> Result<(), CacheError> {
