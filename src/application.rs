@@ -431,14 +431,46 @@ impl Application {
     }
 
     pub fn refresh_playlists(&self, refresh_cache: bool) {
-        if !refresh_cache && let Some(cache) = self.library_cache() {
-            match cache.load::<PlaylistDtoList>() {
+        if config::get_offline() {
+            self.refresh_playlists_offline();
+        } else {
+            self.refresh_playlists_online(refresh_cache);
+        }
+    }
+
+    fn apply_playlists(&self, playlists: PlaylistDtoList) {
+        let playlist_cnt = playlists.items.len() as u64;
+        self.imp().playlists.replace(playlists.items);
+        self.emit_by_name::<()>("playlists-refreshed", &[&playlist_cnt])
+    }
+
+    fn load_cached_playlists(&self) -> Result<PlaylistDtoList, CacheError> {
+        let cache = self.library_cache().ok_or(CacheError::Uninitialized)?;
+        cache.load::<PlaylistDtoList>()
+    }
+
+    fn refresh_playlists_offline(&self) {
+        match self.load_cached_playlists() {
+            Ok(playlists) => {
+                self.apply_playlists(playlists);
+                debug!("Loaded offline playlists from cache");
+            }
+            Err(err) => {
+                warn!("Failed to load cached playlists: {}", err);
+                self.emit_by_name::<()>(
+                    "global-error",
+                    &[&format!("Failed to load cached playlists: {err}")],
+                );
+            }
+        }
+    }
+
+    fn refresh_playlists_online(&self, refresh_cache: bool) {
+        if !refresh_cache {
+            match self.load_cached_playlists() {
                 Ok(playlists) => {
-                    let playlist_cnt = playlists.items.len() as u64;
-                    self.imp().playlists.replace(playlists.items);
-                    self.emit_by_name::<()>("playlists-refreshed", &[&playlist_cnt]);
+                    self.apply_playlists(playlists);
                     debug!("Loaded playlists from cache");
-                    return;
                 }
                 Err(error) => {
                     warn!("Failed to load playlist cache: {}. Refreshing", error);
@@ -458,10 +490,8 @@ impl Application {
                 move |result: Result<PlaylistDtoList, BackendError>| {
                     match result {
                         Ok(playlists) => {
-                            let playlist_cnt = playlists.items.len() as u64;
                             app.cache_collection(&playlists);
-                            app.imp().playlists.replace(playlists.items);
-                            app.emit_by_name::<()>("playlists-refreshed", &[&playlist_cnt]);
+                            app.apply_playlists(playlists);
                         }
                         Err(err) => app.handle_backend_error(err, "refresh_playlists"),
                     }
