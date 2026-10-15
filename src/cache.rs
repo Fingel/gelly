@@ -46,6 +46,12 @@ pub struct PlaylistDtoListCache {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct PlaylistSnapshot {
+    pub id: String,
+    pub items: Vec<MusicDto>,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "PascalCase")]
 pub struct FavoritesDtoListCache {
     pub items: Vec<FavoriteDto>,
@@ -99,17 +105,16 @@ impl Cacheable for FavoriteDtoList {
 pub enum CacheError {
     #[error("IO error: {0}")]
     Io(#[from] std::io::Error),
-
     #[error("Jellyfin error: {0}")]
     Jellyfin(#[from] BackendError),
-
     #[error("Deserialization error: {0}")]
     Deserialize(#[from] serde_json::Error),
-
     #[error("Image decode error: {0}")]
     Decode(String),
     #[error("Cache not initialized")]
     Uninitialized,
+    #[error("Invalid cache key: {0}")]
+    InvalidCacheKey(String),
 }
 
 fn get_cache_directory(name: &str) -> Result<PathBuf, CacheError> {
@@ -126,6 +131,18 @@ fn get_cache_directory(name: &str) -> Result<PathBuf, CacheError> {
 #[derive(Debug, Clone)]
 pub struct LibraryCache {
     cache_dir: PathBuf,
+}
+
+fn validate_playlist_id(id: &str) -> Result<(), CacheError> {
+    if !id.is_empty()
+        && id
+            .chars()
+            .all(|b| b.is_ascii_alphanumeric() || b == '-' || b == '_')
+    {
+        Ok(())
+    } else {
+        Err(CacheError::InvalidCacheKey(id.to_owned()))
+    }
 }
 
 impl LibraryCache {
@@ -162,6 +179,25 @@ impl LibraryCache {
     pub fn save<T: Cacheable>(&self, data: &T) -> Result<(), CacheError> {
         let data = serde_json::to_string(data)?;
         self.save_to_disk(T::CACHE_FILE_NAME, data.as_bytes())?;
+        Ok(())
+    }
+
+    pub fn load_playlist_snapshot(
+        &self,
+        playlist_id: &str,
+    ) -> Result<PlaylistSnapshot, CacheError> {
+        validate_playlist_id(playlist_id)?;
+        let fname = format!("playlist-items/{playlist_id}.json");
+        let data = self.load_from_disk(&fname)?;
+        Ok(serde_json::from_slice(&data)?)
+    }
+
+    pub fn save_playlist_snapshot(&self, snapshot: &PlaylistSnapshot) -> Result<(), CacheError> {
+        validate_playlist_id(&snapshot.id)?;
+        fs::create_dir_all(self.cache_dir.join("playlist-items"))?;
+        let fname = format!("playlist-items/{}.json", snapshot.id);
+        let data = serde_json::to_string(snapshot)?;
+        self.save_to_disk(&fname, data.as_bytes())?;
         Ok(())
     }
 }
