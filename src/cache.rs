@@ -14,7 +14,7 @@ use log::{debug, warn};
 use lru::LruCache;
 use serde::{Deserialize, Serialize, de::DeserializeOwned};
 use thiserror::Error;
-use tokio::sync::{Mutex, Semaphore};
+use tokio::sync::{Mutex, OnceCell, Semaphore};
 
 use crate::{
     async_utils::run_on_tokio,
@@ -421,6 +421,7 @@ pub struct MediaCache {
     items: RwLock<HashMap<CacheKey, CacheEntry>>,
     pending_requests: Mutex<HashSet<CacheKey>>,
     download_semaphore: Semaphore,
+    initialized: OnceCell<()>,
 }
 
 impl MediaCache {
@@ -433,18 +434,30 @@ impl MediaCache {
             items: RwLock::new(HashMap::new()),
             pending_requests: Mutex::new(HashSet::new()),
             download_semaphore: Semaphore::new(MAX_CONCURRENT_DOWNLOADS),
+            initialized: OnceCell::new(),
         })
+    }
+
+    pub async fn ensure_initialized(&self) -> Result<(), CacheError> {
+        self.initialized
+            .get_or_try_init(|| async {
+                self.populate_cache().await?;
+                Ok::<(), CacheError>(())
+            })
+            .await?;
+        Ok(())
+    }
+
+    pub async fn cached_item_ids(&self) -> Result<HashSet<CacheKey>, CacheError> {
+        self.ensure_initialized().await?;
+        Ok(self.items.read().unwrap().keys().cloned().collect())
     }
 
     fn get_cache_file_path(&self, item_id: &str) -> PathBuf {
         self.cache_dir.join(item_id)
     }
 
-    pub fn cached_item_ids(&self) -> HashSet<CacheKey> {
-        self.items.read().unwrap().keys().cloned().collect()
-    }
-
-    pub async fn populate_cache(&self) -> Result<(), CacheError> {
+    async fn populate_cache(&self) -> Result<(), CacheError> {
         let mut dir = tokio::fs::read_dir(&self.cache_dir).await?;
         // collect existing cache entries into a temp map
         let mut scanned_items = HashMap::new();

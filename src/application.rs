@@ -113,13 +113,18 @@ impl Application {
         let cache = Arc::new(cache);
         self.imp().media_cache.replace(Some(Arc::clone(&cache)));
         spawn_tokio(
-            async move { cache.populate_cache().await },
+            async move { cache.ensure_initialized().await },
             glib::clone!(
                 #[weak(rename_to = app)]
                 self,
                 move |result: Result<(), CacheError>| {
-                    if let Err(err) = result {
-                        app.emit_by_name::<()>("global-error", &[&err.to_string()]);
+                    match result {
+                        Ok(()) => {
+                            app.emit_by_name::<()>("media-cache-initialized", &[]);
+                        }
+                        Err(err) => {
+                            app.emit_by_name::<()>("global-error", &[&err.to_string()]);
+                        }
                     }
                 }
             ),
@@ -286,29 +291,50 @@ impl Application {
     }
 
     fn refresh_library_offline(&self, library_cache: &LibraryCache) {
-        // TODO: need to make sure the media cache is initialized
-        match library_cache.load::<MusicDtoList>().and_then(|library| {
-            let media_cache = self.media_cache().ok_or(CacheError::Uninitialized)?;
-            Ok(library
-                .items
-                .into_iter()
-                .filter(|item| media_cache.cached_item_ids().contains(&item.id))
-                .collect::<Vec<_>>())
-        }) {
-            Ok(items) => {
-                let library_cnt = items.len() as u64;
-                self.imp().library.update_songs(items);
-                self.emit_by_name::<()>("library-refreshed", &[&library_cnt]);
-                debug!("Loaded offline library via cache");
-            }
-            Err(err) => {
-                warn!("Failed to load library or media cache: {}", err);
-                self.emit_by_name::<()>(
-                    "global-error",
-                    &[&format!("Failed to load library: {}", err)],
+        let media_cache = self.media_cache();
+        let library_cache = library_cache.clone();
+
+        spawn_tokio(
+            async move {
+                let media_cache = media_cache.ok_or(CacheError::Uninitialized)?;
+                let cached_ids = media_cache.cached_item_ids().await?;
+                let library = library_cache.load::<MusicDtoList>()?;
+
+                Ok::<_, CacheError>(
+                    library
+                        .items
+                        .into_iter()
+                        .filter(|item| cached_ids.contains(&item.id))
+                        .collect::<Vec<_>>(),
                 )
-            }
-        }
+            },
+            glib::clone!(
+                #[weak(rename_to = app)]
+                self,
+                move |result| {
+                    // in case we've gone online in the meantime
+                    if !config::get_offline() {
+                        return;
+                    }
+
+                    match result {
+                        Ok(items) => {
+                            let library_cnt = items.len() as u64;
+                            app.imp().library.update_songs(items);
+                            app.emit_by_name::<()>("library-refreshed", &[&library_cnt]);
+                            debug!("Loaded offline library via cache");
+                        }
+                        Err(err) => {
+                            warn!("Failed to load library or media cache: {}", err);
+                            app.emit_by_name::<()>(
+                                "global-error",
+                                &[&format!("Failed to load library: {}", err)],
+                            );
+                        }
+                    }
+                }
+            ),
+        );
     }
 
     pub fn refresh_library(&self, refresh_cache: bool) {
@@ -655,6 +681,7 @@ mod imp {
                     Signal::builder("media-downloaded")
                         .param_types([String::static_type()])
                         .build(),
+                    Signal::builder("media-cache-initialized").build(),
                 ]
             })
         }
