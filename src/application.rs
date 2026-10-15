@@ -15,7 +15,7 @@ use crate::config::{
 };
 use crate::i18n::tr;
 use crate::jellyfin::Jellyfin;
-use crate::jellyfin::api::{FavoriteDtoList, MusicDtoList, Playlist};
+use crate::jellyfin::api::{FavoriteDtoList, MusicDto, MusicDtoList, Playlist};
 use crate::library::Library;
 use crate::subsonic::Subsonic;
 use log::{debug, error, warn};
@@ -284,12 +284,13 @@ impl Application {
         }
     }
 
-    fn refresh_library_offline(&self, library_cache: &LibraryCache) {
+    fn refresh_library_offline(&self) {
+        let library_cache = self.library_cache();
         let media_cache = self.media_cache();
-        let library_cache = library_cache.clone();
 
         spawn_tokio(
             async move {
+                let library_cache = library_cache.ok_or(CacheError::Uninitialized)?;
                 let media_cache = media_cache.ok_or(CacheError::Uninitialized)?;
                 let cached_ids = media_cache.cached_item_ids().await?;
                 let library = library_cache.load::<MusicDtoList>()?;
@@ -313,9 +314,7 @@ impl Application {
 
                     match result {
                         Ok(items) => {
-                            let library_cnt = items.len() as u64;
-                            app.imp().library.update_songs(items);
-                            app.emit_by_name::<()>("library-refreshed", &[&library_cnt]);
+                            app.apply_library(items);
                             debug!("Loaded offline library via cache");
                         }
                         Err(err) => {
@@ -331,56 +330,62 @@ impl Application {
         );
     }
 
+    fn refresh_library_online(&self, refresh_cache: bool) {
+        if !refresh_cache && self.try_load_library_cache() {
+            return;
+        }
+        let backend = self.backend();
+        if !backend.is_authenticated() {
+            debug!("Not authenticated, skipping library refresh");
+            return;
+        }
+        let library_id = self.imp().library_id.borrow().clone();
+        self.http_with_loading(
+            async move { backend.get_library(&library_id).await },
+            glib::clone!(
+                #[weak(rename_to=app)]
+                self,
+                move |result: Result<MusicDtoList, BackendError>| match result {
+                    Ok(library) => {
+                        app.cache_collection(&library);
+                        app.apply_library(library.items);
+                    }
+                    Err(err) => app.handle_backend_error(err, "refresh_library"),
+                },
+            ),
+        );
+    }
+
+    fn try_load_library_cache(&self) -> bool {
+        let Some(cache) = self.library_cache() else {
+            return false;
+        };
+        // TODO: get this off the main thread, large libraries may lock up
+        match cache.load::<MusicDtoList>() {
+            Ok(library) => {
+                self.apply_library(library.items);
+                debug!("Loaded library from cache");
+                true
+            }
+            Err(err) => {
+                warn!("Failed to load library cache: {err}. Refreshing.");
+                false
+            }
+        }
+    }
+
+    fn apply_library(&self, items: Vec<MusicDto>) {
+        let count = items.len() as u64;
+        self.imp().library.update_songs(items);
+        self.emit_by_name::<()>("library-refreshed", &[&count]);
+    }
+
     pub fn refresh_library(&self, refresh_cache: bool) {
         self.emit_by_name::<()>("library-refresh-requested", &[]);
-        if let Some(library_cache) = self.library_cache() {
-            if config::get_offline() {
-                self.refresh_library_offline(&library_cache);
-            } else {
-                if !refresh_cache {
-                    match library_cache.load::<MusicDtoList>() {
-                        Ok(library) => {
-                            let library_cnt = library.items.len() as u64;
-                            self.imp().library.update_songs(library.items);
-                            self.emit_by_name::<()>("library-refreshed", &[&library_cnt]);
-                            debug!("Loaded library from cache");
-                            return;
-                        }
-                        Err(error) => {
-                            warn!("Failed to load library cache: {}. Refreshing.", error);
-                        }
-                    }
-                }
-                let library_id = self.imp().library_id.borrow().clone();
-                let backend = self.backend();
-                if !backend.is_authenticated() {
-                    debug!("Not authenticated, skipping library refresh");
-                    return;
-                }
-                self.http_with_loading(
-                    async move { backend.get_library(&library_id).await },
-                    glib::clone!(
-                        #[weak(rename_to=app)]
-                        self,
-                        move |result: Result<MusicDtoList, BackendError>| {
-                            match result {
-                                Ok(library) => {
-                                    let library_cnt = library.items.len() as u64;
-                                    app.cache_collection(&library);
-                                    app.imp().library.update_songs(library.items);
-                                    app.emit_by_name::<()>("library-refreshed", &[&library_cnt]);
-                                }
-                                Err(err) => app.handle_backend_error(err, "refresh_library"),
-                            }
-                        },
-                    ),
-                );
-            }
+        if config::get_offline() {
+            self.refresh_library_offline();
         } else {
-            self.emit_by_name::<()>(
-                "global-error",
-                &[&"Library cache failed to initialize".to_string()],
-            )
+            self.refresh_library_online(refresh_cache);
         }
     }
 
