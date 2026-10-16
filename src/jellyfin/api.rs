@@ -318,3 +318,10 @@ impl ImageType {
         }
     }
 }
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct Playlist {
+    pub id: String,
+    pub name: String,
+    pub songs: Vec<MusicDto>,
+}

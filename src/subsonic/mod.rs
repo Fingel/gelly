@@ -1,6 +1,7 @@
 use std::fmt::Write;
 use std::time::Duration;
 
+use futures_util::{StreamExt, TryStreamExt, stream};
 use log::{debug, warn};
 use rand::RngExt;
 use reqwest::{Client, Response, StatusCode, Url};
@@ -418,32 +419,59 @@ impl Subsonic {
         })
     }
 
+    pub async fn get_full_playlists(
+        &self,
+    ) -> Result<Vec<crate::jellyfin::api::Playlist>, BackendError> {
+        debug!("Subsonic::get_full_playlists()");
+
+        let playlists = self.get_playlists().await?;
+        stream::iter(playlists.items)
+            .map(|playlist| async move { self.get_playlist(&playlist.id).await })
+            .buffered(4)
+            .try_collect()
+            .await
+    }
+
     // https://github.com/opensubsonic/open-subsonic-api/blob/main/content/en/docs/Endpoints/getplaylist.md
+    pub async fn get_playlist(
+        &self,
+        id: &str,
+    ) -> Result<crate::jellyfin::api::Playlist, BackendError> {
+        debug!("Subsonic::get_playlist(id={id})");
+        Ok(self.playlist_to_domain(self.get_playlist_payload(id).await?))
+    }
+
+    async fn get_playlist_payload(&self, id: &str) -> Result<api::Playlist, BackendError> {
+        let response = self
+            .get_subsonic("getPlaylist", &[("id".to_string(), id.to_string())])
+            .await?;
+        self.ensure_ok_response(&response)?;
+
+        response.playlist.ok_or_else(|| BackendError::Http {
+            status: StatusCode::BAD_GATEWAY,
+            message: "Subsonic response missing playlist payload".to_string(),
+        })
+    }
+
+    fn playlist_to_domain(&self, playlist: api::Playlist) -> crate::jellyfin::api::Playlist {
+        crate::jellyfin::api::Playlist {
+            id: playlist.id,
+            name: playlist.name,
+            songs: playlist
+                .entry
+                .into_iter()
+                .map(|song| self.song_to_music_dto(song, None))
+                .collect(),
+        }
+    }
+
     pub async fn get_playlist_items(
         &self,
         playlist_id: &str,
     ) -> Result<PlaylistItems, BackendError> {
         debug!("Subsonic::get_playlist_items(playlist_id={playlist_id})");
 
-        let response = self
-            .get_subsonic(
-                "getPlaylist",
-                &[("id".to_string(), playlist_id.to_string())],
-            )
-            .await?;
-        self.ensure_ok_response(&response)?;
-
-        let playlist = response.playlist.ok_or_else(|| BackendError::Http {
-            status: StatusCode::BAD_GATEWAY,
-            message: "Subsonic response missing playlist payload".to_string(),
-        })?;
-
-        let items = playlist
-            .entry
-            .into_iter()
-            .map(|song| self.song_to_music_dto(song, None))
-            .collect::<Vec<_>>();
-
+        let items = self.get_playlist(playlist_id).await?.songs;
         Ok(PlaylistItems {
             total_record_count: items.len() as u64,
             items,

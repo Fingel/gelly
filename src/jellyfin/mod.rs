@@ -3,7 +3,7 @@ use std::time::Duration;
 use std::{fmt::Debug, sync::OnceLock};
 
 use api::AuthenticateResponse;
-use futures::stream::{self, StreamExt};
+use futures::stream::{self, StreamExt, TryStreamExt};
 use log::{debug, warn};
 use reqwest::{Client, Response, StatusCode};
 use serde_json::json;
@@ -13,8 +13,8 @@ use crate::backend::BackendError;
 use crate::config;
 use crate::jellyfin::api::{
     FavoriteDtoList, ImageType, LibraryDtoList, LyricsResponse, MusicDtoList, NewPlaylist,
-    NewPlaylistResponse, PlaybackInfo, PlaybackReport, PlaybackReportStatus, PlaylistDtoList,
-    PlaylistItems, QuickConnectResponse,
+    NewPlaylistResponse, PlaybackInfo, PlaybackReport, PlaybackReportStatus, Playlist, PlaylistDto,
+    PlaylistDtoList, PlaylistItems, QuickConnectResponse,
 };
 
 pub mod api;
@@ -223,6 +223,35 @@ impl Jellyfin {
         let final_result = serde_json::from_str(&body)?;
 
         Ok(final_result)
+    }
+
+    pub async fn get_full_playlists(&self) -> Result<Vec<Playlist>, BackendError> {
+        let playlists = self.get_playlists().await?;
+        stream::iter(playlists.items)
+            .map(|metadata| self.load_playlist_contents(metadata))
+            .buffered(4)
+            .try_collect()
+            .await
+    }
+
+    pub async fn get_playlist(&self, id: &str) -> Result<Playlist, BackendError> {
+        let path = format!("Users/{}/Items/{id}", self.user_id);
+        let response = self.get(&path, None).await?;
+        let body = self.handle_response(response).await?;
+        let metadata = serde_json::from_str::<PlaylistDto>(&body)?;
+        self.load_playlist_contents(metadata).await
+    }
+
+    async fn load_playlist_contents(
+        &self,
+        metadata: PlaylistDto,
+    ) -> Result<Playlist, BackendError> {
+        let contents = self.get_playlist_items(&metadata.id).await?;
+        Ok(Playlist {
+            id: metadata.id,
+            name: metadata.name,
+            songs: contents.items,
+        })
     }
 
     pub async fn get_favorites(&self) -> Result<FavoriteDtoList, BackendError> {
