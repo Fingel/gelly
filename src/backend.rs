@@ -88,16 +88,6 @@ impl Backend {
         }
     }
 
-    pub async fn get_playlist_items(
-        &self,
-        playlist_id: &str,
-    ) -> Result<PlaylistItems, BackendError> {
-        match self {
-            Self::Jellyfin(jellyfin) => jellyfin.get_playlist_items(playlist_id).await,
-            Self::Subsonic(subsonic) => subsonic.get_playlist_items(playlist_id).await,
-        }
-    }
-
     pub async fn new_playlist(
         &self,
         name: &str,

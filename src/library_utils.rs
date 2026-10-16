@@ -21,11 +21,11 @@ pub fn songs_for_playlist(
     let id = playlist_type.to_id();
     let backend = app.backend();
     app.http_with_loading(
-        async move { backend.get_playlist_items(&id).await },
+        async move { backend.get_playlist(&id).await },
         move |result| {
-            cb(result.map(|items| {
-                items
-                    .items
+            cb(result.map(|playlist| {
+                playlist
+                    .songs
                     .iter()
                     .map(|dto| SongModel::new(dto, library.song_is_favorite(&dto.id)))
                     .collect()

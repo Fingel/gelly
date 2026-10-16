@@ -76,9 +76,9 @@ pub fn add_to_playlist_dup_check(
     spawn_tokio(
         async move {
             backend
-                .get_playlist_items(&playlist_id_for_check)
+                .get_playlist(&playlist_id_for_check)
                 .await
-                .map(|items| items.items.iter().any(|item| item.id == song_id_for_check))
+                .map(|p| p.songs.iter().any(|song| song.id == song_id_for_check))
         },
         move |result| match result {
             Ok(false) => on_add(playlist_id.clone(), song_id.clone()),

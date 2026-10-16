@@ -428,17 +428,6 @@ impl Subsonic {
             .await
     }
 
-    pub async fn get_playlist_items(
-        &self,
-        playlist_id: &str,
-    ) -> Result<PlaylistItems, BackendError> {
-        let playlist = self.get_playlist(playlist_id).await?;
-        Ok(PlaylistItems {
-            total_record_count: playlist.songs.len() as u64,
-            items: playlist.songs,
-        })
-    }
-
     // https://github.com/opensubsonic/open-subsonic-api/blob/main/content/en/docs/Endpoints/getplaylist.md
     pub async fn get_playlist(&self, playlist_id: &str) -> Result<Playlist, BackendError> {
         debug!("Subsonic::get_playlist(playlist_id={playlist_id})");

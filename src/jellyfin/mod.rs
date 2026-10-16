@@ -274,10 +274,7 @@ impl Jellyfin {
         })
     }
 
-    pub async fn get_playlist_items(
-        &self,
-        playlist_id: &str,
-    ) -> Result<PlaylistItems, BackendError> {
+    async fn get_playlist_items(&self, playlist_id: &str) -> Result<PlaylistItems, BackendError> {
         let params = vec![("fields", "DateCreated,Genres")];
         let path = format!("Playlists/{}/Items", playlist_id);
         let response = self.get(&path, Some(&params)).await?;
