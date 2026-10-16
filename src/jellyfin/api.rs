@@ -139,6 +139,15 @@ pub struct PlaylistDtoList {
     pub total_record_count: u64,
 }
 
+// TODO: define a real backend agnostic DTO module
+/// Playlist containing ordered songs, shared by both backends.
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct Playlist {
+    pub id: String,
+    pub name: String,
+    pub songs: Vec<MusicDto>,
+}
+
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "PascalCase")]
 pub struct PlaylistDto {

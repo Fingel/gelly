@@ -3,7 +3,7 @@ use std::time::Duration;
 use std::{fmt::Debug, sync::OnceLock};
 
 use api::AuthenticateResponse;
-use futures::stream::{self, StreamExt};
+use futures::stream::{self, StreamExt, TryStreamExt};
 use log::{debug, warn};
 use reqwest::{Client, Response, StatusCode};
 use serde_json::json;
@@ -13,8 +13,8 @@ use crate::backend::BackendError;
 use crate::config;
 use crate::jellyfin::api::{
     FavoriteDtoList, ImageType, LibraryDtoList, LyricsResponse, MusicDtoList, NewPlaylist,
-    NewPlaylistResponse, PlaybackInfo, PlaybackReport, PlaybackReportStatus, PlaylistDtoList,
-    PlaylistItems, QuickConnectResponse,
+    NewPlaylistResponse, PlaybackInfo, PlaybackReport, PlaybackReportStatus, Playlist, PlaylistDto,
+    PlaylistDtoList, PlaylistItems, QuickConnectResponse,
 };
 
 pub mod api;
@@ -242,6 +242,36 @@ impl Jellyfin {
         let final_result = serde_json::from_str(&body)?;
 
         Ok(final_result)
+    }
+
+    pub async fn get_playlist(&self, playlist_id: &str) -> Result<Playlist, BackendError> {
+        let path = format!("Users/{}/Items/{playlist_id}", self.user_id);
+        let params = vec![("fields", "ChildCount")];
+        let response = self.get(&path, Some(&params)).await?;
+        let body = self.handle_response(response).await?;
+        self.load_playlist_contents(serde_json::from_str(&body)?)
+            .await
+    }
+
+    pub async fn get_full_playlists(&self) -> Result<Vec<Playlist>, BackendError> {
+        let playlists = self.get_playlists().await?;
+        stream::iter(playlists.items)
+            .map(|playlist| self.load_playlist_contents(playlist))
+            .buffered(4) // TODO: should be configurable/dynamic
+            .try_collect()
+            .await
+    }
+
+    async fn load_playlist_contents(
+        &self,
+        playlist: PlaylistDto,
+    ) -> Result<Playlist, BackendError> {
+        let items = self.get_playlist_items(&playlist.id).await?;
+        Ok(Playlist {
+            id: playlist.id,
+            name: playlist.name,
+            songs: items.items,
+        })
     }
 
     pub async fn get_playlist_items(

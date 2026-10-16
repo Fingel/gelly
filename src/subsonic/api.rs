@@ -198,6 +198,8 @@ pub struct PlaylistSummary {
 pub struct Playlist {
     #[serde(deserialize_with = "deserialize_id_string")]
     pub id: String,
+    #[serde(default)] // doesn't appear to be strictly required in the spec
+    pub name: String,
 
     #[serde(default, deserialize_with = "deserialize_items_skip_errors")]
     pub entry: Vec<Song>,
