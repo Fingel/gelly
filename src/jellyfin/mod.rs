@@ -207,7 +207,7 @@ impl Jellyfin {
         Ok(serde_json::from_str(&body)?)
     }
 
-    pub async fn get_playlists(&self) -> Result<PlaylistDtoList, BackendError> {
+    async fn get_playlists(&self) -> Result<PlaylistDtoList, BackendError> {
         let params = vec![
             ("IncludeItemTypes", "Playlist"),
             ("sortBy", "DateCreated"),

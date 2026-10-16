@@ -283,7 +283,7 @@ where
     }
 
     fn on_add_to_playlist_dialog(&self) {
-        let playlists = self.obj().get_application().playlists().borrow().clone();
+        let playlists = self.obj().get_application().playlist_choices();
         let weak = self.obj().downgrade();
         add_to_playlist_dialog(
             self.obj().get_gtk_window().as_ref(),

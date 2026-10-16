@@ -214,7 +214,7 @@ impl PlaylistList {
             let playlist_type = PlaylistType::new_regular(
                 playlist.id.clone(),
                 playlist.name.clone(),
-                playlist.child_count,
+                playlist.songs.len() as u64,
                 library.playlist_is_favorite(&playlist.id),
             );
             store.append(&PlaylistModel::new(playlist_type));

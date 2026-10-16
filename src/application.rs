@@ -15,7 +15,7 @@ use crate::config::{
 };
 use crate::i18n::tr;
 use crate::jellyfin::Jellyfin;
-use crate::jellyfin::api::{FavoriteDtoList, MusicDtoList, PlaylistDto, PlaylistDtoList};
+use crate::jellyfin::api::{FavoriteDtoList, MusicDtoList, Playlist};
 use crate::library::Library;
 use crate::subsonic::Subsonic;
 use log::{debug, error, warn};
@@ -196,8 +196,17 @@ impl Application {
         self.imp().library.clone()
     }
 
-    pub fn playlists(&self) -> Rc<RefCell<Vec<PlaylistDto>>> {
+    pub fn playlists(&self) -> Rc<RefCell<Vec<Playlist>>> {
         self.imp().playlists.clone()
+    }
+
+    pub fn playlist_choices(&self) -> Vec<(String, String)> {
+        self.imp()
+            .playlists
+            .borrow()
+            .iter()
+            .map(|p| (p.id.clone(), p.name.clone()))
+            .collect()
     }
 
     pub fn library_cache(&self) -> Option<LibraryCache> {
@@ -314,10 +323,10 @@ impl Application {
 
     pub fn refresh_playlists(&self, refresh_cache: bool) {
         if !refresh_cache && let Some(cache) = self.library_cache() {
-            match cache.load::<PlaylistDtoList>() {
+            match cache.load::<Vec<Playlist>>() {
                 Ok(playlists) => {
-                    let playlist_cnt = playlists.items.len() as u64;
-                    self.imp().playlists.replace(playlists.items);
+                    let playlist_cnt = playlists.len() as u64;
+                    self.imp().playlists.replace(playlists);
                     self.emit_by_name::<()>("playlists-refreshed", &[&playlist_cnt]);
                     debug!("Loaded playlists from cache");
                     return;
@@ -337,12 +346,12 @@ impl Application {
             glib::clone!(
                 #[weak(rename_to=app)]
                 self,
-                move |result: Result<PlaylistDtoList, BackendError>| {
+                move |result: Result<Vec<Playlist>, BackendError>| {
                     match result {
                         Ok(playlists) => {
-                            let playlist_cnt = playlists.items.len() as u64;
+                            let playlist_cnt = playlists.len() as u64;
                             app.cache_collection(&playlists);
-                            app.imp().playlists.replace(playlists.items);
+                            app.imp().playlists.replace(playlists);
                             app.emit_by_name::<()>("playlists-refreshed", &[&playlist_cnt]);
                         }
                         Err(err) => app.handle_backend_error(err, "refresh_playlists"),
@@ -487,14 +496,14 @@ mod imp {
     use crate::audio::model::AudioModel;
     use crate::backend::Backend;
     use crate::cache::{ImageCache, LibraryCache};
-    use crate::jellyfin::api::PlaylistDto;
+    use crate::jellyfin::api::Playlist;
     use crate::library::Library;
 
     #[derive(Default)]
     pub struct Application {
         pub backend: RefCell<Backend>,
         pub library: Library,
-        pub playlists: Rc<RefCell<Vec<PlaylistDto>>>,
+        pub playlists: Rc<RefCell<Vec<Playlist>>>,
         pub library_id: RefCell<String>,
         pub library_cache: RefCell<Option<LibraryCache>>, // TODO: remove these Option<> types
         pub image_cache: RefCell<Option<ImageCache>>,

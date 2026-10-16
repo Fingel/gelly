@@ -160,7 +160,7 @@ impl ArtistDetail {
     }
 
     fn on_add_to_playlist_dialog(&self) {
-        let playlists = self.get_application().playlists().borrow().clone();
+        let playlists = self.get_application().playlist_choices();
         add_to_playlist_dialog(
             self.get_gtk_window().as_ref(),
             playlists,

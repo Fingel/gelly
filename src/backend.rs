@@ -5,8 +5,7 @@ use crate::jellyfin::{
     Jellyfin,
     api::{
         FavoriteDtoList, ImageType, ItemType, LibraryDtoList, LyricsResponse, MusicDtoList,
-        PlaybackInfo, PlaybackReport, PlaybackReportStatus, Playlist, PlaylistDtoList,
-        PlaylistItems,
+        PlaybackInfo, PlaybackReport, PlaybackReportStatus, Playlist, PlaylistItems,
     },
 };
 use crate::subsonic::Subsonic;
@@ -75,13 +74,6 @@ impl Backend {
         }
     }
 
-    pub async fn get_playlists(&self) -> Result<PlaylistDtoList, BackendError> {
-        match self {
-            Self::Jellyfin(jellyfin) => jellyfin.get_playlists().await,
-            Self::Subsonic(subsonic) => subsonic.get_playlists().await,
-        }
-    }
-
     pub async fn get_playlist(&self, playlist_id: &str) -> Result<Playlist, BackendError> {
         match self {
             Self::Jellyfin(jellyfin) => jellyfin.get_playlist(playlist_id).await,
@@ -89,7 +81,7 @@ impl Backend {
         }
     }
 
-    pub async fn get_full_playlists(&self) -> Result<Vec<Playlist>, BackendError> {
+    pub async fn get_playlists(&self) -> Result<Vec<Playlist>, BackendError> {
         match self {
             Self::Jellyfin(jellyfin) => jellyfin.get_full_playlists().await,
             Self::Subsonic(subsonic) => subsonic.get_full_playlists().await,

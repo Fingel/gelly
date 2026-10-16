@@ -392,7 +392,7 @@ impl Subsonic {
     }
 
     // https://github.com/opensubsonic/open-subsonic-api/blob/main/content/en/docs/Endpoints/getplaylists.md
-    pub async fn get_playlists(&self) -> Result<PlaylistDtoList, BackendError> {
+    async fn get_playlists(&self) -> Result<PlaylistDtoList, BackendError> {
         debug!("Subsonic::get_playlists()");
 
         let response = self.get_subsonic("getPlaylists", &[]).await?;
