@@ -136,7 +136,7 @@ pub fn connect_downloaded_indicator(song_widget: &Song, song_model: &SongModel, 
     );
 
     let download_handler = app.connect_closure(
-        "media-downloaded",
+        "media-cache-changed",
         false,
         glib::closure_local!(
             #[weak]

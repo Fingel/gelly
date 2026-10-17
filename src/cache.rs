@@ -519,6 +519,20 @@ impl MediaCache {
         }
     }
 
+    pub async fn remove_item(&self, id: &str) -> Result<(), CacheError> {
+        self.ensure_initialized().await?;
+
+        if let Some(path) = self.media_path(id) {
+            match tokio::fs::remove_file(path).await {
+                Ok(()) => {}
+                Err(error) if error.kind() == std::io::ErrorKind::NotFound => {}
+                Err(error) => return Err(error.into()),
+            }
+            self.items.write().unwrap().remove(id);
+        }
+        Ok(())
+    }
+
     pub fn clear_cache(&self) {
         _ = fs::remove_dir_all(&self.cache_dir);
         _ = fs::create_dir_all(&self.cache_dir);

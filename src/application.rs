@@ -523,6 +523,10 @@ impl Application {
     }
 
     pub fn download_media(&self, item_id: &str) {
+        if config::get_offline() {
+            self.emit_by_name::<()>("global-error", &[&tr("Go online to download music.")]);
+            return;
+        }
         let Some(cache) = self.media_cache() else {
             log::error!("Failed to get media cache");
             return;
@@ -539,12 +543,43 @@ impl Application {
                 self,
                 move |result: Result<String, CacheError>| {
                     match result {
-                        Ok(item_id) => app.emit_by_name::<()>("media-downloaded", &[&item_id]),
+                        Ok(item_id) => app.emit_by_name::<()>("media-cache-changed", &[&item_id]),
                         Err(err) => {
                             log::error!("Failed to download media: {}", err);
                             app.emit_by_name::<()>(
                                 "global-error",
                                 &[&tr("Failed to download media: {}")
+                                    .replace("{}", &err.to_string())],
+                            )
+                        }
+                    }
+                }
+            ),
+        );
+    }
+
+    pub fn remove_media(&self, item_id: &str) {
+        let Some(cache) = self.media_cache() else {
+            log::error!("Failed to get media cache");
+            return;
+        };
+        let item_id = item_id.to_string();
+        spawn_tokio(
+            async move {
+                cache.remove_item(&item_id).await?;
+                Ok::<String, CacheError>(item_id)
+            },
+            glib::clone!(
+                #[weak(rename_to=app)]
+                self,
+                move |result: Result<String, CacheError>| {
+                    match result {
+                        Ok(item_id) => app.emit_by_name::<()>("media-cache-changed", &[&item_id]),
+                        Err(err) => {
+                            log::error!("Failed to remove media: {}", err);
+                            app.emit_by_name::<()>(
+                                "global-error",
+                                &[&tr("Failed to remove media: {}")
                                     .replace("{}", &err.to_string())],
                             )
                         }
@@ -770,7 +805,7 @@ mod imp {
                     Signal::builder("http-request-start").build(),
                     Signal::builder("http-request-end").build(),
                     Signal::builder("big-player-requested").build(),
-                    Signal::builder("media-downloaded")
+                    Signal::builder("media-cache-changed")
                         .param_types([String::static_type()])
                         .build(),
                     Signal::builder("media-cache-initialized").build(),
