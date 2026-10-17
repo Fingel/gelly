@@ -43,6 +43,9 @@ pub fn play_song(id: &str, app: &Application) {
 }
 
 pub fn play_similar(id: &str, app: &Application) {
+    if !app.require_online(Some(&tr("Must be online to fetch similar music."))) {
+        return;
+    }
     let library = app.library();
     let backend = app.backend();
     let id = id.to_string();

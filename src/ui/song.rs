@@ -99,10 +99,14 @@ impl Song {
         let Some(song_model) = self.imp().song_model.borrow().clone() else {
             return;
         };
+        let app = self.get_application();
+        if !app.require_online(None) {
+            self.set_starred(song_model.favorite());
+            return;
+        }
         song_model.set_favorite(is_favorite);
         self.set_starred(is_favorite);
         let item_id = song_model.id();
-        let app = self.get_application();
         let backend = app.backend();
         spawn_tokio(
             async move {

@@ -121,9 +121,13 @@ where
         let Some(song) = self.audio_model().current_song() else {
             return;
         };
+        let app = self.obj().get_application();
+        if !app.require_online(None) {
+            self.favorite_button().set_active(song.favorite());
+            return;
+        }
         song.set_favorite(is_favorite);
         let item_id = song.id();
-        let app = self.obj().get_application();
         let backend = app.backend();
         let weak = self.obj().downgrade();
         let song_weak = song.downgrade();
