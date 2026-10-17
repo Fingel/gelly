@@ -322,6 +322,22 @@ where
         }
     }
 
+    fn on_download(&self) {
+        if let Some(song_model) = self.audio_model().current_song() {
+            self.obj()
+                .get_application()
+                .download_media(&[song_model.id()]);
+        }
+    }
+
+    fn on_remove_download(&self) {
+        if let Some(song_model) = self.audio_model().current_song() {
+            self.obj()
+                .get_application()
+                .remove_media(&[song_model.id()]);
+        }
+    }
+
     fn setup_menu(&self) {
         let options = ContextActions {
             can_remove_from_playlist: false,
@@ -365,6 +381,12 @@ where
         });
         klass.install_action("song.show_info_dialog", None, |player, _, _| {
             player.imp().show_info_dialog();
+        });
+        klass.install_action("song.download", None, |player, _, _| {
+            player.imp().on_download();
+        });
+        klass.install_action("song.remove_download", None, |player, _, _| {
+            player.imp().on_remove_download();
         });
     }
 

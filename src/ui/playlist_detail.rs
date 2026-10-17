@@ -281,14 +281,7 @@ impl PlaylistDetail {
     }
 
     fn on_add_to_playlist(self, playlist_id: String) {
-        let song_ids = self
-            .imp()
-            .songs
-            .borrow()
-            .iter()
-            .map(|song| song.id())
-            .collect::<Vec<_>>();
-
+        let song_ids = self.song_ids();
         let app = self.get_application();
         let backend = app.backend();
         spawn_tokio(
@@ -332,6 +325,23 @@ impl PlaylistDetail {
                 }
             ),
         );
+    }
+
+    fn on_download(&self) {
+        self.get_application().download_media(&self.song_ids());
+    }
+
+    fn on_remove_download(&self) {
+        self.get_application().remove_media(&self.song_ids());
+    }
+
+    fn song_ids(&self) -> Vec<String> {
+        self.imp()
+            .songs
+            .borrow()
+            .iter()
+            .map(|song| song.id())
+            .collect()
     }
 
     fn handle_song_moved(&self, source_index: usize, target_index: usize) {
@@ -681,6 +691,12 @@ mod imp {
             });
             klass.install_action("playlist_detail.copy_id", None, |playlist, _, _| {
                 playlist.copy_id();
+            });
+            klass.install_action("playlist_detail.download", None, |playlist, _, _| {
+                playlist.on_download();
+            });
+            klass.install_action("playlist_detail.remove_download", None, |playlist, _, _| {
+                playlist.on_remove_download();
             });
         }
 

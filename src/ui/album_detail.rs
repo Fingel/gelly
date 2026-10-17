@@ -221,6 +221,23 @@ impl AlbumDetail {
         }
     }
 
+    fn on_download(&self) {
+        self.get_application().download_media(&self.song_ids());
+    }
+
+    fn on_remove_download(&self) {
+        self.get_application().remove_media(&self.song_ids());
+    }
+
+    fn song_ids(&self) -> Vec<String> {
+        self.imp()
+            .songs
+            .borrow()
+            .iter()
+            .map(|song| song.id())
+            .collect::<Vec<_>>()
+    }
+
     fn update_track_metadata(&self) {
         let songs = self.imp().songs.borrow();
         self.imp().track_count.set_text(&songs.len().to_string());
@@ -249,14 +266,7 @@ impl AlbumDetail {
     }
 
     fn on_add_to_playlist(&self, playlist_id: String) {
-        let song_ids = self
-            .imp()
-            .songs
-            .borrow()
-            .iter()
-            .map(|song| song.id())
-            .collect::<Vec<_>>();
-
+        let song_ids = self.song_ids();
         let app = self.get_application();
         let backend = app.backend();
         spawn_tokio(
@@ -397,6 +407,12 @@ mod imp {
             });
             klass.install_action("album.go_to_artist", None, |album, _, _| {
                 album.on_go_to_artist();
+            });
+            klass.install_action("album.download", None, |album, _, _| {
+                album.on_download();
+            });
+            klass.install_action("album.remove_download", None, |album, _, _| {
+                album.on_remove_download();
             });
         }
 
