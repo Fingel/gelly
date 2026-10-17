@@ -360,13 +360,18 @@ impl Application {
             glib::clone!(
                 #[weak(rename_to=app)]
                 self,
-                move |result: Result<MusicDtoList, BackendError>| match result {
-                    Ok(library) => {
-                        app.cache_collection(&library);
-                        app.apply_library(library.items);
+                move |result: Result<MusicDtoList, BackendError>| {
+                    if config::get_offline() {
+                        return;
                     }
-                    Err(err) => app.handle_backend_error(err, "refresh_library"),
-                },
+                    match result {
+                        Ok(library) => {
+                            app.cache_collection(&library);
+                            app.apply_library(library.items);
+                        }
+                        Err(err) => app.handle_backend_error(err, "refresh_library"),
+                    }
+                }
             ),
         );
     }
@@ -387,18 +392,21 @@ impl Application {
     }
 
     pub fn refresh_favorites(&self, refresh_cache: bool) {
-        if config::get_offline() {
-            return;
-        }
-        if !refresh_cache && let Some(cache) = self.library_cache() {
+        let offline = config::get_offline();
+        if (!refresh_cache || offline)
+            && let Some(cache) = self.library_cache()
+        {
             match cache.load::<FavoriteDtoList>() {
                 Ok(favorites) => {
                     self.imp().library.update_favorites(&favorites.items);
                     self.emit_by_name::<()>("favorites-updated", &[]);
                     debug!("Loaded favorites from cache");
                 }
-                Err(error) => warn!("Failed to load favorites cache: {}. Refreshing.", error),
+                Err(error) => warn!("Failed to load favorites cache: {}.", error),
             }
+        }
+        if offline {
+            return;
         }
         let backend = self.backend();
         if !backend.is_authenticated() {
@@ -411,6 +419,9 @@ impl Application {
                 #[weak(rename_to=app)]
                 self,
                 move |result: Result<FavoriteDtoList, BackendError>| {
+                    if config::get_offline() {
+                        return;
+                    }
                     match result {
                         Ok(favorites) => {
                             app.cache_collection(&favorites);
@@ -527,8 +538,7 @@ impl Application {
         if item_ids.is_empty() {
             return;
         }
-        if config::get_offline() {
-            self.emit_by_name::<()>("global-error", &[&tr("Go online to download music.")]);
+        if !self.require_online(None) {
             return;
         }
         let Some(cache) = self.media_cache() else {
@@ -685,6 +695,9 @@ impl Application {
     }
 
     pub fn request_library_rescan(&self) {
+        if !self.require_online(Some(&tr("Go online to rescan the library."))) {
+            return;
+        }
         let library_id = self.imp().library_id.borrow().clone();
         let backend = self.backend();
         spawn_tokio(
@@ -729,6 +742,17 @@ impl Application {
         self.imp().library.update_songs(Vec::new());
         self.imp().library_id.replace(String::new());
         config::logout().unwrap_or_else(|e| warn!("Failed to clear config on logout: {}", e));
+    }
+
+    pub fn require_online(&self, message: Option<&str>) -> bool {
+        if config::get_offline() {
+            let default = tr("Must be online");
+            let message = message.unwrap_or(&default);
+            self.emit_by_name::<()>("global-error", &[&message]);
+            false
+        } else {
+            true
+        }
     }
 
     fn begin_http_request(&self) {

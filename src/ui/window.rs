@@ -204,6 +204,9 @@ impl Window {
     }
 
     pub fn change_library(&self) {
+        if !self.get_application().require_online(None) {
+            return;
+        }
         let backend = self.get_application().backend();
         spawn_tokio(
             async move { backend.get_views().await },
