@@ -246,13 +246,18 @@ where
         let backend = app.backend();
         let weak = self.obj().downgrade();
         spawn_tokio(
-            async move { backend.add_playlist_items(&playlist_id, &[song_id]).await },
+            async move {
+                backend
+                    .add_playlist_items(&playlist_id, &[song_id])
+                    .await
+                    .map(|()| playlist_id)
+            },
             move |result| {
                 if let Some(player) = weak.upgrade() {
                     match result {
-                        Ok(()) => {
+                        Ok(playlist_id) => {
                             player.toast(&tr("Added song to playlist"), None);
-                            app.refresh_playlists(true);
+                            app.refresh_playlist(&playlist_id, true);
                         }
                         Err(e) => {
                             player.toast(&tr("Failed to add song to playlist"), None);
@@ -283,7 +288,7 @@ where
     }
 
     fn on_add_to_playlist_dialog(&self) {
-        let playlists = self.obj().get_application().playlists().borrow().clone();
+        let playlists = self.obj().get_application().library().playlist_choices();
         let weak = self.obj().downgrade();
         add_to_playlist_dialog(
             self.obj().get_gtk_window().as_ref(),

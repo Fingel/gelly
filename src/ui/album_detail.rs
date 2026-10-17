@@ -253,17 +253,21 @@ impl AlbumDetail {
 
         let app = self.get_application();
         let backend = app.backend();
-        let playlist_id = playlist_id.to_string();
         spawn_tokio(
-            async move { backend.add_playlist_items(&playlist_id, &song_ids).await },
+            async move {
+                backend
+                    .add_playlist_items(&playlist_id, &song_ids)
+                    .await
+                    .map(|()| playlist_id)
+            },
             glib::clone!(
                 #[weak(rename_to = album)]
                 self,
                 move |result| {
                     match result {
-                        Ok(()) => {
+                        Ok(playlist_id) => {
                             album.toast(&tr("Added album to playlist"), None);
-                            app.refresh_playlists(true);
+                            app.refresh_playlist(&playlist_id, true);
                         }
                         Err(e) => {
                             album.toast(&tr("Failed to add album to playlist"), None);
@@ -276,7 +280,7 @@ impl AlbumDetail {
     }
 
     fn on_add_to_playlist_dialog(&self) {
-        let playlists = self.get_application().playlists().borrow().clone();
+        let playlists = self.get_application().library().playlist_choices();
         add_to_playlist_dialog(
             self.get_gtk_window().as_ref(),
             playlists,

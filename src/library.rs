@@ -7,8 +7,8 @@ use std::{
 use rand::prelude::*;
 
 use crate::{
-    jellyfin::api::{ArtistItemsDto, FavoriteDto, ItemType, MusicDto},
-    models::{AlbumModel, ArtistModel, SongModel},
+    jellyfin::api::{ArtistItemsDto, FavoriteDto, ItemType, MusicDto, Playlist},
+    models::{AlbumModel, ArtistModel, PlaylistModel, PlaylistType, SongModel},
 };
 
 #[derive(Debug, Clone, Default)]
@@ -42,6 +42,7 @@ pub struct Library {
     album_last_played_dates: Rc<RefCell<HashMap<String, String>>>,
     artist_play_counts: Rc<RefCell<HashMap<String, u64>>>,
     genres: Rc<RefCell<BTreeSet<String>>>,
+    playlists: Rc<RefCell<Vec<Playlist>>>,
 }
 
 impl Library {
@@ -53,6 +54,7 @@ impl Library {
             album_last_played_dates: Rc::new(RefCell::new(HashMap::new())),
             artist_play_counts: Rc::new(RefCell::new(HashMap::new())),
             genres: Rc::new(RefCell::new(BTreeSet::new())),
+            playlists: Rc::new(RefCell::new(Vec::new())),
         }
     }
 
@@ -109,6 +111,69 @@ impl Library {
                 _ => log::warn!("Unknown favorite type: {:?}", favorite.item_type),
             }
         }
+    }
+
+    pub fn update_playlists(&self, playlists: Vec<Playlist>) {
+        *self.playlists.borrow_mut() = playlists;
+    }
+
+    pub fn update_playlist(&self, playlist: Playlist) {
+        let mut playlists = self.playlists.borrow_mut();
+        if let Some(existing) = playlists.iter_mut().find(|p| p.id == playlist.id) {
+            *existing = playlist;
+        } else {
+            playlists.push(playlist);
+        }
+    }
+
+    pub fn remove_playlist(&self, id: &str) {
+        let mut playlists = self.playlists.borrow_mut();
+        playlists.retain(|p| p.id != id);
+    }
+
+    pub fn playlist_choices(&self) -> Vec<(String, String)> {
+        self.playlists
+            .borrow()
+            .iter()
+            .map(|p| (p.id.clone(), p.name.clone()))
+            .collect()
+    }
+
+    pub fn playlists_from_library(&self) -> Vec<PlaylistModel> {
+        self.playlists
+            .borrow()
+            .iter()
+            .map(|p| {
+                PlaylistModel::new(PlaylistType::new_regular(
+                    p.id.clone(),
+                    p.name.clone(),
+                    p.songs.len() as u64,
+                    self.playlist_is_favorite(&p.id),
+                ))
+            })
+            .collect()
+    }
+
+    pub fn songs_for_playlist(&self, id: &str) -> Vec<SongModel> {
+        self.playlists
+            .borrow()
+            .iter()
+            .find(|p| p.id == id)
+            .map(|p| {
+                p.songs
+                    .iter()
+                    .map(|s| SongModel::new(s, self.song_is_favorite(&s.id)))
+                    .collect()
+            })
+            .unwrap_or_default()
+    }
+
+    pub fn playlist_count(&self) -> u64 {
+        self.playlists.borrow().len() as u64
+    }
+
+    pub fn playlists(&self) -> Vec<Playlist> {
+        self.playlists.borrow().clone()
     }
 
     pub fn albums_from_library(&self) -> Vec<AlbumModel> {
