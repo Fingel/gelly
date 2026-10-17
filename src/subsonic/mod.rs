@@ -1,6 +1,7 @@
 use std::fmt::Write;
 use std::time::Duration;
 
+use futures::stream::{self, StreamExt, TryStreamExt};
 use log::{debug, warn};
 use rand::RngExt;
 use reqwest::{Client, Response, StatusCode, Url};
@@ -11,7 +12,7 @@ use crate::config;
 use crate::jellyfin::api::{
     ArtistItemsDto, FavoriteDto, FavoriteDtoList, FavoriteUserDataDto, ImageType, ItemType,
     LibraryDto, LibraryDtoList, LyricsResponse, MediaSource, MediaStream, MusicDto, MusicDtoList,
-    PlaybackInfo, PlaybackReport, PlaybackReportStatus, PlaylistDtoList, PlaylistItems,
+    PlaybackInfo, PlaybackReport, PlaybackReportStatus, Playlist, PlaylistDtoList, PlaylistItems,
     UserDataDto,
 };
 use crate::subsonic::api::{ArtistRef, Song, SubsonicEnvelope, SubsonicResponse};
@@ -391,7 +392,7 @@ impl Subsonic {
     }
 
     // https://github.com/opensubsonic/open-subsonic-api/blob/main/content/en/docs/Endpoints/getplaylists.md
-    pub async fn get_playlists(&self) -> Result<PlaylistDtoList, BackendError> {
+    async fn get_playlists(&self) -> Result<PlaylistDtoList, BackendError> {
         debug!("Subsonic::get_playlists()");
 
         let response = self.get_subsonic("getPlaylists", &[]).await?;
@@ -418,12 +419,18 @@ impl Subsonic {
         })
     }
 
+    pub async fn get_full_playlists(&self) -> Result<Vec<Playlist>, BackendError> {
+        let playlists = self.get_playlists().await?;
+        stream::iter(playlists.items)
+            .map(|playlist| async move { self.get_playlist(&playlist.id).await })
+            .buffered(4) // TODO: should be configurable/dynamic
+            .try_collect()
+            .await
+    }
+
     // https://github.com/opensubsonic/open-subsonic-api/blob/main/content/en/docs/Endpoints/getplaylist.md
-    pub async fn get_playlist_items(
-        &self,
-        playlist_id: &str,
-    ) -> Result<PlaylistItems, BackendError> {
-        debug!("Subsonic::get_playlist_items(playlist_id={playlist_id})");
+    pub async fn get_playlist(&self, playlist_id: &str) -> Result<Playlist, BackendError> {
+        debug!("Subsonic::get_playlist(playlist_id={playlist_id})");
 
         let response = self
             .get_subsonic(
@@ -444,9 +451,10 @@ impl Subsonic {
             .map(|song| self.song_to_music_dto(song, None))
             .collect::<Vec<_>>();
 
-        Ok(PlaylistItems {
-            total_record_count: items.len() as u64,
-            items,
+        Ok(Playlist {
+            id: playlist.id,
+            name: playlist.name,
+            songs: items,
         })
     }
 

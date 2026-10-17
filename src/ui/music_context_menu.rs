@@ -2,7 +2,7 @@ use adw::prelude::{AdwDialogExt, AlertDialogExt, AlertDialogExtManual};
 use gtk::{self, gio, prelude::*};
 use log::warn;
 
-use crate::{async_utils::spawn_tokio, backend::Backend, i18n::tr, jellyfin::api::PlaylistDto};
+use crate::{async_utils::spawn_tokio, backend::Backend, i18n::tr};
 
 #[derive(Debug, Clone)]
 pub struct ContextActions {
@@ -27,7 +27,7 @@ pub fn construct_menu(config: &ContextActions) -> gtk::PopoverMenu {
 
 pub fn add_to_playlist_dialog(
     window: Option<&gtk::Window>,
-    playlists: Vec<PlaylistDto>,
+    playlists: Vec<(String, String)>, // (id, name)
     cb: impl Fn(Option<String>) + 'static,
 ) -> adw::AlertDialog {
     let dialog = adw::AlertDialog::new(Some(&tr("Add to Playlist")), None);
@@ -37,9 +37,9 @@ pub fn add_to_playlist_dialog(
     dialog.set_close_response("cancel");
 
     if !playlists.is_empty() {
-        let strings: Vec<&str> = playlists.iter().map(|s| s.name.as_str()).collect();
+        let names: Vec<&str> = playlists.iter().map(|s| s.1.as_str()).collect();
         let expression = gtk::StringObject::this_expression("string");
-        let playlists_dropdown = gtk::DropDown::from_strings(&strings);
+        let playlists_dropdown = gtk::DropDown::from_strings(&names);
         playlists_dropdown.set_enable_search(true);
         playlists_dropdown.set_search_match_mode(gtk::StringFilterMatchMode::Substring);
         playlists_dropdown.set_expression(Some(&expression));
@@ -49,7 +49,7 @@ pub fn add_to_playlist_dialog(
             if response == "add" {
                 let selected_index = playlists_dropdown.selected();
                 if let Some(selected_playlist) = playlists.get(selected_index as usize) {
-                    cb(Some(selected_playlist.id.clone()));
+                    cb(Some(selected_playlist.0.clone()));
                 }
             }
         });
@@ -76,9 +76,9 @@ pub fn add_to_playlist_dup_check(
     spawn_tokio(
         async move {
             backend
-                .get_playlist_items(&playlist_id_for_check)
+                .get_playlist(&playlist_id_for_check)
                 .await
-                .map(|items| items.items.iter().any(|item| item.id == song_id_for_check))
+                .map(|p| p.songs.iter().any(|song| song.id == song_id_for_check))
         },
         move |result| match result {
             Ok(false) => on_add(playlist_id.clone(), song_id.clone()),
