@@ -386,6 +386,9 @@ impl Application {
     }
 
     pub fn refresh_favorites(&self, refresh_cache: bool) {
+        if config::get_offline() {
+            return;
+        }
         if !refresh_cache && let Some(cache) = self.library_cache() {
             match cache.load::<FavoriteDtoList>() {
                 Ok(favorites) => {
