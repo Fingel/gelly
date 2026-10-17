@@ -1,7 +1,6 @@
 use crate::{
     application::Application,
     async_utils::spawn_tokio,
-    backend::BackendError,
     i18n::{ngettext, tr},
     jellyfin::utils::format_duration,
     library_utils::songs_for_playlist,
@@ -45,6 +44,9 @@ impl DetailPage for PlaylistDetail {
             .build();
         imp.favorite_binding.replace(Some(binding));
         self.pull_tracks();
+        if !model.is_smart() {
+            self.get_application().refresh_playlist(&model.id(), true);
+        }
     }
 
     fn get_model(&self) -> Option<Self::Model> {
@@ -239,27 +241,9 @@ impl PlaylistDetail {
             warn!("No playlist model set");
             return;
         };
-        let app = self.get_application();
-        songs_for_playlist(
-            &playlist_model,
-            &app,
-            glib::clone!(
-                #[weak(rename_to=playlist_detail)]
-                self,
-                move |result: Result<Vec<SongModel>, BackendError>| {
-                    match result {
-                        Ok(songs) => {
-                            playlist_detail.populate_tracks_with_songs(songs);
-                        }
-                        Err(error) => {
-                            playlist_detail
-                                .toast(&tr("Could not load playlist, please try again."), None);
-                            warn!("Unable to load playlist: {error}");
-                        }
-                    }
-                }
-            ),
-        );
+        let library = self.get_application().library();
+        let songs = songs_for_playlist(&playlist_model, &library);
+        self.populate_tracks_with_songs(songs);
     }
 
     fn populate_tracks_with_songs(&self, songs: Vec<SongModel>) {
@@ -301,17 +285,21 @@ impl PlaylistDetail {
 
         let app = self.get_application();
         let backend = app.backend();
-        let playlist_id = playlist_id.to_string();
         spawn_tokio(
-            async move { backend.add_playlist_items(&playlist_id, &song_ids).await },
+            async move {
+                backend
+                    .add_playlist_items(&playlist_id, &song_ids)
+                    .await
+                    .map(|()| playlist_id)
+            },
             glib::clone!(
                 #[weak(rename_to = playlist)]
                 self,
                 move |result| {
                     match result {
-                        Ok(()) => {
+                        Ok(playlist_id) => {
                             playlist.toast(&tr("Added songs to playlist"), None);
-                            app.refresh_playlists(true);
+                            app.refresh_playlist(&playlist_id, true);
                         }
                         Err(e) => {
                             playlist.toast(&tr("Failed to add songs to playlist"), None);
@@ -324,7 +312,7 @@ impl PlaylistDetail {
     }
 
     fn on_add_to_playlist_dialog(&self) {
-        let playlists = self.get_application().playlist_choices();
+        let playlists = self.get_application().library().playlist_choices();
         add_to_playlist_dialog(
             self.get_gtk_window().as_ref(),
             playlists,
@@ -393,27 +381,31 @@ impl PlaylistDetail {
 
         spawn_tokio(
             async move {
-                backend
+                let result = backend
                     .move_playlist_item(&playlist_id, &item_id, target_index as i32)
-                    .await
+                    .await;
+                (playlist_id, result)
             },
             glib::clone!(
                 #[weak(rename_to = playlist_detail)]
                 self,
-                move |result| match result {
-                    Ok(_) => {
-                        log::debug!(
-                            "Successfully moved playlist item from position {} to {}",
-                            source_index,
-                            target_index
-                        );
+                move |(playlist_id, result)| {
+                    let notify_views = result.is_err(); // prevent view scroll jump
+                    match result {
+                        Ok(()) => {
+                            log::debug!(
+                                "Successfully moved playlist item from position {} to {}",
+                                source_index,
+                                target_index
+                            );
+                        }
+                        Err(error) => {
+                            log::error!("Failed to move playlist item: {}", error);
+                            playlist_detail.toast(&tr("Failed to save playlist order."), None);
+                            playlist_detail.pull_tracks();
+                        }
                     }
-                    Err(error) => {
-                        log::error!("Failed to move playlist item: {}", error);
-                        playlist_detail.toast(&tr("Failed to save playlist order."), None);
-                        // Revert to server state
-                        playlist_detail.pull_tracks();
-                    }
+                    app.refresh_playlist(&playlist_id, notify_views);
                 }
             ),
         );
@@ -444,15 +436,18 @@ impl PlaylistDetail {
             let backend = app.backend();
 
             spawn_tokio(
-                async move { backend.remove_playlist_item(&playlist_id, &song_id).await },
+                async move {
+                    let result = backend.remove_playlist_item(&playlist_id, &song_id).await;
+                    (playlist_id, result)
+                },
                 glib::clone!(
                     #[weak(rename_to = playlist_detail)]
                     self,
-                    move |result| {
+                    move |(playlist_id, result)| {
+                        let notify_views = result.is_err();
                         match result {
                             Ok(_) => {
                                 log::debug!("Successfully removed item from playlist");
-                                app.refresh_playlists(true);
                             }
                             Err(error) => {
                                 log::error!("Failed to remove song from playlist: {}", error);
@@ -461,6 +456,7 @@ impl PlaylistDetail {
                                 playlist_detail.pull_tracks();
                             }
                         }
+                        app.refresh_playlist(&playlist_id, notify_views);
                     }
                 ),
             );

@@ -19,8 +19,6 @@ use crate::jellyfin::api::{FavoriteDtoList, MusicDtoList, Playlist};
 use crate::library::Library;
 use crate::subsonic::Subsonic;
 use log::{debug, error, warn};
-use std::cell::RefCell;
-use std::rc::Rc;
 use std::sync::atomic::Ordering;
 
 glib::wrapper! {
@@ -196,19 +194,6 @@ impl Application {
         self.imp().library.clone()
     }
 
-    pub fn playlists(&self) -> Rc<RefCell<Vec<Playlist>>> {
-        self.imp().playlists.clone()
-    }
-
-    pub fn playlist_choices(&self) -> Vec<(String, String)> {
-        self.imp()
-            .playlists
-            .borrow()
-            .iter()
-            .map(|p| (p.id.clone(), p.name.clone()))
-            .collect()
-    }
-
     pub fn library_cache(&self) -> Option<LibraryCache> {
         self.imp().library_cache.borrow().clone()
     }
@@ -326,7 +311,7 @@ impl Application {
             match cache.load::<Vec<Playlist>>() {
                 Ok(playlists) => {
                     let playlist_cnt = playlists.len() as u64;
-                    self.imp().playlists.replace(playlists);
+                    self.imp().library.update_playlists(playlists);
                     self.emit_by_name::<()>("playlists-refreshed", &[&playlist_cnt]);
                     debug!("Loaded playlists from cache");
                     return;
@@ -351,10 +336,41 @@ impl Application {
                         Ok(playlists) => {
                             let playlist_cnt = playlists.len() as u64;
                             app.cache_collection(&playlists);
-                            app.imp().playlists.replace(playlists);
+                            app.library().update_playlists(playlists);
                             app.emit_by_name::<()>("playlists-refreshed", &[&playlist_cnt]);
                         }
                         Err(err) => app.handle_backend_error(err, "refresh_playlists"),
+                    }
+                }
+            ),
+        )
+    }
+
+    pub fn refresh_playlist(&self, id: &str, notify_views: bool) {
+        let backend = self.backend();
+        if !backend.is_authenticated() {
+            debug!("Not authenticated, skipping refresh");
+            return;
+        }
+        let playlist_id = id.to_string();
+        self.http_with_loading(
+            async move { backend.get_playlist(&playlist_id).await },
+            glib::clone!(
+                #[weak(rename_to=app)]
+                self,
+                move |result: Result<Playlist, BackendError>| {
+                    match result {
+                        Ok(playlist) => {
+                            app.library().update_playlist(playlist);
+                            app.cache_collection(&app.library().playlists());
+                            if notify_views {
+                                let playlist_count = app.library().playlist_count();
+                                app.emit_by_name::<()>("playlists-refreshed", &[&playlist_count]);
+                            }
+                        }
+                        Err(error) => {
+                            app.handle_backend_error(error, "refresh_playlist");
+                        }
                     }
                 }
             ),
@@ -489,21 +505,18 @@ mod imp {
     use gtk::glib::types::StaticType;
     use std::cell::Cell;
     use std::cell::RefCell;
-    use std::rc::Rc;
     use std::sync::OnceLock;
     use std::sync::atomic::AtomicU32;
 
     use crate::audio::model::AudioModel;
     use crate::backend::Backend;
     use crate::cache::{ImageCache, LibraryCache};
-    use crate::jellyfin::api::Playlist;
     use crate::library::Library;
 
     #[derive(Default)]
     pub struct Application {
         pub backend: RefCell<Backend>,
         pub library: Library,
-        pub playlists: Rc<RefCell<Vec<Playlist>>>,
         pub library_id: RefCell<String>,
         pub library_cache: RefCell<Option<LibraryCache>>, // TODO: remove these Option<> types
         pub image_cache: RefCell<Option<ImageCache>>,

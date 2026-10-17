@@ -1,12 +1,11 @@
 use crate::{
     application::Application,
     async_utils::spawn_tokio,
-    backend::BackendError,
     config,
     i18n::tr,
     library_utils::songs_for_playlist,
     models::{
-        PlaylistModel, SongModel,
+        PlaylistModel,
         playlist_type::{DEFAULT_SMART_COUNT, PlaylistType},
     },
     ui::{
@@ -24,7 +23,7 @@ use gtk::{
     prelude::*,
     subclass::prelude::*,
 };
-use log::{error, warn};
+use log::error;
 
 glib::wrapper! {
     pub struct PlaylistList(ObjectSubclass<imp::PlaylistList>)
@@ -46,36 +45,11 @@ impl TopPage for PlaylistList {
             && let Some(single_selection) = selection.downcast_ref::<gtk::SingleSelection>()
             && let Some(selected_item) = single_selection.selected_item()
             && let Some(playlist_model) = selected_item.downcast_ref::<PlaylistModel>()
+            && let Some(audio_model) = self.get_application().audio_model()
         {
-            let app = self.get_application();
-            songs_for_playlist(
-                playlist_model,
-                &app,
-                glib::clone!(
-                    #[weak(rename_to=playlist_list)]
-                    self,
-                    move |result: Result<Vec<SongModel>, BackendError>| {
-                        match result {
-                            Ok(songs) => {
-                                if let Some(audio_model) =
-                                    playlist_list.get_application().audio_model()
-                                {
-                                    audio_model.set_queue(songs, 0, false);
-                                } else {
-                                    playlist_list
-                                        .toast(&tr("No audio model found, please restart."), None);
-                                    log::warn!("No audio model found");
-                                }
-                            }
-                            Err(error) => {
-                                playlist_list
-                                    .toast(&tr("Could not load playlist, please try again."), None);
-                                warn!("Unable to load playlist: {error}");
-                            }
-                        }
-                    }
-                ),
-            );
+            let library = self.get_application().library();
+            let songs = songs_for_playlist(playlist_model, &library);
+            audio_model.set_queue(songs, 0, false);
         }
     }
 
@@ -184,8 +158,8 @@ impl PlaylistList {
     }
 
     pub fn pull_playlists(&self) {
-        let playlists = self.get_application().playlists().borrow().clone();
         let library = self.get_application().library();
+        let playlists = library.playlists_from_library();
         let store = self
             .imp()
             .store
@@ -210,15 +184,7 @@ impl PlaylistList {
             store.append(&PlaylistModel::new(PlaylistType::Favorites {}));
         }
 
-        for playlist in playlists {
-            let playlist_type = PlaylistType::new_regular(
-                playlist.id.clone(),
-                playlist.name.clone(),
-                playlist.songs.len() as u64,
-                library.playlist_is_favorite(&playlist.id),
-            );
-            store.append(&PlaylistModel::new(playlist_type));
-        }
+        store.extend_from_slice(&playlists);
         self.apply_sort(self.current_sort_by(), self.current_sort_direction());
     }
 

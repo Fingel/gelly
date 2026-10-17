@@ -1,5 +1,4 @@
 use crate::{
-    backend::BackendError,
     i18n::{ngettext, tr},
     library_utils::songs_for_playlist,
     models::{PlaylistModel, SongModel},
@@ -61,26 +60,9 @@ impl Playlist {
             return;
         };
 
-        let app = self.get_application();
-        songs_for_playlist(
-            &playlist_model,
-            &app,
-            glib::clone!(
-                #[weak(rename_to=playlist)]
-                self,
-                move |result: Result<Vec<SongModel>, BackendError>| {
-                    match result {
-                        Ok(songs) => {
-                            playlist.play_songs(songs);
-                        }
-                        Err(error) => {
-                            playlist.toast(&tr("Unable to load playlist"), None);
-                            warn!("Unable to load playlist: {error}");
-                        }
-                    }
-                }
-            ),
-        );
+        let library = self.get_application().library();
+        let songs = songs_for_playlist(&playlist_model, &library);
+        self.play_songs(songs);
     }
 
     pub fn toggle_favorite(&self, is_favorite: bool) {

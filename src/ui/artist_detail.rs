@@ -138,15 +138,20 @@ impl ArtistDetail {
                 .map(|song| song.id().to_string())
                 .collect();
             spawn_tokio(
-                async move { backend.add_playlist_items(&playlist_id, &song_ids).await },
+                async move {
+                    backend
+                        .add_playlist_items(&playlist_id, &song_ids)
+                        .await
+                        .map(|()| playlist_id)
+                },
                 glib::clone!(
                     #[weak(rename_to = artist)]
                     self,
                     move |result| {
                         match result {
-                            Ok(()) => {
+                            Ok(playlist_id) => {
                                 artist.toast(&tr("Added artist to playlist"), None);
-                                app.refresh_playlists(true);
+                                app.refresh_playlist(&playlist_id, true);
                             }
                             Err(e) => {
                                 artist.toast(&tr("Failed to add artist to playlist"), None);
@@ -160,7 +165,7 @@ impl ArtistDetail {
     }
 
     fn on_add_to_playlist_dialog(&self) {
-        let playlists = self.get_application().playlist_choices();
+        let playlists = self.get_application().library().playlist_choices();
         add_to_playlist_dialog(
             self.get_gtk_window().as_ref(),
             playlists,
