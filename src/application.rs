@@ -331,8 +331,17 @@ impl Application {
     }
 
     fn refresh_library_online(&self, refresh_cache: bool) {
-        if !refresh_cache && self.try_load_library_cache() {
-            return;
+        if !refresh_cache {
+            match self.load_cached_library() {
+                Ok(library) => {
+                    self.apply_library(library.items);
+                    debug!("Loaded library from cache");
+                    return;
+                }
+                Err(error) => {
+                    warn!("Failed to load library cache: {}. Refreshing.", error);
+                }
+            }
         }
         let backend = self.backend();
         if !backend.is_authenticated() {
@@ -356,22 +365,10 @@ impl Application {
         );
     }
 
-    fn try_load_library_cache(&self) -> bool {
-        let Some(cache) = self.library_cache() else {
-            return false;
-        };
+    fn load_cached_library(&self) -> Result<MusicDtoList, CacheError> {
+        let cache = self.library_cache().ok_or(CacheError::Uninitialized)?;
         // TODO: get this off the main thread, large libraries may lock up
-        match cache.load::<MusicDtoList>() {
-            Ok(library) => {
-                self.apply_library(library.items);
-                debug!("Loaded library from cache");
-                true
-            }
-            Err(err) => {
-                warn!("Failed to load library cache: {err}. Refreshing.");
-                false
-            }
-        }
+        cache.load::<MusicDtoList>()
     }
 
     fn apply_library(&self, items: Vec<MusicDto>) {
@@ -424,13 +421,39 @@ impl Application {
         );
     }
 
-    pub fn refresh_playlists(&self, refresh_cache: bool) {
-        if !refresh_cache && let Some(cache) = self.library_cache() {
-            match cache.load::<Vec<Playlist>>() {
+    fn apply_playlists(&self, playlists: Vec<Playlist>) {
+        let playlist_cnt = playlists.len() as u64;
+        self.library().update_playlists(playlists);
+        self.emit_by_name::<()>("playlists-refreshed", &[&playlist_cnt]);
+    }
+
+    fn load_cached_playlists(&self) -> Result<Vec<Playlist>, CacheError> {
+        let cache = self.library_cache().ok_or(CacheError::Uninitialized)?;
+        cache.load::<Vec<Playlist>>()
+    }
+
+    fn refresh_playlists_offline(&self) {
+        match self.load_cached_playlists() {
+            Ok(playlists) => {
+                // This is where we prune the playlists down to what is available offline
+                self.apply_playlists(playlists);
+                debug!("Loaded offline playlists from cache");
+            }
+            Err(err) => {
+                warn!("Failed to load cached playlists: {}", err);
+                self.emit_by_name::<()>(
+                    "global-error",
+                    &[&format!("Failed to load cached playlists: {err}")],
+                )
+            }
+        }
+    }
+
+    fn refresh_playlists_online(&self, refresh_cache: bool) {
+        if !refresh_cache {
+            match self.load_cached_playlists() {
                 Ok(playlists) => {
-                    let playlist_cnt = playlists.len() as u64;
-                    self.imp().library.update_playlists(playlists);
-                    self.emit_by_name::<()>("playlists-refreshed", &[&playlist_cnt]);
+                    self.apply_playlists(playlists);
                     debug!("Loaded playlists from cache");
                     return;
                 }
@@ -452,16 +475,22 @@ impl Application {
                 move |result: Result<Vec<Playlist>, BackendError>| {
                     match result {
                         Ok(playlists) => {
-                            let playlist_cnt = playlists.len() as u64;
                             app.cache_collection(&playlists);
-                            app.library().update_playlists(playlists);
-                            app.emit_by_name::<()>("playlists-refreshed", &[&playlist_cnt]);
+                            app.apply_playlists(playlists);
                         }
                         Err(err) => app.handle_backend_error(err, "refresh_playlists"),
                     }
                 }
             ),
-        )
+        );
+    }
+
+    pub fn refresh_playlists(&self, refresh_cache: bool) {
+        if config::get_offline() {
+            self.refresh_playlists_offline();
+        } else {
+            self.refresh_playlists_online(refresh_cache);
+        }
     }
 
     pub fn download_media(&self, item_id: &str) {
