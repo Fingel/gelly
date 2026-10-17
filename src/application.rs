@@ -332,7 +332,12 @@ impl Application {
 
     fn refresh_library_online(&self, refresh_cache: bool) {
         if !refresh_cache {
-            match self.load_cached_library() {
+            // TODO: get this off the main thread, large libraries may lock up
+            let cached_library = self
+                .library_cache()
+                .ok_or(CacheError::Uninitialized)
+                .and_then(|cache| cache.load::<MusicDtoList>());
+            match cached_library {
                 Ok(library) => {
                     self.apply_library(library.items);
                     debug!("Loaded library from cache");
@@ -363,12 +368,6 @@ impl Application {
                 },
             ),
         );
-    }
-
-    fn load_cached_library(&self) -> Result<MusicDtoList, CacheError> {
-        let cache = self.library_cache().ok_or(CacheError::Uninitialized)?;
-        // TODO: get this off the main thread, large libraries may lock up
-        cache.load::<MusicDtoList>()
     }
 
     fn apply_library(&self, items: Vec<MusicDto>) {
