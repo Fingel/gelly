@@ -426,31 +426,55 @@ impl Application {
         self.emit_by_name::<()>("playlists-refreshed", &[&playlist_cnt]);
     }
 
-    fn load_cached_playlists(&self) -> Result<Vec<Playlist>, CacheError> {
-        let cache = self.library_cache().ok_or(CacheError::Uninitialized)?;
-        cache.load::<Vec<Playlist>>()
-    }
-
     fn refresh_playlists_offline(&self) {
-        match self.load_cached_playlists() {
-            Ok(playlists) => {
-                // This is where we prune the playlists down to what is available offline
-                self.apply_playlists(playlists);
-                debug!("Loaded offline playlists from cache");
-            }
-            Err(err) => {
-                warn!("Failed to load cached playlists: {}", err);
-                self.emit_by_name::<()>(
-                    "global-error",
-                    &[&format!("Failed to load cached playlists: {err}")],
-                )
-            }
-        }
+        let library_cache = self.library_cache();
+        let media_cache = self.media_cache();
+
+        spawn_tokio(
+            async move {
+                let library_cache = library_cache.ok_or(CacheError::Uninitialized)?;
+                let media_cache = media_cache.ok_or(CacheError::Uninitialized)?;
+                let cached_ids = media_cache.cached_item_ids().await?;
+                let mut playlists = library_cache.load::<Vec<Playlist>>()?;
+                for playlist in &mut playlists {
+                    playlist.songs.retain(|s| cached_ids.contains(&s.id));
+                }
+                playlists.retain(|p| !p.songs.is_empty());
+                Ok::<_, CacheError>(playlists)
+            },
+            glib::clone!(
+                #[weak(rename_to=app)]
+                self,
+                move |result| {
+                    if !config::get_offline() {
+                        return;
+                    }
+
+                    match result {
+                        Ok(playlists) => {
+                            app.apply_playlists(playlists);
+                            debug!("Loaded offline playlists from cache");
+                        }
+                        Err(err) => {
+                            warn!("Failed to load playlists or media cache: {}", err);
+                            app.emit_by_name::<()>(
+                                "global-error",
+                                &[&format!("Failed to load playlists: {}", err)],
+                            );
+                        }
+                    }
+                }
+            ),
+        );
     }
 
     fn refresh_playlists_online(&self, refresh_cache: bool) {
         if !refresh_cache {
-            match self.load_cached_playlists() {
+            let cached_playlists = self
+                .library_cache()
+                .ok_or(CacheError::Uninitialized)
+                .and_then(|cache| cache.load::<Vec<Playlist>>());
+            match cached_playlists {
                 Ok(playlists) => {
                     self.apply_playlists(playlists);
                     debug!("Loaded playlists from cache");
@@ -472,6 +496,9 @@ impl Application {
                 #[weak(rename_to=app)]
                 self,
                 move |result: Result<Vec<Playlist>, BackendError>| {
+                    if config::get_offline() {
+                        return;
+                    }
                     match result {
                         Ok(playlists) => {
                             app.cache_collection(&playlists);
@@ -525,6 +552,10 @@ impl Application {
     }
 
     pub fn refresh_playlist(&self, id: &str, notify_views: bool) {
+        if config::get_offline() {
+            debug!("Offline, skipping playlist refresh");
+            return;
+        }
         let backend = self.backend();
         if !backend.is_authenticated() {
             debug!("Not authenticated, skipping refresh");
@@ -537,6 +568,9 @@ impl Application {
                 #[weak(rename_to=app)]
                 self,
                 move |result: Result<Playlist, BackendError>| {
+                    if config::get_offline() {
+                        return;
+                    }
                     match result {
                         Ok(playlist) => {
                             app.library().update_playlist(playlist);
