@@ -286,13 +286,13 @@ impl Song {
     fn on_download(&self) {
         let song_id = self.song_id();
         let application = self.get_application();
-        application.download_media(&song_id);
+        application.download_media(&[song_id]);
     }
 
     fn on_remove_download(&self) {
         let song_id = self.song_id();
         let application = self.get_application();
-        application.remove_media(&song_id);
+        application.remove_media(&[song_id]);
     }
 
     fn show_info_dialog(&self) {

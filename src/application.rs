@@ -1,10 +1,11 @@
 use adw::subclass::prelude::ObjectSubclassIsExt;
+use futures::{StreamExt, stream};
 use glib::Object;
 use gtk::gio::prelude::*;
 use gtk::prelude::{GtkApplicationExt, ObjectExt};
 use gtk::{gio, glib};
 
-use crate::async_utils::spawn_tokio;
+use crate::async_utils::{run_on_tokio, spawn_tokio};
 use crate::audio::model::AudioModel;
 use crate::backend::Backend;
 use crate::backend::BackendError;
@@ -522,7 +523,10 @@ impl Application {
         }
     }
 
-    pub fn download_media(&self, item_id: &str) {
+    pub fn download_media(&self, item_ids: &[String]) {
+        if item_ids.is_empty() {
+            return;
+        }
         if config::get_offline() {
             self.emit_by_name::<()>("global-error", &[&tr("Go online to download music.")]);
             return;
@@ -532,61 +536,84 @@ impl Application {
             return;
         };
         let backend = self.backend();
-        let item_id = item_id.to_string();
-        self.http_with_loading(
-            async move {
-                cache.download_item(&item_id, &backend).await?;
-                Ok::<String, CacheError>(item_id)
-            },
-            glib::clone!(
-                #[weak(rename_to=app)]
-                self,
-                move |result: Result<String, CacheError>| {
-                    match result {
-                        Ok(item_id) => app.emit_by_name::<()>("media-cache-changed", &[&item_id]),
-                        Err(err) => {
-                            log::error!("Failed to download media: {}", err);
-                            app.emit_by_name::<()>(
-                                "global-error",
-                                &[&tr("Failed to download media: {}")
-                                    .replace("{}", &err.to_string())],
-                            )
-                        }
+        let item_ids = item_ids.to_vec();
+        let app_weak = self.downgrade();
+        self.begin_http_request();
+        glib::spawn_future_local(async move {
+            let mut downloads = stream::iter(item_ids)
+                .map(|id| {
+                    let cache = cache.clone();
+                    let backend = backend.clone();
+                    async move {
+                        run_on_tokio(async move {
+                            let result = cache.download_item(&id, &backend).await;
+                            (id, result)
+                        })
+                        .await
+                    }
+                })
+                .buffer_unordered(4);
+
+            while let Some((id, result)) = downloads.next().await {
+                let Some(app) = app_weak.upgrade() else {
+                    break;
+                };
+                match result {
+                    Ok(()) => app.emit_by_name::<()>("media-cache-changed", &[&id]),
+                    Err(err) => {
+                        log::warn!("Failed to download {id}: {err}");
+                        app.emit_by_name::<()>(
+                            "global-error",
+                            &[&tr("Failed to download media: {}").replace("{}", &err.to_string())],
+                        )
                     }
                 }
-            ),
-        );
+            }
+            if let Some(app) = app_weak.upgrade() {
+                app.end_http_request();
+            }
+        });
     }
 
-    pub fn remove_media(&self, item_id: &str) {
+    pub fn remove_media(&self, item_ids: &[String]) {
+        if item_ids.is_empty() {
+            return;
+        }
+
         let Some(cache) = self.media_cache() else {
             log::error!("Failed to get media cache");
             return;
         };
-        let item_id = item_id.to_string();
-        spawn_tokio(
-            async move {
-                cache.remove_item(&item_id).await?;
-                Ok::<String, CacheError>(item_id)
-            },
-            glib::clone!(
-                #[weak(rename_to=app)]
-                self,
-                move |result: Result<String, CacheError>| {
-                    match result {
-                        Ok(item_id) => app.emit_by_name::<()>("media-cache-changed", &[&item_id]),
-                        Err(err) => {
-                            log::error!("Failed to remove media: {}", err);
-                            app.emit_by_name::<()>(
-                                "global-error",
-                                &[&tr("Failed to remove media: {}")
-                                    .replace("{}", &err.to_string())],
-                            )
-                        }
+
+        let item_ids = item_ids.to_vec();
+        let app_weak = self.downgrade();
+
+        glib::spawn_future_local(async move {
+            for id in item_ids {
+                let cache = cache.clone();
+                let (id, result) = run_on_tokio(async move {
+                    let result = cache.remove_item(&id).await;
+                    (id, result)
+                })
+                .await;
+                let Some(app) = app_weak.upgrade() else {
+                    break;
+                };
+                match result {
+                    Ok(()) => {
+                        app.emit_by_name::<()>("media-cache-changed", &[&id]);
+                    }
+                    Err(error) => {
+                        log::warn!("Failed to remove download {id}: {error}");
+                        app.emit_by_name::<()>(
+                            "global-error",
+                            &[&tr("Failed to remove download: {}")
+                                .replace("{}", &error.to_string())],
+                        );
                     }
                 }
-            ),
-        );
+            }
+        });
     }
 
     pub fn refresh_playlist(&self, id: &str, notify_views: bool) {
@@ -704,6 +731,26 @@ impl Application {
         config::logout().unwrap_or_else(|e| warn!("Failed to clear config on logout: {}", e));
     }
 
+    fn begin_http_request(&self) {
+        let previous_count = self
+            .imp()
+            .http_request_count
+            .fetch_add(1, Ordering::Relaxed);
+        if previous_count == 0 {
+            self.emit_by_name::<()>("http-request-start", &[]);
+        }
+    }
+
+    fn end_http_request(&self) {
+        let previous_count = self
+            .imp()
+            .http_request_count
+            .fetch_sub(1, Ordering::Relaxed);
+        if previous_count == 1 {
+            self.emit_by_name::<()>("http-request-end", &[]);
+        }
+    }
+
     /// Emit signals when HTTP requests start, and when all are complete.
     /// Mainly used in window.rs to display the loading pulse.
     pub fn http_with_loading<F, T, E>(
@@ -715,26 +762,14 @@ impl Application {
         T: Send + 'static,
         E: Send + 'static,
     {
-        let previous_count = self
-            .imp()
-            .http_request_count
-            .fetch_add(1, Ordering::Relaxed);
-        if previous_count == 0 {
-            // Only emit signal on first concurrent request
-            self.emit_by_name::<()>("http-request-start", &[]);
-        }
+        self.begin_http_request();
         spawn_tokio(
             operation,
             glib::clone!(
                 #[weak (rename_to = app)]
                 self,
                 move |result| {
-                    let previous_count =
-                        app.imp().http_request_count.fetch_sub(1, Ordering::Relaxed);
-                    if previous_count == 1 {
-                        // Only emit signal when all requests are complete
-                        app.emit_by_name::<()>("http-request-end", &[]);
-                    }
+                    app.end_http_request();
                     callback(result);
                 }
             ),
