@@ -411,6 +411,10 @@ mod imp {
 
         #[property(get, construct_only, name = "is-ghost", default = false)]
         pub is_ghost: Cell<bool>,
+        #[property(get, set)]
+        pub downloaded: Cell<bool>,
+        pub downloaded_indicator_handlers:
+            RefCell<Option<([glib::SignalHandlerId; 2], WeakRef<Application>)>>,
 
         pub playing_indicator_handler: RefCell<Option<glib::SignalHandlerId>>,
         pub signal_handlers: RefCell<Vec<glib::SignalHandlerId>>,

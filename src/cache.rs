@@ -434,6 +434,10 @@ impl MediaCache {
         Ok(self.items.read().unwrap().keys().cloned().collect())
     }
 
+    pub fn contains(&self, id: &str) -> bool {
+        self.items.read().unwrap().contains_key(id)
+    }
+
     fn get_cache_file_path(&self, item_id: &str) -> PathBuf {
         self.cache_dir.join(item_id)
     }

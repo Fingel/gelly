@@ -307,6 +307,11 @@ impl SongList {
                     &song_model,
                     &song_list.get_application(),
                 );
+                song_utils::connect_downloaded_indicator(
+                    &song_widget,
+                    &song_model,
+                    &song_list.get_application(),
+                );
 
                 let nav_handlers =
                     song_utils::connect_song_navigation(&song_widget, &song_list.get_root_window());
@@ -328,6 +333,7 @@ impl SongList {
 
                 song_utils::disconnect_playing_indicator(&song_widget, &audio_model);
                 song_utils::disconnect_favorite_indicator(&song_widget);
+                song_utils::disconnect_downloaded_indicator(&song_widget);
                 song_utils::disconnect_signal_handlers(&song_widget);
             }
         ));

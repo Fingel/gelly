@@ -111,6 +111,66 @@ pub fn disconnect_favorite_indicator(song_widget: &Song) {
     }
 }
 
+fn update_downloaded_indicator(song_widget: &Song, song_model: &SongModel, app: &Application) {
+    let downloaded = app
+        .media_cache()
+        .is_some_and(|cache| cache.contains(&song_model.id()));
+    song_widget.set_downloaded(downloaded);
+}
+
+pub fn connect_downloaded_indicator(song_widget: &Song, song_model: &SongModel, app: &Application) {
+    disconnect_downloaded_indicator(song_widget);
+
+    let init_handler = app.connect_closure(
+        "media-cache-initialized",
+        false,
+        glib::closure_local!(
+            #[weak]
+            song_widget,
+            #[weak]
+            song_model,
+            move |app: Application| {
+                update_downloaded_indicator(&song_widget, &song_model, &app);
+            }
+        ),
+    );
+
+    let download_handler = app.connect_closure(
+        "media-downloaded",
+        false,
+        glib::closure_local!(
+            #[weak]
+            song_widget,
+            #[weak]
+            song_model,
+            move |app: Application, item_id: &str| {
+                if item_id == song_model.id() {
+                    update_downloaded_indicator(&song_widget, &song_model, &app);
+                }
+            }
+        ),
+    );
+
+    song_widget
+        .imp()
+        .downloaded_indicator_handlers
+        .replace(Some(([init_handler, download_handler], app.downgrade())));
+
+    update_downloaded_indicator(song_widget, song_model, app);
+}
+
+pub fn disconnect_downloaded_indicator(song_widget: &Song) {
+    if let Some((handlers, app_weak)) = song_widget.imp().downloaded_indicator_handlers.take()
+        && let Some(app) = app_weak.upgrade()
+    {
+        for handler in handlers {
+            app.disconnect(handler);
+        }
+    }
+
+    song_widget.set_downloaded(false);
+}
+
 pub fn disconnect_signal_handlers(song_widget: &Song) {
     song_widget
         .imp()
