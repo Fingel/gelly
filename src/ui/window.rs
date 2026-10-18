@@ -60,6 +60,9 @@ impl Window {
         imp.playlist_list.setup_library_connection();
         imp.song_list.setup_library_connection();
         imp.playlist_detail.setup_library_connection();
+        imp.album_detail.setup_library_connection();
+        imp.artist_detail.setup_library_connection();
+
         // Library is refreshed down at the end of the connect_map signal
 
         // Initialize player bar with audio model

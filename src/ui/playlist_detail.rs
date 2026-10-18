@@ -1,6 +1,7 @@
 use crate::{
     application::Application,
     async_utils::spawn_tokio,
+    config,
     i18n::{ngettext, tr},
     jellyfin::utils::format_duration,
     library_utils::songs_for_playlist,
@@ -336,6 +337,9 @@ impl PlaylistDetail {
 
     fn on_remove_download(&self) {
         self.get_application().remove_media(&self.song_ids());
+        if config::get_offline() {
+            self.get_root_window().go_back();
+        }
     }
 
     fn song_ids(&self) -> Vec<String> {

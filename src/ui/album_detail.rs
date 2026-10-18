@@ -1,5 +1,7 @@
 use crate::{
+    application::Application,
     async_utils::spawn_tokio,
+    config,
     i18n::{ngettext, tr},
     jellyfin::utils::format_duration,
     library_utils::play_similar,
@@ -163,6 +165,23 @@ impl AlbumDetail {
         self.update_track_metadata();
     }
 
+    pub fn setup_library_connection(&self) {
+        let app = self.get_application();
+        app.connect_closure(
+            "library-refreshed",
+            false,
+            glib::closure_local!(
+                #[weak(rename_to = album_detail)]
+                self,
+                move |_app: Application, _total_record_count: u64| {
+                    if album_detail.get_model().is_some() {
+                        album_detail.pull_tracks();
+                    }
+                }
+            ),
+        );
+    }
+
     pub fn song_selected(&self, index: usize) {
         let songs = self.imp().songs.borrow().clone();
         if let Some(audio_model) = self.get_application().audio_model() {
@@ -227,6 +246,9 @@ impl AlbumDetail {
 
     fn on_remove_download(&self) {
         self.get_application().remove_media(&self.song_ids());
+        if config::get_offline() {
+            self.get_root_window().go_back();
+        }
     }
 
     fn song_ids(&self) -> Vec<String> {
