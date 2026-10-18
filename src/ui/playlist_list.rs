@@ -63,6 +63,9 @@ impl TopPage for PlaylistList {
     }
 
     fn create_new(&self) {
+        if !self.get_application().require_online(None) {
+            return;
+        }
         playlist_dialogs::new_playlist(
             Some(&self.get_root_window()),
             glib::clone!(
@@ -135,6 +138,9 @@ impl PlaylistList {
 
     pub fn create_new_playlist(&self, name: String) {
         let app = self.get_application();
+        if !app.require_online(None) {
+            return;
+        }
         let backend = app.backend();
         spawn_tokio(
             async move { backend.new_playlist(&name, vec![]).await },

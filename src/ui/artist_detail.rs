@@ -127,6 +127,9 @@ impl ArtistDetail {
 
     fn on_add_to_playlist(&self, playlist_id: String) {
         let app = self.get_application();
+        if !app.require_online(None) {
+            return;
+        }
         let backend = app.backend();
         let song_ids = self.song_ids();
         spawn_tokio(

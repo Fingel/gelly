@@ -281,8 +281,11 @@ impl PlaylistDetail {
     }
 
     fn on_add_to_playlist(self, playlist_id: String) {
-        let song_ids = self.song_ids();
         let app = self.get_application();
+        if !app.require_online(None) {
+            return;
+        }
+        let song_ids = self.song_ids();
         let backend = app.backend();
         spawn_tokio(
             async move {
@@ -345,6 +348,10 @@ impl PlaylistDetail {
     }
 
     fn handle_song_moved(&self, source_index: usize, target_index: usize) {
+        let app = self.get_application();
+        if !app.require_online(None) {
+            return;
+        }
         if source_index == target_index {
             return;
         }
@@ -392,7 +399,6 @@ impl PlaylistDetail {
 
         // Persist the change
         let playlist_id = playlist_model.id();
-        let app = self.get_application();
         let backend = app.backend();
 
         spawn_tokio(
@@ -428,6 +434,10 @@ impl PlaylistDetail {
     }
 
     fn handle_remove_from_playlist(&self, song_id: String) {
+        let app = self.get_application();
+        if !app.require_online(None) {
+            return;
+        }
         let Some(playlist_model) = self.get_model() else {
             warn!("No playlist model found");
             return;
@@ -448,7 +458,6 @@ impl PlaylistDetail {
 
             // Persist the change
             let playlist_id = playlist_model.id();
-            let app = self.get_application();
             let backend = app.backend();
 
             spawn_tokio(
@@ -533,6 +542,9 @@ impl PlaylistDetail {
     }
 
     fn confirm_delete(&self) {
+        if !self.get_application().require_online(None) {
+            return;
+        }
         if let Some(model) = self.get_model()
             && model.is_smart()
         {
@@ -556,6 +568,9 @@ impl PlaylistDetail {
 
     fn delete_playlist(&self) {
         let app = self.get_application();
+        if !app.require_online(None) {
+            return;
+        }
         let backend = app.backend();
         let window = self.get_root_window();
         let item_id = self.id();

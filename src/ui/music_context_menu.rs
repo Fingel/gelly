@@ -2,7 +2,7 @@ use adw::prelude::{AdwDialogExt, AlertDialogExt, AlertDialogExtManual};
 use gtk::{self, gio, prelude::*};
 use log::warn;
 
-use crate::{async_utils::spawn_tokio, backend::Backend, i18n::tr};
+use crate::{async_utils::spawn_tokio, backend::Backend, config, i18n::tr};
 
 #[derive(Debug, Clone)]
 pub struct ContextActions {
@@ -35,6 +35,13 @@ pub fn add_to_playlist_dialog(
     dialog.set_response_appearance("add", adw::ResponseAppearance::Suggested);
     dialog.set_default_response(Some("add"));
     dialog.set_close_response("cancel");
+
+    if config::get_offline() {
+        dialog.remove_response("add");
+        dialog.set_body(&tr("Must be online to modify playlists."));
+        dialog.present(window);
+        return dialog;
+    }
 
     if !playlists.is_empty() {
         let names: Vec<&str> = playlists.iter().map(|s| s.1.as_str()).collect();

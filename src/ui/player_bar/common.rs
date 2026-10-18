@@ -251,6 +251,9 @@ where
 
     fn add_song_to_playlist(&self, playlist_id: String, song_id: String) {
         let app = self.obj().get_application();
+        if !app.require_online(None) {
+            return;
+        }
         let backend = app.backend();
         let weak = self.obj().downgrade();
         spawn_tokio(
@@ -278,6 +281,9 @@ where
     }
 
     fn on_add_to_playlist(&self, playlist_id: String) {
+        if !self.obj().get_application().require_online(None) {
+            return;
+        }
         let song_id = self.audio_model().current_song_id();
         let backend = self.obj().get_application().backend();
         let weak = self.obj().downgrade();

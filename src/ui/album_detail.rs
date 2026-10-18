@@ -266,8 +266,11 @@ impl AlbumDetail {
     }
 
     fn on_add_to_playlist(&self, playlist_id: String) {
-        let song_ids = self.song_ids();
         let app = self.get_application();
+        if !app.require_online(None) {
+            return;
+        }
+        let song_ids = self.song_ids();
         let backend = app.backend();
         spawn_tokio(
             async move {
