@@ -378,7 +378,6 @@ mod imp {
         glib::{self, clone},
         prelude::*,
     };
-    use log::{debug, warn};
 
     use crate::i18n::{ngettext, tr};
     use crate::ui::{
@@ -503,21 +502,6 @@ mod imp {
                     self,
                     move |_, _, _| {
                         window.obj().logout();
-                    }
-                ))
-                .build();
-
-            let action_clear_cache = ActionEntry::builder("clear-cache")
-                .activate(glib::clone!(
-                    #[weak(rename_to=window)]
-                    self,
-                    move |_, _, _| {
-                        if let Some(image_cache) = window.obj().get_application().image_cache() {
-                            image_cache.clear_cache();
-                            debug!("Image cache cleared");
-                        } else {
-                            warn!("No image cache found");
-                        }
                     }
                 ))
                 .build();
@@ -771,7 +755,6 @@ mod imp {
 
             self.obj().add_action_entries([
                 action_logout,
-                action_clear_cache,
                 action_refresh_library,
                 action_request_library_rescan,
                 action_search,

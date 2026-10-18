@@ -639,6 +639,39 @@ impl Application {
         });
     }
 
+    pub fn clear_media_cache(&self, on_complete: impl FnOnce(Result<(), CacheError>) + 'static) {
+        let Some(cache) = self.media_cache() else {
+            on_complete(Err(CacheError::Uninitialized));
+            return;
+        };
+
+        spawn_tokio(
+            async move { cache.clear_cache().await },
+            glib::clone!(
+                #[weak(rename_to = app)]
+                self,
+                move |result| {
+                    if result.is_ok() {
+                        app.emit_by_name::<()>("media-cache-initialized", &[]);
+                        if config::get_offline() {
+                            app.refresh_library(false);
+                            app.refresh_playlists(false);
+                        }
+                    }
+                    on_complete(result);
+                }
+            ),
+        );
+    }
+
+    pub fn clear_image_cache(&self, on_complete: impl FnOnce(Result<(), CacheError>) + 'static) {
+        let Some(cache) = self.image_cache() else {
+            on_complete(Err(CacheError::Uninitialized));
+            return;
+        };
+        spawn_tokio(async move { cache.clear_cache().await }, on_complete);
+    }
+
     pub fn refresh_playlist(&self, id: &str, notify_views: bool) {
         if config::get_offline() {
             debug!("Offline, skipping playlist refresh");

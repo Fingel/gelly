@@ -6,7 +6,7 @@ use std::{
     os::unix,
     path::PathBuf,
     sync::{Arc, Mutex as StdMutex, RwLock},
-    time::{Duration, SystemTime},
+    time::Duration,
 };
 
 use gtk::gdk;
@@ -384,10 +384,30 @@ impl ImageCache {
             .await
     }
 
-    pub fn clear_cache(&self) {
+    pub async fn clear_cache(&self) -> Result<(), CacheError> {
+        tokio::fs::remove_dir_all(&self.cache_dir).await?;
         self.texture_cache.lock().unwrap().clear();
-        _ = fs::remove_dir_all(&self.cache_dir);
-        _ = fs::create_dir_all(&self.cache_dir);
+        tokio::fs::create_dir_all(&self.cache_dir).await?;
+        Ok(())
+    }
+
+    pub async fn total_size(&self) -> Result<u64, CacheError> {
+        let mut directories = vec![self.cache_dir.clone()];
+        let mut total = 0;
+
+        while let Some(directory) = directories.pop() {
+            let mut entries = tokio::fs::read_dir(directory).await?;
+            while let Some(entry) = entries.next_entry().await? {
+                let file_type = entry.file_type().await?;
+                if file_type.is_dir() {
+                    directories.push(entry.path());
+                } else if file_type.is_file() {
+                    total += entry.metadata().await?.len();
+                }
+            }
+        }
+
+        Ok(total)
     }
 }
 
@@ -395,7 +415,6 @@ impl ImageCache {
 pub struct CacheEntry {
     path: PathBuf,
     size_bytes: u64,
-    last_used: SystemTime,
 }
 
 type CacheKey = String;
@@ -464,7 +483,6 @@ impl MediaCache {
                 CacheEntry {
                     path: entry.path(),
                     size_bytes: metadata.len(),
-                    last_used: metadata.modified()?,
                 },
             );
         }
@@ -503,11 +521,7 @@ impl MediaCache {
                 let temp_path = path.with_extension("part");
                 tokio::fs::write(&temp_path, bytes).await?;
                 tokio::fs::rename(&temp_path, &path).await?;
-                Ok(CacheEntry {
-                    path,
-                    size_bytes,
-                    last_used: SystemTime::now(),
-                })
+                Ok(CacheEntry { path, size_bytes })
             }
             .await;
             let mut pending = self.pending_requests.lock().await;
@@ -537,9 +551,12 @@ impl MediaCache {
         Ok(())
     }
 
-    pub fn clear_cache(&self) {
-        _ = fs::remove_dir_all(&self.cache_dir);
-        _ = fs::create_dir_all(&self.cache_dir);
+    pub async fn clear_cache(&self) -> Result<(), CacheError> {
+        self.ensure_initialized().await?;
+        tokio::fs::remove_dir_all(&self.cache_dir).await?;
+        self.items.write().unwrap().clear();
+        tokio::fs::create_dir_all(&self.cache_dir).await?;
+        Ok(())
     }
 
     pub fn media_path(&self, id: &str) -> Option<PathBuf> {
@@ -548,5 +565,11 @@ impl MediaCache {
             .unwrap()
             .get(id)
             .map(|entry| entry.path.clone())
+    }
+
+    pub async fn total_size(&self) -> Result<u64, CacheError> {
+        self.ensure_initialized().await?;
+        let items = self.items.read().unwrap();
+        Ok(items.values().map(|entry| entry.size_bytes).sum())
     }
 }

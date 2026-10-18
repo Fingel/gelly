@@ -116,5 +116,48 @@
         </child>
       </object>
     </child>
+    <child>
+      <object class="AdwPreferencesPage">
+        <property name="icon_name">drive-harddisk-symbolic</property>
+        <property name="title" translatable="yes">Cache</property>
+        <child>
+          <object class="AdwPreferencesGroup">
+            <property name="title" translatable="yes">Cache</property>
+            <child>
+              <object class="AdwActionRow" id="media_usage_row">
+                <property name="title" translatable="yes">Downloaded Music</property>
+                <property name="subtitle" translatable="yes">Calculating…</property>
+                <child type="suffix">
+                  <object class="GtkButton" id="clear_media_button">
+                    <property name="label" translatable="yes">Clear</property>
+                    <property name="valign">center</property>
+                    <property name="sensitive">false</property>
+                    <style>
+                      <class name="destructive-action"/>
+                    </style>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="AdwActionRow" id="image_usage_row">
+                <property name="title" translatable="yes">Cached Images</property>
+                <property name="subtitle" translatable="yes">Calculating…</property>
+                <child type="suffix">
+                  <object class="GtkButton" id="clear_images_button">
+                    <property name="label" translatable="yes">Clear</property>
+                    <property name="valign">center</property>
+                    <property name="sensitive">false</property>
+                    <style>
+                      <class name="destructive-action"/>
+                    </style>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
   </template>
 </interface>
