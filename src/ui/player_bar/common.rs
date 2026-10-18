@@ -166,11 +166,15 @@ where
     fn extra_duration_update(&self, _duration: u32) {}
 
     fn show_info_dialog(&self) {
+        let app = self.obj().get_application();
+        if !app.require_online(None) {
+            return;
+        }
         if let Some(uri) = self.audio_model().get_uri()
             && let Some(song_model) = self.audio_model().current_song()
         {
-            let backend = self.obj().get_application().backend();
-            let library = self.obj().get_application().library();
+            let backend = app.backend();
+            let library = app.library();
             let weak = self.obj().downgrade();
             discover_stream_info(&uri, &song_model, &backend, &library, move |info| {
                 if let Some(obj) = weak.upgrade() {

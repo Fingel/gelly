@@ -300,10 +300,14 @@ impl Song {
     }
 
     fn show_info_dialog(&self) {
+        let app = self.get_application();
+        if !app.require_online(None) {
+            return;
+        }
         if let Some(song_model) = self.imp().song_model.borrow().clone() {
             let song_id = song_model.id();
-            let backend = self.get_application().backend();
-            let library = self.get_application().library();
+            let backend = app.backend();
+            let library = app.library();
             let uri = backend.get_stream_uri(&song_id);
             discover_stream_info(
                 &uri,

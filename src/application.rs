@@ -141,6 +141,11 @@ impl Application {
     }
 
     fn offline_changed(&self) {
+        if config::get_offline()
+            && let Some(audio_model) = self.audio_model()
+        {
+            audio_model.reset_playback();
+        }
         self.refresh_all(false);
     }
 
@@ -260,15 +265,17 @@ impl Application {
         self.imp().audio_model.borrow().clone()
     }
 
-    pub fn playback_uri(&self, song_id: &str) -> String {
+    pub fn playback_uri(&self, song_id: &str) -> Option<String> {
         if let Some(cache) = self.media_cache()
             && let Some(path) = cache.media_path(song_id)
         {
             debug!("Locating {song_id} from media cache");
-            gio::File::for_path(path).uri().into()
-        } else {
+            Some(gio::File::for_path(path).uri().into())
+        } else if !config::get_offline() {
             debug!("Locating {song_id} via backend");
-            self.backend().get_stream_uri(song_id)
+            Some(self.backend().get_stream_uri(song_id))
+        } else {
+            None
         }
     }
 
