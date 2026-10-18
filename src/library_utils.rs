@@ -1,4 +1,5 @@
 use crate::application::Application;
+use crate::config;
 use crate::i18n::tr;
 use crate::library::Library;
 use crate::models::{PlaylistModel, SongModel};
@@ -53,6 +54,9 @@ pub fn play_similar(id: &str, app: &Application) {
         app.http_with_loading(
             async move { backend.get_similar_items(&id, 50).await },
             move |result| {
+                if config::get_offline() {
+                    return;
+                }
                 if let Ok(plist_items) = result {
                     let songs: Vec<SongModel> = plist_items
                         .items

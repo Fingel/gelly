@@ -630,6 +630,12 @@ impl Application {
                     }
                 }
             }
+            if let Some(app) = app_weak.upgrade()
+                && config::get_offline()
+            {
+                app.refresh_library(false);
+                app.refresh_playlists(false);
+            }
         });
     }
 
