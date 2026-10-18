@@ -19,7 +19,7 @@ use tokio::sync::{Mutex, OnceCell, Semaphore};
 use crate::{
     async_utils::run_on_tokio,
     backend::{Backend, BackendError},
-    config::APP_ID,
+    config::{self, APP_ID},
     jellyfin::api::{FavoriteDto, FavoriteDtoList, ImageType, MusicDto, MusicDtoList, Playlist},
     ui::image_utils::bytes_to_texture,
 };
@@ -91,6 +91,8 @@ pub enum CacheError {
     Decode(String),
     #[error("Cache not initialized")]
     Uninitialized,
+    #[error("Offline mode enabled")]
+    Offline,
 }
 
 fn get_cache_directory(name: &str) -> Result<PathBuf, CacheError> {
@@ -236,7 +238,9 @@ impl ImageCache {
             if let Ok(bytes) = self.load_from_disk(item_id, image_type).await {
                 return Ok(bytes);
             }
-
+            if config::get_offline() {
+                return Err(CacheError::Offline);
+            }
             // Prevent duplicate requests
             {
                 let mut pending = self.pending_requests.lock().await;
