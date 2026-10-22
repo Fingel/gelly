@@ -1,6 +1,7 @@
 use crate::{
     Application,
     audio::model::AudioModel,
+    config,
     models::SongModel,
     ui::{song::Song, widget_ext::WidgetApplicationExt, window::Window},
 };
@@ -79,6 +80,7 @@ pub fn disconnect_playing_indicator(song_widget: &Song, audio_model: &AudioModel
 }
 
 pub fn connect_favorite_indicator(song_widget: &Song, song_model: &SongModel, app: &Application) {
+    let settings = config::settings();
     song_widget.set_starred(song_model.favorite());
 
     let handler_id = app.connect_closure(
@@ -101,6 +103,22 @@ pub fn connect_favorite_indicator(song_widget: &Song, song_model: &SongModel, ap
         .imp()
         .favorite_indicator_handler
         .replace(Some((handler_id, app.downgrade())));
+
+    song_widget.action_set_enabled("song.toggle-favorite", !settings.boolean("offline"));
+
+    let handler = settings.connect_changed(
+        Some("offline"),
+        glib::clone!(
+            #[weak]
+            song_widget,
+            move |settings, _| {
+                song_widget
+                    .action_set_enabled("song.toggle-favorite", !settings.boolean("offline"));
+            }
+        ),
+    );
+
+    song_widget.imp().offline_handler.replace(Some(handler));
 }
 
 pub fn disconnect_favorite_indicator(song_widget: &Song) {
@@ -108,6 +126,9 @@ pub fn disconnect_favorite_indicator(song_widget: &Song) {
         && let Some(app) = app_weak.upgrade()
     {
         app.disconnect(handler_id);
+    }
+    if let Some(handler) = song_widget.imp().offline_handler.take() {
+        config::settings().disconnect(handler);
     }
 }
 

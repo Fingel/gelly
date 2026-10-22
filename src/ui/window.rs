@@ -374,7 +374,7 @@ mod imp {
     use glib::subclass::{InitializingObject, Signal};
     use gtk::{
         CompositeTemplate,
-        gio::{ActionEntry, prelude::ActionMapExtManual},
+        gio::{self, ActionEntry, prelude::ActionMapExtManual},
         glib::{self, clone},
         prelude::*,
     };
@@ -774,6 +774,15 @@ mod imp {
 
             let action_offline = config::settings().create_action("offline");
             self.obj().add_action(&action_offline);
+
+            let settings = config::settings();
+            for name in ["request-library-rescan", "change-library"] {
+                let action = self.obj().lookup_action(name).expect("action not found");
+                settings
+                    .bind("offline", &action, "enabled")
+                    .flags(gio::SettingsBindFlags::GET | gio::SettingsBindFlags::INVERT_BOOLEAN)
+                    .build();
+            }
 
             self.stack.connect_notify_local(
                 Some("visible-child"),

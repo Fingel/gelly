@@ -438,6 +438,7 @@ mod imp {
 
         pub playing_indicator_handler: RefCell<Option<glib::SignalHandlerId>>,
         pub signal_handlers: RefCell<Vec<glib::SignalHandlerId>>,
+        pub offline_handler: RefCell<Option<glib::SignalHandlerId>>,
     }
 
     impl Song {

@@ -1,6 +1,7 @@
 use crate::{
     async_utils::spawn_tokio,
     audio::{model::AudioModel, stream_info::discover_stream_info},
+    config,
     i18n::tr,
     jellyfin::api::ItemType,
     library_utils::play_similar,
@@ -16,7 +17,7 @@ use crate::{
 };
 use adw::prelude::*;
 use glib::{WeakRef, object::ObjectSubclassIs, subclass::prelude::*};
-use gtk::{glib, subclass::prelude::WidgetClassExt};
+use gtk::{gio, glib, subclass::prelude::WidgetClassExt};
 use log::warn;
 use std::cell::RefCell;
 
@@ -519,6 +520,11 @@ where
                 }
             }
         });
+
+        config::settings()
+            .bind("offline", self.favorite_button(), "sensitive")
+            .flags(gio::SettingsBindFlags::GET | gio::SettingsBindFlags::INVERT_BOOLEAN)
+            .build();
 
         self.obj().connect_notify_local(Some("position"), {
             let weak = weak.clone();
