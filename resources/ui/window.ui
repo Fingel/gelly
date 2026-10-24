@@ -48,9 +48,6 @@
                             <property name="modal">true</property>
                             <property name="content">
                               <object class="AdwNavigationView" id="main_navigation">
-                                <property name="margin-bottom">12</property>
-                                <property name="margin-start">12</property>
-                                <property name="margin-end">12</property>
                                 <child>
                                   <object class="AdwNavigationPage" id="album_detail_page">
                                     <property name="title" translatable="yes">Album Detail</property>
@@ -283,6 +280,9 @@
                                         <property name="content">
                                           <object class="AdwViewStack" id="stack">
                                             <property name="vexpand">true</property>
+                                            <property name="margin-bottom">10</property>
+                                            <property name="margin-start">10</property>
+                                            <property name="margin-end">10</property>
                                             <child>
                                               <object class="AdwViewStackPage" id="albums">
                                                 <property name="name">albums</property>
