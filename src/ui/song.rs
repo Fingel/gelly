@@ -99,10 +99,14 @@ impl Song {
         let Some(song_model) = self.imp().song_model.borrow().clone() else {
             return;
         };
+        let app = self.get_application();
+        if !app.require_online(None) {
+            self.set_starred(song_model.favorite());
+            return;
+        }
         song_model.set_favorite(is_favorite);
         self.set_starred(is_favorite);
         let item_id = song_model.id();
-        let app = self.get_application();
         let backend = app.backend();
         spawn_tokio(
             async move {
@@ -221,6 +225,9 @@ impl Song {
 
     fn add_song_to_playlist(&self, playlist_id: String, song_id: String) {
         let app = self.get_application();
+        if !app.require_online(None) {
+            return;
+        }
         let backend = app.backend();
         spawn_tokio(
             async move {
@@ -249,6 +256,9 @@ impl Song {
     }
 
     fn on_add_to_playlist(&self, playlist_id: String) {
+        if !self.get_application().require_online(None) {
+            return;
+        }
         let song_id = self.song_id();
         let backend = self.get_application().backend();
         let weak = self.downgrade();
@@ -283,11 +293,27 @@ impl Song {
         );
     }
 
+    fn on_download(&self) {
+        let song_id = self.song_id();
+        let application = self.get_application();
+        application.download_media(&[song_id]);
+    }
+
+    fn on_remove_download(&self) {
+        let song_id = self.song_id();
+        let application = self.get_application();
+        application.remove_media(&[song_id]);
+    }
+
     fn show_info_dialog(&self) {
+        let app = self.get_application();
+        if !app.require_online(None) {
+            return;
+        }
         if let Some(song_model) = self.imp().song_model.borrow().clone() {
             let song_id = song_model.id();
-            let backend = self.get_application().backend();
-            let library = self.get_application().library();
+            let backend = app.backend();
+            let library = app.library();
             let uri = backend.get_stream_uri(&song_id);
             discover_stream_info(
                 &uri,
@@ -405,9 +431,14 @@ mod imp {
 
         #[property(get, construct_only, name = "is-ghost", default = false)]
         pub is_ghost: Cell<bool>,
+        #[property(get, set)]
+        pub downloaded: Cell<bool>,
+        pub downloaded_indicator_handlers:
+            RefCell<Option<([glib::SignalHandlerId; 2], WeakRef<Application>)>>,
 
         pub playing_indicator_handler: RefCell<Option<glib::SignalHandlerId>>,
         pub signal_handlers: RefCell<Vec<glib::SignalHandlerId>>,
+        pub offline_handler: RefCell<Option<glib::SignalHandlerId>>,
     }
 
     impl Song {
@@ -448,6 +479,12 @@ mod imp {
             });
             klass.install_action("song.add_to_playlist_dialog", None, |song, _, _| {
                 song.on_add_to_playlist_dialog();
+            });
+            klass.install_action("song.download", None, |song, _, _| {
+                song.on_download();
+            });
+            klass.install_action("song.remove_download", None, |song, _, _| {
+                song.on_remove_download();
             });
             klass.install_action("song.show_info_dialog", None, |song, _, _| {
                 song.show_info_dialog();

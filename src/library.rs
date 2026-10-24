@@ -36,7 +36,7 @@ impl Favorites {
 
 #[derive(Debug, Clone, Default)]
 pub struct Library {
-    pub songs: Rc<RefCell<Vec<MusicDto>>>, // TODO make this private
+    songs: Rc<RefCell<Vec<MusicDto>>>,
     favorites: Rc<RefCell<Favorites>>,
     album_play_counts: Rc<RefCell<HashMap<String, u64>>>,
     album_last_played_dates: Rc<RefCell<HashMap<String, String>>>,

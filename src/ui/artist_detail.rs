@@ -1,5 +1,7 @@
 use crate::{
+    application::Application,
     async_utils::spawn_tokio,
+    config,
     i18n::{ngettext, tr},
     jellyfin::api::ImageType,
     library_utils::{play_artist, play_similar},
@@ -67,6 +69,23 @@ impl ArtistDetail {
             .set_albums(self.imp().albums.borrow().as_ref());
     }
 
+    pub fn setup_library_connection(&self) {
+        let app = self.get_application();
+        app.connect_closure(
+            "library-refreshed",
+            false,
+            glib::closure_local!(
+                #[weak(rename_to = artist_detail)]
+                self,
+                move |_app: Application, _total_record_count: u64| {
+                    if artist_detail.get_model().is_some() {
+                        artist_detail.pull_albums();
+                    }
+                }
+            ),
+        );
+    }
+
     pub fn load_banner_image(&self) {
         self.imp().banner_image.set_paintable(None::<&Texture>);
         let Some(image_cache) = self.get_application().image_cache() else {
@@ -126,42 +145,36 @@ impl ArtistDetail {
     }
 
     fn on_add_to_playlist(&self, playlist_id: String) {
-        if let Some(model) = self.get_model() {
-            let id = model.id();
-            let app = self.get_application();
-            let backend = app.backend();
-            let playlist_id = playlist_id.to_string();
-            let song_ids: Vec<String> = app
-                .library()
-                .songs_for_artist(&id)
-                .iter()
-                .map(|song| song.id().to_string())
-                .collect();
-            spawn_tokio(
-                async move {
-                    backend
-                        .add_playlist_items(&playlist_id, &song_ids)
-                        .await
-                        .map(|()| playlist_id)
-                },
-                glib::clone!(
-                    #[weak(rename_to = artist)]
-                    self,
-                    move |result| {
-                        match result {
-                            Ok(playlist_id) => {
-                                artist.toast(&tr("Added artist to playlist"), None);
-                                app.refresh_playlist(&playlist_id, true);
-                            }
-                            Err(e) => {
-                                artist.toast(&tr("Failed to add artist to playlist"), None);
-                                warn!("Failed to add artist to playlist: {}", e);
-                            }
+        let app = self.get_application();
+        if !app.require_online(None) {
+            return;
+        }
+        let backend = app.backend();
+        let song_ids = self.song_ids();
+        spawn_tokio(
+            async move {
+                backend
+                    .add_playlist_items(&playlist_id, &song_ids)
+                    .await
+                    .map(|()| playlist_id)
+            },
+            glib::clone!(
+                #[weak(rename_to = artist)]
+                self,
+                move |result| {
+                    match result {
+                        Ok(playlist_id) => {
+                            artist.toast(&tr("Added artist to playlist"), None);
+                            app.refresh_playlist(&playlist_id, true);
+                        }
+                        Err(e) => {
+                            artist.toast(&tr("Failed to add artist to playlist"), None);
+                            warn!("Failed to add artist to playlist: {}", e);
                         }
                     }
-                ),
-            );
-        }
+                }
+            ),
+        );
     }
 
     fn on_add_to_playlist_dialog(&self) {
@@ -212,6 +225,26 @@ impl ArtistDetail {
     fn on_play_similar(&self) {
         let app = self.get_application();
         play_similar(&self.id(), &app);
+    }
+
+    fn on_download(&self) {
+        self.get_application().download_media(&self.song_ids());
+    }
+
+    fn on_remove_download(&self) {
+        self.get_application().remove_media(&self.song_ids());
+        if config::get_offline() {
+            self.get_root_window().go_back();
+        }
+    }
+
+    fn song_ids(&self) -> Vec<String> {
+        let app = self.get_application();
+        app.library()
+            .songs_for_artist(&self.id())
+            .iter()
+            .map(|song| song.id())
+            .collect()
     }
 
     pub fn toggle_favorite(&self, is_favorite: bool) {
@@ -301,6 +334,12 @@ mod imp {
             });
             klass.install_action("artist.copy_id", None, |artist, _, _| {
                 artist.copy_id();
+            });
+            klass.install_action("artist.download", None, |artist, _, _| {
+                artist.on_download();
+            });
+            klass.install_action("artist.remove_download", None, |artist, _, _| {
+                artist.on_remove_download();
             });
         }
 

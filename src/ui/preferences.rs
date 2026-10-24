@@ -1,12 +1,16 @@
-use adw::prelude::ComboRowExt;
+use adw::prelude::*;
 use gtk::{
     self, gio,
     glib::{self, Object},
-    prelude::*,
     subclass::prelude::*,
 };
 
-use crate::config::{self, TranscodingProfile};
+use crate::{
+    async_utils::spawn_tokio,
+    config::{self, TranscodingProfile},
+    i18n::tr,
+    ui::widget_ext::WidgetApplicationExt,
+};
 
 glib::wrapper! {
     pub struct Preferences(ObjectSubclass<imp::Preferences>)
@@ -101,6 +105,126 @@ impl Preferences {
                 }
             });
     }
+
+    fn confirm_clear(&self, heading: &str, body: &str, on_confirm: impl Fn() + 'static) {
+        let dialog = adw::AlertDialog::new(Some(heading), Some(body));
+        dialog.add_responses(&[("cancel", &tr("Cancel")), ("clear", &tr("Clear"))]);
+        dialog.set_default_response(Some("cancel"));
+        dialog.set_close_response("cancel");
+        dialog.set_response_appearance("clear", adw::ResponseAppearance::Destructive);
+        dialog.connect_response(Some("clear"), move |_, _| {
+            on_confirm();
+        });
+        dialog.present(Some(self));
+    }
+
+    fn calculate_media_size(&self) {
+        if let Some(cache) = self.get_application().media_cache() {
+            spawn_tokio(
+                async move { cache.total_size().await },
+                glib::clone!(
+                    #[weak(rename_to=pref)]
+                    self,
+                    move |result| {
+                        if let Ok(size) = result {
+                            let label = glib::format_size(size);
+                            pref.imp().media_usage_row.set_subtitle(&label);
+                            pref.imp().clear_media_button.set_sensitive(true);
+                        } else {
+                            pref.imp().media_usage_row.set_subtitle(&tr("Unknown"));
+                        }
+                    }
+                ),
+            );
+        } else {
+            self.imp().media_usage_row.set_subtitle(&tr("Unknown"));
+        }
+    }
+
+    fn confirm_clear_media(&self) {
+        self.confirm_clear(
+            &tr("Clear downloaded music?"),
+            &tr("This will remove all offline media."),
+            glib::clone!(
+                #[weak(rename_to=pref)]
+                self,
+                move || {
+                    pref.clear_media();
+                }
+            ),
+        )
+    }
+
+    fn clear_media(&self) {
+        self.imp().clear_media_button.set_sensitive(false);
+        self.imp().media_usage_row.set_subtitle(&tr("Clearing…"));
+        self.get_application().clear_media_cache(glib::clone!(
+            #[weak(rename_to = pref)]
+            self,
+            move |result| {
+                if let Err(error) = result {
+                    log::warn!("Failed to clear downloaded music: {error}");
+                    pref.toast(&tr("Failed to clear downloaded music."), None);
+                }
+                pref.calculate_media_size();
+                pref.imp().clear_media_button.set_sensitive(true);
+            }
+        ));
+    }
+
+    fn calculate_image_size(&self) {
+        if let Some(cache) = self.get_application().image_cache() {
+            spawn_tokio(
+                async move { cache.total_size().await },
+                glib::clone!(
+                    #[weak(rename_to=pref)]
+                    self,
+                    move |result| {
+                        if let Ok(size) = result {
+                            let label = glib::format_size(size);
+                            pref.imp().image_usage_row.set_subtitle(&label);
+                            pref.imp().clear_images_button.set_sensitive(true);
+                        } else {
+                            pref.imp().image_usage_row.set_subtitle(&tr("Unknown"));
+                        }
+                    }
+                ),
+            );
+        } else {
+            self.imp().image_usage_row.set_subtitle(&tr("Unknown"));
+        }
+    }
+
+    fn confirm_clear_images(&self) {
+        self.confirm_clear(
+            &tr("Clear image cache?"),
+            &tr("This will remove all cached album and artist art."),
+            glib::clone!(
+                #[weak(rename_to=pref)]
+                self,
+                move || {
+                    pref.clear_images();
+                }
+            ),
+        )
+    }
+
+    fn clear_images(&self) {
+        self.imp().clear_images_button.set_sensitive(false);
+        self.imp().image_usage_row.set_subtitle(&tr("Clearing…"));
+        self.get_application().clear_image_cache(glib::clone!(
+            #[weak(rename_to = pref)]
+            self,
+            move |result| {
+                if let Err(error) = result {
+                    log::warn!("Failed to clear cached images: {error}");
+                    pref.toast(&tr("Failed to clear cached images."), None);
+                }
+                pref.calculate_image_size();
+                pref.imp().clear_images_button.set_sensitive(true);
+            }
+        ));
+    }
 }
 
 impl Default for Preferences {
@@ -110,6 +234,8 @@ impl Default for Preferences {
 }
 
 mod imp {
+
+    use adw::prelude::*;
     use adw::subclass::prelude::*;
     use gtk::CompositeTemplate;
     use gtk::glib::{self, subclass::InitializingObject};
@@ -139,6 +265,14 @@ mod imp {
         pub playlist_most_played_enabled_row: TemplateChild<adw::SwitchRow>,
         #[template_child]
         pub album_art_background_row: TemplateChild<adw::SwitchRow>,
+        #[template_child]
+        pub media_usage_row: TemplateChild<adw::ActionRow>,
+        #[template_child]
+        pub clear_media_button: TemplateChild<gtk::Button>,
+        #[template_child]
+        pub image_usage_row: TemplateChild<adw::ActionRow>,
+        #[template_child]
+        pub clear_images_button: TemplateChild<gtk::Button>,
     }
 
     #[glib::object_subclass]
@@ -159,6 +293,7 @@ mod imp {
     impl ObjectImpl for Preferences {
         fn constructed(&self) {
             self.parent_constructed();
+            self.setup_signals();
         }
     }
 
@@ -167,4 +302,32 @@ mod imp {
     impl AdwDialogImpl for Preferences {}
 
     impl PreferencesDialogImpl for Preferences {}
+
+    impl Preferences {
+        fn setup_signals(&self) {
+            self.obj().connect_map(glib::clone!(
+                #[weak(rename_to = preferences)]
+                self.obj(),
+                move |_| {
+                    preferences.calculate_media_size();
+                    preferences.calculate_image_size();
+                }
+            ));
+
+            self.clear_media_button.connect_clicked(glib::clone!(
+                #[weak(rename_to = preferences)]
+                self.obj(),
+                move |_| {
+                    preferences.confirm_clear_media();
+                }
+            ));
+            self.clear_images_button.connect_clicked(glib::clone!(
+                #[weak(rename_to = preferences)]
+                self.obj(),
+                move |_| {
+                    preferences.confirm_clear_images();
+                }
+            ));
+        }
+    }
 }

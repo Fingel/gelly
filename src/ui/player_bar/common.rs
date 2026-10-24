@@ -1,6 +1,7 @@
 use crate::{
     async_utils::spawn_tokio,
     audio::{model::AudioModel, stream_info::discover_stream_info},
+    config,
     i18n::tr,
     jellyfin::api::ItemType,
     library_utils::play_similar,
@@ -16,7 +17,7 @@ use crate::{
 };
 use adw::prelude::*;
 use glib::{WeakRef, object::ObjectSubclassIs, subclass::prelude::*};
-use gtk::{glib, subclass::prelude::WidgetClassExt};
+use gtk::{gio, glib, subclass::prelude::WidgetClassExt};
 use log::warn;
 use std::cell::RefCell;
 
@@ -121,9 +122,13 @@ where
         let Some(song) = self.audio_model().current_song() else {
             return;
         };
+        let app = self.obj().get_application();
+        if !app.require_online(None) {
+            self.favorite_button().set_active(song.favorite());
+            return;
+        }
         song.set_favorite(is_favorite);
         let item_id = song.id();
-        let app = self.obj().get_application();
         let backend = app.backend();
         let weak = self.obj().downgrade();
         let song_weak = song.downgrade();
@@ -162,11 +167,15 @@ where
     fn extra_duration_update(&self, _duration: u32) {}
 
     fn show_info_dialog(&self) {
+        let app = self.obj().get_application();
+        if !app.require_online(None) {
+            return;
+        }
         if let Some(uri) = self.audio_model().get_uri()
             && let Some(song_model) = self.audio_model().current_song()
         {
-            let backend = self.obj().get_application().backend();
-            let library = self.obj().get_application().library();
+            let backend = app.backend();
+            let library = app.library();
             let weak = self.obj().downgrade();
             discover_stream_info(&uri, &song_model, &backend, &library, move |info| {
                 if let Some(obj) = weak.upgrade() {
@@ -243,6 +252,9 @@ where
 
     fn add_song_to_playlist(&self, playlist_id: String, song_id: String) {
         let app = self.obj().get_application();
+        if !app.require_online(None) {
+            return;
+        }
         let backend = app.backend();
         let weak = self.obj().downgrade();
         spawn_tokio(
@@ -270,6 +282,9 @@ where
     }
 
     fn on_add_to_playlist(&self, playlist_id: String) {
+        if !self.obj().get_application().require_online(None) {
+            return;
+        }
         let song_id = self.audio_model().current_song_id();
         let backend = self.obj().get_application().backend();
         let weak = self.obj().downgrade();
@@ -322,6 +337,22 @@ where
         }
     }
 
+    fn on_download(&self) {
+        if let Some(song_model) = self.audio_model().current_song() {
+            self.obj()
+                .get_application()
+                .download_media(&[song_model.id()]);
+        }
+    }
+
+    fn on_remove_download(&self) {
+        if let Some(song_model) = self.audio_model().current_song() {
+            self.obj()
+                .get_application()
+                .remove_media(&[song_model.id()]);
+        }
+    }
+
     fn setup_menu(&self) {
         let options = ContextActions {
             can_remove_from_playlist: false,
@@ -365,6 +396,12 @@ where
         });
         klass.install_action("song.show_info_dialog", None, |player, _, _| {
             player.imp().show_info_dialog();
+        });
+        klass.install_action("song.download", None, |player, _, _| {
+            player.imp().on_download();
+        });
+        klass.install_action("song.remove_download", None, |player, _, _| {
+            player.imp().on_remove_download();
         });
     }
 
@@ -483,6 +520,11 @@ where
                 }
             }
         });
+
+        config::settings()
+            .bind("offline", self.favorite_button(), "sensitive")
+            .flags(gio::SettingsBindFlags::GET | gio::SettingsBindFlags::INVERT_BOOLEAN)
+            .build();
 
         self.obj().connect_notify_local(Some("position"), {
             let weak = weak.clone();

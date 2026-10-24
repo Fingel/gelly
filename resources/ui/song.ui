@@ -106,6 +106,18 @@
           </object>
         </child>
         <child>
+          <object class="GtkImage" id="download_icon">
+            <property name="icon-name">folder-download-symbolic</property>
+            <property name="icon-size">1</property>
+            <property name="margin-end">6</property>
+            <property name="visible"
+                       bind-source="GellySong"
+                       bind-property="downloaded"
+                       bind-flags="sync-create"/>
+            <property name="tooltip-text" translatable="yes">Available offline</property>
+          </object>
+        </child>
+        <child>
           <object class="GtkBox" id="album_duration_box">
             <property name="focusable">False</property>
             <property name="spacing">6</property>

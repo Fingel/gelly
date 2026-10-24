@@ -35,7 +35,7 @@ impl Jellyfin {
         let client = Client::builder()
             .user_agent(format!("Gelly/{}", config::VERSION))
             .connect_timeout(Duration::from_secs(10))
-            .timeout(Duration::from_secs(30))
+            .read_timeout(Duration::from_secs(30))
             .build()
             .expect("Failed to create HTTP client");
 
@@ -362,6 +362,13 @@ impl Jellyfin {
         let path = format!("Items/{}", item_id);
         self.delete(&path, None).await?;
         Ok(())
+    }
+
+    pub async fn download_item(&self, item_id: &str) -> Result<Vec<u8>, BackendError> {
+        let response = self
+            .get(&format!("Items/{}/Download", item_id), None)
+            .await?;
+        self.handle_binary_response(response).await
     }
 
     pub async fn set_favorite(&self, item_id: &str, is_favorite: bool) -> Result<(), BackendError> {
