@@ -35,7 +35,7 @@ impl Jellyfin {
         let client = Client::builder()
             .user_agent(format!("Gelly/{}", config::VERSION))
             .connect_timeout(Duration::from_secs(10))
-            .timeout(Duration::from_secs(30))
+            .read_timeout(Duration::from_secs(30))
             .build()
             .expect("Failed to create HTTP client");
 
