@@ -17,8 +17,9 @@
 - [x] Replaygain
 - [x] Gapless playback
 - [x] Transcoding
+- [x] [Offline Mode](#offline-mode)
 - [x] Instant Mix
-- [x] Translated to 20+ languages
+- [x] [Translated to 20+ languages](#translations)
 - [x] [CLI](#command-line-interface)
 - [x] Playlist management
 - [x] Favorites
@@ -81,6 +82,11 @@ Jukebox!
 
 See [this blog post](https://www.pedaldrivenprogramming.com/2026/05/self-hosted-jukebox-with-nfc-cards/)
 for more details.
+
+## Offline Mode
+Gelly supports downloading music for offline playback. This leverages the backend's respective
+/download endpoints, it does *not* support playing arbitrary files locally from the device. 
+The download cache can be cleared via an option in the Cache section of the preferences dialog.
 
 ## Connecting with TLS using self signed certificates
 
