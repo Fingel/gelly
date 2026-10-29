@@ -1,10 +1,11 @@
 use std::{
-    collections::HashSet,
+    collections::{HashMap, HashSet},
+    ffi::OsStr,
     fs,
     num::NonZeroUsize,
     os::unix,
     path::PathBuf,
-    sync::{Arc, Mutex as StdMutex},
+    sync::{Arc, Mutex as StdMutex, RwLock},
     time::Duration,
 };
 
@@ -13,12 +14,12 @@ use log::{debug, warn};
 use lru::LruCache;
 use serde::{Deserialize, Serialize, de::DeserializeOwned};
 use thiserror::Error;
-use tokio::sync::{Mutex, Semaphore};
+use tokio::sync::{Mutex, OnceCell, Semaphore};
 
 use crate::{
     async_utils::run_on_tokio,
     backend::{Backend, BackendError},
-    config::APP_ID,
+    config::{self, APP_ID},
     jellyfin::api::{FavoriteDto, FavoriteDtoList, ImageType, MusicDto, MusicDtoList, Playlist},
     ui::image_utils::bytes_to_texture,
 };
@@ -88,6 +89,10 @@ pub enum CacheError {
 
     #[error("Image decode error: {0}")]
     Decode(String),
+    #[error("Cache not initialized")]
+    Uninitialized,
+    #[error("Offline mode enabled")]
+    Offline,
 }
 
 fn get_cache_directory(name: &str) -> Result<PathBuf, CacheError> {
@@ -229,10 +234,13 @@ impl ImageCache {
         jellyfin: &Backend,
     ) -> Result<Vec<u8>, CacheError> {
         loop {
+            // TODO: there is a small race condition here. Fix like in media cache download
             if let Ok(bytes) = self.load_from_disk(item_id, image_type).await {
                 return Ok(bytes);
             }
-
+            if config::get_offline() {
+                return Err(CacheError::Offline);
+            }
             // Prevent duplicate requests
             {
                 let mut pending = self.pending_requests.lock().await;
@@ -376,9 +384,192 @@ impl ImageCache {
             .await
     }
 
-    pub fn clear_cache(&self) {
+    pub async fn clear_cache(&self) -> Result<(), CacheError> {
+        tokio::fs::remove_dir_all(&self.cache_dir).await?;
         self.texture_cache.lock().unwrap().clear();
-        _ = fs::remove_dir_all(&self.cache_dir);
-        _ = fs::create_dir_all(&self.cache_dir);
+        tokio::fs::create_dir_all(&self.cache_dir).await?;
+        Ok(())
+    }
+
+    pub async fn total_size(&self) -> Result<u64, CacheError> {
+        let mut directories = vec![self.cache_dir.clone()];
+        let mut total = 0;
+
+        while let Some(directory) = directories.pop() {
+            let mut entries = tokio::fs::read_dir(directory).await?;
+            while let Some(entry) = entries.next_entry().await? {
+                let file_type = entry.file_type().await?;
+                if file_type.is_dir() {
+                    directories.push(entry.path());
+                } else if file_type.is_file() {
+                    total += entry.metadata().await?.len();
+                }
+            }
+        }
+
+        Ok(total)
+    }
+}
+
+#[derive(Debug)]
+pub struct CacheEntry {
+    path: PathBuf,
+    size_bytes: u64,
+}
+
+type CacheKey = String;
+
+#[derive(Debug)]
+pub struct MediaCache {
+    cache_dir: PathBuf,
+    items: RwLock<HashMap<CacheKey, CacheEntry>>,
+    pending_requests: Mutex<HashSet<CacheKey>>,
+    download_semaphore: Semaphore,
+    initialized: OnceCell<()>,
+}
+
+impl MediaCache {
+    pub fn new() -> Option<Self> {
+        const MAX_CONCURRENT_DOWNLOADS: usize = 2;
+        let cache_dir = get_cache_directory("media").ok()?;
+        fs::create_dir_all(&cache_dir).ok()?;
+        Some(Self {
+            cache_dir,
+            items: RwLock::new(HashMap::new()),
+            pending_requests: Mutex::new(HashSet::new()),
+            download_semaphore: Semaphore::new(MAX_CONCURRENT_DOWNLOADS),
+            initialized: OnceCell::new(),
+        })
+    }
+
+    pub async fn ensure_initialized(&self) -> Result<(), CacheError> {
+        self.initialized
+            .get_or_try_init(|| async {
+                self.populate_cache().await?;
+                Ok::<(), CacheError>(())
+            })
+            .await?;
+        Ok(())
+    }
+
+    pub async fn cached_item_ids(&self) -> Result<HashSet<CacheKey>, CacheError> {
+        self.ensure_initialized().await?;
+        Ok(self.items.read().unwrap().keys().cloned().collect())
+    }
+
+    pub fn contains(&self, id: &str) -> bool {
+        self.items.read().unwrap().contains_key(id)
+    }
+
+    fn get_cache_file_path(&self, item_id: &str) -> PathBuf {
+        self.cache_dir.join(item_id)
+    }
+
+    async fn populate_cache(&self) -> Result<(), CacheError> {
+        let mut dir = tokio::fs::read_dir(&self.cache_dir).await?;
+        // collect existing cache entries into a temp map
+        let mut scanned_items = HashMap::new();
+        while let Some(entry) = dir.next_entry().await? {
+            let metadata = entry.metadata().await?;
+            if !metadata.is_file() || entry.path().extension() == Some(OsStr::new("part")) {
+                continue;
+            }
+
+            let Ok(item_id) = entry.file_name().into_string() else {
+                continue;
+            };
+            scanned_items.insert(
+                item_id,
+                CacheEntry {
+                    path: entry.path(),
+                    size_bytes: metadata.len(),
+                },
+            );
+        }
+        log::info!(
+            "Found {} items during media cache scan",
+            scanned_items.len()
+        );
+        // merge scanned items into the main cache
+        let mut items = self.items.write().unwrap();
+        for (item_id, entry) in scanned_items {
+            items.entry(item_id).or_insert(entry);
+        }
+        Ok(())
+    }
+
+    pub async fn download_item(&self, item_id: &str, backend: &Backend) -> Result<(), CacheError> {
+        loop {
+            {
+                let mut pending = self.pending_requests.lock().await;
+                if self.items.read().unwrap().contains_key(item_id) {
+                    return Ok(());
+                }
+                if pending.contains(item_id) {
+                    drop(pending);
+                    tokio::time::sleep(Duration::from_millis(100)).await;
+                    continue;
+                }
+                pending.insert(item_id.to_string());
+            }
+            let _permit = self.download_semaphore.acquire().await.unwrap();
+            // save the result to ensure cleanup in case of error
+            let result: Result<CacheEntry, CacheError> = async {
+                let bytes = backend.download_item(item_id).await?;
+                let size_bytes = bytes.len() as u64;
+                let path = self.get_cache_file_path(item_id);
+                let temp_path = path.with_extension("part");
+                tokio::fs::write(&temp_path, bytes).await?;
+                tokio::fs::rename(&temp_path, &path).await?;
+                Ok(CacheEntry { path, size_bytes })
+            }
+            .await;
+            let mut pending = self.pending_requests.lock().await;
+            let result = result.map(|cache_entry| {
+                self.items
+                    .write()
+                    .unwrap()
+                    .insert(item_id.to_string(), cache_entry);
+            });
+            pending.remove(item_id);
+
+            return result;
+        }
+    }
+
+    pub async fn remove_item(&self, id: &str) -> Result<(), CacheError> {
+        self.ensure_initialized().await?;
+
+        if let Some(path) = self.media_path(id) {
+            match tokio::fs::remove_file(path).await {
+                Ok(()) => {}
+                Err(error) if error.kind() == std::io::ErrorKind::NotFound => {}
+                Err(error) => return Err(error.into()),
+            }
+            self.items.write().unwrap().remove(id);
+        }
+        Ok(())
+    }
+
+    pub async fn clear_cache(&self) -> Result<(), CacheError> {
+        self.ensure_initialized().await?;
+        tokio::fs::remove_dir_all(&self.cache_dir).await?;
+        self.items.write().unwrap().clear();
+        tokio::fs::create_dir_all(&self.cache_dir).await?;
+        Ok(())
+    }
+
+    pub fn media_path(&self, id: &str) -> Option<PathBuf> {
+        self.items
+            .read()
+            .unwrap()
+            .get(id)
+            .map(|entry| entry.path.clone())
+    }
+
+    pub async fn total_size(&self) -> Result<u64, CacheError> {
+        self.ensure_initialized().await?;
+        let items = self.items.read().unwrap();
+        Ok(items.values().map(|entry| entry.size_bytes).sum())
     }
 }

@@ -416,8 +416,8 @@
         <attribute name="action">win.change-library</attribute>
       </item>
       <item>
-        <attribute name="label" translatable="yes">Clear Image Cache</attribute>
-        <attribute name="action">win.clear-cache</attribute>
+        <attribute name="label" translatable="yes">Offline</attribute>
+        <attribute name="action">win.offline</attribute>
       </item>
     </section>
     <section>

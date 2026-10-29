@@ -1,5 +1,7 @@
 use crate::{
+    application::Application,
     async_utils::spawn_tokio,
+    config,
     i18n::{ngettext, tr},
     jellyfin::utils::format_duration,
     library_utils::play_similar,
@@ -117,6 +119,11 @@ impl AlbumDetail {
                     &song_model,
                     &album_detail.get_application(),
                 );
+                song_utils::connect_downloaded_indicator(
+                    &song_widget,
+                    &song_model,
+                    &album_detail.get_application(),
+                );
 
                 let nav_handlers =
                     connect_song_navigation(&song_widget, &album_detail.get_root_window());
@@ -138,6 +145,7 @@ impl AlbumDetail {
 
                 song_utils::disconnect_playing_indicator(&song_widget, &audio_model);
                 song_utils::disconnect_favorite_indicator(&song_widget);
+                song_utils::disconnect_downloaded_indicator(&song_widget);
                 song_utils::disconnect_signal_handlers(&song_widget);
             }
         ));
@@ -155,6 +163,23 @@ impl AlbumDetail {
         store.extend_from_slice(&songs);
         self.imp().songs.replace(songs);
         self.update_track_metadata();
+    }
+
+    pub fn setup_library_connection(&self) {
+        let app = self.get_application();
+        app.connect_closure(
+            "library-refreshed",
+            false,
+            glib::closure_local!(
+                #[weak(rename_to = album_detail)]
+                self,
+                move |_app: Application, _total_record_count: u64| {
+                    if album_detail.get_model().is_some() {
+                        album_detail.pull_tracks();
+                    }
+                }
+            ),
+        );
     }
 
     pub fn song_selected(&self, index: usize) {
@@ -215,6 +240,26 @@ impl AlbumDetail {
         }
     }
 
+    fn on_download(&self) {
+        self.get_application().download_media(&self.song_ids());
+    }
+
+    fn on_remove_download(&self) {
+        self.get_application().remove_media(&self.song_ids());
+        if config::get_offline() {
+            self.get_root_window().go_back();
+        }
+    }
+
+    fn song_ids(&self) -> Vec<String> {
+        self.imp()
+            .songs
+            .borrow()
+            .iter()
+            .map(|song| song.id())
+            .collect::<Vec<_>>()
+    }
+
     fn update_track_metadata(&self) {
         let songs = self.imp().songs.borrow();
         self.imp().track_count.set_text(&songs.len().to_string());
@@ -243,15 +288,11 @@ impl AlbumDetail {
     }
 
     fn on_add_to_playlist(&self, playlist_id: String) {
-        let song_ids = self
-            .imp()
-            .songs
-            .borrow()
-            .iter()
-            .map(|song| song.id())
-            .collect::<Vec<_>>();
-
         let app = self.get_application();
+        if !app.require_online(None) {
+            return;
+        }
+        let song_ids = self.song_ids();
         let backend = app.backend();
         spawn_tokio(
             async move {
@@ -391,6 +432,12 @@ mod imp {
             });
             klass.install_action("album.go_to_artist", None, |album, _, _| {
                 album.on_go_to_artist();
+            });
+            klass.install_action("album.download", None, |album, _, _| {
+                album.on_download();
+            });
+            klass.install_action("album.remove_download", None, |album, _, _| {
+                album.on_remove_download();
             });
         }
 

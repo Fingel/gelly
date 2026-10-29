@@ -2,7 +2,7 @@ use adw::prelude::{AdwDialogExt, AlertDialogExt, AlertDialogExtManual};
 use gtk::{self, gio, prelude::*};
 use log::warn;
 
-use crate::{async_utils::spawn_tokio, backend::Backend, i18n::tr};
+use crate::{async_utils::spawn_tokio, backend::Backend, config, i18n::tr};
 
 #[derive(Debug, Clone)]
 pub struct ContextActions {
@@ -35,6 +35,13 @@ pub fn add_to_playlist_dialog(
     dialog.set_response_appearance("add", adw::ResponseAppearance::Suggested);
     dialog.set_default_response(Some("add"));
     dialog.set_close_response("cancel");
+
+    if config::get_offline() {
+        dialog.remove_response("add");
+        dialog.set_body(&tr("Must be online to modify playlists."));
+        dialog.present(window);
+        return dialog;
+    }
 
     if !playlists.is_empty() {
         let names: Vec<&str> = playlists.iter().map(|s| s.1.as_str()).collect();
@@ -105,6 +112,7 @@ pub fn add_to_playlist_dup_check(
 
 fn create_menu_model(config: &ContextActions) -> gio::Menu {
     let menu = gio::Menu::new();
+    let online = !crate::config::get_offline();
     // Queue section
     if !config.in_queue {
         let queue_section = gio::Menu::new();
@@ -118,27 +126,40 @@ fn create_menu_model(config: &ContextActions) -> gio::Menu {
         );
         menu.append_section(None, &queue_section);
     }
-    // Similar mix
-    let similar_section = gio::Menu::new();
-    similar_section.append(
-        Some(&tr("Play Similar")),
-        Some(&format!("{}.play_similar", config.action_prefix)),
-    );
-    menu.append_section(None, &similar_section);
     // Playlist section
-    let playlist_section = gio::Menu::new();
-    playlist_section.append(
-        Some(&tr("Add to Playlist")),
-        Some(&format!("{}.add_to_playlist_dialog", config.action_prefix)),
-    );
-    if config.can_remove_from_playlist {
+    if online {
+        let playlist_section = gio::Menu::new();
         playlist_section.append(
-            Some(&tr("Remove from Playlist")),
-            Some(&format!("{}.remove_playlist", config.action_prefix)),
+            Some(&tr("Add to Playlist")),
+            Some(&format!("{}.add_to_playlist_dialog", config.action_prefix)),
         );
+        if config.can_remove_from_playlist {
+            playlist_section.append(
+                Some(&tr("Remove from Playlist")),
+                Some(&format!("{}.remove_playlist", config.action_prefix)),
+            );
+        }
+        playlist_section.append(
+            Some(&tr("Play Similar")),
+            Some(&format!("{}.play_similar", config.action_prefix)),
+        );
+
+        menu.append_section(None, &playlist_section);
     }
 
-    menu.append_section(None, &playlist_section);
+    // Download section
+    let download_section = gio::Menu::new();
+    if online {
+        download_section.append(
+            Some(&tr("Download")),
+            Some(&format!("{}.download", config.action_prefix)),
+        );
+    }
+    download_section.append(
+        Some(&tr("Remove Downloads")),
+        Some(&format!("{}.remove_download", config.action_prefix)),
+    );
+    menu.append_section(None, &download_section);
 
     let navigation_section = gio::Menu::new();
     if config.go_to_album {
@@ -158,15 +179,17 @@ fn create_menu_model(config: &ContextActions) -> gio::Menu {
 
     let other_section = gio::Menu::new();
     if config.show_info_dialog {
-        other_section.append(
-            Some(&tr("Song Info")),
-            Some(&format!("{}.show_info_dialog", config.action_prefix)),
-        );
+        if online {
+            other_section.append(
+                Some(&tr("Song Info")),
+                Some(&format!("{}.show_info_dialog", config.action_prefix)),
+            );
+        }
     } else {
         other_section.append(
             Some(&tr("Copy ID")),
             Some(&format!("{}.copy_id", config.action_prefix)),
-        )
+        );
     }
     menu.append_section(None, &other_section);
 

@@ -41,10 +41,13 @@ impl ArtistModel {
     }
 
     pub fn toggle_favorite(&self, is_favorite: bool, app: &Application) {
+        let app = app.clone();
+        if !app.require_online(None) {
+            return;
+        }
         self.set_favorite(is_favorite);
         let backend = app.backend();
         let item_id = self.id();
-        let app = app.clone();
         spawn_tokio(
             async move {
                 backend

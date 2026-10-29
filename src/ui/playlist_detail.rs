@@ -1,6 +1,7 @@
 use crate::{
     application::Application,
     async_utils::spawn_tokio,
+    config,
     i18n::{ngettext, tr},
     jellyfin::utils::format_duration,
     library_utils::songs_for_playlist,
@@ -148,6 +149,11 @@ impl PlaylistDetail {
                     &song_model,
                     &playlist_detail.get_application(),
                 );
+                song_utils::connect_downloaded_indicator(
+                    &song_widget,
+                    &song_model,
+                    &playlist_detail.get_application(),
+                );
 
                 let mut handlers = Vec::new();
                 let nav_handlers =
@@ -207,6 +213,7 @@ impl PlaylistDetail {
 
                 song_utils::disconnect_playing_indicator(&song_widget, &audio_model);
                 song_utils::disconnect_favorite_indicator(&song_widget);
+                song_utils::disconnect_downloaded_indicator(&song_widget);
                 song_utils::disconnect_signal_handlers(&song_widget);
             }
         ));
@@ -275,15 +282,11 @@ impl PlaylistDetail {
     }
 
     fn on_add_to_playlist(self, playlist_id: String) {
-        let song_ids = self
-            .imp()
-            .songs
-            .borrow()
-            .iter()
-            .map(|song| song.id())
-            .collect::<Vec<_>>();
-
         let app = self.get_application();
+        if !app.require_online(None) {
+            return;
+        }
+        let song_ids = self.song_ids();
         let backend = app.backend();
         spawn_tokio(
             async move {
@@ -328,7 +331,31 @@ impl PlaylistDetail {
         );
     }
 
+    fn on_download(&self) {
+        self.get_application().download_media(&self.song_ids());
+    }
+
+    fn on_remove_download(&self) {
+        self.get_application().remove_media(&self.song_ids());
+        if config::get_offline() {
+            self.get_root_window().go_back();
+        }
+    }
+
+    fn song_ids(&self) -> Vec<String> {
+        self.imp()
+            .songs
+            .borrow()
+            .iter()
+            .map(|song| song.id())
+            .collect()
+    }
+
     fn handle_song_moved(&self, source_index: usize, target_index: usize) {
+        let app = self.get_application();
+        if !app.require_online(None) {
+            return;
+        }
         if source_index == target_index {
             return;
         }
@@ -376,7 +403,6 @@ impl PlaylistDetail {
 
         // Persist the change
         let playlist_id = playlist_model.id();
-        let app = self.get_application();
         let backend = app.backend();
 
         spawn_tokio(
@@ -412,6 +438,10 @@ impl PlaylistDetail {
     }
 
     fn handle_remove_from_playlist(&self, song_id: String) {
+        let app = self.get_application();
+        if !app.require_online(None) {
+            return;
+        }
         let Some(playlist_model) = self.get_model() else {
             warn!("No playlist model found");
             return;
@@ -432,7 +462,6 @@ impl PlaylistDetail {
 
             // Persist the change
             let playlist_id = playlist_model.id();
-            let app = self.get_application();
             let backend = app.backend();
 
             spawn_tokio(
@@ -517,6 +546,9 @@ impl PlaylistDetail {
     }
 
     fn confirm_delete(&self) {
+        if !self.get_application().require_online(None) {
+            return;
+        }
         if let Some(model) = self.get_model()
             && model.is_smart()
         {
@@ -540,6 +572,9 @@ impl PlaylistDetail {
 
     fn delete_playlist(&self) {
         let app = self.get_application();
+        if !app.require_online(None) {
+            return;
+        }
         let backend = app.backend();
         let window = self.get_root_window();
         let item_id = self.id();
@@ -675,6 +710,12 @@ mod imp {
             });
             klass.install_action("playlist_detail.copy_id", None, |playlist, _, _| {
                 playlist.copy_id();
+            });
+            klass.install_action("playlist_detail.download", None, |playlist, _, _| {
+                playlist.on_download();
+            });
+            klass.install_action("playlist_detail.remove_download", None, |playlist, _, _| {
+                playlist.on_remove_download();
             });
         }
 

@@ -1,24 +1,26 @@
 use adw::subclass::prelude::ObjectSubclassIsExt;
+use futures::{StreamExt, stream};
 use glib::Object;
 use gtk::gio::prelude::*;
 use gtk::prelude::{GtkApplicationExt, ObjectExt};
 use gtk::{gio, glib};
 
-use crate::async_utils::spawn_tokio;
+use crate::async_utils::{run_on_tokio, spawn_tokio};
 use crate::audio::model::AudioModel;
 use crate::backend::Backend;
 use crate::backend::BackendError;
-use crate::cache::{Cacheable, ImageCache, LibraryCache};
+use crate::cache::{CacheError, Cacheable, ImageCache, LibraryCache, MediaCache};
 use crate::cli::add_cli_options;
 use crate::config::{
     self, BackendType, retrieve_jellyfin_api_token, retrieve_subsonic_password, settings,
 };
 use crate::i18n::tr;
 use crate::jellyfin::Jellyfin;
-use crate::jellyfin::api::{FavoriteDtoList, MusicDtoList, Playlist};
+use crate::jellyfin::api::{FavoriteDtoList, MusicDto, MusicDtoList, Playlist};
 use crate::library::Library;
 use crate::subsonic::Subsonic;
 use log::{debug, error, warn};
+use std::sync::Arc;
 use std::sync::atomic::Ordering;
 
 glib::wrapper! {
@@ -37,6 +39,7 @@ impl Application {
         app.initialize_backend();
         app.initialize_library_cache();
         app.initialize_image_cache();
+        app.initialize_media_cache();
         app.initialize_audio_model();
         app.register_playback_actions();
         app.initialize_cli();
@@ -74,6 +77,7 @@ impl Application {
         self.imp().backend.replace(backend);
     }
 
+    // TODO: simplify like media cache
     pub fn initialize_library_cache(&self) {
         match LibraryCache::new() {
             Ok(cache) => {
@@ -87,6 +91,7 @@ impl Application {
         }
     }
 
+    // TODO: simplify like media cache
     pub fn initialize_image_cache(&self) {
         match ImageCache::new() {
             Ok(cache) => {
@@ -98,6 +103,50 @@ impl Application {
                 error!("Failed to initialize image cache: {}", err);
             }
         }
+    }
+
+    pub fn initialize_media_cache(&self) {
+        let Some(cache) = MediaCache::new() else {
+            return;
+        };
+        let cache = Arc::new(cache);
+        self.imp().media_cache.replace(Some(Arc::clone(&cache)));
+        spawn_tokio(
+            async move { cache.ensure_initialized().await },
+            glib::clone!(
+                #[weak(rename_to = app)]
+                self,
+                move |result: Result<(), CacheError>| {
+                    match result {
+                        Ok(()) => {
+                            app.emit_by_name::<()>("media-cache-initialized", &[]);
+                        }
+                        Err(err) => {
+                            app.emit_by_name::<()>("global-error", &[&err.to_string()]);
+                        }
+                    }
+                }
+            ),
+        );
+        config::settings().connect_changed(
+            Some("offline"),
+            glib::clone!(
+                #[weak(rename_to = app)]
+                self,
+                move |_, _| {
+                    app.offline_changed();
+                }
+            ),
+        );
+    }
+
+    fn offline_changed(&self) {
+        if config::get_offline()
+            && let Some(audio_model) = self.audio_model()
+        {
+            audio_model.reset_playback();
+        }
+        self.refresh_all(false);
     }
 
     pub fn initialize_cli(&self) {
@@ -202,6 +251,10 @@ impl Application {
         self.imp().image_cache.borrow().clone()
     }
 
+    pub fn media_cache(&self) -> Option<Arc<MediaCache>> {
+        self.imp().media_cache.borrow().clone()
+    }
+
     pub fn set_image_cache_scale(&self, scale: f32) {
         if let Some(image_cache) = self.image_cache() {
             image_cache.set_scale(scale);
@@ -212,8 +265,18 @@ impl Application {
         self.imp().audio_model.borrow().clone()
     }
 
-    pub fn playback_uri(&self, song_id: &str) -> String {
-        self.backend().get_stream_uri(song_id)
+    pub fn playback_uri(&self, song_id: &str) -> Option<String> {
+        if let Some(cache) = self.media_cache()
+            && let Some(path) = cache.media_path(song_id)
+        {
+            debug!("Locating {song_id} from media cache");
+            Some(gio::File::for_path(path).uri().into())
+        } else if !config::get_offline() {
+            debug!("Locating {song_id} via backend");
+            Some(self.backend().get_stream_uri(song_id))
+        } else {
+            None
+        }
     }
 
     fn handle_backend_error(&self, error: BackendError, operation: &str) {
@@ -229,14 +292,62 @@ impl Application {
         }
     }
 
-    pub fn refresh_library(&self, refresh_cache: bool) {
-        self.emit_by_name::<()>("library-refresh-requested", &[]);
-        if !refresh_cache && let Some(cache) = self.library_cache() {
-            match cache.load::<MusicDtoList>() {
+    fn refresh_library_offline(&self) {
+        let library_cache = self.library_cache();
+        let media_cache = self.media_cache();
+
+        spawn_tokio(
+            async move {
+                let library_cache = library_cache.ok_or(CacheError::Uninitialized)?;
+                let media_cache = media_cache.ok_or(CacheError::Uninitialized)?;
+                let cached_ids = media_cache.cached_item_ids().await?;
+                let library = library_cache.load::<MusicDtoList>()?;
+
+                Ok::<_, CacheError>(
+                    library
+                        .items
+                        .into_iter()
+                        .filter(|item| cached_ids.contains(&item.id))
+                        .collect::<Vec<_>>(),
+                )
+            },
+            glib::clone!(
+                #[weak(rename_to = app)]
+                self,
+                move |result| {
+                    // in case we've gone online in the meantime
+                    if !config::get_offline() {
+                        return;
+                    }
+
+                    match result {
+                        Ok(items) => {
+                            app.apply_library(items);
+                            debug!("Loaded offline library via cache");
+                        }
+                        Err(err) => {
+                            warn!("Failed to load library or media cache: {}", err);
+                            app.emit_by_name::<()>(
+                                "global-error",
+                                &[&format!("Failed to load library: {}", err)],
+                            );
+                        }
+                    }
+                }
+            ),
+        );
+    }
+
+    fn refresh_library_online(&self, refresh_cache: bool) {
+        if !refresh_cache {
+            // TODO: get this off the main thread, large libraries may lock up
+            let cached_library = self
+                .library_cache()
+                .ok_or(CacheError::Uninitialized)
+                .and_then(|cache| cache.load::<MusicDtoList>());
+            match cached_library {
                 Ok(library) => {
-                    let library_cnt = library.items.len() as u64;
-                    self.imp().library.update_songs(library.items);
-                    self.emit_by_name::<()>("library-refreshed", &[&library_cnt]);
+                    self.apply_library(library.items);
                     debug!("Loaded library from cache");
                     return;
                 }
@@ -245,42 +356,64 @@ impl Application {
                 }
             }
         }
-        let library_id = self.imp().library_id.borrow().clone();
         let backend = self.backend();
         if !backend.is_authenticated() {
             debug!("Not authenticated, skipping library refresh");
             return;
         }
+        let library_id = self.imp().library_id.borrow().clone();
         self.http_with_loading(
             async move { backend.get_library(&library_id).await },
             glib::clone!(
                 #[weak(rename_to=app)]
                 self,
                 move |result: Result<MusicDtoList, BackendError>| {
+                    if config::get_offline() {
+                        return;
+                    }
                     match result {
                         Ok(library) => {
-                            let library_cnt = library.items.len() as u64;
                             app.cache_collection(&library);
-                            app.imp().library.update_songs(library.items);
-                            app.emit_by_name::<()>("library-refreshed", &[&library_cnt]);
+                            app.apply_library(library.items);
                         }
                         Err(err) => app.handle_backend_error(err, "refresh_library"),
                     }
-                },
+                }
             ),
         );
     }
 
+    fn apply_library(&self, items: Vec<MusicDto>) {
+        let count = items.len() as u64;
+        self.imp().library.update_songs(items);
+        self.emit_by_name::<()>("library-refreshed", &[&count]);
+    }
+
+    pub fn refresh_library(&self, refresh_cache: bool) {
+        self.emit_by_name::<()>("library-refresh-requested", &[]);
+        if config::get_offline() {
+            self.refresh_library_offline();
+        } else {
+            self.refresh_library_online(refresh_cache);
+        }
+    }
+
     pub fn refresh_favorites(&self, refresh_cache: bool) {
-        if !refresh_cache && let Some(cache) = self.library_cache() {
+        let offline = config::get_offline();
+        if (!refresh_cache || offline)
+            && let Some(cache) = self.library_cache()
+        {
             match cache.load::<FavoriteDtoList>() {
                 Ok(favorites) => {
                     self.imp().library.update_favorites(&favorites.items);
                     self.emit_by_name::<()>("favorites-updated", &[]);
                     debug!("Loaded favorites from cache");
                 }
-                Err(error) => warn!("Failed to load favorites cache: {}. Refreshing.", error),
+                Err(error) => warn!("Failed to load favorites cache: {}.", error),
             }
+        }
+        if offline {
+            return;
         }
         let backend = self.backend();
         if !backend.is_authenticated() {
@@ -293,6 +426,9 @@ impl Application {
                 #[weak(rename_to=app)]
                 self,
                 move |result: Result<FavoriteDtoList, BackendError>| {
+                    if config::get_offline() {
+                        return;
+                    }
                     match result {
                         Ok(favorites) => {
                             app.cache_collection(&favorites);
@@ -306,13 +442,63 @@ impl Application {
         );
     }
 
-    pub fn refresh_playlists(&self, refresh_cache: bool) {
-        if !refresh_cache && let Some(cache) = self.library_cache() {
-            match cache.load::<Vec<Playlist>>() {
+    fn apply_playlists(&self, playlists: Vec<Playlist>) {
+        let playlist_cnt = playlists.len() as u64;
+        self.library().update_playlists(playlists);
+        self.emit_by_name::<()>("playlists-refreshed", &[&playlist_cnt]);
+    }
+
+    fn refresh_playlists_offline(&self) {
+        let library_cache = self.library_cache();
+        let media_cache = self.media_cache();
+
+        spawn_tokio(
+            async move {
+                let library_cache = library_cache.ok_or(CacheError::Uninitialized)?;
+                let media_cache = media_cache.ok_or(CacheError::Uninitialized)?;
+                let cached_ids = media_cache.cached_item_ids().await?;
+                let mut playlists = library_cache.load::<Vec<Playlist>>()?;
+                for playlist in &mut playlists {
+                    playlist.songs.retain(|s| cached_ids.contains(&s.id));
+                }
+                playlists.retain(|p| !p.songs.is_empty());
+                Ok::<_, CacheError>(playlists)
+            },
+            glib::clone!(
+                #[weak(rename_to=app)]
+                self,
+                move |result| {
+                    if !config::get_offline() {
+                        return;
+                    }
+
+                    match result {
+                        Ok(playlists) => {
+                            app.apply_playlists(playlists);
+                            debug!("Loaded offline playlists from cache");
+                        }
+                        Err(err) => {
+                            warn!("Failed to load playlists or media cache: {}", err);
+                            app.emit_by_name::<()>(
+                                "global-error",
+                                &[&format!("Failed to load playlists: {}", err)],
+                            );
+                        }
+                    }
+                }
+            ),
+        );
+    }
+
+    fn refresh_playlists_online(&self, refresh_cache: bool) {
+        if !refresh_cache {
+            let cached_playlists = self
+                .library_cache()
+                .ok_or(CacheError::Uninitialized)
+                .and_then(|cache| cache.load::<Vec<Playlist>>());
+            match cached_playlists {
                 Ok(playlists) => {
-                    let playlist_cnt = playlists.len() as u64;
-                    self.imp().library.update_playlists(playlists);
-                    self.emit_by_name::<()>("playlists-refreshed", &[&playlist_cnt]);
+                    self.apply_playlists(playlists);
                     debug!("Loaded playlists from cache");
                     return;
                 }
@@ -332,21 +518,165 @@ impl Application {
                 #[weak(rename_to=app)]
                 self,
                 move |result: Result<Vec<Playlist>, BackendError>| {
+                    if config::get_offline() {
+                        return;
+                    }
                     match result {
                         Ok(playlists) => {
-                            let playlist_cnt = playlists.len() as u64;
                             app.cache_collection(&playlists);
-                            app.library().update_playlists(playlists);
-                            app.emit_by_name::<()>("playlists-refreshed", &[&playlist_cnt]);
+                            app.apply_playlists(playlists);
                         }
                         Err(err) => app.handle_backend_error(err, "refresh_playlists"),
                     }
                 }
             ),
-        )
+        );
+    }
+
+    pub fn refresh_playlists(&self, refresh_cache: bool) {
+        if config::get_offline() {
+            self.refresh_playlists_offline();
+        } else {
+            self.refresh_playlists_online(refresh_cache);
+        }
+    }
+
+    pub fn download_media(&self, item_ids: &[String]) {
+        if item_ids.is_empty() {
+            return;
+        }
+        if !self.require_online(None) {
+            return;
+        }
+        let Some(cache) = self.media_cache() else {
+            log::error!("Failed to get media cache");
+            return;
+        };
+        let backend = self.backend();
+        let item_ids = item_ids.to_vec();
+        let app_weak = self.downgrade();
+        self.begin_http_request();
+        glib::spawn_future_local(async move {
+            let mut downloads = stream::iter(item_ids)
+                .map(|id| {
+                    let cache = cache.clone();
+                    let backend = backend.clone();
+                    async move {
+                        run_on_tokio(async move {
+                            let result = cache.download_item(&id, &backend).await;
+                            (id, result)
+                        })
+                        .await
+                    }
+                })
+                .buffer_unordered(4);
+
+            while let Some((id, result)) = downloads.next().await {
+                let Some(app) = app_weak.upgrade() else {
+                    break;
+                };
+                match result {
+                    Ok(()) => app.emit_by_name::<()>("media-cache-changed", &[&id]),
+                    Err(err) => {
+                        log::warn!("Failed to download {id}: {err}");
+                        app.emit_by_name::<()>(
+                            "global-error",
+                            &[&tr("Failed to download media: {}").replace("{}", &err.to_string())],
+                        )
+                    }
+                }
+            }
+            if let Some(app) = app_weak.upgrade() {
+                app.end_http_request();
+            }
+        });
+    }
+
+    pub fn remove_media(&self, item_ids: &[String]) {
+        if item_ids.is_empty() {
+            return;
+        }
+
+        let Some(cache) = self.media_cache() else {
+            log::error!("Failed to get media cache");
+            return;
+        };
+
+        let item_ids = item_ids.to_vec();
+        let app_weak = self.downgrade();
+
+        glib::spawn_future_local(async move {
+            for id in item_ids {
+                let cache = cache.clone();
+                let (id, result) = run_on_tokio(async move {
+                    let result = cache.remove_item(&id).await;
+                    (id, result)
+                })
+                .await;
+                let Some(app) = app_weak.upgrade() else {
+                    break;
+                };
+                match result {
+                    Ok(()) => {
+                        app.emit_by_name::<()>("media-cache-changed", &[&id]);
+                    }
+                    Err(error) => {
+                        log::warn!("Failed to remove download {id}: {error}");
+                        app.emit_by_name::<()>(
+                            "global-error",
+                            &[&tr("Failed to remove download: {}")
+                                .replace("{}", &error.to_string())],
+                        );
+                    }
+                }
+            }
+            if let Some(app) = app_weak.upgrade()
+                && config::get_offline()
+            {
+                app.refresh_library(false);
+                app.refresh_playlists(false);
+            }
+        });
+    }
+
+    pub fn clear_media_cache(&self, on_complete: impl FnOnce(Result<(), CacheError>) + 'static) {
+        let Some(cache) = self.media_cache() else {
+            on_complete(Err(CacheError::Uninitialized));
+            return;
+        };
+
+        spawn_tokio(
+            async move { cache.clear_cache().await },
+            glib::clone!(
+                #[weak(rename_to = app)]
+                self,
+                move |result| {
+                    if result.is_ok() {
+                        app.emit_by_name::<()>("media-cache-initialized", &[]);
+                        if config::get_offline() {
+                            app.refresh_library(false);
+                            app.refresh_playlists(false);
+                        }
+                    }
+                    on_complete(result);
+                }
+            ),
+        );
+    }
+
+    pub fn clear_image_cache(&self, on_complete: impl FnOnce(Result<(), CacheError>) + 'static) {
+        let Some(cache) = self.image_cache() else {
+            on_complete(Err(CacheError::Uninitialized));
+            return;
+        };
+        spawn_tokio(async move { cache.clear_cache().await }, on_complete);
     }
 
     pub fn refresh_playlist(&self, id: &str, notify_views: bool) {
+        if config::get_offline() {
+            debug!("Offline, skipping playlist refresh");
+            return;
+        }
         let backend = self.backend();
         if !backend.is_authenticated() {
             debug!("Not authenticated, skipping refresh");
@@ -359,6 +689,9 @@ impl Application {
                 #[weak(rename_to=app)]
                 self,
                 move |result: Result<Playlist, BackendError>| {
+                    if config::get_offline() {
+                        return;
+                    }
                     match result {
                         Ok(playlist) => {
                             app.library().update_playlist(playlist);
@@ -408,6 +741,9 @@ impl Application {
     }
 
     pub fn request_library_rescan(&self) {
+        if !self.require_online(Some(&tr("Go online to rescan the library."))) {
+            return;
+        }
         let library_id = self.imp().library_id.borrow().clone();
         let backend = self.backend();
         spawn_tokio(
@@ -454,6 +790,37 @@ impl Application {
         config::logout().unwrap_or_else(|e| warn!("Failed to clear config on logout: {}", e));
     }
 
+    pub fn require_online(&self, message: Option<&str>) -> bool {
+        if config::get_offline() {
+            let default = tr("Must be online");
+            let message = message.unwrap_or(&default);
+            self.emit_by_name::<()>("global-error", &[&message]);
+            false
+        } else {
+            true
+        }
+    }
+
+    fn begin_http_request(&self) {
+        let previous_count = self
+            .imp()
+            .http_request_count
+            .fetch_add(1, Ordering::Relaxed);
+        if previous_count == 0 {
+            self.emit_by_name::<()>("http-request-start", &[]);
+        }
+    }
+
+    fn end_http_request(&self) {
+        let previous_count = self
+            .imp()
+            .http_request_count
+            .fetch_sub(1, Ordering::Relaxed);
+        if previous_count == 1 {
+            self.emit_by_name::<()>("http-request-end", &[]);
+        }
+    }
+
     /// Emit signals when HTTP requests start, and when all are complete.
     /// Mainly used in window.rs to display the loading pulse.
     pub fn http_with_loading<F, T, E>(
@@ -465,26 +832,14 @@ impl Application {
         T: Send + 'static,
         E: Send + 'static,
     {
-        let previous_count = self
-            .imp()
-            .http_request_count
-            .fetch_add(1, Ordering::Relaxed);
-        if previous_count == 0 {
-            // Only emit signal on first concurrent request
-            self.emit_by_name::<()>("http-request-start", &[]);
-        }
+        self.begin_http_request();
         spawn_tokio(
             operation,
             glib::clone!(
                 #[weak (rename_to = app)]
                 self,
                 move |result| {
-                    let previous_count =
-                        app.imp().http_request_count.fetch_sub(1, Ordering::Relaxed);
-                    if previous_count == 1 {
-                        // Only emit signal when all requests are complete
-                        app.emit_by_name::<()>("http-request-end", &[]);
-                    }
+                    app.end_http_request();
                     callback(result);
                 }
             ),
@@ -505,11 +860,12 @@ mod imp {
     use gtk::glib::types::StaticType;
     use std::cell::Cell;
     use std::cell::RefCell;
-    use std::sync::OnceLock;
     use std::sync::atomic::AtomicU32;
+    use std::sync::{Arc, OnceLock};
 
     use crate::audio::model::AudioModel;
     use crate::backend::Backend;
+    use crate::cache::MediaCache;
     use crate::cache::{ImageCache, LibraryCache};
     use crate::library::Library;
 
@@ -520,6 +876,7 @@ mod imp {
         pub library_id: RefCell<String>,
         pub library_cache: RefCell<Option<LibraryCache>>, // TODO: remove these Option<> types
         pub image_cache: RefCell<Option<ImageCache>>,
+        pub media_cache: RefCell<Option<Arc<MediaCache>>>,
         pub audio_model: RefCell<Option<AudioModel>>,
         pub http_request_count: AtomicU32,
         pub inhibit_cookie: Cell<u32>,
@@ -553,6 +910,10 @@ mod imp {
                     Signal::builder("http-request-start").build(),
                     Signal::builder("http-request-end").build(),
                     Signal::builder("big-player-requested").build(),
+                    Signal::builder("media-cache-changed")
+                        .param_types([String::static_type()])
+                        .build(),
+                    Signal::builder("media-cache-initialized").build(),
                 ]
             })
         }

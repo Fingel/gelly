@@ -338,3 +338,7 @@ pub fn get_compact_mode_enabled() -> bool {
 pub fn get_album_art_window_background_enabled() -> bool {
     settings().boolean("album-art-window-background")
 }
+
+pub fn get_offline() -> bool {
+    settings().boolean("offline")
+}

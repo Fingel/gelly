@@ -60,6 +60,9 @@ impl Window {
         imp.playlist_list.setup_library_connection();
         imp.song_list.setup_library_connection();
         imp.playlist_detail.setup_library_connection();
+        imp.album_detail.setup_library_connection();
+        imp.artist_detail.setup_library_connection();
+
         // Library is refreshed down at the end of the connect_map signal
 
         // Initialize player bar with audio model
@@ -204,6 +207,9 @@ impl Window {
     }
 
     pub fn change_library(&self) {
+        if !self.get_application().require_online(None) {
+            return;
+        }
         let backend = self.get_application().backend();
         spawn_tokio(
             async move { backend.get_views().await },
@@ -368,11 +374,10 @@ mod imp {
     use glib::subclass::{InitializingObject, Signal};
     use gtk::{
         CompositeTemplate,
-        gio::{ActionEntry, prelude::ActionMapExtManual},
+        gio::{self, ActionEntry, prelude::ActionMapExtManual},
         glib::{self, clone},
         prelude::*,
     };
-    use log::{debug, warn};
 
     use crate::i18n::{ngettext, tr};
     use crate::ui::{
@@ -497,21 +502,6 @@ mod imp {
                     self,
                     move |_, _, _| {
                         window.obj().logout();
-                    }
-                ))
-                .build();
-
-            let action_clear_cache = ActionEntry::builder("clear-cache")
-                .activate(glib::clone!(
-                    #[weak(rename_to=window)]
-                    self,
-                    move |_, _, _| {
-                        if let Some(image_cache) = window.obj().get_application().image_cache() {
-                            image_cache.clear_cache();
-                            debug!("Image cache cleared");
-                        } else {
-                            warn!("No image cache found");
-                        }
                     }
                 ))
                 .build();
@@ -765,7 +755,6 @@ mod imp {
 
             self.obj().add_action_entries([
                 action_logout,
-                action_clear_cache,
                 action_refresh_library,
                 action_request_library_rescan,
                 action_search,
@@ -782,6 +771,18 @@ mod imp {
                 action_song_list,
                 action_sidebar,
             ]);
+
+            let action_offline = config::settings().create_action("offline");
+            self.obj().add_action(&action_offline);
+
+            let settings = config::settings();
+            for name in ["request-library-rescan", "change-library"] {
+                let action = self.obj().lookup_action(name).expect("action not found");
+                settings
+                    .bind("offline", &action, "enabled")
+                    .flags(gio::SettingsBindFlags::GET | gio::SettingsBindFlags::INVERT_BOOLEAN)
+                    .build();
+            }
 
             self.stack.connect_notify_local(
                 Some("visible-child"),
