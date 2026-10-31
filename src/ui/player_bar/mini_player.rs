@@ -97,6 +97,7 @@ impl MiniPlayerBar {
 
     fn hide(&self) {
         if let Some(w) = self.imp().bottom_sheet.get() {
+            w.set_open(false);
             w.set_reveal_bottom_bar(false);
         }
     }

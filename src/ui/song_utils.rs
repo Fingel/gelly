@@ -1,6 +1,7 @@
 use crate::{
     Application,
     audio::model::AudioModel,
+    config,
     models::SongModel,
     ui::{song::Song, widget_ext::WidgetApplicationExt, window::Window},
 };
@@ -79,6 +80,7 @@ pub fn disconnect_playing_indicator(song_widget: &Song, audio_model: &AudioModel
 }
 
 pub fn connect_favorite_indicator(song_widget: &Song, song_model: &SongModel, app: &Application) {
+    let settings = config::settings();
     song_widget.set_starred(song_model.favorite());
 
     let handler_id = app.connect_closure(
@@ -101,6 +103,22 @@ pub fn connect_favorite_indicator(song_widget: &Song, song_model: &SongModel, ap
         .imp()
         .favorite_indicator_handler
         .replace(Some((handler_id, app.downgrade())));
+
+    song_widget.action_set_enabled("song.toggle-favorite", !settings.boolean("offline"));
+
+    let handler = settings.connect_changed(
+        Some("offline"),
+        glib::clone!(
+            #[weak]
+            song_widget,
+            move |settings, _| {
+                song_widget
+                    .action_set_enabled("song.toggle-favorite", !settings.boolean("offline"));
+            }
+        ),
+    );
+
+    song_widget.imp().offline_handler.replace(Some(handler));
 }
 
 pub fn disconnect_favorite_indicator(song_widget: &Song) {
@@ -109,6 +127,69 @@ pub fn disconnect_favorite_indicator(song_widget: &Song) {
     {
         app.disconnect(handler_id);
     }
+    if let Some(handler) = song_widget.imp().offline_handler.take() {
+        config::settings().disconnect(handler);
+    }
+}
+
+fn update_downloaded_indicator(song_widget: &Song, song_model: &SongModel, app: &Application) {
+    let downloaded = app
+        .media_cache()
+        .is_some_and(|cache| cache.contains(&song_model.id()));
+    song_widget.set_downloaded(downloaded);
+}
+
+pub fn connect_downloaded_indicator(song_widget: &Song, song_model: &SongModel, app: &Application) {
+    disconnect_downloaded_indicator(song_widget);
+
+    let init_handler = app.connect_closure(
+        "media-cache-initialized",
+        false,
+        glib::closure_local!(
+            #[weak]
+            song_widget,
+            #[weak]
+            song_model,
+            move |app: Application| {
+                update_downloaded_indicator(&song_widget, &song_model, &app);
+            }
+        ),
+    );
+
+    let download_handler = app.connect_closure(
+        "media-cache-changed",
+        false,
+        glib::closure_local!(
+            #[weak]
+            song_widget,
+            #[weak]
+            song_model,
+            move |app: Application, item_id: &str| {
+                if item_id == song_model.id() {
+                    update_downloaded_indicator(&song_widget, &song_model, &app);
+                }
+            }
+        ),
+    );
+
+    song_widget
+        .imp()
+        .downloaded_indicator_handlers
+        .replace(Some(([init_handler, download_handler], app.downgrade())));
+
+    update_downloaded_indicator(song_widget, song_model, app);
+}
+
+pub fn disconnect_downloaded_indicator(song_widget: &Song) {
+    if let Some((handlers, app_weak)) = song_widget.imp().downloaded_indicator_handlers.take()
+        && let Some(app) = app_weak.upgrade()
+    {
+        for handler in handlers {
+            app.disconnect(handler);
+        }
+    }
+
+    song_widget.set_downloaded(false);
 }
 
 pub fn disconnect_signal_handlers(song_widget: &Song) {

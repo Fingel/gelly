@@ -158,7 +158,7 @@ impl AudioModel {
             .expect("Player should be initialized")
     }
 
-    fn stream_uri(&self, song_id: &str) -> String {
+    fn stream_uri(&self, song_id: &str) -> Option<String> {
         self.application()
             .expect("Application must be available to resolve URIs")
             .playback_uri(song_id)
@@ -242,8 +242,7 @@ impl AudioModel {
             } else {
                 start_index as i32
             };
-            self.load_song(index);
-            self.play();
+            self.load_and_play_song(index);
         } else {
             self.stop();
         }
@@ -281,28 +280,29 @@ impl AudioModel {
     }
 
     pub fn play_song(&self, index: usize) {
-        self.load_song(index as i32);
-        self.play();
+        self.load_and_play_song(index as i32);
     }
 
-    fn load_song(&self, index: i32) {
+    fn load_and_play_song(&self, index: i32) {
         self.clear_prefetched_next_uri();
         if let Some(song) = self
             .imp()
             .queue
             .item(index as u32)
             .and_downcast::<SongModel>()
+            && let Some(stream_uri) = self.stream_uri(&song.id())
         {
-            let stream_uri = self.stream_uri(&song.id());
             let player = self.player();
             self.imp().track_transition_in_progress.set(true);
             self.set_property("loading", true);
             player.stop();
             player.set_uri(&stream_uri);
             self.update_current_song(index, song, Some(stream_uri));
+            self.play();
         } else {
             self.imp().track_transition_in_progress.set(false);
             self.stop();
+            self.set_property("loading", false);
             warn!("Failed to load song at index {}", index);
         }
     }
@@ -353,8 +353,8 @@ impl AudioModel {
                 .queue
                 .item(next_index as u32)
                 .and_downcast::<SongModel>()
+            && let Some(uri) = self.stream_uri(&song.id())
         {
-            let uri = self.stream_uri(&song.id());
             self.imp().prefetched_next_index.set(Some(next_index));
             self.imp().prefetched_next_uri.replace(Some(uri.clone()));
             self.player().cache_next_uri(uri);
@@ -365,8 +365,7 @@ impl AudioModel {
 
     pub fn next(&self) {
         if let Some(next_index) = self.next_index() {
-            self.load_song(next_index);
-            self.play();
+            self.load_and_play_song(next_index);
         } else {
             self.stop();
             self.emit_by_name::<()>("queue-finished", &[]);
@@ -375,8 +374,7 @@ impl AudioModel {
 
     pub fn prev(&self) {
         if let Some(prev_index) = self.prev_index() {
-            self.load_song(prev_index);
-            self.play()
+            self.load_and_play_song(prev_index);
         } else {
             self.stop();
         }
@@ -472,6 +470,15 @@ impl AudioModel {
         self.player().stop();
         self.set_property("position", 0u32);
         self.set_property("duration", 0u32);
+    }
+
+    pub fn reset_playback(&self) {
+        self.stop();
+        self.clear_prefetched_next_uri();
+        self.imp().uri.replace(None);
+        self.clear_queue();
+        self.set_loading(false);
+        self.emit_by_name::<()>("queue-finished", &[]);
     }
 
     pub fn seek(&self, position: u32) {

@@ -92,6 +92,9 @@ impl Queue {
     }
 
     pub fn save_as_playlist(&self) {
+        if !self.get_application().require_online(None) {
+            return;
+        }
         let window = self.get_root_window();
         let Some(audio_model) = self.get_application().audio_model() else {
             warn!("No audio model found");
@@ -112,6 +115,9 @@ impl Queue {
 
     fn create_new_playlist(&self, name: String, song_ids: Vec<String>) {
         let app = self.get_application();
+        if !app.require_online(None) {
+            return;
+        }
         let backend = app.backend();
         spawn_tokio(
             async move { backend.new_playlist(&name, song_ids).await },
@@ -193,6 +199,11 @@ impl Queue {
                     &song_model,
                     &queue.get_application(),
                 );
+                song_utils::connect_downloaded_indicator(
+                    &song_widget,
+                    &song_model,
+                    &queue.get_application(),
+                );
 
                 let mut handlers = Vec::new();
                 let nav_handlers =
@@ -228,6 +239,7 @@ impl Queue {
 
                 song_utils::disconnect_playing_indicator(&song_widget, &audio_model);
                 song_utils::disconnect_favorite_indicator(&song_widget);
+                song_utils::disconnect_downloaded_indicator(&song_widget);
                 song_utils::disconnect_signal_handlers(&song_widget);
             }
         ));

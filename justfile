@@ -66,7 +66,7 @@ dev-remote host: schemas
     BINARY_PATH="{{ justfile_directory() }}/target/debug/gelly"
     WAYLAND_DISPLAY_VAR="${WAYLAND_DISPLAY:-wayland-0}"
 
-    ssh {{ host }} "WAYLAND_DISPLAY=$WAYLAND_DISPLAY_VAR RUST_LOG='debug,glycin=off,glycin_utils=off' waypipe -n ssh $DEV_HOST $BINARY_PATH"
+    ssh -A {{ host }} "WAYLAND_DISPLAY=$WAYLAND_DISPLAY_VAR RUST_LOG='debug,glycin=off,glycin_utils=off' waypipe -n ssh $DEV_HOST $BINARY_PATH"
 
 navidrome:
     podman run \

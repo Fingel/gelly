@@ -3,7 +3,8 @@ use gtk::{gdk, gio, glib, prelude::*, subclass::prelude::*};
 use log::debug;
 
 use crate::{
-    async_utils::spawn_tokio, audio::model::AudioModel, backend::Backend, jellyfin::api::Lyric,
+    async_utils::spawn_tokio, audio::model::AudioModel, backend::Backend, config,
+    jellyfin::api::Lyric,
 };
 
 glib::wrapper! {
@@ -74,6 +75,10 @@ impl Lyrics {
     pub fn fetch_lyrics(&self, item_id: &str) {
         let imp = self.imp();
         self.set_song_info();
+        if config::get_offline() {
+            self.create_lyrics_widgets(vec![]);
+            return;
+        }
 
         let Some(jellyfin) = imp.jellyfin.get() else {
             debug!("Jellyfin client not set, cannot fetch lyrics");

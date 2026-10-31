@@ -3,6 +3,7 @@ use std::cell::RefCell;
 use crate::{
     application::Application,
     async_utils::spawn_tokio,
+    config,
     jellyfin::api::{PlaybackReport, PlaybackReportStatus},
 };
 
@@ -99,6 +100,9 @@ impl JellyfinReporter {
     }
 
     fn report(&self, report: PlaybackReport, status: PlaybackReportStatus) {
+        if config::get_offline() {
+            return;
+        }
         let Some(app) = self.app.upgrade() else {
             warn!("JellyfinReporter: Unable to access application instance");
             return;
