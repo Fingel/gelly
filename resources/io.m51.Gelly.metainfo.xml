@@ -71,6 +71,29 @@
     <color type="primary" scheme_preference="dark">#325a4a</color>
   </branding>
   <releases>
+    <release version="2.0.0" date="2026-10-31">
+      <description>
+        <ul>
+          <li>
+            Gelly now supports downloads. Offline versions of songs can be used for
+            both saving bandwidth and playback in the new fully offline mode. See
+            README for additional details.
+          </li>
+          <li>
+            Faster playlist loading.
+          </li>
+          <li>
+            Improved keybindings.
+          </li>
+          <li>
+            Improved compatibility with PostmarketOS.
+          </li>
+          <li>
+            Flatpak users are updated to the GNOME 51 runtime.
+          </li>
+        </ul>
+      </description>
+    </release>
     <release version="1.16.1" date="2026-10-08">
       <description>
         <ul>
