@@ -1,6 +1,6 @@
 id: io.m51.Gelly
 runtime: org.gnome.Platform
-runtime-version: "50"
+runtime-version: "51"
 sdk: org.gnome.Sdk
 sdk-extensions:
   - org.freedesktop.Sdk.Extension.rust-stable
@@ -35,6 +35,6 @@ modules:
     sources:
       - type: git
         url: https://github.com/Fingel/gelly.git
-        tag: v1.16.1
-        commit: 6ae9252c215b6403203740a0c6e4f89bea376f28
+        tag: v2.0.0
+        commit: 2ebd49683f0e33c35a4b0b1c0d4bbafdcd75c2f4
       - cargo-sources.json
