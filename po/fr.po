@@ -7,10 +7,10 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-19 13:31-0700\n"
+"POT-Creation-Date: 2026-11-01 10:31-0800\n"
 "PO-Revision-Date: 2026-11-01 22:51+0000\n"
-"Last-Translator: Clément Neuhaus <crazylava@users.noreply.hosted.weblate.org>"
-"\n"
+"Last-Translator: Clément Neuhaus "
+"<crazylava@users.noreply.hosted.weblate.org>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/gelly/gelly/fr/>\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
@@ -19,19 +19,41 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
 "X-Generator: Weblate 2026.11.dev0\n"
 
-#: src/application.rs:121
+#: src/application.rs:169
 msgid "Playback error: {}"
 msgstr "Erreur de lecture : {]"
 
-#: src/audio/model.rs:476
+#: src/application.rs:584
+#, fuzzy
+#| msgid "Failed to load libraries"
+msgid "Failed to download media: {}"
+msgstr "Échec du chargement des bibliothèques"
+
+#: src/application.rs:627
+msgid "Failed to remove download: {}"
+msgstr ""
+
+#: src/application.rs:744
+msgid "Go online to rescan the library."
+msgstr ""
+
+#: src/application.rs:795
+msgid "Must be online"
+msgstr ""
+
+#: src/audio/model.rs:492
 msgid "Subsonic does not support seeking transcoded streams."
 msgstr "Subsonic ne supporte pas la recherche."
 
-#: src/audio/model.rs:478
+#: src/audio/model.rs:494
 msgid "Failed to seek"
 msgstr "Echec de recherche"
 
-#: src/library_utils.rs:82
+#: src/library_utils.rs:47
+msgid "Must be online to fetch similar music."
+msgstr ""
+
+#: src/library_utils.rs:67
 msgid ""
 "The backend did not return many songs, it may require a sonic analysis plugin"
 msgstr ""
@@ -50,55 +72,55 @@ msgstr "Top {} des morceaux jouées"
 msgid "Favorite Mix"
 msgstr "Mix préféré"
 
-#: src/ui/album_detail.rs:36
+#: src/ui/album_detail.rs:38
 msgid "N/A"
 msgstr "N/A"
 
-#: src/ui/album_detail.rs:165 src/ui/album_detail.rs:175
-#: src/ui/album_detail.rs:199 src/ui/artist_detail.rs:198 src/ui/playlist.rs:53
-#: src/ui/playlist_detail.rs:475 src/ui/playlist_detail.rs:485
-#: src/ui/playlist_detail.rs:509 src/ui/song_list.rs:159
+#: src/ui/album_detail.rs:190 src/ui/album_detail.rs:200
+#: src/ui/album_detail.rs:224 src/ui/artist_detail.rs:219 src/ui/playlist.rs:52
+#: src/ui/playlist_detail.rs:500 src/ui/playlist_detail.rs:510
+#: src/ui/playlist_detail.rs:534 src/ui/song_list.rs:159
 msgid "Audio model not initialized, please restart"
 msgstr "Modèle audio non initialisé, veuillez redémarrer"
 
-#: src/ui/album_detail.rs:191 src/ui/artist_detail.rs:190
-#: src/ui/playlist_detail.rs:501
+#: src/ui/album_detail.rs:216 src/ui/artist_detail.rs:211
+#: src/ui/playlist_detail.rs:526
 msgid "1 song added to queue"
 msgid_plural "{} songs added to queue"
 msgstr[0] "1 morceau ajoutée à la file"
 msgstr[1] "{} morceaux ajoutées à la file"
 
-#: src/ui/album_detail.rs:242
+#: src/ui/album_detail.rs:287
 msgid "Album ID copied to clipboard"
 msgstr "ID de l'album copié dans le presse papier"
 
-#: src/ui/album_detail.rs:265
+#: src/ui/album_detail.rs:310
 msgid "Added album to playlist"
 msgstr "Album ajouté à la liste de lecture"
 
-#: src/ui/album_detail.rs:269
+#: src/ui/album_detail.rs:314
 msgid "Failed to add album to playlist"
 msgstr "Echec de l'ajout de l'album à la liste de lecture"
 
-#: src/ui/artist_detail.rs:122
+#: src/ui/artist_detail.rs:144
 msgid "Artist ID copied to clipboard"
 msgstr "ID de l'artiste copiée dans le presse-papier"
 
-#: src/ui/artist_detail.rs:145
+#: src/ui/artist_detail.rs:167
 msgid "Added artist to playlist"
 msgstr "Artiste ajouté à la liste de lecture"
 
-#: src/ui/artist_detail.rs:149
+#: src/ui/artist_detail.rs:171
 msgid "Failed to add artist to playlist"
 msgstr "Echec de l'ajout de l'artiste à la liste de lecture"
 
-#: src/ui/music_context_menu.rs:33 src/ui/music_context_menu.rs:131
+#: src/ui/music_context_menu.rs:33 src/ui/music_context_menu.rs:133
 msgid "Add to Playlist"
 msgstr "Ajouter à la liste de lecture"
 
-#: src/ui/music_context_menu.rs:34 src/ui/music_context_menu.rs:87
+#: src/ui/music_context_menu.rs:34 src/ui/music_context_menu.rs:94
 #: src/ui/playlist_dialogs.rs:20 src/ui/playlist_dialogs.rs:59
-#: src/ui/window.rs:185 resources/ui/setup.ui:203
+#: src/ui/preferences.rs:111 src/ui/window.rs:188 resources/ui/setup.ui:203
 msgid "Cancel"
 msgstr "Annuler"
 
@@ -106,47 +128,63 @@ msgstr "Annuler"
 msgid "Add"
 msgstr "Ajouter"
 
-#: src/ui/music_context_menu.rs:59
+#: src/ui/music_context_menu.rs:41
+#, fuzzy
+#| msgid "Failed to modify playlist."
+msgid "Must be online to modify playlists."
+msgstr "Modification de la liste de lecture échouée."
+
+#: src/ui/music_context_menu.rs:66
 msgid "No playlists available. Please create a playlist first."
 msgstr "Pas de liste de lecture. Merci d'en créer une."
 
-#: src/ui/music_context_menu.rs:86
+#: src/ui/music_context_menu.rs:93
 msgid "Song already in playlist"
 msgstr "Morceau déjà présent dans la liste de lecture"
 
-#: src/ui/music_context_menu.rs:87
+#: src/ui/music_context_menu.rs:94
 msgid "Add Anyway"
 msgstr "Ajouter quand même"
 
-#: src/ui/music_context_menu.rs:112
+#: src/ui/music_context_menu.rs:120
 msgid "Queue Next"
 msgstr "Ajouter à la suite"
 
-#: src/ui/music_context_menu.rs:116
+#: src/ui/music_context_menu.rs:124
 msgid "Queue Last"
 msgstr "Ajouter à la fin"
 
-#: src/ui/music_context_menu.rs:124
-msgid "Play Similar"
-msgstr "Jouer similaire"
-
-#: src/ui/music_context_menu.rs:136
+#: src/ui/music_context_menu.rs:138
 msgid "Remove from Playlist"
 msgstr "Retirer de la liste de lecture"
 
-#: src/ui/music_context_menu.rs:146
+#: src/ui/music_context_menu.rs:143
+msgid "Play Similar"
+msgstr "Jouer similaire"
+
+#: src/ui/music_context_menu.rs:154
+msgid "Download"
+msgstr ""
+
+#: src/ui/music_context_menu.rs:159
+#, fuzzy
+#| msgid "Remove from Playlist"
+msgid "Remove Downloads"
+msgstr "Retirer de la liste de lecture"
+
+#: src/ui/music_context_menu.rs:167
 msgid "Go to Album"
 msgstr "Aller à l'album"
 
-#: src/ui/music_context_menu.rs:153
+#: src/ui/music_context_menu.rs:174
 msgid "Go to Artist"
 msgstr "Aller à l'artiste"
 
-#: src/ui/music_context_menu.rs:162 src/ui/stream_info_dialog.rs:121
+#: src/ui/music_context_menu.rs:184 src/ui/stream_info_dialog.rs:130
 msgid "Song Info"
 msgstr "Informations sur le morceau"
 
-#: src/ui/music_context_menu.rs:167
+#: src/ui/music_context_menu.rs:190
 msgid "Copy ID"
 msgstr "Copier ID"
 
@@ -202,81 +240,73 @@ msgstr "Répéter une fois"
 msgid "Shuffle Repeat"
 msgstr "Répéter mélangée"
 
-#: src/ui/player_bar/common.rs:79
+#: src/ui/player_bar/common.rs:80
 msgid "Pause"
 msgstr "Pause"
 
-#: src/ui/player_bar/common.rs:82 resources/ui/album_detail.ui:120
-#: resources/ui/artist_detail.ui:53 resources/ui/playlist_detail.ui:102
+#: src/ui/player_bar/common.rs:83 resources/ui/album_detail.ui:120
+#: resources/ui/artist_detail.ui:57 resources/ui/playlist_detail.ui:102
 #: resources/ui/player_bar/big_player.ui:143
 #: resources/ui/player_bar/compact_player_bar.ui:146
 #: resources/ui/player_bar/full_player_bar.ui:126
 msgid "Play"
 msgstr "Jouer"
 
-#: src/ui/player_bar/common.rs:92
+#: src/ui/player_bar/common.rs:93
 msgid "Unknown Artist"
 msgstr "Artiste Inconnu"
 
-#: src/ui/player_bar/common.rs:254 src/ui/song.rs:233
+#: src/ui/player_bar/common.rs:271 src/ui/song.rs:245
 msgid "Added song to playlist"
 msgstr "Morceau ajoutée à la liste de lecture"
 
-#: src/ui/player_bar/common.rs:258 src/ui/song.rs:237
+#: src/ui/player_bar/common.rs:275 src/ui/song.rs:249
 msgid "Failed to add song to playlist"
 msgstr "Impossible d'ajouter ce morceau à la liste"
 
-#: src/ui/playlist.rs:26
+#: src/ui/playlist.rs:25
 msgid "1 song"
 msgid_plural "{} songs"
 msgstr[0] "1 morceau"
 msgstr[1] "{} morceaux"
 
-#: src/ui/playlist.rs:29
+#: src/ui/playlist.rs:28
 msgid "Smart playlist"
 msgstr "Playlist intelligente"
 
-#: src/ui/playlist.rs:31
+#: src/ui/playlist.rs:30
 msgid "Empty playlist"
 msgstr "Playlist vide"
 
-#: src/ui/playlist.rs:77
-msgid "Unable to load playlist"
-msgstr "Impossible de charger la liste de lecture"
-
-#: src/ui/playlist_detail.rs:256 src/ui/playlist_list.rs:72
-msgid "Could not load playlist, please try again."
-msgstr "Impossible de charger la liste de lecture, réessayez ultérieurement."
-
-#: src/ui/playlist_detail.rs:289
+#: src/ui/playlist_detail.rs:280
 msgid "Playlist ID copied to clipboard"
 msgstr "ID de la liste de lecture copiée dans le presse-papier"
 
-#: src/ui/playlist_detail.rs:313
+#: src/ui/playlist_detail.rs:304
 msgid "Added songs to playlist"
 msgstr "Morceaux ajoutés à la liste de lecture"
 
-#: src/ui/playlist_detail.rs:317
+#: src/ui/playlist_detail.rs:308
 msgid "Failed to add songs to playlist"
 msgstr "Impossible d'ajouter ces morceaux à la liste"
 
-#: src/ui/playlist_detail.rs:413
+#: src/ui/playlist_detail.rs:430
 msgid "Failed to save playlist order."
 msgstr "Sauvegarde de l'ordre de la liste de lecture échouée."
 
-#: src/ui/playlist_detail.rs:459
+#: src/ui/playlist_detail.rs:483
 msgid "Failed to modify playlist."
 msgstr "Modification de la liste de lecture échouée."
 
-#: src/ui/playlist_detail.rs:527
+#: src/ui/playlist_detail.rs:555
 msgid "Smart playlists cannot be deleted"
 msgstr "Les liste automatiques ne peuvent être supprimées"
 
-#: src/ui/playlist_detail.rs:560
+#: src/ui/playlist_detail.rs:591
 msgid "Playlist deleted"
 msgstr "Liste supprimée"
 
-#: src/ui/playlist_detail.rs:563
+#: src/ui/playlist_detail.rs:594
 msgid "Failed to delete playlist"
 msgstr "Impossible de supprimer cette liste de lecture"
 
@@ -300,17 +330,62 @@ msgstr "Supprimer la liste ?"
 msgid "Delete"
 msgstr "Supprimer"
 
-#: src/ui/playlist_list.rs:66
-msgid "No audio model found, please restart."
-msgstr "Aucun modèle audio trouvé, veuillez redémarrer"
-
-#: src/ui/playlist_list.rs:174 src/ui/queue.rs:125
+#: src/ui/playlist_list.rs:154 src/ui/queue.rs:131
 msgid "Playlist created"
 msgstr "Liste crée"
 
-#: src/ui/playlist_list.rs:177 src/ui/queue.rs:128
+#: src/ui/playlist_list.rs:157 src/ui/queue.rs:134
 msgid "Failed to create playlist"
 msgstr "Impossible de créer la liste"
+
+#: src/ui/preferences.rs:111 resources/ui/preferences.ui:132
+#: resources/ui/preferences.ui:148
+#, fuzzy
+#| msgid "Clear Queue"
+msgid "Clear"
+msgstr "Vider la file d’attente"
+
+#: src/ui/preferences.rs:134 src/ui/preferences.rs:140
+#: src/ui/preferences.rs:188 src/ui/preferences.rs:194
+#: src/ui/stream_info_dialog.rs:11 src/ui/stream_info_dialog.rs:53
+#: src/ui/stream_info_dialog.rs:74 src/ui/stream_info_dialog.rs:121
+#: src/ui/stream_info_dialog.rs:122
+msgid "Unknown"
+msgstr "Inconnu"
+
+#: src/ui/preferences.rs:146
+#, fuzzy
+#| msgid "Re-downloads the music library"
+msgid "Clear downloaded music?"
+msgstr "Re-télécharge la bibliothèque musicale"
+
+#: src/ui/preferences.rs:147
+msgid "This will remove all offline media."
+msgstr ""
+
+#: src/ui/preferences.rs:160 src/ui/preferences.rs:214
+msgid "Clearing…"
+msgstr ""
+
+#: src/ui/preferences.rs:167
+msgid "Failed to clear downloaded music."
+msgstr ""
+
+#: src/ui/preferences.rs:200
+#, fuzzy
+#| msgid "Clear Image Cache"
+msgid "Clear image cache?"
+msgstr "Vider le Cache d'Images"
+
+#: src/ui/preferences.rs:201
+msgid "This will remove all cached album and artist art."
+msgstr ""
+
+#: src/ui/preferences.rs:221
+#, fuzzy
+#| msgid "Failed to load libraries"
+msgid "Failed to clear cached images."
+msgstr "Échec du chargement des bibliothèques"
 
 #: src/ui/setup.rs:180 src/ui/setup.rs:195 src/ui/setup.rs:425
 msgid "Credentials could not be saved. Do you have a keyring daemon running?"
@@ -361,12 +436,6 @@ msgstr "Oui"
 #: src/ui/stream_info_dialog.rs:10
 msgid "No"
 msgstr "Non"
-
-#: src/ui/stream_info_dialog.rs:11 src/ui/stream_info_dialog.rs:53
-#: src/ui/stream_info_dialog.rs:74 src/ui/stream_info_dialog.rs:115
-#: src/ui/stream_info_dialog.rs:116
-msgid "Unknown"
-msgstr "Inconnu"
 
 #: src/ui/stream_info_dialog.rs:50
 msgid "Backend"
@@ -436,53 +505,69 @@ msgstr "Debit binaire original"
 msgid "File Size"
 msgstr "Taille de fichier"
 
-#: src/ui/stream_info_dialog.rs:115
+#: src/ui/stream_info_dialog.rs:121
 msgid "Id"
 msgstr "Identifiant"
 
-#: src/ui/stream_info_dialog.rs:116
+#: src/ui/stream_info_dialog.rs:122
 msgid "Path"
 msgstr "Chemin"
 
-#: src/ui/stream_info_dialog.rs:139
+#: src/ui/stream_info_dialog.rs:123
+#, fuzzy
+#| msgid "Play Count"
+msgid "Approximate Play Count"
+msgstr "Nombre de lecture"
+
+#: src/ui/stream_info_dialog.rs:124
+msgid "Date Added"
+msgstr ""
+
+#: src/ui/stream_info_dialog.rs:125
+#, fuzzy
+#| msgid "all genres"
+msgid "Genres"
+msgstr "Tous les genres"
+
+#: src/ui/stream_info_dialog.rs:148
 msgid "Song Properties"
 msgstr "Propriétés du morceau"
 
-#: src/ui/stream_info_dialog.rs:146
+#: src/ui/stream_info_dialog.rs:155
 msgid "Local Properties"
 msgstr "Propriétés locales"
 
-#: src/ui/stream_info_dialog.rs:153
+#: src/ui/stream_info_dialog.rs:162
 msgid "Remote Properties"
 msgstr "Propriétés distantes"
 
-#: src/ui/window.rs:184 resources/ui/window.ui:415
+#: src/ui/window.rs:187 resources/ui/window.ui:415
 msgid "Change Library"
 msgstr "Changer de bibliothèque"
 
-#: src/ui/window.rs:185
+#: src/ui/window.rs:188
 msgid "Select"
 msgstr "Choisir"
 
-#: src/ui/window.rs:217
+#: src/ui/window.rs:223
 msgid "Failed to fetch libraries"
 msgstr "Impossible de récupérer les bibliothèque"
 
-#: src/ui/window.rs:227
+#: src/ui/window.rs:233
 msgid "Logged out"
 msgstr "Déconnecté"
 
-#: src/ui/window.rs:355
+#: src/ui/window.rs:361
 msgid "all genres"
 msgstr "Tous les genres"
 
-#: src/ui/window.rs:835
+#: src/ui/window.rs:836
 msgid "1 item added to library"
 msgid_plural "{} items added to library"
 msgstr[0] "1 élément ajouté à la bibliothèque"
 msgstr[1] "{} éléments ajoutés à la bibliothèque"
 
-#: src/ui/window.rs:856
+#: src/ui/window.rs:857
 msgid ""
 "Library rescan requested. Wait a few seconds and then use the \"Refresh "
 "Library\" option."
@@ -498,7 +583,7 @@ msgstr "Illustration d’album manquante"
 msgid "tracks"
 msgstr "morceaux"
 
-#: resources/ui/album_detail.ui:147 resources/ui/artist_detail.ui:81
+#: resources/ui/album_detail.ui:147 resources/ui/artist_detail.ui:85
 msgid "More Actions"
 msgstr "Plus d'actions"
 
@@ -510,7 +595,7 @@ msgstr "Pas d'albums"
 msgid "Caching initial library download..."
 msgstr "Mise en cache des téléchargements initiaux…"
 
-#: resources/ui/artist_detail.ui:41
+#: resources/ui/artist_detail.ui:45
 msgid "Artist Name"
 msgstr "Nom de l'artiste"
 
@@ -573,7 +658,7 @@ msgstr ""
 "Utiliser des éléments graphiques plus petits, sans tenir compte de la taille "
 "de fenêtre."
 
-#: resources/ui/preferences.ui:35 resources/ui/shortcuts_dialog.ui:84
+#: resources/ui/preferences.ui:35 resources/ui/shortcuts_dialog.ui:91
 msgid "Playback"
 msgstr "Lecture"
 
@@ -646,6 +731,22 @@ msgstr "Liste Aléatoire"
 #: resources/ui/preferences.ui:112
 msgid "Most Played Playlist"
 msgstr "Liste des titres les plus joués"
+
+#: resources/ui/preferences.ui:122 resources/ui/preferences.ui:125
+msgid "Cache"
+msgstr ""
+
+#: resources/ui/preferences.ui:128
+msgid "Downloaded Music"
+msgstr ""
+
+#: resources/ui/preferences.ui:129 resources/ui/preferences.ui:145
+msgid "Calculating…"
+msgstr ""
+
+#: resources/ui/preferences.ui:144
+msgid "Cached Images"
+msgstr ""
 
 #: resources/ui/queue.ui:8
 msgid "Nothing Playing"
@@ -808,13 +909,41 @@ msgstr "Liste en vedette"
 msgid "Focus Song List"
 msgstr "Morceaux en vedette"
 
-#: resources/ui/shortcuts_dialog.ui:87
+#: resources/ui/shortcuts_dialog.ui:82
 msgid "Play Selected"
 msgstr "Jouer les éléments sélectionnés"
 
-#: resources/ui/shortcuts_dialog.ui:88
+#: resources/ui/shortcuts_dialog.ui:83
 msgid "Play the currently selected item in the list"
 msgstr "Jouer l'élément actuellement sélectionné dans la liste"
+
+#: resources/ui/shortcuts_dialog.ui:94
+msgid "Toggle Play/Pause"
+msgstr ""
+
+#: resources/ui/shortcuts_dialog.ui:100
+#, fuzzy
+#| msgid "Previous"
+msgid "Previous Song"
+msgstr "Précédent"
+
+#: resources/ui/shortcuts_dialog.ui:106
+#, fuzzy
+#| msgid "No Songs"
+msgid "Next Song"
+msgstr "Aucun morceaux"
+
+#: resources/ui/shortcuts_dialog.ui:112
+msgid "Seek Backward"
+msgstr ""
+
+#: resources/ui/shortcuts_dialog.ui:118
+msgid "Seek Forward"
+msgstr ""
+
+#: resources/ui/song.ui:117
+msgid "Available offline"
+msgstr ""
 
 #: resources/ui/song_list.ui:8
 msgid "No Songs"
@@ -824,55 +953,55 @@ msgstr "Aucun morceaux"
 msgid "songs"
 msgstr "morceaux"
 
-#: resources/ui/window.ui:56
+#: resources/ui/window.ui:53
 msgid "Album Detail"
 msgstr "Détails de l’album"
 
-#: resources/ui/window.ui:89
+#: resources/ui/window.ui:86
 msgid "Artist Detail"
 msgstr "Détails de l’artiste"
 
-#: resources/ui/window.ui:121
+#: resources/ui/window.ui:118
 msgid "Playlist Detail"
 msgstr "Détails de la playlist"
 
-#: resources/ui/window.ui:144
+#: resources/ui/window.ui:141
 msgid "Main"
 msgstr "Principal"
 
-#: resources/ui/window.ui:153
+#: resources/ui/window.ui:150
 msgid "Show Queue"
 msgstr "Afficher la file d’attente"
 
-#: resources/ui/window.ui:160
+#: resources/ui/window.ui:157
 msgid "Search and Genres"
 msgstr "Recherche et genres"
 
-#: resources/ui/window.ui:166
+#: resources/ui/window.ui:163
 msgid "Sort"
 msgstr "Trier"
 
-#: resources/ui/window.ui:173
+#: resources/ui/window.ui:170
 msgid "New"
 msgstr "Nouveau"
 
-#: resources/ui/window.ui:208
+#: resources/ui/window.ui:205
 msgid "Search..."
 msgstr "Chercher…"
 
-#: resources/ui/window.ui:231
+#: resources/ui/window.ui:228
 msgid "Reset"
 msgstr "Réinitialiser"
 
-#: resources/ui/window.ui:253
+#: resources/ui/window.ui:250
 msgid "Favorites"
 msgstr "Favoris"
 
-#: resources/ui/window.ui:266
+#: resources/ui/window.ui:263
 msgid "Ascending"
 msgstr "Ascendant"
 
-#: resources/ui/window.ui:273
+#: resources/ui/window.ui:270
 msgid "Descending"
 msgstr "Descendant"
 
@@ -905,8 +1034,8 @@ msgid "Request Rescan"
 msgstr "Requêter un Rescan"
 
 #: resources/ui/window.ui:419
-msgid "Clear Image Cache"
-msgstr "Vider le Cache d'Images"
+msgid "Offline"
+msgstr ""
 
 #: resources/ui/window.ui:433
 msgid "About Gelly"
@@ -949,3 +1078,13 @@ msgstr "Volume"
 #: resources/ui/player_bar/full_player_bar.ui:233
 msgid "Song Menu"
 msgstr "Menu du morceau"
+
+#~ msgid "Unable to load playlist"
+#~ msgstr "Impossible de charger la liste de lecture"
+
+#~ msgid "Could not load playlist, please try again."
+#~ msgstr ""
+#~ "Impossible de charger la liste de lecture, réessayez ultérieurement."
+
+#~ msgid "No audio model found, please restart."
+#~ msgstr "Aucun modèle audio trouvé, veuillez redémarrer"

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-19 13:31-0700\n"
+"POT-Creation-Date: 2026-11-01 10:31-0800\n"
 "PO-Revision-Date: 2026-09-24 11:51+0000\n"
 "Last-Translator: sendevia <me@sendevia.top>\n"
 "Language-Team: Chinese (Simplified Han script) <https://hosted.weblate.org/"
@@ -19,19 +19,41 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 "X-Generator: Weblate 2026.10.dev0\n"
 
-#: src/application.rs:121
+#: src/application.rs:169
 msgid "Playback error: {}"
 msgstr "播放错误：{}"
 
-#: src/audio/model.rs:476
+#: src/application.rs:584
+#, fuzzy
+#| msgid "Failed to load libraries"
+msgid "Failed to download media: {}"
+msgstr "无法加载音乐库"
+
+#: src/application.rs:627
+msgid "Failed to remove download: {}"
+msgstr ""
+
+#: src/application.rs:744
+msgid "Go online to rescan the library."
+msgstr ""
+
+#: src/application.rs:795
+msgid "Must be online"
+msgstr ""
+
+#: src/audio/model.rs:492
 msgid "Subsonic does not support seeking transcoded streams."
 msgstr "Subsonic 不支持对转码流进行进度跳转。"
 
-#: src/audio/model.rs:478
+#: src/audio/model.rs:494
 msgid "Failed to seek"
 msgstr "无法跳转"
 
-#: src/library_utils.rs:82
+#: src/library_utils.rs:47
+msgid "Must be online to fetch similar music."
+msgstr ""
+
+#: src/library_utils.rs:67
 msgid ""
 "The backend did not return many songs, it may require a sonic analysis plugin"
 msgstr "后端返回的歌曲数量不多，可能需要音频分析插件"
@@ -48,54 +70,54 @@ msgstr "播放次数最多的 {} 首歌曲"
 msgid "Favorite Mix"
 msgstr "精选合辑"
 
-#: src/ui/album_detail.rs:36
+#: src/ui/album_detail.rs:38
 msgid "N/A"
 msgstr "N/A"
 
-#: src/ui/album_detail.rs:165 src/ui/album_detail.rs:175
-#: src/ui/album_detail.rs:199 src/ui/artist_detail.rs:198 src/ui/playlist.rs:53
-#: src/ui/playlist_detail.rs:475 src/ui/playlist_detail.rs:485
-#: src/ui/playlist_detail.rs:509 src/ui/song_list.rs:159
+#: src/ui/album_detail.rs:190 src/ui/album_detail.rs:200
+#: src/ui/album_detail.rs:224 src/ui/artist_detail.rs:219 src/ui/playlist.rs:52
+#: src/ui/playlist_detail.rs:500 src/ui/playlist_detail.rs:510
+#: src/ui/playlist_detail.rs:534 src/ui/song_list.rs:159
 msgid "Audio model not initialized, please restart"
 msgstr "音频模型未初始化，请重新启动"
 
-#: src/ui/album_detail.rs:191 src/ui/artist_detail.rs:190
-#: src/ui/playlist_detail.rs:501
+#: src/ui/album_detail.rs:216 src/ui/artist_detail.rs:211
+#: src/ui/playlist_detail.rs:526
 msgid "1 song added to queue"
 msgid_plural "{} songs added to queue"
 msgstr[0] "已添加 {} 首歌曲到队列"
 
-#: src/ui/album_detail.rs:242
+#: src/ui/album_detail.rs:287
 msgid "Album ID copied to clipboard"
 msgstr "已复制专辑 ID 到剪贴板"
 
-#: src/ui/album_detail.rs:265
+#: src/ui/album_detail.rs:310
 msgid "Added album to playlist"
 msgstr "专辑已添加到歌单"
 
-#: src/ui/album_detail.rs:269
+#: src/ui/album_detail.rs:314
 msgid "Failed to add album to playlist"
 msgstr "无法将专辑添加到歌单"
 
-#: src/ui/artist_detail.rs:122
+#: src/ui/artist_detail.rs:144
 msgid "Artist ID copied to clipboard"
 msgstr "已复制艺术家 ID 到剪贴板"
 
-#: src/ui/artist_detail.rs:145
+#: src/ui/artist_detail.rs:167
 msgid "Added artist to playlist"
 msgstr "艺术家已添加到歌单"
 
-#: src/ui/artist_detail.rs:149
+#: src/ui/artist_detail.rs:171
 msgid "Failed to add artist to playlist"
 msgstr "无法将艺术家添加到歌单"
 
-#: src/ui/music_context_menu.rs:33 src/ui/music_context_menu.rs:131
+#: src/ui/music_context_menu.rs:33 src/ui/music_context_menu.rs:133
 msgid "Add to Playlist"
 msgstr "添加到歌单"
 
-#: src/ui/music_context_menu.rs:34 src/ui/music_context_menu.rs:87
+#: src/ui/music_context_menu.rs:34 src/ui/music_context_menu.rs:94
 #: src/ui/playlist_dialogs.rs:20 src/ui/playlist_dialogs.rs:59
-#: src/ui/window.rs:185 resources/ui/setup.ui:203
+#: src/ui/preferences.rs:111 src/ui/window.rs:188 resources/ui/setup.ui:203
 msgid "Cancel"
 msgstr "取消"
 
@@ -103,47 +125,63 @@ msgstr "取消"
 msgid "Add"
 msgstr "添加"
 
-#: src/ui/music_context_menu.rs:59
+#: src/ui/music_context_menu.rs:41
+#, fuzzy
+#| msgid "Failed to modify playlist."
+msgid "Must be online to modify playlists."
+msgstr "无法修改歌单。"
+
+#: src/ui/music_context_menu.rs:66
 msgid "No playlists available. Please create a playlist first."
 msgstr "没有歌单，请先创建一个。"
 
-#: src/ui/music_context_menu.rs:86
+#: src/ui/music_context_menu.rs:93
 msgid "Song already in playlist"
 msgstr "歌曲已在歌单中"
 
-#: src/ui/music_context_menu.rs:87
+#: src/ui/music_context_menu.rs:94
 msgid "Add Anyway"
 msgstr "仍要添加"
 
-#: src/ui/music_context_menu.rs:112
+#: src/ui/music_context_menu.rs:120
 msgid "Queue Next"
 msgstr "队列下一首"
 
-#: src/ui/music_context_menu.rs:116
+#: src/ui/music_context_menu.rs:124
 msgid "Queue Last"
 msgstr "队列末尾"
 
-#: src/ui/music_context_menu.rs:124
-msgid "Play Similar"
-msgstr "播放相似"
-
-#: src/ui/music_context_menu.rs:136
+#: src/ui/music_context_menu.rs:138
 msgid "Remove from Playlist"
 msgstr "从歌单移除"
 
-#: src/ui/music_context_menu.rs:146
+#: src/ui/music_context_menu.rs:143
+msgid "Play Similar"
+msgstr "播放相似"
+
+#: src/ui/music_context_menu.rs:154
+msgid "Download"
+msgstr ""
+
+#: src/ui/music_context_menu.rs:159
+#, fuzzy
+#| msgid "Remove from Playlist"
+msgid "Remove Downloads"
+msgstr "从歌单移除"
+
+#: src/ui/music_context_menu.rs:167
 msgid "Go to Album"
 msgstr "前往专辑"
 
-#: src/ui/music_context_menu.rs:153
+#: src/ui/music_context_menu.rs:174
 msgid "Go to Artist"
 msgstr "前往艺术家"
 
-#: src/ui/music_context_menu.rs:162 src/ui/stream_info_dialog.rs:121
+#: src/ui/music_context_menu.rs:184 src/ui/stream_info_dialog.rs:130
 msgid "Song Info"
 msgstr "歌曲信息"
 
-#: src/ui/music_context_menu.rs:167
+#: src/ui/music_context_menu.rs:190
 msgid "Copy ID"
 msgstr "复制 ID"
 
@@ -199,80 +237,72 @@ msgstr "单曲循环"
 msgid "Shuffle Repeat"
 msgstr "随机重复"
 
-#: src/ui/player_bar/common.rs:79
+#: src/ui/player_bar/common.rs:80
 msgid "Pause"
 msgstr "暂停"
 
-#: src/ui/player_bar/common.rs:82 resources/ui/album_detail.ui:120
-#: resources/ui/artist_detail.ui:53 resources/ui/playlist_detail.ui:102
+#: src/ui/player_bar/common.rs:83 resources/ui/album_detail.ui:120
+#: resources/ui/artist_detail.ui:57 resources/ui/playlist_detail.ui:102
 #: resources/ui/player_bar/big_player.ui:143
 #: resources/ui/player_bar/compact_player_bar.ui:146
 #: resources/ui/player_bar/full_player_bar.ui:126
 msgid "Play"
 msgstr "播放"
 
-#: src/ui/player_bar/common.rs:92
+#: src/ui/player_bar/common.rs:93
 msgid "Unknown Artist"
 msgstr "未知艺术家"
 
-#: src/ui/player_bar/common.rs:254 src/ui/song.rs:233
+#: src/ui/player_bar/common.rs:271 src/ui/song.rs:245
 msgid "Added song to playlist"
 msgstr "歌曲已添加到歌单"
 
-#: src/ui/player_bar/common.rs:258 src/ui/song.rs:237
+#: src/ui/player_bar/common.rs:275 src/ui/song.rs:249
 msgid "Failed to add song to playlist"
 msgstr "无法将歌曲添加到歌单"
 
-#: src/ui/playlist.rs:26
+#: src/ui/playlist.rs:25
 msgid "1 song"
 msgid_plural "{} songs"
 msgstr[0] "{} 首歌曲"
 
-#: src/ui/playlist.rs:29
+#: src/ui/playlist.rs:28
 msgid "Smart playlist"
 msgstr "智能列表"
 
-#: src/ui/playlist.rs:31
+#: src/ui/playlist.rs:30
 msgid "Empty playlist"
 msgstr "空歌单"
 
-#: src/ui/playlist.rs:77
-msgid "Unable to load playlist"
-msgstr "无法加载歌单"
-
-#: src/ui/playlist_detail.rs:256 src/ui/playlist_list.rs:72
-msgid "Could not load playlist, please try again."
-msgstr "不能加载歌单，请重试。"
-
-#: src/ui/playlist_detail.rs:289
+#: src/ui/playlist_detail.rs:280
 msgid "Playlist ID copied to clipboard"
 msgstr "已复制歌单 ID 到剪贴板"
 
-#: src/ui/playlist_detail.rs:313
+#: src/ui/playlist_detail.rs:304
 msgid "Added songs to playlist"
 msgstr "歌曲已添加到歌单"
 
-#: src/ui/playlist_detail.rs:317
+#: src/ui/playlist_detail.rs:308
 msgid "Failed to add songs to playlist"
 msgstr "无法将歌曲添加到歌单"
 
-#: src/ui/playlist_detail.rs:413
+#: src/ui/playlist_detail.rs:430
 msgid "Failed to save playlist order."
 msgstr "无法保存歌单排序。"
 
-#: src/ui/playlist_detail.rs:459
+#: src/ui/playlist_detail.rs:483
 msgid "Failed to modify playlist."
 msgstr "无法修改歌单。"
 
-#: src/ui/playlist_detail.rs:527
+#: src/ui/playlist_detail.rs:555
 msgid "Smart playlists cannot be deleted"
 msgstr "智能列表不能删除"
 
-#: src/ui/playlist_detail.rs:560
+#: src/ui/playlist_detail.rs:591
 msgid "Playlist deleted"
 msgstr "歌单已删除"
 
-#: src/ui/playlist_detail.rs:563
+#: src/ui/playlist_detail.rs:594
 msgid "Failed to delete playlist"
 msgstr "无法删除歌单"
 
@@ -296,17 +326,62 @@ msgstr "删除歌单？"
 msgid "Delete"
 msgstr "删除"
 
-#: src/ui/playlist_list.rs:66
-msgid "No audio model found, please restart."
-msgstr "未找到音频模型，请重新启动。"
-
-#: src/ui/playlist_list.rs:174 src/ui/queue.rs:125
+#: src/ui/playlist_list.rs:154 src/ui/queue.rs:131
 msgid "Playlist created"
 msgstr "已创建歌单"
 
-#: src/ui/playlist_list.rs:177 src/ui/queue.rs:128
+#: src/ui/playlist_list.rs:157 src/ui/queue.rs:134
 msgid "Failed to create playlist"
 msgstr "无法创建歌单"
+
+#: src/ui/preferences.rs:111 resources/ui/preferences.ui:132
+#: resources/ui/preferences.ui:148
+#, fuzzy
+#| msgid "Clear Queue"
+msgid "Clear"
+msgstr "清除队列"
+
+#: src/ui/preferences.rs:134 src/ui/preferences.rs:140
+#: src/ui/preferences.rs:188 src/ui/preferences.rs:194
+#: src/ui/stream_info_dialog.rs:11 src/ui/stream_info_dialog.rs:53
+#: src/ui/stream_info_dialog.rs:74 src/ui/stream_info_dialog.rs:121
+#: src/ui/stream_info_dialog.rs:122
+msgid "Unknown"
+msgstr "未知"
+
+#: src/ui/preferences.rs:146
+#, fuzzy
+#| msgid "Re-downloads the music library"
+msgid "Clear downloaded music?"
+msgstr "重新下载曲库"
+
+#: src/ui/preferences.rs:147
+msgid "This will remove all offline media."
+msgstr ""
+
+#: src/ui/preferences.rs:160 src/ui/preferences.rs:214
+msgid "Clearing…"
+msgstr ""
+
+#: src/ui/preferences.rs:167
+msgid "Failed to clear downloaded music."
+msgstr ""
+
+#: src/ui/preferences.rs:200
+#, fuzzy
+#| msgid "Clear Image Cache"
+msgid "Clear image cache?"
+msgstr "清除图像缓存"
+
+#: src/ui/preferences.rs:201
+msgid "This will remove all cached album and artist art."
+msgstr ""
+
+#: src/ui/preferences.rs:221
+#, fuzzy
+#| msgid "Failed to load libraries"
+msgid "Failed to clear cached images."
+msgstr "无法加载音乐库"
 
 #: src/ui/setup.rs:180 src/ui/setup.rs:195 src/ui/setup.rs:425
 msgid "Credentials could not be saved. Do you have a keyring daemon running?"
@@ -351,12 +426,6 @@ msgstr "是"
 #: src/ui/stream_info_dialog.rs:10
 msgid "No"
 msgstr "否"
-
-#: src/ui/stream_info_dialog.rs:11 src/ui/stream_info_dialog.rs:53
-#: src/ui/stream_info_dialog.rs:74 src/ui/stream_info_dialog.rs:115
-#: src/ui/stream_info_dialog.rs:116
-msgid "Unknown"
-msgstr "未知"
 
 #: src/ui/stream_info_dialog.rs:50
 msgid "Backend"
@@ -426,52 +495,68 @@ msgstr "原始比特率"
 msgid "File Size"
 msgstr "文件大小"
 
-#: src/ui/stream_info_dialog.rs:115
+#: src/ui/stream_info_dialog.rs:121
 msgid "Id"
 msgstr "Id"
 
-#: src/ui/stream_info_dialog.rs:116
+#: src/ui/stream_info_dialog.rs:122
 msgid "Path"
 msgstr "目录"
 
-#: src/ui/stream_info_dialog.rs:139
+#: src/ui/stream_info_dialog.rs:123
+#, fuzzy
+#| msgid "Play Count"
+msgid "Approximate Play Count"
+msgstr "播放次数"
+
+#: src/ui/stream_info_dialog.rs:124
+msgid "Date Added"
+msgstr ""
+
+#: src/ui/stream_info_dialog.rs:125
+#, fuzzy
+#| msgid "all genres"
+msgid "Genres"
+msgstr "所有风格"
+
+#: src/ui/stream_info_dialog.rs:148
 msgid "Song Properties"
 msgstr "歌曲属性"
 
-#: src/ui/stream_info_dialog.rs:146
+#: src/ui/stream_info_dialog.rs:155
 msgid "Local Properties"
 msgstr "本地属性"
 
-#: src/ui/stream_info_dialog.rs:153
+#: src/ui/stream_info_dialog.rs:162
 msgid "Remote Properties"
 msgstr "远程属性"
 
-#: src/ui/window.rs:184 resources/ui/window.ui:415
+#: src/ui/window.rs:187 resources/ui/window.ui:415
 msgid "Change Library"
 msgstr "更改曲库"
 
-#: src/ui/window.rs:185
+#: src/ui/window.rs:188
 msgid "Select"
 msgstr "选择"
 
-#: src/ui/window.rs:217
+#: src/ui/window.rs:223
 msgid "Failed to fetch libraries"
 msgstr "无法获取曲库"
 
-#: src/ui/window.rs:227
+#: src/ui/window.rs:233
 msgid "Logged out"
 msgstr "登出"
 
-#: src/ui/window.rs:355
+#: src/ui/window.rs:361
 msgid "all genres"
 msgstr "所有风格"
 
-#: src/ui/window.rs:835
+#: src/ui/window.rs:836
 msgid "1 item added to library"
 msgid_plural "{} items added to library"
 msgstr[0] "已将 {} 个项目添加到曲库"
 
-#: src/ui/window.rs:856
+#: src/ui/window.rs:857
 msgid ""
 "Library rescan requested. Wait a few seconds and then use the \"Refresh "
 "Library\" option."
@@ -485,7 +570,7 @@ msgstr "缺少专辑图片"
 msgid "tracks"
 msgstr "曲目"
 
-#: resources/ui/album_detail.ui:147 resources/ui/artist_detail.ui:81
+#: resources/ui/album_detail.ui:147 resources/ui/artist_detail.ui:85
 msgid "More Actions"
 msgstr "更多操作"
 
@@ -497,7 +582,7 @@ msgstr "无专辑"
 msgid "Caching initial library download..."
 msgstr "正在缓存初始曲库.."
 
-#: resources/ui/artist_detail.ui:41
+#: resources/ui/artist_detail.ui:45
 msgid "Artist Name"
 msgstr "艺术家名称"
 
@@ -558,7 +643,7 @@ msgstr "紧凑模式"
 msgid "Use smaller UI elements regardless of window size."
 msgstr "无论窗口大小如何，均使用较小的 UI 元素。"
 
-#: resources/ui/preferences.ui:35 resources/ui/shortcuts_dialog.ui:84
+#: resources/ui/preferences.ui:35 resources/ui/shortcuts_dialog.ui:91
 msgid "Playback"
 msgstr "播放"
 
@@ -629,6 +714,22 @@ msgstr "随机播放的歌单"
 #: resources/ui/preferences.ui:112
 msgid "Most Played Playlist"
 msgstr "播放次数最多的歌单"
+
+#: resources/ui/preferences.ui:122 resources/ui/preferences.ui:125
+msgid "Cache"
+msgstr ""
+
+#: resources/ui/preferences.ui:128
+msgid "Downloaded Music"
+msgstr ""
+
+#: resources/ui/preferences.ui:129 resources/ui/preferences.ui:145
+msgid "Calculating…"
+msgstr ""
+
+#: resources/ui/preferences.ui:144
+msgid "Cached Images"
+msgstr ""
 
 #: resources/ui/queue.ui:8
 msgid "Nothing Playing"
@@ -783,13 +884,41 @@ msgstr "聚焦歌单页"
 msgid "Focus Song List"
 msgstr "聚焦歌曲页"
 
-#: resources/ui/shortcuts_dialog.ui:87
+#: resources/ui/shortcuts_dialog.ui:82
 msgid "Play Selected"
 msgstr "播放选中"
 
-#: resources/ui/shortcuts_dialog.ui:88
+#: resources/ui/shortcuts_dialog.ui:83
 msgid "Play the currently selected item in the list"
 msgstr "在列表中播放当前选择的歌曲"
+
+#: resources/ui/shortcuts_dialog.ui:94
+msgid "Toggle Play/Pause"
+msgstr ""
+
+#: resources/ui/shortcuts_dialog.ui:100
+#, fuzzy
+#| msgid "Previous"
+msgid "Previous Song"
+msgstr "上一首"
+
+#: resources/ui/shortcuts_dialog.ui:106
+#, fuzzy
+#| msgid "No Songs"
+msgid "Next Song"
+msgstr "无歌曲"
+
+#: resources/ui/shortcuts_dialog.ui:112
+msgid "Seek Backward"
+msgstr ""
+
+#: resources/ui/shortcuts_dialog.ui:118
+msgid "Seek Forward"
+msgstr ""
+
+#: resources/ui/song.ui:117
+msgid "Available offline"
+msgstr ""
 
 #: resources/ui/song_list.ui:8
 msgid "No Songs"
@@ -799,55 +928,55 @@ msgstr "无歌曲"
 msgid "songs"
 msgstr "歌曲"
 
-#: resources/ui/window.ui:56
+#: resources/ui/window.ui:53
 msgid "Album Detail"
 msgstr "专辑详情"
 
-#: resources/ui/window.ui:89
+#: resources/ui/window.ui:86
 msgid "Artist Detail"
 msgstr "艺术家详情"
 
-#: resources/ui/window.ui:121
+#: resources/ui/window.ui:118
 msgid "Playlist Detail"
 msgstr "歌单详情"
 
-#: resources/ui/window.ui:144
+#: resources/ui/window.ui:141
 msgid "Main"
 msgstr "主要"
 
-#: resources/ui/window.ui:153
+#: resources/ui/window.ui:150
 msgid "Show Queue"
 msgstr "显示队列"
 
-#: resources/ui/window.ui:160
+#: resources/ui/window.ui:157
 msgid "Search and Genres"
 msgstr "搜索与歌曲风格"
 
-#: resources/ui/window.ui:166
+#: resources/ui/window.ui:163
 msgid "Sort"
 msgstr "排序"
 
-#: resources/ui/window.ui:173
+#: resources/ui/window.ui:170
 msgid "New"
 msgstr "新添加"
 
-#: resources/ui/window.ui:208
+#: resources/ui/window.ui:205
 msgid "Search..."
 msgstr "搜索..."
 
-#: resources/ui/window.ui:231
+#: resources/ui/window.ui:228
 msgid "Reset"
 msgstr "重置"
 
-#: resources/ui/window.ui:253
+#: resources/ui/window.ui:250
 msgid "Favorites"
 msgstr "精选"
 
-#: resources/ui/window.ui:266
+#: resources/ui/window.ui:263
 msgid "Ascending"
 msgstr "升序"
 
-#: resources/ui/window.ui:273
+#: resources/ui/window.ui:270
 msgid "Descending"
 msgstr "降序"
 
@@ -880,8 +1009,8 @@ msgid "Request Rescan"
 msgstr "请求重新扫描"
 
 #: resources/ui/window.ui:419
-msgid "Clear Image Cache"
-msgstr "清除图像缓存"
+msgid "Offline"
+msgstr ""
 
 #: resources/ui/window.ui:433
 msgid "About Gelly"
@@ -924,6 +1053,15 @@ msgstr "音量"
 #: resources/ui/player_bar/full_player_bar.ui:233
 msgid "Song Menu"
 msgstr "歌曲目录"
+
+#~ msgid "Unable to load playlist"
+#~ msgstr "无法加载歌单"
+
+#~ msgid "Could not load playlist, please try again."
+#~ msgstr "不能加载歌单，请重试。"
+
+#~ msgid "No audio model found, please restart."
+#~ msgstr "未找到音频模型，请重新启动。"
 
 #~ msgid ""
 #~ "Performing initial library download, this may take a moment. The library "
