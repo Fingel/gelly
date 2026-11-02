@@ -44,7 +44,6 @@ Gelly is available on the [aur](https://aur.archlinux.org/packages/gelly):
 
     paru -S gelly
 
-
 ### NixOS
 
     nix-shell -p gelly
@@ -85,8 +84,9 @@ for more details.
 
 ## Offline Mode
 Gelly supports downloading music for offline playback. This leverages the backend's respective
-/download endpoints, it does *not* support playing arbitrary files locally from the device. 
+/download endpoints, it does *not* support playing arbitrary files locally from the device.
 The download cache can be cleared via an option in the Cache section of the preferences dialog.
+Existing downloaded songs will be used even when not in offline mode, negating the need to stream.
 
 ## Connecting with TLS using self signed certificates
 
@@ -99,7 +99,7 @@ There is a workaround: You need to make the cert file available to the flatpak s
 set the `SSL_CERT_FILE` env var to point to it. This can be done using a tool like Flatseal. Thank you
 @RodrigoPrestes for [finding this workaround](https://github.com/Fingel/gelly/issues/15#issuecomment-4195533397).
 
-The other alternative is to use a non flatpak installation method.
+The other alternative is to use a non Flatpak installation method.
 
 ## Translations
 
@@ -156,6 +156,8 @@ I write about developing Gelly on my blog occasionally
 [Gelly 1.2 and The Most Cursed Cache Bug](https://www.pedaldrivenprogramming.com/2026/04/gelly-12-and-the-most-cursed-cache-bug/)
 
 [A GTK Dropdown with Ellipsized Items](https://www.pedaldrivenprogramming.com/2026/07/a-gtk-dropdown-with-ellipsized-items/)
+
+[Gelly is a GTK desktop music player for Jellyfin and Navidrome - OMG! Ubuntu](https://www.omgubuntu.co.uk/2026/10/gelly-jellyfin-desktop-music-player-linux)
 
 
 ## Contact
