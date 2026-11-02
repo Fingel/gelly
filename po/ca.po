@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-19 13:31-0700\n"
+"POT-Creation-Date: 2026-11-01 10:31-0800\n"
 "PO-Revision-Date: 2026-08-18 23:51+0000\n"
 "Last-Translator: \"Ícar N. S.\" <icar.nin@pm.me>\n"
 "Language-Team: Catalan <https://hosted.weblate.org/projects/gelly/gelly/ca/"
@@ -19,13 +19,31 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 "X-Generator: Weblate 2026.9.dev0\n"
 
-#: src/application.rs:121
+#: src/application.rs:169
 #, fuzzy
 #| msgid "Playback Mode"
 msgid "Playback error: {}"
 msgstr "Mode de reproducció"
 
-#: src/audio/model.rs:476
+#: src/application.rs:584
+#, fuzzy
+#| msgid "Failed to load libraries"
+msgid "Failed to download media: {}"
+msgstr "No s'han pogut carregar les llibreries"
+
+#: src/application.rs:627
+msgid "Failed to remove download: {}"
+msgstr ""
+
+#: src/application.rs:744
+msgid "Go online to rescan the library."
+msgstr ""
+
+#: src/application.rs:795
+msgid "Must be online"
+msgstr ""
+
+#: src/audio/model.rs:492
 #, fuzzy
 #| msgid "Currently Subsonic backends cannot seek transcoded streams."
 msgid "Subsonic does not support seeking transcoded streams."
@@ -33,13 +51,17 @@ msgstr ""
 "Actualment el servei Subsonic no suporta el desplaçament amb transmissions "
 "transcodificades."
 
-#: src/audio/model.rs:478
+#: src/audio/model.rs:494
 #, fuzzy
 #| msgid "Failed to delete playlist"
 msgid "Failed to seek"
 msgstr "No s'ha pogut suprimir la llista de reproducció"
 
-#: src/library_utils.rs:82
+#: src/library_utils.rs:47
+msgid "Must be online to fetch similar music."
+msgstr ""
+
+#: src/library_utils.rs:67
 msgid ""
 "The backend did not return many songs, it may require a sonic analysis plugin"
 msgstr ""
@@ -60,55 +82,55 @@ msgstr ""
 msgid "Favorite Mix"
 msgstr "Preferit"
 
-#: src/ui/album_detail.rs:36
+#: src/ui/album_detail.rs:38
 msgid "N/A"
 msgstr "No disponible"
 
-#: src/ui/album_detail.rs:165 src/ui/album_detail.rs:175
-#: src/ui/album_detail.rs:199 src/ui/artist_detail.rs:198 src/ui/playlist.rs:53
-#: src/ui/playlist_detail.rs:475 src/ui/playlist_detail.rs:485
-#: src/ui/playlist_detail.rs:509 src/ui/song_list.rs:159
+#: src/ui/album_detail.rs:190 src/ui/album_detail.rs:200
+#: src/ui/album_detail.rs:224 src/ui/artist_detail.rs:219 src/ui/playlist.rs:52
+#: src/ui/playlist_detail.rs:500 src/ui/playlist_detail.rs:510
+#: src/ui/playlist_detail.rs:534 src/ui/song_list.rs:159
 msgid "Audio model not initialized, please restart"
 msgstr "El model d'àudio no està inicialitzat, si us plau, reinicieu"
 
-#: src/ui/album_detail.rs:191 src/ui/artist_detail.rs:190
-#: src/ui/playlist_detail.rs:501
+#: src/ui/album_detail.rs:216 src/ui/artist_detail.rs:211
+#: src/ui/playlist_detail.rs:526
 msgid "1 song added to queue"
 msgid_plural "{} songs added to queue"
 msgstr[0] "una cançó afegida a la cua"
 msgstr[1] "{} cançons afegides a la cua"
 
-#: src/ui/album_detail.rs:242
+#: src/ui/album_detail.rs:287
 msgid "Album ID copied to clipboard"
 msgstr "L'identificador de l'àlbum s'ha copiat al porta-retalls"
 
-#: src/ui/album_detail.rs:265
+#: src/ui/album_detail.rs:310
 msgid "Added album to playlist"
 msgstr "L'àlbum s'ha afegit a la llista de reproducció"
 
-#: src/ui/album_detail.rs:269
+#: src/ui/album_detail.rs:314
 msgid "Failed to add album to playlist"
 msgstr "No s'ha pogut afegir l'àlbum a la llista de reproducció"
 
-#: src/ui/artist_detail.rs:122
+#: src/ui/artist_detail.rs:144
 msgid "Artist ID copied to clipboard"
 msgstr "El codi de l'artista s'ha copiat al porta-retalls"
 
-#: src/ui/artist_detail.rs:145
+#: src/ui/artist_detail.rs:167
 msgid "Added artist to playlist"
 msgstr "L'artista s'ha afegit a la llista de reproducció"
 
-#: src/ui/artist_detail.rs:149
+#: src/ui/artist_detail.rs:171
 msgid "Failed to add artist to playlist"
 msgstr "No s'ha pogut afegir l'artista a la llista de reproducció"
 
-#: src/ui/music_context_menu.rs:33 src/ui/music_context_menu.rs:131
+#: src/ui/music_context_menu.rs:33 src/ui/music_context_menu.rs:133
 msgid "Add to Playlist"
 msgstr "Afegeix a la llista de reproducció"
 
-#: src/ui/music_context_menu.rs:34 src/ui/music_context_menu.rs:87
+#: src/ui/music_context_menu.rs:34 src/ui/music_context_menu.rs:94
 #: src/ui/playlist_dialogs.rs:20 src/ui/playlist_dialogs.rs:59
-#: src/ui/window.rs:185 resources/ui/setup.ui:203
+#: src/ui/preferences.rs:111 src/ui/window.rs:188 resources/ui/setup.ui:203
 msgid "Cancel"
 msgstr "Cancel·la"
 
@@ -116,47 +138,63 @@ msgstr "Cancel·la"
 msgid "Add"
 msgstr "Afegeix"
 
-#: src/ui/music_context_menu.rs:59
+#: src/ui/music_context_menu.rs:41
+#, fuzzy
+#| msgid "Failed to modify playlist."
+msgid "Must be online to modify playlists."
+msgstr "No s'ha pogut modificar la llista de reproducció."
+
+#: src/ui/music_context_menu.rs:66
 msgid "No playlists available. Please create a playlist first."
 msgstr "Cap llista de reproducció disponible. Si us plau, creeu-ne una primer."
 
-#: src/ui/music_context_menu.rs:86
+#: src/ui/music_context_menu.rs:93
 msgid "Song already in playlist"
 msgstr "La cançó ja es troba a la llista de reproducció"
 
-#: src/ui/music_context_menu.rs:87
+#: src/ui/music_context_menu.rs:94
 msgid "Add Anyway"
 msgstr "Afegeix-la de totes maneres"
 
-#: src/ui/music_context_menu.rs:112
+#: src/ui/music_context_menu.rs:120
 msgid "Queue Next"
 msgstr "Encua com a següent"
 
-#: src/ui/music_context_menu.rs:116
+#: src/ui/music_context_menu.rs:124
 msgid "Queue Last"
 msgstr "Encua com a darrera"
 
-#: src/ui/music_context_menu.rs:124
-msgid "Play Similar"
-msgstr ""
-
-#: src/ui/music_context_menu.rs:136
+#: src/ui/music_context_menu.rs:138
 msgid "Remove from Playlist"
 msgstr "Suprimeix de la llista de reproducció"
 
-#: src/ui/music_context_menu.rs:146
+#: src/ui/music_context_menu.rs:143
+msgid "Play Similar"
+msgstr ""
+
+#: src/ui/music_context_menu.rs:154
+msgid "Download"
+msgstr ""
+
+#: src/ui/music_context_menu.rs:159
+#, fuzzy
+#| msgid "Remove from Playlist"
+msgid "Remove Downloads"
+msgstr "Suprimeix de la llista de reproducció"
+
+#: src/ui/music_context_menu.rs:167
 msgid "Go to Album"
 msgstr "Vés a l'àlbum"
 
-#: src/ui/music_context_menu.rs:153
+#: src/ui/music_context_menu.rs:174
 msgid "Go to Artist"
 msgstr "Vés a l'artista"
 
-#: src/ui/music_context_menu.rs:162 src/ui/stream_info_dialog.rs:121
+#: src/ui/music_context_menu.rs:184 src/ui/stream_info_dialog.rs:130
 msgid "Song Info"
 msgstr "Informació de la cançó"
 
-#: src/ui/music_context_menu.rs:167
+#: src/ui/music_context_menu.rs:190
 msgid "Copy ID"
 msgstr "Copia l'identificador"
 
@@ -220,83 +258,73 @@ msgstr ""
 msgid "Shuffle Repeat"
 msgstr "Llista de reproducció de barreja"
 
-#: src/ui/player_bar/common.rs:79
+#: src/ui/player_bar/common.rs:80
 msgid "Pause"
 msgstr "Pausa"
 
-#: src/ui/player_bar/common.rs:82 resources/ui/album_detail.ui:120
-#: resources/ui/artist_detail.ui:53 resources/ui/playlist_detail.ui:102
+#: src/ui/player_bar/common.rs:83 resources/ui/album_detail.ui:120
+#: resources/ui/artist_detail.ui:57 resources/ui/playlist_detail.ui:102
 #: resources/ui/player_bar/big_player.ui:143
 #: resources/ui/player_bar/compact_player_bar.ui:146
 #: resources/ui/player_bar/full_player_bar.ui:126
 msgid "Play"
 msgstr "Reprodueix"
 
-#: src/ui/player_bar/common.rs:92
+#: src/ui/player_bar/common.rs:93
 msgid "Unknown Artist"
 msgstr "Artista desconegut"
 
-#: src/ui/player_bar/common.rs:254 src/ui/song.rs:233
+#: src/ui/player_bar/common.rs:271 src/ui/song.rs:245
 msgid "Added song to playlist"
 msgstr "La cançó s'ha afegit a la llista de reproducció"
 
-#: src/ui/player_bar/common.rs:258 src/ui/song.rs:237
+#: src/ui/player_bar/common.rs:275 src/ui/song.rs:249
 msgid "Failed to add song to playlist"
 msgstr "Ha fallat afegir la cançó a la llista de reproducció"
 
-#: src/ui/playlist.rs:26
+#: src/ui/playlist.rs:25
 msgid "1 song"
 msgid_plural "{} songs"
 msgstr[0] "una cançó"
 msgstr[1] "{} cançons"
 
-#: src/ui/playlist.rs:29
+#: src/ui/playlist.rs:28
 msgid "Smart playlist"
 msgstr "Llista de reproducció intel·ligent"
 
-#: src/ui/playlist.rs:31
+#: src/ui/playlist.rs:30
 msgid "Empty playlist"
 msgstr "Llista de reproducció buida"
 
-#: src/ui/playlist.rs:77
-msgid "Unable to load playlist"
-msgstr "No s'ha pogut carregar la llista de reproducció"
-
-#: src/ui/playlist_detail.rs:256 src/ui/playlist_list.rs:72
-msgid "Could not load playlist, please try again."
-msgstr ""
-"No s'ha pogut carregar la llista de producció, si us plau torneu-ho a "
-"intentar."
-
-#: src/ui/playlist_detail.rs:289
+#: src/ui/playlist_detail.rs:280
 msgid "Playlist ID copied to clipboard"
 msgstr "L'identificador de la llista de producció s'ha copiat al porta-retalls"
 
-#: src/ui/playlist_detail.rs:313
+#: src/ui/playlist_detail.rs:304
 msgid "Added songs to playlist"
 msgstr "Les cançons s'han afegit a la llista de reproducció"
 
-#: src/ui/playlist_detail.rs:317
+#: src/ui/playlist_detail.rs:308
 msgid "Failed to add songs to playlist"
 msgstr "Ha fallat afegir les cançons a la llista de reproducció"
 
-#: src/ui/playlist_detail.rs:413
+#: src/ui/playlist_detail.rs:430
 msgid "Failed to save playlist order."
 msgstr "Ha fallat desar l'ordre de la llista de reproducció."
 
-#: src/ui/playlist_detail.rs:459
+#: src/ui/playlist_detail.rs:483
 msgid "Failed to modify playlist."
 msgstr "No s'ha pogut modificar la llista de reproducció."
 
-#: src/ui/playlist_detail.rs:527
+#: src/ui/playlist_detail.rs:555
 msgid "Smart playlists cannot be deleted"
 msgstr "Les llistes de reproducció intel·ligents no poder ser suprimides"
 
-#: src/ui/playlist_detail.rs:560
+#: src/ui/playlist_detail.rs:591
 msgid "Playlist deleted"
 msgstr "S'ha suprimit la llista de reproducció"
 
-#: src/ui/playlist_detail.rs:563
+#: src/ui/playlist_detail.rs:594
 msgid "Failed to delete playlist"
 msgstr "No s'ha pogut suprimir la llista de reproducció"
 
@@ -320,17 +348,62 @@ msgstr "Suprimir la llista de reproducció?"
 msgid "Delete"
 msgstr "Suprimir"
 
-#: src/ui/playlist_list.rs:66
-msgid "No audio model found, please restart."
-msgstr "Cap model d'àudio trobat, si us plau reinicieu."
-
-#: src/ui/playlist_list.rs:174 src/ui/queue.rs:125
+#: src/ui/playlist_list.rs:154 src/ui/queue.rs:131
 msgid "Playlist created"
 msgstr "S'ha creat la llista de reproducció"
 
-#: src/ui/playlist_list.rs:177 src/ui/queue.rs:128
+#: src/ui/playlist_list.rs:157 src/ui/queue.rs:134
 msgid "Failed to create playlist"
 msgstr "No s'ha pogut crear la llista de reproducció"
+
+#: src/ui/preferences.rs:111 resources/ui/preferences.ui:132
+#: resources/ui/preferences.ui:148
+#, fuzzy
+#| msgid "Clear Queue"
+msgid "Clear"
+msgstr "Neteja la cua"
+
+#: src/ui/preferences.rs:134 src/ui/preferences.rs:140
+#: src/ui/preferences.rs:188 src/ui/preferences.rs:194
+#: src/ui/stream_info_dialog.rs:11 src/ui/stream_info_dialog.rs:53
+#: src/ui/stream_info_dialog.rs:74 src/ui/stream_info_dialog.rs:121
+#: src/ui/stream_info_dialog.rs:122
+msgid "Unknown"
+msgstr "Desconegut"
+
+#: src/ui/preferences.rs:146
+#, fuzzy
+#| msgid "Re-downloads the music library"
+msgid "Clear downloaded music?"
+msgstr "Torna a descarregar la llibreria de música"
+
+#: src/ui/preferences.rs:147
+msgid "This will remove all offline media."
+msgstr ""
+
+#: src/ui/preferences.rs:160 src/ui/preferences.rs:214
+msgid "Clearing…"
+msgstr ""
+
+#: src/ui/preferences.rs:167
+msgid "Failed to clear downloaded music."
+msgstr ""
+
+#: src/ui/preferences.rs:200
+#, fuzzy
+#| msgid "Clear Image Cache"
+msgid "Clear image cache?"
+msgstr "Neteja la memòria cau d'imatges"
+
+#: src/ui/preferences.rs:201
+msgid "This will remove all cached album and artist art."
+msgstr ""
+
+#: src/ui/preferences.rs:221
+#, fuzzy
+#| msgid "Failed to load libraries"
+msgid "Failed to clear cached images."
+msgstr "No s'han pogut carregar les llibreries"
 
 #: src/ui/setup.rs:180 src/ui/setup.rs:195 src/ui/setup.rs:425
 msgid "Credentials could not be saved. Do you have a keyring daemon running?"
@@ -378,12 +451,6 @@ msgstr "Sí"
 #: src/ui/stream_info_dialog.rs:10
 msgid "No"
 msgstr "No"
-
-#: src/ui/stream_info_dialog.rs:11 src/ui/stream_info_dialog.rs:53
-#: src/ui/stream_info_dialog.rs:74 src/ui/stream_info_dialog.rs:115
-#: src/ui/stream_info_dialog.rs:116
-msgid "Unknown"
-msgstr "Desconegut"
 
 #: src/ui/stream_info_dialog.rs:50
 msgid "Backend"
@@ -453,59 +520,73 @@ msgstr "Taxa de bits original"
 msgid "File Size"
 msgstr "Mida del fitxer"
 
-#: src/ui/stream_info_dialog.rs:115
+#: src/ui/stream_info_dialog.rs:121
 msgid "Id"
 msgstr "Identificador"
 
-#: src/ui/stream_info_dialog.rs:116
+#: src/ui/stream_info_dialog.rs:122
 msgid "Path"
 msgstr "Camí"
 
-#: src/ui/stream_info_dialog.rs:139
+#: src/ui/stream_info_dialog.rs:123
+msgid "Approximate Play Count"
+msgstr ""
+
+#: src/ui/stream_info_dialog.rs:124
+msgid "Date Added"
+msgstr ""
+
+#: src/ui/stream_info_dialog.rs:125
+#, fuzzy
+#| msgid "all genres"
+msgid "Genres"
+msgstr "tots els gèneres"
+
+#: src/ui/stream_info_dialog.rs:148
 msgid "Song Properties"
 msgstr "Propietats de la cançó"
 
-#: src/ui/stream_info_dialog.rs:146
+#: src/ui/stream_info_dialog.rs:155
 msgid "Local Properties"
 msgstr "Propietats locals"
 
-#: src/ui/stream_info_dialog.rs:153
+#: src/ui/stream_info_dialog.rs:162
 msgid "Remote Properties"
 msgstr "Propietats remotes"
 
-#: src/ui/window.rs:184 resources/ui/window.ui:415
+#: src/ui/window.rs:187 resources/ui/window.ui:415
 #, fuzzy
 #| msgid "Choose Library"
 msgid "Change Library"
 msgstr "Escolliu la biblioteca"
 
-#: src/ui/window.rs:185
+#: src/ui/window.rs:188
 #, fuzzy
 #| msgid "Play Selected"
 msgid "Select"
 msgstr "Reprodueix la selecció"
 
-#: src/ui/window.rs:217
+#: src/ui/window.rs:223
 #, fuzzy
 #| msgid "Failed to load libraries"
 msgid "Failed to fetch libraries"
 msgstr "No s'han pogut carregar les llibreries"
 
-#: src/ui/window.rs:227
+#: src/ui/window.rs:233
 msgid "Logged out"
 msgstr "Sessió tancada"
 
-#: src/ui/window.rs:355
+#: src/ui/window.rs:361
 msgid "all genres"
 msgstr "tots els gèneres"
 
-#: src/ui/window.rs:835
+#: src/ui/window.rs:836
 msgid "1 item added to library"
 msgid_plural "{} items added to library"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/ui/window.rs:856
+#: src/ui/window.rs:857
 msgid ""
 "Library rescan requested. Wait a few seconds and then use the \"Refresh "
 "Library\" option."
@@ -519,7 +600,7 @@ msgstr "Falta la coberta de l'àlbum"
 msgid "tracks"
 msgstr "pistes"
 
-#: resources/ui/album_detail.ui:147 resources/ui/artist_detail.ui:81
+#: resources/ui/album_detail.ui:147 resources/ui/artist_detail.ui:85
 msgid "More Actions"
 msgstr "Més accions"
 
@@ -531,7 +612,7 @@ msgstr "Cap àlbum"
 msgid "Caching initial library download..."
 msgstr ""
 
-#: resources/ui/artist_detail.ui:41
+#: resources/ui/artist_detail.ui:45
 msgid "Artist Name"
 msgstr "Nom de l'artista"
 
@@ -594,7 +675,7 @@ msgstr ""
 "Usa elements de la interfície més petits independentment de la mida de la "
 "finestra."
 
-#: resources/ui/preferences.ui:35 resources/ui/shortcuts_dialog.ui:84
+#: resources/ui/preferences.ui:35 resources/ui/shortcuts_dialog.ui:91
 msgid "Playback"
 msgstr "Reproducció"
 
@@ -667,6 +748,22 @@ msgstr "Llista de reproducció de barreja"
 #: resources/ui/preferences.ui:112
 msgid "Most Played Playlist"
 msgstr "Llista de reproducció de les més reproduïdes"
+
+#: resources/ui/preferences.ui:122 resources/ui/preferences.ui:125
+msgid "Cache"
+msgstr ""
+
+#: resources/ui/preferences.ui:128
+msgid "Downloaded Music"
+msgstr ""
+
+#: resources/ui/preferences.ui:129 resources/ui/preferences.ui:145
+msgid "Calculating…"
+msgstr ""
+
+#: resources/ui/preferences.ui:144
+msgid "Cached Images"
+msgstr ""
 
 #: resources/ui/queue.ui:8
 msgid "Nothing Playing"
@@ -826,13 +923,39 @@ msgstr "Centra't en la llista de reproducció"
 msgid "Focus Song List"
 msgstr "Centrar-se en la llista de cançons"
 
-#: resources/ui/shortcuts_dialog.ui:87
+#: resources/ui/shortcuts_dialog.ui:82
 msgid "Play Selected"
 msgstr "Reprodueix la selecció"
 
-#: resources/ui/shortcuts_dialog.ui:88
+#: resources/ui/shortcuts_dialog.ui:83
 msgid "Play the currently selected item in the list"
 msgstr "Reprodueix l'ítem actualment seleccionat a la llista"
+
+#: resources/ui/shortcuts_dialog.ui:94
+msgid "Toggle Play/Pause"
+msgstr ""
+
+#: resources/ui/shortcuts_dialog.ui:100
+msgid "Previous Song"
+msgstr ""
+
+#: resources/ui/shortcuts_dialog.ui:106
+#, fuzzy
+#| msgid "No Songs"
+msgid "Next Song"
+msgstr "Cap cançó"
+
+#: resources/ui/shortcuts_dialog.ui:112
+msgid "Seek Backward"
+msgstr ""
+
+#: resources/ui/shortcuts_dialog.ui:118
+msgid "Seek Forward"
+msgstr ""
+
+#: resources/ui/song.ui:117
+msgid "Available offline"
+msgstr ""
 
 #: resources/ui/song_list.ui:8
 msgid "No Songs"
@@ -842,55 +965,55 @@ msgstr "Cap cançó"
 msgid "songs"
 msgstr "cançons"
 
-#: resources/ui/window.ui:56
+#: resources/ui/window.ui:53
 msgid "Album Detail"
 msgstr "Detalls de l'àlbum"
 
-#: resources/ui/window.ui:89
+#: resources/ui/window.ui:86
 msgid "Artist Detail"
 msgstr "Detalls de l'artista"
 
-#: resources/ui/window.ui:121
+#: resources/ui/window.ui:118
 msgid "Playlist Detail"
 msgstr "Detalls de la llista de reproducció"
 
-#: resources/ui/window.ui:144
+#: resources/ui/window.ui:141
 msgid "Main"
 msgstr "Principal"
 
-#: resources/ui/window.ui:153
+#: resources/ui/window.ui:150
 msgid "Show Queue"
 msgstr "Mostra la cua"
 
-#: resources/ui/window.ui:160
+#: resources/ui/window.ui:157
 msgid "Search and Genres"
 msgstr "Cerca i gèneres"
 
-#: resources/ui/window.ui:166
+#: resources/ui/window.ui:163
 msgid "Sort"
 msgstr "Ordenació"
 
-#: resources/ui/window.ui:173
+#: resources/ui/window.ui:170
 msgid "New"
 msgstr "Nou"
 
-#: resources/ui/window.ui:208
+#: resources/ui/window.ui:205
 msgid "Search..."
 msgstr "Cerca…"
 
-#: resources/ui/window.ui:231
+#: resources/ui/window.ui:228
 msgid "Reset"
 msgstr "Restableix"
 
-#: resources/ui/window.ui:253
+#: resources/ui/window.ui:250
 msgid "Favorites"
 msgstr "Preferits"
 
-#: resources/ui/window.ui:266
+#: resources/ui/window.ui:263
 msgid "Ascending"
 msgstr "Ascendent"
 
-#: resources/ui/window.ui:273
+#: resources/ui/window.ui:270
 msgid "Descending"
 msgstr "Descendent"
 
@@ -923,8 +1046,8 @@ msgid "Request Rescan"
 msgstr "Demana una nova exploració"
 
 #: resources/ui/window.ui:419
-msgid "Clear Image Cache"
-msgstr "Neteja la memòria cau d'imatges"
+msgid "Offline"
+msgstr ""
 
 #: resources/ui/window.ui:433
 msgid "About Gelly"
@@ -967,6 +1090,17 @@ msgstr "Volum"
 #: resources/ui/player_bar/full_player_bar.ui:233
 msgid "Song Menu"
 msgstr "Menú de la cançó"
+
+#~ msgid "Unable to load playlist"
+#~ msgstr "No s'ha pogut carregar la llista de reproducció"
+
+#~ msgid "Could not load playlist, please try again."
+#~ msgstr ""
+#~ "No s'ha pogut carregar la llista de producció, si us plau torneu-ho a "
+#~ "intentar."
+
+#~ msgid "No audio model found, please restart."
+#~ msgstr "Cap model d'àudio trobat, si us plau reinicieu."
 
 #~ msgid ""
 #~ "Performing initial library download, this may take a moment. The library "
