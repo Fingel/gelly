@@ -41,7 +41,8 @@ jobs:
             clippy \
             gcc \
             gcc-c++ \
-            wget
+            wget \
+            patchelf
 
       - name: Check formatting
         run: cargo fmt --check
