@@ -27,6 +27,11 @@ install -Dm 0644 resources/$ID.gschema.xml "$APPIMAGE_APPDIR/usr/share/glib-2.0/
 install -Dm 0644 resources/$ID.svg "$APPIMAGE_APPDIR/usr/share/icons/hicolor/scalable/apps/$ID.svg"
 install -Dm 0644 resources/$ID-symbolic.svg "$APPIMAGE_APPDIR/usr/share/icons/hicolor/symbolic/apps/$ID-symbolic.svg"
 glib-compile-schemas $APPIMAGE_APPDIR/usr/share/glib-2.0/schemas/
+for po_file in po/*.po; do
+    lang=$(basename "$po_file" .po)
+    install -dm755 "$APPIMAGE_APPDIR/usr/share/locale/$lang/LC_MESSAGES"
+    msgfmt -o "$APPIMAGE_APPDIR/usr/share/locale/$lang/LC_MESSAGES/gelly.mo" "$po_file"
+done
 /tmp/linuxdeploy.appimage --appimage-extract-and-run \
     --appdir $APPIMAGE_APPDIR \
     --executable target/$PROFILE/$BIN \

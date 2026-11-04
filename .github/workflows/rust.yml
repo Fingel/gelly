@@ -55,7 +55,8 @@ jobs:
             gcc-c++ \
             wget \
             patchelf \
-            file
+            file \
+            gettext
 
       - name: Check formatting
         run: cargo fmt --check
