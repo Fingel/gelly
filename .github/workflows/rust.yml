@@ -9,6 +9,7 @@ on:
   workflow_dispatch:
 
 env:
+  BIN_NAME: gelly
   CARGO_TERM_COLOR: always
 
 jobs:
@@ -39,7 +40,8 @@ jobs:
             rustfmt \
             clippy \
             gcc \
-            gcc-c++
+            gcc-c++ \
+            wget
 
       - name: Check formatting
         run: cargo fmt --check
@@ -61,10 +63,10 @@ jobs:
       - name: Upload binaries
         uses: actions/upload-artifact@v7
         with:
-          name: gelly-${{ matrix.profile }}-${{ matrix.arch }}
+          name: ${{ env.BIN_NAME }}-${{ matrix.profile }}-${{ matrix.arch }}
           path: |
-            target/${{ matrix.profile }}/gelly
-            target/appimage/gelly-${{ matrix.profile }}-${{ matrix.arch }}.appimage
+            target/${{ matrix.profile }}/${{ env.BIN_NAME }}
+            target/appimage/${{ env.BIN_NAME }}-${{ matrix.profile }}-${{ matrix.arch }}.appimage
 
   release:
     runs-on: ubuntu-latest
