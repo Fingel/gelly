@@ -14,12 +14,14 @@ env:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     container: fedora:45
     strategy:
       matrix:
         profile: [debug, release]
-        arch: [x86_64]
+        include:
+          - os: ubuntu-24.04
+            arch: x86_64
 
     steps:
       - uses: actions/checkout@v7
@@ -81,7 +83,7 @@ jobs:
             target/appimage/${{ env.BIN_NAME }}-${{ matrix.profile }}-${{ matrix.arch }}.appimage
 
   release:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     container: fedora:45
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
     needs: [build]
