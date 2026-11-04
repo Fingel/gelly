@@ -74,13 +74,16 @@ jobs:
           PROFILE: ${{ matrix.profile }}
         run: ./package/appimage/make-appimage.sh
 
+      - run: |
+          mkdir -p dist
+          cp target/${{ matrix.profile }}/${{ env.BIN_NAME }} dist/
+          cp target/appimage/${{ env.BIN_NAME }}-${{ matrix.profile }}-${{ matrix.arch }}.appimage dist/
+
       - name: Upload binaries
         uses: actions/upload-artifact@v7
         with:
           name: ${{ env.BIN_NAME }}-${{ matrix.profile }}-${{ matrix.arch }}
-          path: |
-            target/${{ matrix.profile }}/${{ env.BIN_NAME }}
-            target/appimage/${{ env.BIN_NAME }}-${{ matrix.profile }}-${{ matrix.arch }}.appimage
+          path: dist/*
 
   release:
     runs-on: ubuntu-24.04
