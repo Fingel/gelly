@@ -24,6 +24,16 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
+      - uses: actions/cache@v6
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}  
+
       - name: Install system dependencies
         run: |
           dnf update -y
