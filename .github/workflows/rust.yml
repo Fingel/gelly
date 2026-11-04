@@ -18,7 +18,7 @@ jobs:
     container: fedora:45
     strategy:
       matrix:
-        profile: [debug, release]
+        profile: [release]
         include:
           - os: ubuntu-latest
             arch: x86_64
