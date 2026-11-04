@@ -3,8 +3,10 @@ name: Rust
 on:
   push:
     branches: ["main"]
+    tags: ["v*"]
   pull_request:
     branches: ["main"]
+  workflow_dispatch:
 
 env:
   CARGO_TERM_COLOR: always
@@ -13,6 +15,10 @@ jobs:
   build:
     runs-on: ubuntu-latest
     container: fedora:45
+    strategy:
+      matrix:
+        profile: [debug, release]
+        arch: [x86_64]
 
     steps:
       - uses: actions/checkout@v7
@@ -41,8 +47,21 @@ jobs:
       - name: Run Clippy
         run: cargo clippy --all-targets --all-features -- -D warnings
 
-      - name: Build
-        run: cargo build --verbose
+      - name: Build binaries in "${{ matrix.profile }}" mode
+        run: cargo build --profile ${{ matrix.profile }} --verbose
 
-      - name: Run tests
-        run: cargo test --verbose
+      - name: Run tests in "${{ matrix.profile }}" mode
+        run: cargo test --profile ${{ matrix.profile }} --verbose
+
+      - name: Build AppImage in "${{ matrix.profile }}" mode
+        env:
+          PROFILE: ${{ matrix.profile }}
+        run: ./package/appimage/make-appimage.sh
+
+      - name: Upload binaries
+        uses: actions/upload-artifact@v7
+        with:
+          name: gelly-${{ matrix.profile }}-${{ matrix.arch }}
+          path: |
+            target/${{ matrix.profile }}/gelly
+            target/appimage/gelly-${{ matrix.profile }}-${{ matrix.arch }}.appimage
