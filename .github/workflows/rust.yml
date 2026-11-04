@@ -65,3 +65,29 @@ jobs:
           path: |
             target/${{ matrix.profile }}/gelly
             target/appimage/gelly-${{ matrix.profile }}-${{ matrix.arch }}.appimage
+
+  release:
+    runs-on: ubuntu-latest
+    container: fedora:45
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+    needs: [build]
+    permissions:
+      contents: write
+      id-token: write
+
+    steps:
+      - uses: actions/checkout@v7
+      
+      - name: Download artifacts
+        uses: actions/download-artifact@v8
+
+      - name: Create release
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" \
+            **/*.appimage \
+            --repo "$GITHUB_REPOSITORY" \
+            --title "$GITHUB_REF_NAME" \
+            --draft --generate-notes
