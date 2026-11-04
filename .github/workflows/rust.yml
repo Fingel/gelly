@@ -57,11 +57,6 @@ jobs:
             patchelf \
             file
 
-      - name: Setup Rust
-        uses: actions-rust-lang/setup-rust-toolchain@v2
-        with:
-          components: "clippy,rustfmt"
-
       - name: Check formatting
         run: cargo fmt --check
 
