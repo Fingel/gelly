@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+set -e
+
+this_dir="$(readlink -f "$(dirname "$0")")"
+
+export GSETTINGS_SCHEMA_DIR="$this_dir/usr/share/glib-2.0/schemas"
+
+exec "$this_dir/usr/bin/gelly" "$@"
