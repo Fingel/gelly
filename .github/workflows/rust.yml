@@ -9,7 +9,6 @@ on:
   workflow_dispatch:
 
 env:
-  BIN_NAME: gelly
   CARGO_TERM_COLOR: always
 
 jobs:
@@ -77,13 +76,13 @@ jobs:
 
       - run: |
           mkdir -p dist
-          cp target/${{ matrix.profile }}/${{ env.BIN_NAME }} dist/
-          cp target/appimage/${{ env.BIN_NAME }}-${{ matrix.profile }}-${{ matrix.arch }}.appimage dist/
+          cp target/${{ matrix.profile }}/gelly dist/
+          cp target/appimage/gelly-${{ matrix.profile }}-${{ matrix.arch }}.appimage dist/
 
       - name: Upload binaries
         uses: actions/upload-artifact@v7
         with:
-          name: ${{ env.BIN_NAME }}-${{ matrix.profile }}-${{ matrix.arch }}
+          name: gelly-${{ matrix.profile }}-${{ matrix.arch }}
           path: dist/*
 
   release:
