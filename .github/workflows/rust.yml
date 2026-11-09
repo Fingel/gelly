@@ -13,13 +13,13 @@ env:
 
 jobs:
   build:
-    runs-on: ${{ matrix.os }}
-    container: fedora:45
+    runs-on: ubuntu-latest
+    container: ${{ matrix.container }}
     strategy:
       matrix:
         profile: [release]
         include:
-          - os: ubuntu-latest
+          - container: fedora:45
             arch: x86_64
 
     steps:
@@ -33,7 +33,7 @@ jobs:
             ~/.cargo/registry/cache/
             ~/.cargo/git/db/
             target/
-          key: ${{ matrix.os }}-${{ matrix.arch }}-cargo-${{ hashFiles('**/Cargo.lock') }}  
+          key: ${{ matrix.container }}-${{ matrix.arch }}-cargo-${{ hashFiles('**/Cargo.lock') }}
 
       - name: Install system dependencies
         run: |
@@ -90,7 +90,6 @@ jobs:
 
   release:
     runs-on: ubuntu-latest
-    container: fedora:45
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
     needs: [build]
     permissions:
@@ -99,7 +98,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v7
-      
+
       - name: Download artifacts
         uses: actions/download-artifact@v8
 
