@@ -44,6 +44,10 @@ Gelly is available on the [aur](https://aur.archlinux.org/packages/gelly):
 
     paru -S gelly
 
+### AppImage
+
+Download the AppImage from [releases](https://github.com/Fingel/gelly/releases/latest).
+
 ### NixOS
 
     nix-shell -p gelly
