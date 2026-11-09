@@ -75,18 +75,13 @@ jobs:
           PROFILE: ${{ matrix.profile }}
         run: ./package/appimage/make-appimage.sh
 
-      - if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
-        run: |
-          mkdir -p dist
-          cp target/${{ matrix.profile }}/gelly dist/
-          cp target/appimage/gelly-${{ matrix.profile }}-${{ matrix.arch }}.appimage dist/
-
-      - name: Upload binaries
+      - name: Upload Appimage
         uses: actions/upload-artifact@v7
         if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
         with:
           name: gelly-${{ matrix.profile }}-${{ matrix.arch }}
-          path: dist/*
+          path: target/appimage/*.appimage
+          if-no-files-found: error
 
   release:
     runs-on: ubuntu-latest
