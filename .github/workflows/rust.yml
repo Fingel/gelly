@@ -96,6 +96,9 @@ jobs:
 
       - name: Download artifacts
         uses: actions/download-artifact@v8
+        with:
+          name: gelly-release-x86_64
+          path: dist
 
       - name: Create release
         shell: bash
@@ -103,7 +106,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           gh release create "$GITHUB_REF_NAME" \
-            **/*.appimage \
+            dist/*.appimage \
             --repo "$GITHUB_REPOSITORY" \
             --title "$GITHUB_REF_NAME" \
             --draft --generate-notes
