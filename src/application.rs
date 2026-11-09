@@ -6,7 +6,7 @@ use gtk::prelude::{GtkApplicationExt, ObjectExt};
 use gtk::{gio, glib};
 
 use crate::async_utils::{run_on_tokio, spawn_tokio};
-use crate::audio::model::AudioModel;
+use crate::audio::{error::AudioError, model::AudioModel};
 use crate::backend::Backend;
 use crate::backend::BackendError;
 use crate::cache::{CacheError, Cacheable, ImageCache, LibraryCache, MediaCache};
@@ -162,12 +162,10 @@ impl Application {
             glib::closure_local!(
                 #[weak(rename_to = app)]
                 self,
-                move |_audio_model: AudioModel, error: String| {
+                move |_audio_model: AudioModel, error: AudioError| {
                     log::error!("Audio error: {}", error);
-                    app.emit_by_name::<()>(
-                        "global-error",
-                        &[&tr("Playback error: {}").replace("{}", &error)],
-                    );
+                    let message = error.user_message();
+                    app.emit_by_name::<()>("global-error", &[&message]);
                 }
             ),
         );

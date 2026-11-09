@@ -11,9 +11,9 @@ use std::sync::OnceLock;
 use super::shuffle::ShuffleState;
 
 use crate::{
+    audio::error::AudioError,
     audio::player::{AudioPlayer, PlayerEvent, PlayerState},
-    config::{self, BackendType},
-    i18n::tr,
+    config,
     models::SongModel,
     reporting::{PlaybackEvent, ReportingManager},
     ui::playback_mode::PlaybackMode,
@@ -92,7 +92,7 @@ impl AudioModel {
                     PlayerEvent::Error(err) => {
                         obj.imp().track_transition_in_progress.set(false);
                         obj.set_property("loading", false);
-                        obj.emit_error(&err);
+                        obj.emit_error(&AudioError::from(err));
                     }
                     PlayerEvent::AboutToFinish => {
                         if let Some(next_index) = obj.imp().prefetched_next_index.take()
@@ -488,12 +488,7 @@ impl AudioModel {
                 position: position.into(),
             });
         } else {
-            let msg = if config::get_backend_type() == BackendType::Subsonic {
-                tr("Subsonic does not support seeking transcoded streams.")
-            } else {
-                tr("Failed to seek")
-            };
-            self.emit_error(&msg);
+            self.emit_error(&AudioError::SeekFailed);
         }
     }
 
@@ -568,8 +563,8 @@ impl AudioModel {
         self.imp().shuffle.borrow_mut().reset();
     }
 
-    pub fn emit_error(&self, message: &str) {
-        self.emit_by_name::<()>("error", &[&message]);
+    fn emit_error(&self, error: &AudioError) {
+        self.emit_by_name::<()>("error", &[error]);
     }
 }
 
@@ -686,7 +681,7 @@ mod imp {
                         .build(),
                     glib::subclass::Signal::builder("queue-finished").build(),
                     glib::subclass::Signal::builder("error")
-                        .param_types([String::static_type()])
+                        .param_types([AudioError::static_type()])
                         .build(),
                 ]
             })

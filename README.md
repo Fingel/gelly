@@ -44,6 +44,14 @@ Gelly is available on the [aur](https://aur.archlinux.org/packages/gelly):
 
     paru -S gelly
 
+### AppImage
+
+Download the AppImage from [releases](https://github.com/Fingel/gelly/releases/latest).
+
+Note that a relatively recent distribution is still required for AppImage, as it uses 
+the host's glibc. If the AppImage does not work, it is recommended to use the Flatpak 
+instead.
+
 ### NixOS
 
     nix-shell -p gelly

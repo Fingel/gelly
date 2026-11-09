@@ -8,84 +8,79 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-11-01 10:31-0800\n"
-"PO-Revision-Date: 2026-06-05 20:09+0000\n"
-"Last-Translator: Balázs Meskó <meskobalazs@mailbox.org>\n"
-"Language-Team: Hungarian <https://hosted.weblate.org/projects/gelly/gelly/hu/"
-">\n"
+"PO-Revision-Date: 2026-11-05 05:09+0000\n"
+"Last-Translator: Balázs Meskó <meskobalazs@users.noreply.hosted.weblate.org>"
+"\n"
+"Language-Team: Hungarian <https://hosted.weblate.org/projects/gelly/gelly/"
+"hu/>\n"
 "Language: hu\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 2026.6\n"
+"X-Generator: Weblate 2026.11.1.dev0\n"
 
 #: src/application.rs:169
-#, fuzzy
-#| msgid "Playback"
 msgid "Playback error: {}"
-msgstr "Lejátszás"
+msgstr "Lejátszási hiba: {}"
 
 #: src/application.rs:584
 msgid "Failed to download media: {}"
-msgstr ""
+msgstr "Nem sikerült a média letöltése: {}"
 
 #: src/application.rs:627
 msgid "Failed to remove download: {}"
-msgstr ""
+msgstr "Nem sikerült a letöltés eltávolítása: {}"
 
 #: src/application.rs:744
 msgid "Go online to rescan the library."
-msgstr ""
+msgstr "Kapcsolódjon és olvassa újra a zenetárat."
 
 #: src/application.rs:795
 msgid "Must be online"
-msgstr ""
+msgstr "Online kapcsolat szükséges"
 
 #: src/audio/model.rs:492
 msgid "Subsonic does not support seeking transcoded streams."
-msgstr ""
+msgstr "A Subsonic nem támogatja a léptetést az átkódolt közvetítésekben."
 
 #: src/audio/model.rs:494
-#, fuzzy
-#| msgid "Smart playlist"
 msgid "Failed to seek"
-msgstr "Okos lejátszólista"
+msgstr "Nem sikerült a léptetés"
 
 #: src/library_utils.rs:47
 msgid "Must be online to fetch similar music."
-msgstr ""
+msgstr "Online kapcsolat szükséges a hasonló zenék lekéréséhez."
 
 #: src/library_utils.rs:67
 msgid ""
 "The backend did not return many songs, it may require a sonic analysis plugin"
 msgstr ""
+"A háttérrendszer nem adott túl sok számot, lehet, hogy a hangelemző "
+"bővítményre lenne szükség"
 
 #: src/models/playlist_type.rs:71
-#, fuzzy
-#| msgid "Shuffled Playlist"
 msgid "Shuffled Songs"
-msgstr "Kevert lejátszólista"
+msgstr "Kevert számok"
 
 #: src/models/playlist_type.rs:73
 msgid "Top {} Played Songs"
-msgstr ""
+msgstr "{} legtöbbet játszott szám"
 
 #: src/models/playlist_type.rs:75
-#, fuzzy
-#| msgid "Favorites"
 msgid "Favorite Mix"
-msgstr "Kedvencek"
+msgstr "Kedvenc mix"
 
 #: src/ui/album_detail.rs:38
 msgid "N/A"
-msgstr ""
+msgstr "–"
 
 #: src/ui/album_detail.rs:190 src/ui/album_detail.rs:200
 #: src/ui/album_detail.rs:224 src/ui/artist_detail.rs:219 src/ui/playlist.rs:52
 #: src/ui/playlist_detail.rs:500 src/ui/playlist_detail.rs:510
 #: src/ui/playlist_detail.rs:534 src/ui/song_list.rs:159
 msgid "Audio model not initialized, please restart"
-msgstr ""
+msgstr "A hangmodell nincs előkészítve, indítsa újra"
 
 #: src/ui/album_detail.rs:216 src/ui/artist_detail.rs:211
 #: src/ui/playlist_detail.rs:526
@@ -95,40 +90,32 @@ msgstr[0] "1 szám hozzáadva a sorhoz"
 msgstr[1] "{} szám hozzáadva a sorhoz"
 
 #: src/ui/album_detail.rs:287
-#, fuzzy
-#| msgid "Quick connect code copied to clipboard"
 msgid "Album ID copied to clipboard"
-msgstr "Gyors kapcsolódási kód vágólapra másolva"
+msgstr "Az albumazonosító a vágólapra másolva"
 
 #: src/ui/album_detail.rs:310
 msgid "Added album to playlist"
-msgstr ""
+msgstr "Album hozzáadva a lejátszólistához"
 
 #: src/ui/album_detail.rs:314
 msgid "Failed to add album to playlist"
-msgstr ""
+msgstr "Nem sikerült az album lejátszólistához adása"
 
 #: src/ui/artist_detail.rs:144
-#, fuzzy
-#| msgid "Quick connect code copied to clipboard"
 msgid "Artist ID copied to clipboard"
-msgstr "Gyors kapcsolódási kód vágólapra másolva"
+msgstr "Az előadózonosító a vágólapra másolva"
 
 #: src/ui/artist_detail.rs:167
-#, fuzzy
-#| msgid "Smart playlist"
 msgid "Added artist to playlist"
-msgstr "Okos lejátszólista"
+msgstr "Előadó hozzáadva a lejátszólistához"
 
 #: src/ui/artist_detail.rs:171
 msgid "Failed to add artist to playlist"
-msgstr ""
+msgstr "Nem sikerült az előadó lejátszólistához adása"
 
 #: src/ui/music_context_menu.rs:33 src/ui/music_context_menu.rs:133
-#, fuzzy
-#| msgid "Smart Playlists"
 msgid "Add to Playlist"
-msgstr "Okos lejátszólisták"
+msgstr "Lejátszólistához adás"
 
 #: src/ui/music_context_menu.rs:34 src/ui/music_context_menu.rs:94
 #: src/ui/playlist_dialogs.rs:20 src/ui/playlist_dialogs.rs:59
@@ -138,159 +125,139 @@ msgstr "Mégse"
 
 #: src/ui/music_context_menu.rs:34
 msgid "Add"
-msgstr ""
+msgstr "Hozzáadás"
 
 #: src/ui/music_context_menu.rs:41
-#, fuzzy
-#| msgid "Most Played Playlist"
 msgid "Must be online to modify playlists."
-msgstr "Leggyakrabban játszottak lejátszólistája"
+msgstr "Online kapcsolat szükséges a lejátszólisták módosításához."
 
 #: src/ui/music_context_menu.rs:66
 msgid "No playlists available. Please create a playlist first."
-msgstr ""
+msgstr "Nem érhető el lejátszólista. Először hozzon létre egyet."
 
 #: src/ui/music_context_menu.rs:93
-#, fuzzy
-#| msgid "Most Played Playlist"
 msgid "Song already in playlist"
-msgstr "Leggyakrabban játszottak lejátszólistája"
+msgstr "A szám már a lejátszólistán van"
 
 #: src/ui/music_context_menu.rs:94
 msgid "Add Anyway"
-msgstr ""
+msgstr "Hozzáadás mindenképp"
 
 #: src/ui/music_context_menu.rs:120
 msgid "Queue Next"
-msgstr ""
+msgstr "Sorba állítás következőként"
 
 #: src/ui/music_context_menu.rs:124
 msgid "Queue Last"
-msgstr ""
+msgstr "Sorba állítás utolsóként"
 
 #: src/ui/music_context_menu.rs:138
-#, fuzzy
-#| msgid "Save As Playlist"
 msgid "Remove from Playlist"
-msgstr "Mentés lejátszólistaként"
+msgstr "Eltávolítás a lejátszólistából"
 
 #: src/ui/music_context_menu.rs:143
 msgid "Play Similar"
-msgstr ""
+msgstr "Hasonló lejátszása"
 
 #: src/ui/music_context_menu.rs:154
 msgid "Download"
-msgstr ""
+msgstr "Letöltés"
 
 #: src/ui/music_context_menu.rs:159
-#, fuzzy
-#| msgid "Save As Playlist"
 msgid "Remove Downloads"
-msgstr "Mentés lejátszólistaként"
+msgstr "Letöltések eltávolítása"
 
 #: src/ui/music_context_menu.rs:167
 msgid "Go to Album"
-msgstr ""
+msgstr "Ugrás az albumhoz"
 
 #: src/ui/music_context_menu.rs:174
-#, fuzzy
-#| msgid "Artists"
 msgid "Go to Artist"
-msgstr "Előadók"
+msgstr "Ugrás az előadóhoz"
 
 #: src/ui/music_context_menu.rs:184 src/ui/stream_info_dialog.rs:130
 msgid "Song Info"
-msgstr ""
+msgstr "Száminformációk"
 
 #: src/ui/music_context_menu.rs:190
 msgid "Copy ID"
-msgstr ""
+msgstr "Azonosító másolása"
 
 #: src/ui/page_traits.rs:30
 msgid "Recently Added"
-msgstr ""
+msgstr "Nemrég hozzáadva"
 
 #: src/ui/page_traits.rs:31
 msgid "Name"
-msgstr ""
+msgstr "Név"
 
 #: src/ui/page_traits.rs:32
-#, fuzzy
-#| msgid "Album Detail"
 msgid "Album Artist"
-msgstr "Album részletei"
+msgstr "Albumelőadó"
 
 #: src/ui/page_traits.rs:33
 msgid "Year"
-msgstr ""
+msgstr "Év"
 
 #: src/ui/page_traits.rs:34
 msgid "Play Count"
-msgstr ""
+msgstr "Lejátszásszám"
 
 #: src/ui/page_traits.rs:35
-#, fuzzy
-#| msgid "Songs"
 msgid "Num. Songs"
-msgstr "Számok"
+msgstr "Számok száma"
 
 #: src/ui/page_traits.rs:36
-#, fuzzy
-#| msgid "Albums"
 msgid "Album"
-msgstr "Albumok"
+msgstr "Album"
 
 #: src/ui/page_traits.rs:37
 msgid "Last Played"
-msgstr ""
+msgstr "Legutóbb lejátszva"
 
 #: src/ui/playback_mode.rs:34
 msgid "No Shuffle/Repeat"
-msgstr ""
+msgstr "Nincs keverés/ismétlés"
 
 #: src/ui/playback_mode.rs:35
 msgid "Shuffle"
-msgstr ""
+msgstr "Keverés"
 
 #: src/ui/playback_mode.rs:36
 msgid "Repeat"
-msgstr ""
+msgstr "Ismétlés"
 
 #: src/ui/playback_mode.rs:37
 msgid "Repeat One"
-msgstr ""
+msgstr "Egy ismétlése"
 
 #: src/ui/playback_mode.rs:38
-#, fuzzy
-#| msgid "Shuffled Playlist"
 msgid "Shuffle Repeat"
-msgstr "Kevert lejátszólista"
+msgstr "Kevert ismétlés"
 
 #: src/ui/player_bar/common.rs:80
 msgid "Pause"
-msgstr ""
+msgstr "Szünet"
 
 #: src/ui/player_bar/common.rs:83 resources/ui/album_detail.ui:120
 #: resources/ui/artist_detail.ui:57 resources/ui/playlist_detail.ui:102
 #: resources/ui/player_bar/big_player.ui:143
 #: resources/ui/player_bar/compact_player_bar.ui:146
 #: resources/ui/player_bar/full_player_bar.ui:126
-#, fuzzy
-#| msgid "Playback"
 msgid "Play"
 msgstr "Lejátszás"
 
 #: src/ui/player_bar/common.rs:93
 msgid "Unknown Artist"
-msgstr ""
+msgstr "Ismeretlen előadó"
 
 #: src/ui/player_bar/common.rs:271 src/ui/song.rs:245
 msgid "Added song to playlist"
-msgstr ""
+msgstr "Szám hozzáadva a lejátszólistához"
 
 #: src/ui/player_bar/common.rs:275 src/ui/song.rs:249
 msgid "Failed to add song to playlist"
-msgstr ""
+msgstr "Nem sikerült a szám lejátszólistához adása"
 
 #: src/ui/playlist.rs:25
 msgid "1 song"
@@ -307,85 +274,69 @@ msgid "Empty playlist"
 msgstr "Üres lejátszólista"
 
 #: src/ui/playlist_detail.rs:280
-#, fuzzy
-#| msgid "Quick connect code copied to clipboard"
 msgid "Playlist ID copied to clipboard"
-msgstr "Gyors kapcsolódási kód vágólapra másolva"
+msgstr "A lejátszólista-azonosító a vágólapra másolva"
 
 #: src/ui/playlist_detail.rs:304
 msgid "Added songs to playlist"
-msgstr ""
+msgstr "Számok hozzáadva a lejátszólistához"
 
 #: src/ui/playlist_detail.rs:308
 msgid "Failed to add songs to playlist"
-msgstr ""
+msgstr "Nem sikerült a számok lejátszólistához adása"
 
 #: src/ui/playlist_detail.rs:430
 msgid "Failed to save playlist order."
-msgstr ""
+msgstr "Nem sikerült a lejátszólista-sorrend mentése."
 
 #: src/ui/playlist_detail.rs:483
 msgid "Failed to modify playlist."
-msgstr ""
+msgstr "Nem sikerült a lejátszólista módosítása."
 
 #: src/ui/playlist_detail.rs:555
 msgid "Smart playlists cannot be deleted"
-msgstr ""
+msgstr "Az okos lejátszólisták nem törölhetők"
 
 #: src/ui/playlist_detail.rs:591
-#, fuzzy
-#| msgid "Playlist Detail"
 msgid "Playlist deleted"
-msgstr "Lejátszólista részletei"
+msgstr "Lejátszólista törölve"
 
 #: src/ui/playlist_detail.rs:594
 msgid "Failed to delete playlist"
-msgstr ""
+msgstr "Nem sikerült a lejátszólista törlése"
 
 #: src/ui/playlist_dialogs.rs:7
-#, fuzzy
-#| msgid "Playlists"
 msgid "Playlist name"
-msgstr "Lejátszólisták"
+msgstr "Lejátszólista neve"
 
 #: src/ui/playlist_dialogs.rs:16
-#, fuzzy
-#| msgid "Playlists"
 msgid "New Playlist"
-msgstr "Lejátszólisták"
+msgstr "Új lejátszólista"
 
 #: src/ui/playlist_dialogs.rs:20
 msgid "Create"
-msgstr ""
+msgstr "Létrehozás"
 
 #: src/ui/playlist_dialogs.rs:56
-#, fuzzy
-#| msgid "Smart playlist"
 msgid "Delete playlist?"
-msgstr "Okos lejátszólista"
+msgstr "Lejátszólista törlése?"
 
 #: src/ui/playlist_dialogs.rs:59
 msgid "Delete"
-msgstr ""
+msgstr "Törlés"
 
 #: src/ui/playlist_list.rs:154 src/ui/queue.rs:131
-#, fuzzy
-#| msgid "Playlist Detail"
 msgid "Playlist created"
-msgstr "Lejátszólista részletei"
+msgstr "Lejátszólista létrehozva"
 
 #: src/ui/playlist_list.rs:157 src/ui/queue.rs:134
-#, fuzzy
-#| msgid "Smart playlist"
 msgid "Failed to create playlist"
-msgstr "Okos lejátszólista"
+msgstr "Nem sikerült a lejátszólista létrehozása"
 
 #: src/ui/preferences.rs:111 resources/ui/preferences.ui:132
 #: resources/ui/preferences.ui:148
-#, fuzzy
-#| msgid "Clear Queue"
 msgid "Clear"
-msgstr "Sor ürítése"
+msgstr "Törlés"
 
 #: src/ui/preferences.rs:134 src/ui/preferences.rs:140
 #: src/ui/preferences.rs:188 src/ui/preferences.rs:194
@@ -393,43 +344,40 @@ msgstr "Sor ürítése"
 #: src/ui/stream_info_dialog.rs:74 src/ui/stream_info_dialog.rs:121
 #: src/ui/stream_info_dialog.rs:122
 msgid "Unknown"
-msgstr ""
+msgstr "Ismeretlen"
 
 #: src/ui/preferences.rs:146
 msgid "Clear downloaded music?"
-msgstr ""
+msgstr "Törli a letöltött zenéket?"
 
 #: src/ui/preferences.rs:147
 msgid "This will remove all offline media."
-msgstr ""
+msgstr "Ez eltávolítja az összes offline médiát."
 
 #: src/ui/preferences.rs:160 src/ui/preferences.rs:214
 msgid "Clearing…"
-msgstr ""
+msgstr "Törlés…"
 
 #: src/ui/preferences.rs:167
 msgid "Failed to clear downloaded music."
-msgstr ""
+msgstr "Nem sikerült a letöltött zenék törlése."
 
 #: src/ui/preferences.rs:200
-#, fuzzy
-#| msgid "Clear Image Cache"
 msgid "Clear image cache?"
-msgstr "Képgyorsítótár ürítése"
+msgstr "Üríti a képgyorsítótárat?"
 
 #: src/ui/preferences.rs:201
 msgid "This will remove all cached album and artist art."
 msgstr ""
+"Ez eltávolítja az összes gyorsítótárazott album- és előadóillusztrációt."
 
 #: src/ui/preferences.rs:221
-#, fuzzy
-#| msgid "Smart playlist"
 msgid "Failed to clear cached images."
-msgstr "Okos lejátszólista"
+msgstr "Nem sikerült a gyorsítótárazott képek törlése."
 
 #: src/ui/setup.rs:180 src/ui/setup.rs:195 src/ui/setup.rs:425
 msgid "Credentials could not be saved. Do you have a keyring daemon running?"
-msgstr ""
+msgstr "Nem sikerült a hitelesítő adatok mentése. Fut a kulcstartódémon?"
 
 #: src/ui/setup.rs:245
 msgid "Connection error. Please supply a full URL (http://example.com:8096)"
@@ -445,173 +393,165 @@ msgstr "Nem sikerült a hitelesítés a Jellyfinnel vagy a Subsonickal"
 
 #: src/ui/setup.rs:314
 msgid "Failed to load libraries"
-msgstr ""
+msgstr "Nem sikerült a zenetárak betöltése"
 
 #: src/ui/setup.rs:344
 msgid "Failed to initiate quick connect. Is the host valid?"
-msgstr ""
+msgstr "Nem sikerült a gyors kapcsolódás kezdeményezése. Érvényes a gépnév?"
 
 #: src/ui/setup.rs:399
 msgid "Error during quick connect"
-msgstr ""
+msgstr "Hiba a gyors kapcsolódás során"
 
 #: src/ui/setup.rs:435
-#, fuzzy
-#| msgid "Could not authenticate with Jellyfin or Subsonic"
 msgid "Failed to authenticate with quick connect"
-msgstr "Nem sikerült a hitelesítés a Jellyfinnel vagy a Subsonickal"
+msgstr "Nem sikerült a hitelesítés a gyors kapcsolódással"
 
 #: src/ui/setup.rs:445
 msgid "Quick connect code copied to clipboard"
-msgstr "Gyors kapcsolódási kód vágólapra másolva"
+msgstr "A gyors kapcsolódási kód a vágólapra másolva"
 
 #: src/ui/stream_info_dialog.rs:9
 msgid "Yes"
-msgstr ""
+msgstr "Igen"
 
 #: src/ui/stream_info_dialog.rs:10
 msgid "No"
-msgstr ""
+msgstr "Nem"
 
 #: src/ui/stream_info_dialog.rs:50
 msgid "Backend"
-msgstr ""
+msgstr "Háttérrendszer"
 
 #: src/ui/stream_info_dialog.rs:53
 msgid "Codec"
-msgstr ""
+msgstr "Kodek"
 
 #: src/ui/stream_info_dialog.rs:55
 msgid "Container"
-msgstr ""
+msgstr "Konténer"
 
 #: src/ui/stream_info_dialog.rs:56 src/ui/stream_info_dialog.rs:78
 msgid "None"
-msgstr ""
+msgstr "Egyik sem"
 
 #: src/ui/stream_info_dialog.rs:59
 msgid "Sample Rate"
-msgstr ""
+msgstr "Mintavételi arány"
 
 #: src/ui/stream_info_dialog.rs:62
 msgid "Channels"
-msgstr ""
+msgstr "Csatornák"
 
 #: src/ui/stream_info_dialog.rs:65
 msgid "Bit Rate"
-msgstr ""
+msgstr "Bitsebesség"
 
 #: src/ui/stream_info_dialog.rs:68
 msgid "Encoder"
-msgstr ""
+msgstr "Kódoló"
 
 #: src/ui/stream_info_dialog.rs:73
 msgid "Original Codec"
-msgstr ""
+msgstr "Eredeti kodek"
 
 #: src/ui/stream_info_dialog.rs:77
 msgid "Original Container"
-msgstr ""
+msgstr "Eredeti konténer"
 
 #: src/ui/stream_info_dialog.rs:81
 msgid "Original Sample Rate"
-msgstr ""
+msgstr "Eredeti mintavételi arány"
 
 #: src/ui/stream_info_dialog.rs:85
 msgid "Original Channels"
-msgstr ""
+msgstr "Eredeti csatornák"
 
 #: src/ui/stream_info_dialog.rs:89
 msgid "Supports Direct Play"
-msgstr ""
+msgstr "Támogatja a közvetlen lejátszás"
 
 #: src/ui/stream_info_dialog.rs:93
 msgid "Supports Direct Stream"
-msgstr ""
+msgstr "Támogatja a közvetlen közvetítést"
 
 #: src/ui/stream_info_dialog.rs:97
-#, fuzzy
-#| msgid "Transcoding"
 msgid "Supports Transcoding"
-msgstr "Átkódolás"
+msgstr "Támogatja az átkódolást"
 
 #: src/ui/stream_info_dialog.rs:103
 msgid "Original Bit Rate"
-msgstr ""
+msgstr "Eredeti bitsebesség"
 
 #: src/ui/stream_info_dialog.rs:109
 msgid "File Size"
-msgstr ""
+msgstr "Fájlméret"
 
 #: src/ui/stream_info_dialog.rs:121
 msgid "Id"
-msgstr ""
+msgstr "Azonosító"
 
 #: src/ui/stream_info_dialog.rs:122
 msgid "Path"
-msgstr ""
+msgstr "Elérési út"
 
 #: src/ui/stream_info_dialog.rs:123
 msgid "Approximate Play Count"
-msgstr ""
+msgstr "Közelítő lejátszásszám"
 
 #: src/ui/stream_info_dialog.rs:124
 msgid "Date Added"
-msgstr ""
+msgstr "Hozzáadás dátuma"
 
 #: src/ui/stream_info_dialog.rs:125
 msgid "Genres"
-msgstr ""
+msgstr "Műfajok"
 
 #: src/ui/stream_info_dialog.rs:148
 msgid "Song Properties"
-msgstr ""
+msgstr "Szám tulajdonságai"
 
 #: src/ui/stream_info_dialog.rs:155
 msgid "Local Properties"
-msgstr ""
+msgstr "Helyi tulajdonságok"
 
 #: src/ui/stream_info_dialog.rs:162
 msgid "Remote Properties"
-msgstr ""
+msgstr "Távoli tulajdonságok"
 
 #: src/ui/window.rs:187 resources/ui/window.ui:415
-#, fuzzy
-#| msgid "Choose Library"
 msgid "Change Library"
-msgstr "Válasszon könyvtárat"
+msgstr "Médiatár megváltoztatása"
 
 #: src/ui/window.rs:188
-#, fuzzy
-#| msgid "Select Library"
 msgid "Select"
-msgstr "Könyvtár kiválasztása"
+msgstr "Kiválasztás"
 
 #: src/ui/window.rs:223
-#, fuzzy
-#| msgid "Smart playlist"
 msgid "Failed to fetch libraries"
-msgstr "Okos lejátszólista"
+msgstr "Nem sikerült a zenetárak lekérése"
 
 #: src/ui/window.rs:233
 msgid "Logged out"
-msgstr ""
+msgstr "Kijelentkezve"
 
 #: src/ui/window.rs:361
 msgid "all genres"
-msgstr ""
+msgstr "összes műfaj"
 
 #: src/ui/window.rs:836
 msgid "1 item added to library"
 msgid_plural "{} items added to library"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "1 elem hozzáadva a zenetárhoz"
+msgstr[1] "{} elem hozzáadva a zenetárhoz"
 
 #: src/ui/window.rs:857
 msgid ""
 "Library rescan requested. Wait a few seconds and then use the \"Refresh "
 "Library\" option."
 msgstr ""
+"A zenetár újraolvasása kérve. Várjon néhány másodpercet, majd használja a „"
+"Zenetár frissítése” lehetőséget."
 
 #: resources/ui/album_art.ui:33
 msgid "Missing album art"
@@ -619,65 +559,51 @@ msgstr "Hiányzó albumillusztráció"
 
 #: resources/ui/album_detail.ui:82 resources/ui/playlist_detail.ui:66
 msgid "tracks"
-msgstr ""
+msgstr "számok"
 
 #: resources/ui/album_detail.ui:147 resources/ui/artist_detail.ui:85
 msgid "More Actions"
-msgstr ""
+msgstr "További műveletek"
 
 #: resources/ui/album_list.ui:8
-#, fuzzy
-#| msgid "Albums"
 msgid "No Albums"
-msgstr "Albumok"
+msgstr "Nincsenek albumok"
 
 #: resources/ui/album_list.ui:14 resources/ui/artist_list.ui:14
 msgid "Caching initial library download..."
-msgstr ""
+msgstr "Kezdeti zenetár-letöltés gyorsítótárazása…"
 
 #: resources/ui/artist_detail.ui:45
-#, fuzzy
-#| msgid "Artist Detail"
 msgid "Artist Name"
-msgstr "Előadó részletei"
+msgstr "Előadó neve"
 
 #: resources/ui/artist_list.ui:8
-#, fuzzy
-#| msgid "Artists"
 msgid "No Artists"
-msgstr "Előadók"
+msgstr "Nincsenek előadók"
 
 #: resources/ui/lyrics.ui:56
 msgid "No lyrics available"
-msgstr ""
+msgstr "Nem érhető el dalszöveg"
 
 #: resources/ui/playback_mode.ui:9
-#, fuzzy
-#| msgid "Playback"
 msgid "Playback Mode"
-msgstr "Lejátszás"
+msgstr "Lejátszási mód"
 
 #: resources/ui/playlist_detail.ui:129
 msgid "More actions"
-msgstr ""
+msgstr "További műveletek"
 
 #: resources/ui/playlist_detail.ui:140
-#, fuzzy
-#| msgid "Smart playlist"
 msgid "Delete playlist"
-msgstr "Okos lejátszólista"
+msgstr "Lejátszólista törlése"
 
 #: resources/ui/playlist_detail.ui:154
-#, fuzzy
-#| msgid "Playlists"
 msgid "Playlist is Empty"
-msgstr "Lejátszólisták"
+msgstr "A lejátszólista üres"
 
 #: resources/ui/playlist_list.ui:8
-#, fuzzy
-#| msgid "Playlists"
 msgid "No Playlists"
-msgstr "Lejátszólisták"
+msgstr "Nincsenek lejátszólisták"
 
 #: resources/ui/preferences.ui:9 resources/ui/preferences.ui:12
 #: resources/ui/shortcuts_dialog.ui:6
@@ -702,11 +628,11 @@ msgstr "Áttetszőség, elmosott hátterek és egyebek használata"
 
 #: resources/ui/preferences.ui:27
 msgid "Compact Mode"
-msgstr ""
+msgstr "Kompakt mód"
 
 #: resources/ui/preferences.ui:28
 msgid "Use smaller UI elements regardless of window size."
-msgstr ""
+msgstr "Kisebb felületi elemek használata, az ablakmérettől függetlenül."
 
 #: resources/ui/preferences.ui:35 resources/ui/shortcuts_dialog.ui:91
 msgid "Playback"
@@ -721,14 +647,12 @@ msgid "May require backend plugins."
 msgstr "Háttérrendszer-bővítmények lehetnek szükségesek."
 
 #: resources/ui/preferences.ui:44
-#, fuzzy
-#| msgid "Playback"
 msgid "Gapless Playback"
-msgstr "Lejátszás"
+msgstr "Hézagmentes lejátszás"
 
 #: resources/ui/preferences.ui:45
 msgid "Uninterrupted playback of consecutive tracks."
-msgstr ""
+msgstr "Egymás követő számok megszakításmentes lejátszása."
 
 #: resources/ui/preferences.ui:50
 msgid "Inhibit Suspend"
@@ -745,6 +669,8 @@ msgstr "Átkódolás"
 #: resources/ui/preferences.ui:59
 msgid "Currently Subsonic backends cannot seek transcoded streams."
 msgstr ""
+"Jelenleg a Subsonic háttérrendszerek nem tudnak az átkódolt közvetítésekben "
+"léptetni."
 
 #: resources/ui/preferences.ui:62
 msgid "Transcoding Profile"
@@ -784,27 +710,27 @@ msgstr "Leggyakrabban játszottak lejátszólistája"
 
 #: resources/ui/preferences.ui:122 resources/ui/preferences.ui:125
 msgid "Cache"
-msgstr ""
+msgstr "Gyorsítótár"
 
 #: resources/ui/preferences.ui:128
 msgid "Downloaded Music"
-msgstr ""
+msgstr "Zene letöltése"
 
 #: resources/ui/preferences.ui:129 resources/ui/preferences.ui:145
 msgid "Calculating…"
-msgstr ""
+msgstr "Számítás…"
 
 #: resources/ui/preferences.ui:144
 msgid "Cached Images"
-msgstr ""
+msgstr "Gyorsítótárazott képek"
 
 #: resources/ui/queue.ui:8
 msgid "Nothing Playing"
-msgstr ""
+msgstr "Nincs lejátszás"
 
 #: resources/ui/queue.ui:41
 msgid "Jump to current song"
-msgstr ""
+msgstr "Ugrás a jelenlegi számhoz"
 
 #: resources/ui/setup.ui:11
 msgid "Servers"
@@ -812,7 +738,7 @@ msgstr "Kiszolgálók"
 
 #: resources/ui/setup.ui:20
 msgid "Connect to Server"
-msgstr "Kapcsolód kiszolgálóhoz"
+msgstr "Kapcsolódás kiszolgálóhoz"
 
 #: resources/ui/setup.ui:21
 msgid ""
@@ -826,13 +752,15 @@ msgstr ""
 
 #: resources/ui/setup.ui:36
 msgid "Host URL"
-msgstr ""
+msgstr "Gazdagép webcíme"
 
 #: resources/ui/setup.ui:38
 msgid ""
 "Enter the complete server address including protocol (HTTP or HTTPS) and "
 "port number (:8096)"
 msgstr ""
+"Adja meg a teljes kiszolgálócímet protokollal (HTTP vagy HTTPS) és "
+"portszámmal (:8096) együtt"
 
 #: resources/ui/setup.ui:43
 msgid "Username"
@@ -844,7 +772,7 @@ msgstr "Jelszó"
 
 #: resources/ui/setup.ui:61 resources/ui/setup.ui:222
 msgid "Advanced Settings"
-msgstr ""
+msgstr "Speciális beállítások"
 
 #: resources/ui/setup.ui:76
 msgid "Connect"
@@ -856,20 +784,20 @@ msgstr "Jellyfin gyors kapcsolódás"
 
 #: resources/ui/setup.ui:104
 msgid "Choose Library"
-msgstr "Válasszon könyvtárat"
+msgstr "Válasszon zenetárat"
 
 #: resources/ui/setup.ui:114
 msgid "Select Library"
-msgstr "Könyvtár kiválasztása"
+msgstr "Médiatár kiválasztása"
 
 #: resources/ui/setup.ui:115
 msgid "Choose which library Gelly will use to load your music."
 msgstr ""
-"Válasszon, hogy a Gelly melyik könyvtárat használja a zenéje betöltéséhez."
+"Válasszon, hogy a Gelly melyik zenetárat használja a zenéje betöltéséhez."
 
 #: resources/ui/setup.ui:130
 msgid "Library"
-msgstr "Könyvtár"
+msgstr "Médiatár"
 
 #: resources/ui/setup.ui:137
 msgid "Launch Gelly"
@@ -885,17 +813,19 @@ msgstr "A hitelesítés befejezéséhez adja meg a kódot a Jellyfin weblapján.
 
 #: resources/ui/setup.ui:233
 msgid "Subsonic"
-msgstr ""
+msgstr "Subsonic"
 
 #: resources/ui/setup.ui:236
 msgid "Legacy Authentication"
-msgstr ""
+msgstr "Örökölt hitelesítés"
 
 #: resources/ui/setup.ui:237
 msgid ""
 "Required by specific servers that do not support token auth like Nextcloud "
 "Music."
 msgstr ""
+"Bizonyos kiszolgálók követelik meg, melyek nem támogatják a tokenes "
+"hitelesítést, például a Nextcloud Zenék."
 
 #: resources/ui/shortcuts_dialog.ui:9 resources/ui/window.ui:411
 msgid "Refresh Library"
@@ -903,27 +833,25 @@ msgstr "Gyűjtemény frissítése"
 
 #: resources/ui/shortcuts_dialog.ui:10
 msgid "Re-downloads the music library"
-msgstr ""
+msgstr "Újra letölti a zenetárat"
 
 #: resources/ui/shortcuts_dialog.ui:16
-#, fuzzy
-#| msgid "Request Rescan"
 msgid "Request Library Rescan"
 msgstr "Újraolvasás kérése"
 
 #: resources/ui/shortcuts_dialog.ui:17
 msgid "Ask Jellyfin to rescan the library for new or modified files"
 msgstr ""
+"A Jellyfin megkérése, hogy olvassa újra a zenetárat új és megváltozott "
+"fájlokat keresve"
 
 #: resources/ui/shortcuts_dialog.ui:23
 msgid "Search"
 msgstr "Keresés"
 
 #: resources/ui/shortcuts_dialog.ui:29
-#, fuzzy
-#| msgid "Favorites"
 msgid "Show Favorites"
-msgstr "Kedvencek"
+msgstr "Kedvencek megjelenítése"
 
 #: resources/ui/shortcuts_dialog.ui:35 resources/ui/window.ui:425
 msgid "Preferences"
@@ -939,75 +867,63 @@ msgstr "Kilépés"
 
 #: resources/ui/shortcuts_dialog.ui:55
 msgid "Navigation"
-msgstr ""
+msgstr "Navigáció"
 
 #: resources/ui/shortcuts_dialog.ui:58
-#, fuzzy
-#| msgid "Albums"
 msgid "Focus Albums"
-msgstr "Albumok"
+msgstr "Fókuszálás az albumokra"
 
 #: resources/ui/shortcuts_dialog.ui:64
-#, fuzzy
-#| msgid "Artists"
 msgid "Focus Artists"
-msgstr "Előadók"
+msgstr "Fókuszálás az előadókra"
 
 #: resources/ui/shortcuts_dialog.ui:70
-#, fuzzy
-#| msgid "Playlists"
 msgid "Focus Playlist"
-msgstr "Lejátszólisták"
+msgstr "Fókuszálás a lejátszólistára"
 
 #: resources/ui/shortcuts_dialog.ui:76
 msgid "Focus Song List"
-msgstr ""
+msgstr "Fókuszálás a számlistára"
 
 #: resources/ui/shortcuts_dialog.ui:82
 msgid "Play Selected"
-msgstr ""
+msgstr "Kijelölt lejátszása"
 
 #: resources/ui/shortcuts_dialog.ui:83
 msgid "Play the currently selected item in the list"
-msgstr ""
+msgstr "A jelenleg kijelölt elem lejátszása a listából"
 
 #: resources/ui/shortcuts_dialog.ui:94
 msgid "Toggle Play/Pause"
-msgstr ""
+msgstr "Lejátszás/szünet"
 
 #: resources/ui/shortcuts_dialog.ui:100
 msgid "Previous Song"
-msgstr ""
+msgstr "Előző szám"
 
 #: resources/ui/shortcuts_dialog.ui:106
-#, fuzzy
-#| msgid "Songs"
 msgid "Next Song"
-msgstr "Számok"
+msgstr "Következő szám"
 
 #: resources/ui/shortcuts_dialog.ui:112
 msgid "Seek Backward"
-msgstr ""
+msgstr "Léptetés hátrafelé"
 
 #: resources/ui/shortcuts_dialog.ui:118
 msgid "Seek Forward"
-msgstr ""
+msgstr "Léptetés előrefelé"
 
 #: resources/ui/song.ui:117
 msgid "Available offline"
-msgstr ""
+msgstr "Elérhető offline"
 
 #: resources/ui/song_list.ui:8
-#, fuzzy
-#| msgid "Songs"
 msgid "No Songs"
-msgstr "Számok"
+msgstr "Nincsenek számok"
 
 #: resources/ui/song_list.ui:35
-#, fuzzy
-#| msgid "Songs"
 msgid "songs"
-msgstr "Számok"
+msgstr "szám"
 
 #: resources/ui/window.ui:53
 msgid "Album Detail"
@@ -1031,7 +947,7 @@ msgstr "Sor megjelenítése"
 
 #: resources/ui/window.ui:157
 msgid "Search and Genres"
-msgstr ""
+msgstr "Keresés és műfajok"
 
 #: resources/ui/window.ui:163
 msgid "Sort"
@@ -1042,14 +958,12 @@ msgid "New"
 msgstr "Új"
 
 #: resources/ui/window.ui:205
-#, fuzzy
-#| msgid "Search"
 msgid "Search..."
-msgstr "Keresés"
+msgstr "Keresés…"
 
 #: resources/ui/window.ui:228
 msgid "Reset"
-msgstr ""
+msgstr "Visszaállítás"
 
 #: resources/ui/window.ui:250
 msgid "Favorites"
@@ -1093,7 +1007,7 @@ msgstr "Újraolvasás kérése"
 
 #: resources/ui/window.ui:419
 msgid "Offline"
-msgstr ""
+msgstr "Offline"
 
 #: resources/ui/window.ui:433
 msgid "About Gelly"
@@ -1107,34 +1021,32 @@ msgstr "Kijelentkezés"
 #: resources/ui/player_bar/compact_player_bar.ui:136
 #: resources/ui/player_bar/full_player_bar.ui:116
 msgid "Previous"
-msgstr ""
+msgstr "Előző"
 
 #: resources/ui/player_bar/big_player.ui:153
 #: resources/ui/player_bar/compact_player_bar.ui:156
 #: resources/ui/player_bar/full_player_bar.ui:137
 msgid "Next"
-msgstr ""
+msgstr "Következő"
 
 #: resources/ui/player_bar/big_player.ui:170
 #: resources/ui/player_bar/compact_player_bar.ui:110
 #: resources/ui/player_bar/full_player_bar.ui:199
 msgid "Lyrics"
-msgstr ""
+msgstr "Dalszöveg"
 
 #: resources/ui/player_bar/big_player.ui:180
 #: resources/ui/player_bar/compact_player_bar.ui:120
 #: resources/ui/player_bar/full_player_bar.ui:209
-#, fuzzy
-#| msgid "Favorites"
 msgid "Favorite"
-msgstr "Kedvencek"
+msgstr "Kedvenc"
 
 #: resources/ui/player_bar/big_player.ui:200
 #: resources/ui/player_bar/full_player_bar.ui:246
 msgid "Volume"
-msgstr ""
+msgstr "Hangerő"
 
 #: resources/ui/player_bar/big_player.ui:215
 #: resources/ui/player_bar/full_player_bar.ui:233
 msgid "Song Menu"
-msgstr ""
+msgstr "Szám menü"

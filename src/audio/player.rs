@@ -17,7 +17,7 @@ pub enum PlayerState {
 pub enum PlayerEvent {
     StateChanged(PlayerState),
     EndOfStream,
-    Error(String),
+    Error(glib::Error),
     PositionChanged(u64),
     DurationChanged(u64),
     AboutToFinish,
@@ -172,14 +172,15 @@ impl AudioPlayer {
                         let _ = sender.send(PlayerEvent::EndOfStream).await;
                     }
                     gst::MessageView::Error(err) => {
+                        let error = err.error();
                         let error_msg = format!(
                             "Gstreamer error from {:?}: {} ({})",
                             err.src().map(|s| s.path_string()),
-                            err.error(),
+                            error,
                             err.debug().unwrap_or_else(|| "no debug info".into())
                         );
                         warn!("{error_msg}");
-                        let _ = sender.send(PlayerEvent::Error(error_msg)).await;
+                        let _ = sender.send(PlayerEvent::Error(error)).await;
                     }
                     gst::MessageView::DurationChanged(_) => {
                         // Get it via a timer instead

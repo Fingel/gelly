@@ -4,6 +4,11 @@
 - [ ] Git tag
 - [ ] Github release
 
+AppImage:
+
+- [ ] Run `cargo build --release`
+- [ ] Run the build script: `PROFILE=release ./package/appimage/make-appimage.sh`
+
 Arch/PKGBUILD:
 
 - [ ] Update pkgver
