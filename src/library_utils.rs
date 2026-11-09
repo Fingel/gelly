@@ -65,7 +65,7 @@ pub fn play_similar(id: &str, app: &Application) {
                         .collect();
                     if songs.len() <= 20 {
                         let msg = tr("The backend did not return many songs, it may require a sonic analysis plugin");
-                        audio_model.emit_error(&msg);
+                        log::warn!("{}", msg);
                     }
                     if !songs.is_empty() {
                         audio_model.set_queue(songs, 0, true);
