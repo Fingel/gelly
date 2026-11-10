@@ -90,6 +90,7 @@ impl AudioModel {
                         obj.set_property("duration", dur as u32);
                     }
                     PlayerEvent::Error(err) => {
+                        obj.player().stop();
                         obj.imp().track_transition_in_progress.set(false);
                         obj.set_property("loading", false);
                         obj.emit_error(&AudioError::from(err));

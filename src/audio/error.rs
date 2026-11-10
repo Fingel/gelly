@@ -17,10 +17,8 @@ pub enum AudioError {
 impl AudioError {
     pub fn user_message(&self) -> String {
         match self {
-            Self::Stream(cause) if cause.matches(gstreamer::StreamError::TypeNotFound) => {
-                tr("Unable to load the stream. Is the network available?")
-            }
-            Self::Resource(cause) | Self::Playback(cause) | Self::Stream(cause) => {
+            Self::Stream(_) => tr("Unable to load the stream. Is the network available?"),
+            Self::Resource(cause) | Self::Playback(cause) => {
                 tr("Playback error: {}").replace("{}", &cause.to_string())
             }
             Self::SeekFailed => {

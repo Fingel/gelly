@@ -23,6 +23,17 @@ use log::{debug, error, warn};
 use std::sync::Arc;
 use std::sync::atomic::Ordering;
 
+#[derive(Default)]
+pub enum AudioRecovery {
+    #[default]
+    Idle,
+    Failed(u32),
+    RetryScheduled {
+        retry: glib::SourceId,
+        position: u32,
+    },
+}
+
 glib::wrapper! {
     pub struct Application(ObjectSubclass<imp::Application>)
     @extends gio::Application, gtk::Application, adw::Application,
@@ -144,6 +155,7 @@ impl Application {
         if config::get_offline()
             && let Some(audio_model) = self.audio_model()
         {
+            self.take_audio_recovery();
             audio_model.reset_playback();
         }
         self.refresh_all(false);
@@ -163,9 +175,7 @@ impl Application {
                 #[weak(rename_to = app)]
                 self,
                 move |_audio_model: AudioModel, error: AudioError| {
-                    log::error!("Audio error: {}", error);
-                    let message = error.user_message();
-                    app.emit_by_name::<()>("global-error", &[&message]);
+                    app.handle_audio_error(error);
                 }
             ),
         );
@@ -176,7 +186,12 @@ impl Application {
             glib::closure_local!(
                 #[weak(rename_to = app)]
                 self,
-                move |_audio_model: AudioModel| {
+                move |audio_model: AudioModel| {
+                    if let Some(position) = app.take_audio_recovery()
+                        && position > 0
+                    {
+                        audio_model.seek(position);
+                    }
                     app.update_inhibit(true);
                 }
             ),
@@ -202,6 +217,18 @@ impl Application {
                 self,
                 move |_audio_model: AudioModel| {
                     app.update_inhibit(false);
+                }
+            ),
+        );
+
+        audio_model.connect_closure(
+            "song-changed",
+            false,
+            glib::closure_local!(
+                #[weak(rename_to = app)]
+                self,
+                move |_audio_model: AudioModel, _song_id: String| {
+                    app.take_audio_recovery(); // clear recovery state
                 }
             ),
         );
@@ -275,6 +302,66 @@ impl Application {
         } else {
             None
         }
+    }
+
+    fn take_audio_recovery(&self) -> Option<u32> {
+        match self.imp().audio_recovery.replace(AudioRecovery::Idle) {
+            AudioRecovery::Idle => None,
+            AudioRecovery::Failed(position) => Some(position),
+            AudioRecovery::RetryScheduled { retry, position } => {
+                retry.remove();
+                Some(position)
+            }
+        }
+    }
+
+    fn notify_audio_error(&self, error: &AudioError) {
+        if matches!(error, AudioError::SeekFailed)
+            || matches!(*self.imp().audio_recovery.borrow(), AudioRecovery::Idle)
+        {
+            let message = error.user_message();
+            self.emit_by_name::<()>("global-error", &[&message]);
+        }
+    }
+
+    fn handle_audio_error(&self, error: AudioError) {
+        let Some(audio_model) = self.audio_model() else {
+            return;
+        };
+
+        log::error!("Audio error: {}", error);
+        self.notify_audio_error(&error);
+
+        if !matches!(error, AudioError::Stream(_)) {
+            return;
+        }
+
+        let mut recovery = self.imp().audio_recovery.borrow_mut();
+        let position = match &*recovery {
+            AudioRecovery::Idle => audio_model.position(),
+            AudioRecovery::Failed(position) => *position,
+            AudioRecovery::RetryScheduled { .. } => return,
+        };
+        let retry = glib::timeout_add_seconds_local(
+            1,
+            glib::clone!(
+                #[weak(rename_to = app)]
+                self,
+                #[weak]
+                audio_model,
+                #[upgrade_or]
+                glib::ControlFlow::Break,
+                move || {
+                    log::debug!("Attempting to restart playback");
+                    app.imp()
+                        .audio_recovery
+                        .replace(AudioRecovery::Failed(position));
+                    audio_model.play();
+                    glib::ControlFlow::Break
+                }
+            ),
+        );
+        *recovery = AudioRecovery::RetryScheduled { retry, position };
     }
 
     fn handle_backend_error(&self, error: BackendError, operation: &str) {
@@ -861,6 +948,7 @@ mod imp {
     use std::sync::atomic::AtomicU32;
     use std::sync::{Arc, OnceLock};
 
+    use super::AudioRecovery;
     use crate::audio::model::AudioModel;
     use crate::backend::Backend;
     use crate::cache::MediaCache;
@@ -876,6 +964,7 @@ mod imp {
         pub image_cache: RefCell<Option<ImageCache>>,
         pub media_cache: RefCell<Option<Arc<MediaCache>>>,
         pub audio_model: RefCell<Option<AudioModel>>,
+        pub audio_recovery: RefCell<AudioRecovery>,
         pub http_request_count: AtomicU32,
         pub inhibit_cookie: Cell<u32>,
     }
