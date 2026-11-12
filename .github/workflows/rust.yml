@@ -69,18 +69,25 @@ jobs:
       - name: Run tests in "${{ matrix.profile }}" mode
         run: cargo test --profile ${{ matrix.profile }} --verbose
 
-      - name: Build AppImage in "${{ matrix.profile }}" mode
+      - name: Build packages in "${{ matrix.profile }}" mode
         if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
         env:
           PROFILE: ${{ matrix.profile }}
-        run: ./package/appimage/make-appimage.sh
+        run:
+          ./package/appimage/make-appimage.sh
+          cargo install cargo-generate-rpm cargo-deb
+          cargo generate-rpm
+          cargo deb
 
-      - name: Upload Appimage
+      - name: Upload packages
         uses: actions/upload-artifact@v7
         if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
         with:
           name: gelly-${{ matrix.profile }}-${{ matrix.arch }}
-          path: target/appimage/*.appimage
+          path: |
+            target/appimage/*.appimage
+            target/generate-rpm/*.rpm
+            target/debian/*.deb
           if-no-files-found: error
 
   release:
@@ -107,6 +114,8 @@ jobs:
         run: |
           gh release create "$GITHUB_REF_NAME" \
             dist/*.appimage \
+            dist/*.rpm \
+            dist/*.deb \
             --repo "$GITHUB_REPOSITORY" \
             --title "$GITHUB_REF_NAME" \
             --draft --generate-notes
