@@ -547,6 +547,12 @@ impl AudioModel {
         self.current_song().map(|s| s.id()).unwrap_or_default()
     }
 
+    pub fn current_song_album_id(&self) -> String {
+        self.current_song()
+            .map(|s| s.album_id())
+            .unwrap_or_default()
+    }
+
     fn is_shuffle_enabled(&self) -> bool {
         matches!(
             PlaybackMode::try_from(self.playback_mode()),

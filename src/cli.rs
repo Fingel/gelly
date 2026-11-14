@@ -5,8 +5,18 @@ use gtk::{
 
 use crate::{
     application::Application,
+    audio::model::AudioModel,
     library_utils::{play_album, play_artist, play_song},
 };
+use serde::Serialize;
+
+#[derive(Debug, Serialize)]
+struct MediaInfo {
+    album: String,
+    artists: Vec<String>,
+    title: String,
+    album_id: String,
+}
 
 pub fn add_cli_options(app: &Application) {
     app.add_main_option(
@@ -47,6 +57,14 @@ pub fn add_cli_options(app: &Application) {
         glib::OptionFlags::NONE,
         glib::OptionArg::None,
         "Refresh the library",
+        None,
+    );
+    app.add_main_option(
+        "info",
+        Char::from(b'i'),
+        glib::OptionFlags::NONE,
+        glib::OptionArg::None,
+        "Print media info",
         None,
     );
     app.add_main_option(
@@ -116,6 +134,8 @@ pub fn add_cli_options(app: &Application) {
             audio_model.stop();
         } else if lookup_bool("refresh-library") {
             app.refresh_all(true);
+        } else if lookup_bool("info") {
+            print_media_info(&audio_model, command_line);
         }
 
         if let Some(song_id) = lookup_value("play-song") {
@@ -132,4 +152,16 @@ pub fn add_cli_options(app: &Application) {
 
         glib::ExitCode::SUCCESS
     });
+}
+
+fn print_media_info(model: &AudioModel, command_line: &gtk::gio::ApplicationCommandLine) {
+    println!("{:?}", model.current_song_artists());
+    let info = MediaInfo {
+        album: model.current_song_album(),
+        artists: model.current_song_artists(),
+        title: model.current_song_title(),
+        album_id: model.current_song_album_id(),
+    };
+    let j = serde_json::to_string(&info).unwrap();
+    command_line.print_literal(&format!("{}\n", j));
 }
