@@ -71,6 +71,23 @@
     <color type="primary" scheme_preference="dark">#325a4a</color>
   </branding>
   <releases>
+    <release version="2.1.0" date="2026-11-15">
+      <description>
+        <ul>
+          <li>
+            Much better error recovery, minor network blips should no longer
+            cause Gelly to give up playback.
+          </li>
+          <li>
+            Added an additional command to the CLI: --info to get current
+            song information.
+          </li>
+          <li>
+            Translation updates.
+          </li>
+        </ul>
+      </description>
+    </release>
     <release version="2.0.0" date="2026-10-31">
       <description>
         <ul>
