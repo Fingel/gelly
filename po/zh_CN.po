@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-11-01 10:31-0800\n"
-"PO-Revision-Date: 2026-09-24 11:51+0000\n"
+"PO-Revision-Date: 2026-11-17 09:51+0000\n"
 "Last-Translator: sendevia <me@sendevia.top>\n"
 "Language-Team: Chinese (Simplified Han script) <https://hosted.weblate.org/"
 "projects/gelly/gelly/zh_Hans/>\n"
@@ -17,29 +17,27 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 2026.10.dev0\n"
+"X-Generator: Weblate 2026.12.dev0\n"
 
 #: src/application.rs:169
 msgid "Playback error: {}"
 msgstr "播放错误：{}"
 
 #: src/application.rs:584
-#, fuzzy
-#| msgid "Failed to load libraries"
 msgid "Failed to download media: {}"
-msgstr "无法加载音乐库"
+msgstr "无法下载媒体：{}"
 
 #: src/application.rs:627
 msgid "Failed to remove download: {}"
-msgstr ""
+msgstr "无法移除下载：{}"
 
 #: src/application.rs:744
 msgid "Go online to rescan the library."
-msgstr ""
+msgstr "重新扫描曲库需联网。"
 
 #: src/application.rs:795
 msgid "Must be online"
-msgstr ""
+msgstr "必须联网"
 
 #: src/audio/model.rs:492
 msgid "Subsonic does not support seeking transcoded streams."
@@ -51,7 +49,7 @@ msgstr "无法跳转"
 
 #: src/library_utils.rs:47
 msgid "Must be online to fetch similar music."
-msgstr ""
+msgstr "获取相似音乐时必须联网。"
 
 #: src/library_utils.rs:67
 msgid ""
@@ -126,10 +124,8 @@ msgid "Add"
 msgstr "添加"
 
 #: src/ui/music_context_menu.rs:41
-#, fuzzy
-#| msgid "Failed to modify playlist."
 msgid "Must be online to modify playlists."
-msgstr "无法修改歌单。"
+msgstr "修改歌单时必须联网。"
 
 #: src/ui/music_context_menu.rs:66
 msgid "No playlists available. Please create a playlist first."
@@ -161,13 +157,11 @@ msgstr "播放相似"
 
 #: src/ui/music_context_menu.rs:154
 msgid "Download"
-msgstr ""
+msgstr "下载"
 
 #: src/ui/music_context_menu.rs:159
-#, fuzzy
-#| msgid "Remove from Playlist"
 msgid "Remove Downloads"
-msgstr "从歌单移除"
+msgstr "移除下载"
 
 #: src/ui/music_context_menu.rs:167
 msgid "Go to Album"
@@ -336,10 +330,8 @@ msgstr "无法创建歌单"
 
 #: src/ui/preferences.rs:111 resources/ui/preferences.ui:132
 #: resources/ui/preferences.ui:148
-#, fuzzy
-#| msgid "Clear Queue"
 msgid "Clear"
-msgstr "清除队列"
+msgstr "清除"
 
 #: src/ui/preferences.rs:134 src/ui/preferences.rs:140
 #: src/ui/preferences.rs:188 src/ui/preferences.rs:194
@@ -350,38 +342,32 @@ msgid "Unknown"
 msgstr "未知"
 
 #: src/ui/preferences.rs:146
-#, fuzzy
-#| msgid "Re-downloads the music library"
 msgid "Clear downloaded music?"
-msgstr "重新下载曲库"
+msgstr "清除已下载的音乐？"
 
 #: src/ui/preferences.rs:147
 msgid "This will remove all offline media."
-msgstr ""
+msgstr "这将会移除所有离线媒体。"
 
 #: src/ui/preferences.rs:160 src/ui/preferences.rs:214
 msgid "Clearing…"
-msgstr ""
+msgstr "清除中…"
 
 #: src/ui/preferences.rs:167
 msgid "Failed to clear downloaded music."
-msgstr ""
+msgstr "无法清除已下载的音乐。"
 
 #: src/ui/preferences.rs:200
-#, fuzzy
-#| msgid "Clear Image Cache"
 msgid "Clear image cache?"
-msgstr "清除图像缓存"
+msgstr "清除图像缓存？"
 
 #: src/ui/preferences.rs:201
 msgid "This will remove all cached album and artist art."
-msgstr ""
+msgstr "这将会移除所有缓存的专辑和艺术家封面。"
 
 #: src/ui/preferences.rs:221
-#, fuzzy
-#| msgid "Failed to load libraries"
 msgid "Failed to clear cached images."
-msgstr "无法加载音乐库"
+msgstr "无法清除缓存的图像。"
 
 #: src/ui/setup.rs:180 src/ui/setup.rs:195 src/ui/setup.rs:425
 msgid "Credentials could not be saved. Do you have a keyring daemon running?"
@@ -389,7 +375,7 @@ msgstr "无法保存认证信息。你的密钥环守护进程在运行吗？"
 
 #: src/ui/setup.rs:245
 msgid "Connection error. Please supply a full URL (http://example.com:8096)"
-msgstr "连接错误。请提供完整的 URL (http://example.com:8096)"
+msgstr "连接错误。请提供完整的 URL（http://example.com:8096）"
 
 #: src/ui/setup.rs:259
 msgid "Invalid credentials"
@@ -504,20 +490,16 @@ msgid "Path"
 msgstr "目录"
 
 #: src/ui/stream_info_dialog.rs:123
-#, fuzzy
-#| msgid "Play Count"
 msgid "Approximate Play Count"
-msgstr "播放次数"
+msgstr "大致播放次数"
 
 #: src/ui/stream_info_dialog.rs:124
 msgid "Date Added"
-msgstr ""
+msgstr "添加日期"
 
 #: src/ui/stream_info_dialog.rs:125
-#, fuzzy
-#| msgid "all genres"
 msgid "Genres"
-msgstr "所有风格"
+msgstr "风格"
 
 #: src/ui/stream_info_dialog.rs:148
 msgid "Song Properties"
@@ -564,7 +546,7 @@ msgstr "已请求重新扫描媒体库。请稍候片刻，然后使用“刷新
 
 #: resources/ui/album_art.ui:33
 msgid "Missing album art"
-msgstr "缺少专辑图片"
+msgstr "缺少专辑封面"
 
 #: resources/ui/album_detail.ui:82 resources/ui/playlist_detail.ui:66
 msgid "tracks"
@@ -580,7 +562,7 @@ msgstr "无专辑"
 
 #: resources/ui/album_list.ui:14 resources/ui/artist_list.ui:14
 msgid "Caching initial library download..."
-msgstr "正在缓存初始曲库.."
+msgstr "正在缓存初始曲库…"
 
 #: resources/ui/artist_detail.ui:45
 msgid "Artist Name"
@@ -717,19 +699,19 @@ msgstr "播放次数最多的歌单"
 
 #: resources/ui/preferences.ui:122 resources/ui/preferences.ui:125
 msgid "Cache"
-msgstr ""
+msgstr "缓存"
 
 #: resources/ui/preferences.ui:128
 msgid "Downloaded Music"
-msgstr ""
+msgstr "已下载的音乐"
 
 #: resources/ui/preferences.ui:129 resources/ui/preferences.ui:145
 msgid "Calculating…"
-msgstr ""
+msgstr "计算中…"
 
 #: resources/ui/preferences.ui:144
 msgid "Cached Images"
-msgstr ""
+msgstr "缓存的图像"
 
 #: resources/ui/queue.ui:8
 msgid "Nothing Playing"
@@ -894,31 +876,27 @@ msgstr "在列表中播放当前选择的歌曲"
 
 #: resources/ui/shortcuts_dialog.ui:94
 msgid "Toggle Play/Pause"
-msgstr ""
+msgstr "切换播放/暂停"
 
 #: resources/ui/shortcuts_dialog.ui:100
-#, fuzzy
-#| msgid "Previous"
 msgid "Previous Song"
 msgstr "上一首"
 
 #: resources/ui/shortcuts_dialog.ui:106
-#, fuzzy
-#| msgid "No Songs"
 msgid "Next Song"
-msgstr "无歌曲"
+msgstr "下一首"
 
 #: resources/ui/shortcuts_dialog.ui:112
 msgid "Seek Backward"
-msgstr ""
+msgstr "后退"
 
 #: resources/ui/shortcuts_dialog.ui:118
 msgid "Seek Forward"
-msgstr ""
+msgstr "前进"
 
 #: resources/ui/song.ui:117
 msgid "Available offline"
-msgstr ""
+msgstr "可离线"
 
 #: resources/ui/song_list.ui:8
 msgid "No Songs"
@@ -1010,7 +988,7 @@ msgstr "请求重新扫描"
 
 #: resources/ui/window.ui:419
 msgid "Offline"
-msgstr ""
+msgstr "离线"
 
 #: resources/ui/window.ui:433
 msgid "About Gelly"
