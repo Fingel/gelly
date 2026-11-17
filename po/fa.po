@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-01 10:31-0800\n"
+"POT-Creation-Date: 2026-11-15 15:42-0800\n"
 "PO-Revision-Date: 2026-08-17 16:51+0000\n"
 "Last-Translator: pou <stpou@proton.me>\n"
 "Language-Team: Persian <https://hosted.weblate.org/projects/gelly/gelly/fa/"
@@ -19,33 +19,37 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
 "X-Generator: Weblate 2026.9.dev0\n"
 
-#: src/application.rs:169
-msgid "Playback error: {}"
-msgstr ""
-
-#: src/application.rs:584
+#: src/application.rs:669
 #, fuzzy
 #| msgid "Failed to load libraries"
 msgid "Failed to download media: {}"
 msgstr "خطا در بارگذاری کتابخانه‌ها"
 
-#: src/application.rs:627
+#: src/application.rs:712
 msgid "Failed to remove download: {}"
 msgstr ""
 
-#: src/application.rs:744
+#: src/application.rs:829
 msgid "Go online to rescan the library."
 msgstr ""
 
-#: src/application.rs:795
+#: src/application.rs:880
 msgid "Must be online"
 msgstr ""
 
-#: src/audio/model.rs:492
+#: src/audio/error.rs:20
+msgid "Unable to load the stream. Is the network available?"
+msgstr ""
+
+#: src/audio/error.rs:22
+msgid "Playback error: {}"
+msgstr ""
+
+#: src/audio/error.rs:26
 msgid "Subsonic does not support seeking transcoded streams."
 msgstr ""
 
-#: src/audio/model.rs:494
+#: src/audio/error.rs:28
 #, fuzzy
 #| msgid "Failed to delete playlist"
 msgid "Failed to seek"

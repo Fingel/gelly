@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-01 10:31-0800\n"
+"POT-Creation-Date: 2026-11-15 15:42-0800\n"
 "PO-Revision-Date: 2026-07-16 15:01+0000\n"
 "Last-Translator: mifares <vserafim_o@outlook.com>\n"
 "Language-Team: Portuguese (Brazil) <https://hosted.weblate.org/projects/"
@@ -19,33 +19,37 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
 "X-Generator: Weblate 2026.8.dev0\n"
 
-#: src/application.rs:169
+#: src/application.rs:669
+msgid "Failed to download media: {}"
+msgstr ""
+
+#: src/application.rs:712
+msgid "Failed to remove download: {}"
+msgstr ""
+
+#: src/application.rs:829
+msgid "Go online to rescan the library."
+msgstr ""
+
+#: src/application.rs:880
+msgid "Must be online"
+msgstr ""
+
+#: src/audio/error.rs:20
+msgid "Unable to load the stream. Is the network available?"
+msgstr ""
+
+#: src/audio/error.rs:22
 #, fuzzy
 #| msgid "Playback"
 msgid "Playback error: {}"
 msgstr "Reprodução"
 
-#: src/application.rs:584
-msgid "Failed to download media: {}"
-msgstr ""
-
-#: src/application.rs:627
-msgid "Failed to remove download: {}"
-msgstr ""
-
-#: src/application.rs:744
-msgid "Go online to rescan the library."
-msgstr ""
-
-#: src/application.rs:795
-msgid "Must be online"
-msgstr ""
-
-#: src/audio/model.rs:492
+#: src/audio/error.rs:26
 msgid "Subsonic does not support seeking transcoded streams."
 msgstr ""
 
-#: src/audio/model.rs:494
+#: src/audio/error.rs:28
 #, fuzzy
 #| msgid "Smart playlist"
 msgid "Failed to seek"

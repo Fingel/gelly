@@ -7,10 +7,10 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-01 10:31-0800\n"
+"POT-Creation-Date: 2026-11-15 15:42-0800\n"
 "PO-Revision-Date: 2026-11-05 05:09+0000\n"
-"Last-Translator: Clément Neuhaus <crazylava@users.noreply.hosted.weblate.org>"
-"\n"
+"Last-Translator: Clément Neuhaus "
+"<crazylava@users.noreply.hosted.weblate.org>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/gelly/gelly/fr/>\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
@@ -19,31 +19,35 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
 "X-Generator: Weblate 2026.11.1.dev0\n"
 
-#: src/application.rs:169
-msgid "Playback error: {}"
-msgstr "Erreur de lecture : {}"
-
-#: src/application.rs:584
+#: src/application.rs:669
 msgid "Failed to download media: {}"
 msgstr "Échec du chargement des médias : {}"
 
-#: src/application.rs:627
+#: src/application.rs:712
 msgid "Failed to remove download: {}"
 msgstr "Échec de l'effacement des téléchargements :{}"
 
-#: src/application.rs:744
+#: src/application.rs:829
 msgid "Go online to rescan the library."
 msgstr "vous devez être en ligne pour analyser la bibliothèque."
 
-#: src/application.rs:795
+#: src/application.rs:880
 msgid "Must be online"
 msgstr "Vous êtes en ligne !"
 
-#: src/audio/model.rs:492
+#: src/audio/error.rs:20
+msgid "Unable to load the stream. Is the network available?"
+msgstr ""
+
+#: src/audio/error.rs:22
+msgid "Playback error: {}"
+msgstr "Erreur de lecture : {}"
+
+#: src/audio/error.rs:26
 msgid "Subsonic does not support seeking transcoded streams."
 msgstr "Subsonic ne supporte pas le bobinage."
 
-#: src/audio/model.rs:494
+#: src/audio/error.rs:28
 msgid "Failed to seek"
 msgstr "Impossible de bobiner"
 
