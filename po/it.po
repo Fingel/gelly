@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-01 10:31-0800\n"
+"POT-Creation-Date: 2026-11-15 15:42-0800\n"
 "PO-Revision-Date: 2026-08-15 14:51+0000\n"
 "Last-Translator: Simob98 <simobertuzzi98@gmail.com>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/gelly/gelly/it/"
@@ -19,31 +19,35 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 "X-Generator: Weblate 2026.9.dev0\n"
 
-#: src/application.rs:169
-#, fuzzy
-#| msgid "Playback Mode"
-msgid "Playback error: {}"
-msgstr "Modalità di Riproduzione"
-
-#: src/application.rs:584
+#: src/application.rs:669
 #, fuzzy
 #| msgid "Failed to load libraries"
 msgid "Failed to download media: {}"
 msgstr "Impossibile caricare le librerie"
 
-#: src/application.rs:627
+#: src/application.rs:712
 msgid "Failed to remove download: {}"
 msgstr ""
 
-#: src/application.rs:744
+#: src/application.rs:829
 msgid "Go online to rescan the library."
 msgstr ""
 
-#: src/application.rs:795
+#: src/application.rs:880
 msgid "Must be online"
 msgstr ""
 
-#: src/audio/model.rs:492
+#: src/audio/error.rs:20
+msgid "Unable to load the stream. Is the network available?"
+msgstr ""
+
+#: src/audio/error.rs:22
+#, fuzzy
+#| msgid "Playback Mode"
+msgid "Playback error: {}"
+msgstr "Modalità di Riproduzione"
+
+#: src/audio/error.rs:26
 #, fuzzy
 #| msgid "Currently Subsonic backends cannot seek transcoded streams."
 msgid "Subsonic does not support seeking transcoded streams."
@@ -51,7 +55,7 @@ msgstr ""
 "Attualmente i backend Subsonic non possono eseguire il seek negli stream "
 "transcodificati."
 
-#: src/audio/model.rs:494
+#: src/audio/error.rs:28
 #, fuzzy
 #| msgid "Failed to delete playlist"
 msgid "Failed to seek"
