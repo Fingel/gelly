@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-11-15 15:42-0800\n"
-"PO-Revision-Date: 2026-11-17 09:51+0000\n"
+"PO-Revision-Date: 2026-11-19 05:16+0000\n"
 "Last-Translator: sendevia <me@sendevia.top>\n"
 "Language-Team: Chinese (Simplified Han script) <https://hosted.weblate.org/"
 "projects/gelly/gelly/zh_Hans/>\n"
@@ -37,7 +37,7 @@ msgstr "必须联网"
 
 #: src/audio/error.rs:20
 msgid "Unable to load the stream. Is the network available?"
-msgstr ""
+msgstr "无法加载音频流，网络是否可用？"
 
 #: src/audio/error.rs:22
 msgid "Playback error: {}"
