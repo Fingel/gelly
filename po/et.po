@@ -8,38 +8,36 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-11-15 15:42-0800\n"
-"PO-Revision-Date: 2026-09-25 12:50+0000\n"
+"PO-Revision-Date: 2026-11-20 14:51+0000\n"
 "Last-Translator: Priit Jõerüüt <jrthwlate@users.noreply.hosted.weblate.org>\n"
-"Language-Team: Estonian <https://hosted.weblate.org/projects/gelly/gelly/et/"
-">\n"
+"Language-Team: Estonian <https://hosted.weblate.org/projects/gelly/gelly/et/>"
+"\n"
 "Language: et\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 2026.10.dev0\n"
+"X-Generator: Weblate 2026.12.dev0\n"
 
 #: src/application.rs:669
-#, fuzzy
-#| msgid "Failed to load libraries"
 msgid "Failed to download media: {}"
-msgstr "Teekide laadimine ei õnnestunud"
+msgstr "Meediumi allalaadimine ei õnnestunud: {}"
 
 #: src/application.rs:712
 msgid "Failed to remove download: {}"
-msgstr ""
+msgstr "Allalaaditu eemaldamine ei õnnestunud: {}"
 
 #: src/application.rs:829
 msgid "Go online to rescan the library."
-msgstr ""
+msgstr "Muusikakogu uuesti skaneerimiseks loo võrguühendus."
 
 #: src/application.rs:880
 msgid "Must be online"
-msgstr ""
+msgstr "Võrguühendus peab toimima"
 
 #: src/audio/error.rs:20
 msgid "Unable to load the stream. Is the network available?"
-msgstr ""
+msgstr "Voogedastuse laadimine ei õnnestunud. Kas võrguühendus ikka toimib?"
 
 #: src/audio/error.rs:22
 msgid "Playback error: {}"
@@ -55,7 +53,7 @@ msgstr "Kerimine ei õnnestunud"
 
 #: src/library_utils.rs:47
 msgid "Must be online to fetch similar music."
-msgstr ""
+msgstr "Sarnase muusika laadimiseks peab võrguühendus toimima."
 
 #: src/library_utils.rs:67
 msgid ""
@@ -133,10 +131,8 @@ msgid "Add"
 msgstr "Lisa"
 
 #: src/ui/music_context_menu.rs:41
-#, fuzzy
-#| msgid "Failed to modify playlist."
 msgid "Must be online to modify playlists."
-msgstr "Esitlusloendi muutmine ei õnnestunud."
+msgstr "Esitlusloendite muutmiseks peab võrguühendus toimima."
 
 #: src/ui/music_context_menu.rs:66
 msgid "No playlists available. Please create a playlist first."
@@ -168,13 +164,11 @@ msgstr "Esita sarnaseid lugusid"
 
 #: src/ui/music_context_menu.rs:154
 msgid "Download"
-msgstr ""
+msgstr "Laadi alla"
 
 #: src/ui/music_context_menu.rs:159
-#, fuzzy
-#| msgid "Remove from Playlist"
 msgid "Remove Downloads"
-msgstr "Eemalda esitusloendist"
+msgstr "Eemalda allalaadimised"
 
 #: src/ui/music_context_menu.rs:167
 msgid "Go to Album"
@@ -344,10 +338,8 @@ msgstr "Esitusloendi loomine ei õnnestunud"
 
 #: src/ui/preferences.rs:111 resources/ui/preferences.ui:132
 #: resources/ui/preferences.ui:148
-#, fuzzy
-#| msgid "Clear Queue"
 msgid "Clear"
-msgstr "Tühjenda esitusjärjekord"
+msgstr "Tühjenda"
 
 #: src/ui/preferences.rs:134 src/ui/preferences.rs:140
 #: src/ui/preferences.rs:188 src/ui/preferences.rs:194
@@ -358,38 +350,33 @@ msgid "Unknown"
 msgstr "Tundmatu"
 
 #: src/ui/preferences.rs:146
-#, fuzzy
-#| msgid "Re-downloads the music library"
 msgid "Clear downloaded music?"
-msgstr "Laadib meediumikogu uuesti alla"
+msgstr "Kas eemaldad allalaaditud muusika?"
 
 #: src/ui/preferences.rs:147
 msgid "This will remove all offline media."
-msgstr ""
+msgstr "Järgnevaga eemaldad sinu seadmesse allalaaditud meediumi."
 
 #: src/ui/preferences.rs:160 src/ui/preferences.rs:214
 msgid "Clearing…"
-msgstr ""
+msgstr "Eemaldan…"
 
 #: src/ui/preferences.rs:167
 msgid "Failed to clear downloaded music."
-msgstr ""
+msgstr "Allalaaditud muusika eemaldamine ei õnnestunud."
 
 #: src/ui/preferences.rs:200
-#, fuzzy
-#| msgid "Clear Image Cache"
 msgid "Clear image cache?"
-msgstr "Eemalda vahemälust pildid"
+msgstr "Kas eemaldad puhverdatud pildid?"
 
 #: src/ui/preferences.rs:201
 msgid "This will remove all cached album and artist art."
 msgstr ""
+"Järgnevaga eemaldad puhverdatud albumite kaanepildid ja esitajate fotod."
 
 #: src/ui/preferences.rs:221
-#, fuzzy
-#| msgid "Failed to load libraries"
 msgid "Failed to clear cached images."
-msgstr "Teekide laadimine ei õnnestunud"
+msgstr "Puhverdatud piltide eemaldamine ei õnnestunud."
 
 #: src/ui/setup.rs:180 src/ui/setup.rs:195 src/ui/setup.rs:425
 msgid "Credentials could not be saved. Do you have a keyring daemon running?"
@@ -517,20 +504,16 @@ msgid "Path"
 msgstr "Asukoht"
 
 #: src/ui/stream_info_dialog.rs:123
-#, fuzzy
-#| msgid "Play Count"
 msgid "Approximate Play Count"
-msgstr "Esituskordade arv"
+msgstr "Umbkaudne esituskordade arv"
 
 #: src/ui/stream_info_dialog.rs:124
 msgid "Date Added"
-msgstr ""
+msgstr "Lisamise kuupäev"
 
 #: src/ui/stream_info_dialog.rs:125
-#, fuzzy
-#| msgid "all genres"
 msgid "Genres"
-msgstr "kõik žanrid"
+msgstr "Žanrid"
 
 #: src/ui/stream_info_dialog.rs:148
 msgid "Song Properties"
@@ -735,19 +718,19 @@ msgstr "Esitusloend: Enimesitatud lood"
 
 #: resources/ui/preferences.ui:122 resources/ui/preferences.ui:125
 msgid "Cache"
-msgstr ""
+msgstr "Puhver"
 
 #: resources/ui/preferences.ui:128
 msgid "Downloaded Music"
-msgstr ""
+msgstr "Allalaaditud muusika"
 
 #: resources/ui/preferences.ui:129 resources/ui/preferences.ui:145
 msgid "Calculating…"
-msgstr ""
+msgstr "Arvutan…"
 
 #: resources/ui/preferences.ui:144
 msgid "Cached Images"
-msgstr ""
+msgstr "Puhverdatud pildid"
 
 #: resources/ui/queue.ui:8
 msgid "Nothing Playing"
@@ -919,31 +902,27 @@ msgstr "Esita hetkel loendis valitud kirjet"
 
 #: resources/ui/shortcuts_dialog.ui:94
 msgid "Toggle Play/Pause"
-msgstr ""
+msgstr "Esita/peata esitus"
 
 #: resources/ui/shortcuts_dialog.ui:100
-#, fuzzy
-#| msgid "Previous"
 msgid "Previous Song"
-msgstr "Eelmine"
+msgstr "Eelmine lugu"
 
 #: resources/ui/shortcuts_dialog.ui:106
-#, fuzzy
-#| msgid "No Songs"
 msgid "Next Song"
-msgstr "Lugusid ei leidu"
+msgstr "Järgmine lugusid"
 
 #: resources/ui/shortcuts_dialog.ui:112
 msgid "Seek Backward"
-msgstr ""
+msgstr "Keri tagasi"
 
 #: resources/ui/shortcuts_dialog.ui:118
 msgid "Seek Forward"
-msgstr ""
+msgstr "Keri edasi"
 
 #: resources/ui/song.ui:117
 msgid "Available offline"
-msgstr ""
+msgstr "Saadaval vallasrežiimis"
 
 #: resources/ui/song_list.ui:8
 msgid "No Songs"
@@ -1035,7 +1014,7 @@ msgstr "Skaneeri uuesti"
 
 #: resources/ui/window.ui:419
 msgid "Offline"
-msgstr ""
+msgstr "Vallasrežiim"
 
 #: resources/ui/window.ui:433
 msgid "About Gelly"
