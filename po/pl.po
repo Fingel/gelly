@@ -8,9 +8,8 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-11-15 15:42-0800\n"
-"PO-Revision-Date: 2026-09-24 11:51+0000\n"
-"Last-Translator: Tomasz Bojanowski "
-"<tbojanowski@users.noreply.hosted.weblate.org>\n"
+"PO-Revision-Date: 2026-11-24 08:51+0000\n"
+"Last-Translator: Tymoteusz Beczek <tymoteusz.be@gmail.com>\n"
 "Language-Team: Polish <https://hosted.weblate.org/projects/gelly/gelly/pl/>\n"
 "Language: pl\n"
 "MIME-Version: 1.0\n"
@@ -18,29 +17,27 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
 "|| n%100>=20) ? 1 : 2);\n"
-"X-Generator: Weblate 2026.10.dev0\n"
+"X-Generator: Weblate 2026.12.dev0\n"
 
 #: src/application.rs:669
-#, fuzzy
-#| msgid "Failed to load libraries"
 msgid "Failed to download media: {}"
-msgstr "Nie udało się wczytać bibliotek"
+msgstr "Pobieranie mediów nie powiodło się: {}"
 
 #: src/application.rs:712
 msgid "Failed to remove download: {}"
-msgstr ""
+msgstr "Usuwanie pobranych plików nie powiodło się: {}"
 
 #: src/application.rs:829
 msgid "Go online to rescan the library."
-msgstr ""
+msgstr "Przejdź online by przeskanować bibliotekę."
 
 #: src/application.rs:880
 msgid "Must be online"
-msgstr ""
+msgstr "Musisz być online"
 
 #: src/audio/error.rs:20
 msgid "Unable to load the stream. Is the network available?"
-msgstr ""
+msgstr "Nie można załadować strumienia. Czy sieć jest dostępna?"
 
 #: src/audio/error.rs:22
 msgid "Playback error: {}"
@@ -56,7 +53,7 @@ msgstr "Nie udało się przewinąć"
 
 #: src/library_utils.rs:47
 msgid "Must be online to fetch similar music."
-msgstr ""
+msgstr "Musisz być online by pobrać podobną muzykę."
 
 #: src/library_utils.rs:67
 msgid ""
@@ -101,11 +98,11 @@ msgstr "Skopiowano ID albumu do schowka"
 
 #: src/ui/album_detail.rs:310
 msgid "Added album to playlist"
-msgstr "Dodano album do playlisty"
+msgstr "Dodano album do listy odtwarzania"
 
 #: src/ui/album_detail.rs:314
 msgid "Failed to add album to playlist"
-msgstr "Nie udało się dodać albumu do playlisty"
+msgstr "Nie udało się dodać albumu do listy odtwarzania"
 
 #: src/ui/artist_detail.rs:144
 msgid "Artist ID copied to clipboard"
@@ -113,15 +110,15 @@ msgstr "Skopiowano ID artysty do schowka"
 
 #: src/ui/artist_detail.rs:167
 msgid "Added artist to playlist"
-msgstr "Dodano artystę do playlisty"
+msgstr "Dodano artystę do listy odtwarzania"
 
 #: src/ui/artist_detail.rs:171
 msgid "Failed to add artist to playlist"
-msgstr "Nie udało się dodać artysty do playlisty"
+msgstr "Nie udało się dodać artysty do listy odtwarzania"
 
 #: src/ui/music_context_menu.rs:33 src/ui/music_context_menu.rs:133
 msgid "Add to Playlist"
-msgstr "Dodaj do playlisty"
+msgstr "Dodaj do listy odtwarzania"
 
 #: src/ui/music_context_menu.rs:34 src/ui/music_context_menu.rs:94
 #: src/ui/playlist_dialogs.rs:20 src/ui/playlist_dialogs.rs:59
@@ -134,18 +131,16 @@ msgid "Add"
 msgstr "Dodaj"
 
 #: src/ui/music_context_menu.rs:41
-#, fuzzy
-#| msgid "Failed to modify playlist."
 msgid "Must be online to modify playlists."
-msgstr "Nie udało się zmienić playlisty."
+msgstr "Musisz być online by zmodyfikować listę odtwarzania."
 
 #: src/ui/music_context_menu.rs:66
 msgid "No playlists available. Please create a playlist first."
-msgstr "Brak dostępnych playlist. Najpierw utwórz playlistę."
+msgstr "Brak dostępnych list odtwarzania. Najpierw utwórz listę odtwarzania."
 
 #: src/ui/music_context_menu.rs:93
 msgid "Song already in playlist"
-msgstr "Utwór jest już na playliście"
+msgstr "Utwór jest już na liście odtwarzania"
 
 #: src/ui/music_context_menu.rs:94
 msgid "Add Anyway"
@@ -161,7 +156,7 @@ msgstr "Dodaj na koniec kolejki"
 
 #: src/ui/music_context_menu.rs:138
 msgid "Remove from Playlist"
-msgstr "Usuń z playlisty"
+msgstr "Usuń z listy odtwarzania"
 
 #: src/ui/music_context_menu.rs:143
 msgid "Play Similar"
@@ -169,13 +164,11 @@ msgstr "Odtwórz podobne"
 
 #: src/ui/music_context_menu.rs:154
 msgid "Download"
-msgstr ""
+msgstr "Pobierz"
 
 #: src/ui/music_context_menu.rs:159
-#, fuzzy
-#| msgid "Remove from Playlist"
 msgid "Remove Downloads"
-msgstr "Usuń z playlisty"
+msgstr "Usuń z pobranych"
 
 #: src/ui/music_context_menu.rs:167
 msgid "Go to Album"
@@ -263,11 +256,11 @@ msgstr "Nieznany artysta"
 
 #: src/ui/player_bar/common.rs:271 src/ui/song.rs:245
 msgid "Added song to playlist"
-msgstr "Dodano utwór do playlisty"
+msgstr "Dodano utwór do listy odtwarzania"
 
 #: src/ui/player_bar/common.rs:275 src/ui/song.rs:249
 msgid "Failed to add song to playlist"
-msgstr "Nie udało się dodać utworu do playlisty"
+msgstr "Nie udało się dodać utworu do listy odtwarzania"
 
 #: src/ui/playlist.rs:25
 msgid "1 song"
@@ -278,51 +271,51 @@ msgstr[2] "{} utworów"
 
 #: src/ui/playlist.rs:28
 msgid "Smart playlist"
-msgstr "Inteligentna playlista"
+msgstr "Inteligentna lista odtwarzania"
 
 #: src/ui/playlist.rs:30
 msgid "Empty playlist"
-msgstr "Pusta playlista"
+msgstr "Pusta lista odtwarzania"
 
 #: src/ui/playlist_detail.rs:280
 msgid "Playlist ID copied to clipboard"
-msgstr "Skopiowano ID playlisty do schowka"
+msgstr "Skopiowano ID listy odtwarzania do schowka"
 
 #: src/ui/playlist_detail.rs:304
 msgid "Added songs to playlist"
-msgstr "Dodano utwory do playlisty"
+msgstr "Dodano utwory do listy odtwarzania"
 
 #: src/ui/playlist_detail.rs:308
 msgid "Failed to add songs to playlist"
-msgstr "Nie udało się dodać utworów do playlisty"
+msgstr "Nie udało się dodać utworów do listy odtwarzania"
 
 #: src/ui/playlist_detail.rs:430
 msgid "Failed to save playlist order."
-msgstr "Nie udało się zapisać kolejności playlisty."
+msgstr "Nie udało się zapisać kolejności listy odtwarzania."
 
 #: src/ui/playlist_detail.rs:483
 msgid "Failed to modify playlist."
-msgstr "Nie udało się zmienić playlisty."
+msgstr "Nie udało się zmienić listy odtwarzania."
 
 #: src/ui/playlist_detail.rs:555
 msgid "Smart playlists cannot be deleted"
-msgstr "Nie można usunąć inteligentnej playlisty"
+msgstr "Nie można usunąć inteligentnej listy odtwarzania"
 
 #: src/ui/playlist_detail.rs:591
 msgid "Playlist deleted"
-msgstr "Usunięto playlistę"
+msgstr "Usunięto listę odtwarzania"
 
 #: src/ui/playlist_detail.rs:594
 msgid "Failed to delete playlist"
-msgstr "Nie udało się usunąć playlisty"
+msgstr "Nie udało się usunąć listy odtwarzania"
 
 #: src/ui/playlist_dialogs.rs:7
 msgid "Playlist name"
-msgstr "Nazwa playlisty"
+msgstr "Nazwa listy odtwarzania"
 
 #: src/ui/playlist_dialogs.rs:16
 msgid "New Playlist"
-msgstr "Nowa playlista"
+msgstr "Nowa lista odtwarzania"
 
 #: src/ui/playlist_dialogs.rs:20
 msgid "Create"
@@ -330,7 +323,7 @@ msgstr "Utwórz"
 
 #: src/ui/playlist_dialogs.rs:56
 msgid "Delete playlist?"
-msgstr "Usunąć playlistę?"
+msgstr "Usunąć listę odtwarzania?"
 
 #: src/ui/playlist_dialogs.rs:59
 msgid "Delete"
@@ -338,18 +331,16 @@ msgstr "Usuń"
 
 #: src/ui/playlist_list.rs:154 src/ui/queue.rs:131
 msgid "Playlist created"
-msgstr "Utworzono playlistę"
+msgstr "Utworzono listę odtwarzania"
 
 #: src/ui/playlist_list.rs:157 src/ui/queue.rs:134
 msgid "Failed to create playlist"
-msgstr "Nie udało się utworzyć playlisty"
+msgstr "Nie udało się utworzyć listy odtwarzania"
 
 #: src/ui/preferences.rs:111 resources/ui/preferences.ui:132
 #: resources/ui/preferences.ui:148
-#, fuzzy
-#| msgid "Clear Queue"
 msgid "Clear"
-msgstr "Wyczyść kolejkę odtwarzania"
+msgstr "Wyczyść"
 
 #: src/ui/preferences.rs:134 src/ui/preferences.rs:140
 #: src/ui/preferences.rs:188 src/ui/preferences.rs:194
@@ -360,38 +351,33 @@ msgid "Unknown"
 msgstr "Nieznane"
 
 #: src/ui/preferences.rs:146
-#, fuzzy
-#| msgid "Re-downloads the music library"
 msgid "Clear downloaded music?"
-msgstr "Pobiera ponownie bibliotekę muzyczną"
+msgstr "Wyczyścić pobraną muzykę?"
 
 #: src/ui/preferences.rs:147
 msgid "This will remove all offline media."
-msgstr ""
+msgstr "Operacja usunie wszystkie media offline."
 
 #: src/ui/preferences.rs:160 src/ui/preferences.rs:214
 msgid "Clearing…"
-msgstr ""
+msgstr "Czyszczenie…"
 
 #: src/ui/preferences.rs:167
 msgid "Failed to clear downloaded music."
-msgstr ""
+msgstr "Usuwanie pobranej muzyki nie powiodło się."
 
 #: src/ui/preferences.rs:200
-#, fuzzy
-#| msgid "Clear Image Cache"
 msgid "Clear image cache?"
-msgstr "Wyczyść pamięć podręczną obrazów"
+msgstr "Wyczyścić pamięć podręczną obrazów?"
 
 #: src/ui/preferences.rs:201
 msgid "This will remove all cached album and artist art."
 msgstr ""
+"Ta operacja usunie wszystkie obrazy albumów i artystów w pamięci podręcznej."
 
 #: src/ui/preferences.rs:221
-#, fuzzy
-#| msgid "Failed to load libraries"
 msgid "Failed to clear cached images."
-msgstr "Nie udało się wczytać bibliotek"
+msgstr "Nie udało się wyczyścić obrazów z pamięci podręcznej."
 
 #: src/ui/setup.rs:180 src/ui/setup.rs:195 src/ui/setup.rs:425
 msgid "Credentials could not be saved. Do you have a keyring daemon running?"
@@ -516,20 +502,16 @@ msgid "Path"
 msgstr "Ścieżka"
 
 #: src/ui/stream_info_dialog.rs:123
-#, fuzzy
-#| msgid "Play Count"
 msgid "Approximate Play Count"
-msgstr "Liczba odtworzeń"
+msgstr "Przybliżona liczba odtworzeń"
 
 #: src/ui/stream_info_dialog.rs:124
 msgid "Date Added"
-msgstr ""
+msgstr "Data dodania"
 
 #: src/ui/stream_info_dialog.rs:125
-#, fuzzy
-#| msgid "all genres"
 msgid "Genres"
-msgstr "wszystkie gatunki"
+msgstr "Gatunki"
 
 #: src/ui/stream_info_dialog.rs:148
 msgid "Song Properties"
@@ -620,15 +602,15 @@ msgstr "Więcej działań"
 
 #: resources/ui/playlist_detail.ui:140
 msgid "Delete playlist"
-msgstr "Usuń playlistę"
+msgstr "Usuń listę odtwarzania"
 
 #: resources/ui/playlist_detail.ui:154
 msgid "Playlist is Empty"
-msgstr "Playlista jest pusta"
+msgstr "Lista odtwarzania jest pusta"
 
 #: resources/ui/playlist_list.ui:8
 msgid "No Playlists"
-msgstr "Brak playlist"
+msgstr "Brak list odtwarzania"
 
 #: resources/ui/preferences.ui:9 resources/ui/preferences.ui:12
 #: resources/ui/shortcuts_dialog.ui:6
@@ -714,11 +696,11 @@ msgstr "Wartość 0 oznacza brak limitu."
 
 #: resources/ui/preferences.ui:96 resources/ui/window.ui:313
 msgid "Playlists"
-msgstr "Playlisty"
+msgstr "Listy odtwarzania"
 
 #: resources/ui/preferences.ui:99
 msgid "Smart Playlists"
-msgstr "Inteligentne playlisty"
+msgstr "Inteligentne listy odtwarzania"
 
 #: resources/ui/preferences.ui:102
 msgid "Favorite Mix Playlist"
@@ -734,19 +716,19 @@ msgstr "Najczęściej odtwarzane"
 
 #: resources/ui/preferences.ui:122 resources/ui/preferences.ui:125
 msgid "Cache"
-msgstr ""
+msgstr "Pamięć podręczna"
 
 #: resources/ui/preferences.ui:128
 msgid "Downloaded Music"
-msgstr ""
+msgstr "Pobrana muzyka"
 
 #: resources/ui/preferences.ui:129 resources/ui/preferences.ui:145
 msgid "Calculating…"
-msgstr ""
+msgstr "Przeliczanie…"
 
 #: resources/ui/preferences.ui:144
 msgid "Cached Images"
-msgstr ""
+msgstr "Obrazki w pamięci podręcznej"
 
 #: resources/ui/queue.ui:8
 msgid "Nothing Playing"
@@ -901,7 +883,7 @@ msgstr "Przełącz na artystów"
 
 #: resources/ui/shortcuts_dialog.ui:70
 msgid "Focus Playlist"
-msgstr "Przełącz na playlisty"
+msgstr "Przełącz na listy odtwarzania"
 
 #: resources/ui/shortcuts_dialog.ui:76
 msgid "Focus Song List"
@@ -917,31 +899,27 @@ msgstr "Odtwórz aktualnie zaznaczony element z listy"
 
 #: resources/ui/shortcuts_dialog.ui:94
 msgid "Toggle Play/Pause"
-msgstr ""
+msgstr "Przełącz odtwarzanie/pauzę"
 
 #: resources/ui/shortcuts_dialog.ui:100
-#, fuzzy
-#| msgid "Previous"
 msgid "Previous Song"
 msgstr "Poprzedni utwór"
 
 #: resources/ui/shortcuts_dialog.ui:106
-#, fuzzy
-#| msgid "No Songs"
 msgid "Next Song"
-msgstr "Brak utworów"
+msgstr "Następny utwór"
 
 #: resources/ui/shortcuts_dialog.ui:112
 msgid "Seek Backward"
-msgstr ""
+msgstr "Przewiń wstecz"
 
 #: resources/ui/shortcuts_dialog.ui:118
 msgid "Seek Forward"
-msgstr ""
+msgstr "Przewiń w przód"
 
 #: resources/ui/song.ui:117
 msgid "Available offline"
-msgstr ""
+msgstr "Dostępne offline"
 
 #: resources/ui/song_list.ui:8
 msgid "No Songs"
@@ -961,7 +939,7 @@ msgstr "Szczegóły artysty"
 
 #: resources/ui/window.ui:118
 msgid "Playlist Detail"
-msgstr "Szczegóły playlisty"
+msgstr "Szczegóły listy odtwarzania"
 
 #: resources/ui/window.ui:141
 msgid "Main"
@@ -981,7 +959,7 @@ msgstr "Sortowanie"
 
 #: resources/ui/window.ui:170
 msgid "New"
-msgstr "Nowa playlista"
+msgstr "Nowa lista odtwarzania"
 
 #: resources/ui/window.ui:205
 msgid "Search..."
@@ -1025,7 +1003,7 @@ msgstr "Wyczyść kolejkę odtwarzania"
 
 #: resources/ui/window.ui:386
 msgid "Save As Playlist"
-msgstr "Zapisz jako playlistę"
+msgstr "Zapisz jako listę odtwarzania"
 
 #: resources/ui/window.ui:407
 msgid "Request Rescan"
@@ -1033,7 +1011,7 @@ msgstr "Zażądaj ponownego skanowania"
 
 #: resources/ui/window.ui:419
 msgid "Offline"
-msgstr ""
+msgstr "Offline"
 
 #: resources/ui/window.ui:433
 msgid "About Gelly"
